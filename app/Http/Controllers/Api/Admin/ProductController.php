@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Api\Admin;
+use Illuminate\Support\Str;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreProductRequest;
@@ -23,18 +24,32 @@ class ProductController extends Controller
         ]);
     }
 
-    public function store(StoreProductRequest $request): JsonResponse
-    {
-        $product = Product::create($request->validated());
+    // public function store(StoreProductRequest $request): JsonResponse
+    // {
+    //     $product = Product::create($request->validated());
 
-        $product->load('category');
+    //     $product->load('category');
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Product created successfully',
-            'data' => $product,
-        ], 201);
-    }
+    //     return response()->json([
+    //         'success' => true,
+    //         'message' => 'Product created successfully',
+    //         'data' => $product,
+    //     ], 201);
+    // }
+
+ public function store(StoreProductRequest $request)
+{
+    $data = $request->validated();
+
+    $data['slug'] = Str::slug($data['name']);
+
+    $product = Product::create($data);
+
+    return response()->json([
+        'message' => 'Produk berhasil dibuat.',
+        'data' => $product,
+    ], 201);
+}
 
     public function show(Product $product): JsonResponse
     {
