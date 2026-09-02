@@ -10,19 +10,21 @@ interface CategoryResponse {
     last_page: number
     per_page: number
     total: number
+    from: number | null
+    to: number | null
   }
 }
 
 export const categoryService = {
-  async getAll(): Promise<Category[]> {
+  async getAdminAll(page = 1): Promise<CategoryResponse['data']> {
     const response = await api.get<CategoryResponse>(
-      '/admin/categories',
+      `/admin/categories?page=${page}`,
     )
 
-    return response.data.data.data
+    return response.data.data
   },
 
-  async getById(id: number): Promise<Category> {
+  async getAdminById(id: number): Promise<Category> {
     const response = await api.get<{
       success: boolean
       message: string
