@@ -1,3 +1,9 @@
+export interface ProductCategory {
+  id: number
+  name: string
+  slug: string
+}
+
 export interface Product {
   id: number
   category_id: number
@@ -7,6 +13,7 @@ export interface Product {
   price: string
   image?: string | null
   is_active: boolean
+  category?: ProductCategory | null
 }
 
 export interface CreateProductRequest {
@@ -18,4 +25,5 @@ export interface CreateProductRequest {
   is_active: boolean
 }
 
-export interface UpdateProductRequest extends CreateProductRequest {}
+export interface UpdateProductRequest
+  extends CreateProductRequest {}
