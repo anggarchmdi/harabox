@@ -9,14 +9,21 @@ import {
   Trash2,
   X,
 } from 'lucide-react'
+
 import { toast } from 'sonner'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+
+import {
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query'
+
 import { AxiosError } from 'axios'
 
 import type {
   Category,
   CategoryForm,
 } from '../../types/category'
+
 import { categoryService } from '../../services/category.services'
 
 const initialForm: CategoryForm = {
@@ -28,19 +35,44 @@ const initialForm: CategoryForm = {
 export default function AdminCategories() {
   const queryClient = useQueryClient()
 
-  const [page, setPage] = useState(1)
-  const [search, setSearch] = useState('')
+  // =========================
+  // PAGINATION
+  // =========================
 
-  const [modalOpen, setModalOpen] = useState(false)
+  const [page, setPage] = useState(1)
+
+  // =========================
+  // SEARCH
+  // =========================
+
+  const [searchInput, setSearchInput] =
+    useState('')
+
+  const [search, setSearch] =
+    useState('')
+
+  // =========================
+  // MODAL
+  // =========================
+
+  const [modalOpen, setModalOpen] =
+    useState(false)
+
   const [editingCategory, setEditingCategory] =
     useState<Category | null>(null)
 
   const [form, setForm] =
     useState<CategoryForm>(initialForm)
 
-  const [saving, setSaving] = useState(false)
+  const [saving, setSaving] =
+    useState(false)
+
   const [deletingId, setDeletingId] =
     useState<number | null>(null)
+
+  // =========================
+  // CATEGORY QUERY
+  // =========================
 
   const {
     data,
@@ -48,14 +80,37 @@ export default function AdminCategories() {
     isFetching,
   } = useQuery({
     queryKey: ['categories', page],
-    queryFn: () => categoryService.getAdminAll(page),
+
+    queryFn: () =>
+      categoryService.getAdminAll(page),
   })
 
-  const categories = data?.data ?? []
+  const categories =
+    data?.data ?? []
 
-  const filteredCategories = categories.filter(
-    (category) => {
-      const keyword = search.toLowerCase()
+  // =========================
+  // DEBOUNCE SEARCH
+  // =========================
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setSearch(searchInput.trim())
+      setPage(1)
+    }, 400)
+
+    return () => {
+      clearTimeout(timeout)
+    }
+  }, [searchInput])
+
+  // =========================
+  // LOCAL SEARCH
+  // =========================
+
+  const filteredCategories =
+    categories.filter((category) => {
+      const keyword =
+        search.toLowerCase()
 
       return (
         category.name
@@ -65,8 +120,7 @@ export default function AdminCategories() {
           .toLowerCase()
           .includes(keyword)
       )
-    },
-  )
+    })
 
   // =========================
   // MODAL
@@ -92,7 +146,8 @@ export default function AdminCategories() {
       setForm({
         name: detail.name,
         slug: detail.slug,
-        description: detail.description ?? '',
+        description:
+          detail.description ?? '',
       })
 
       setModalOpen(true)
@@ -103,14 +158,17 @@ export default function AdminCategories() {
         }>
 
       toast.error(
-        axiosError.response?.data?.message ??
+        axiosError.response?.data
+          ?.message ??
           'Gagal mengambil data kategori.',
       )
     }
   }
 
   const closeModal = () => {
-    if (saving) return
+    if (saving) {
+      return
+    }
 
     setModalOpen(false)
     setEditingCategory(null)
@@ -122,12 +180,14 @@ export default function AdminCategories() {
   // =========================
 
   const handleChange = (
-    event:
-      React.ChangeEvent<
-        HTMLInputElement | HTMLTextAreaElement
-      >,
+    event: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement
+    >,
   ) => {
-    const { name, value } = event.target
+    const {
+      name,
+      value,
+    } = event.target
 
     setForm((current) => ({
       ...current,
@@ -155,12 +215,16 @@ export default function AdminCategories() {
     event.preventDefault()
 
     if (!form.name.trim()) {
-      toast.error('Nama kategori wajib diisi.')
+      toast.error(
+        'Nama kategori wajib diisi.',
+      )
       return
     }
 
     if (!form.slug.trim()) {
-      toast.error('Slug kategori wajib diisi.')
+      toast.error(
+        'Slug kategori wajib diisi.',
+      )
       return
     }
 
@@ -184,15 +248,19 @@ export default function AdminCategories() {
           'Kategori berhasil diperbarui.',
         )
       } else {
-        await categoryService.create(payload)
+        await categoryService.create(
+          payload,
+        )
 
         toast.success(
           'Kategori berhasil ditambahkan.',
         )
       }
 
+      // Refresh seluruh query categories.
       await queryClient.invalidateQueries({
         queryKey: ['categories'],
+        refetchType: 'all',
       })
 
       closeModal()
@@ -211,13 +279,15 @@ export default function AdminCategories() {
 
       if (validationMessage) {
         const firstError =
-          Object.values(validationMessage)
-            .flat()[0]
+          Object.values(
+            validationMessage,
+          ).flat()[0]
 
         toast.error(firstError)
       } else {
         toast.error(
-          axiosError.response?.data?.message ??
+          axiosError.response?.data
+            ?.message ??
             'Gagal menyimpan kategori.',
         )
       }
@@ -233,11 +303,14 @@ export default function AdminCategories() {
   const handleDelete = async (
     category: Category,
   ) => {
-    const confirmed = window.confirm(
-      `Yakin ingin menghapus kategori "${category.name}"?`,
-    )
+    const confirmed =
+      window.confirm(
+        `Yakin ingin menghapus kategori "${category.name}"?`,
+      )
 
-    if (!confirmed) return
+    if (!confirmed) {
+      return
+    }
 
     try {
       setDeletingId(category.id)
@@ -252,6 +325,7 @@ export default function AdminCategories() {
 
       await queryClient.invalidateQueries({
         queryKey: ['categories'],
+        refetchType: 'all',
       })
 
       // Kalau halaman terakhir kosong
@@ -259,7 +333,9 @@ export default function AdminCategories() {
         categories.length === 1 &&
         page > 1
       ) {
-        setPage((current) => current - 1)
+        setPage(
+          (current) => current - 1,
+        )
       }
     } catch (error) {
       const axiosError =
@@ -268,7 +344,8 @@ export default function AdminCategories() {
         }>
 
       toast.error(
-        axiosError.response?.data?.message ??
+        axiosError.response?.data
+          ?.message ??
           'Gagal menghapus kategori.',
       )
     } finally {
@@ -276,14 +353,12 @@ export default function AdminCategories() {
     }
   }
 
-  // Reset page ketika search
-  useEffect(() => {
-    setPage(1)
-  }, [search])
-
   return (
     <div className="mx-auto max-w-7xl">
-      {/* Header */}
+      {/* =========================
+          HEADER
+      ========================= */}
+
       <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-gray-900">
@@ -305,7 +380,10 @@ export default function AdminCategories() {
         </button>
       </div>
 
-      {/* Toolbar */}
+      {/* =========================
+          TOOLBAR
+      ========================= */}
+
       <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="relative w-full sm:max-w-sm">
           <Search
@@ -315,9 +393,11 @@ export default function AdminCategories() {
 
           <input
             type="text"
-            value={search}
+            value={searchInput}
             onChange={(event) =>
-              setSearch(event.target.value)
+              setSearchInput(
+                event.target.value,
+              )
             }
             placeholder="Cari kategori..."
             className="w-full rounded-xl border border-gray-200 bg-white py-3 pl-11 pr-4 text-sm outline-none transition focus:border-red-500 focus:ring-2 focus:ring-red-500/10"
@@ -331,7 +411,10 @@ export default function AdminCategories() {
         )}
       </div>
 
-      {/* Loading */}
+      {/* =========================
+          LOADING
+      ========================= */}
+
       {isLoading ? (
         <div className="flex min-h-[400px] items-center justify-center rounded-2xl border border-gray-200 bg-white">
           <div className="text-center">
@@ -343,7 +426,10 @@ export default function AdminCategories() {
           </div>
         </div>
       ) : filteredCategories.length === 0 ? (
-        /* Empty */
+        /* =========================
+           EMPTY
+        ========================= */
+
         <div className="rounded-2xl border border-dashed border-gray-300 bg-white px-6 py-16 text-center">
           <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-red-50 text-red-600">
             <FolderOpen size={25} />
@@ -364,7 +450,9 @@ export default function AdminCategories() {
           {!search && (
             <button
               type="button"
-              onClick={openCreateModal}
+              onClick={
+                openCreateModal
+              }
               className="mt-6 inline-flex items-center gap-2 rounded-xl bg-red-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-red-700"
             >
               <Plus size={17} />
@@ -374,7 +462,10 @@ export default function AdminCategories() {
         </div>
       ) : (
         <>
-          {/* Table */}
+          {/* =========================
+              TABLE
+          ========================= */}
+
           <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
             <div className="overflow-x-auto">
               <table className="w-full min-w-[800px] text-left">
@@ -409,12 +500,13 @@ export default function AdminCategories() {
                         key={category.id}
                         className="transition hover:bg-gray-50"
                       >
-                        {/* Name */}
+                        {/* NAME */}
+
                         <td className="px-6 py-5">
                           <div className="flex items-center gap-3">
                             <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-red-50 text-red-600">
                               <FolderOpen
-                              b-500   size={19}
+                                size={19}
                               />
                             </div>
 
@@ -424,20 +516,23 @@ export default function AdminCategories() {
                               </p>
 
                               <p className="mt-1 text-xs text-gray-400">
-                                ID #{category.id}
+                                ID #
+                                {category.id}
                               </p>
                             </div>
                           </div>
                         </td>
 
-                        {/* Slug */}
+                        {/* SLUG */}
+
                         <td className="px-6 py-5">
                           <span className="rounded-lg bg-gray-100 px-3 py-1.5 font-mono text-xs text-gray-600">
                             {category.slug}
                           </span>
                         </td>
 
-                        {/* Description */}
+                        {/* DESCRIPTION */}
+
                         <td className="max-w-xs px-6 py-5">
                           <p className="truncate text-sm text-gray-600">
                             {category.description ||
@@ -445,7 +540,8 @@ export default function AdminCategories() {
                           </p>
                         </td>
 
-                        {/* Products */}
+                        {/* PRODUCTS */}
+
                         <td className="px-6 py-5">
                           <span className="inline-flex items-center rounded-full bg-blue-50 px-3 py-1 text-xs font-bold text-blue-600">
                             {category.products_count ??
@@ -454,7 +550,8 @@ export default function AdminCategories() {
                           </span>
                         </td>
 
-                        {/* Actions */}
+                        {/* ACTIONS */}
+
                         <td className="px-6 py-5">
                           <div className="flex justify-end gap-2">
                             <button
@@ -466,7 +563,9 @@ export default function AdminCategories() {
                               }
                               className="inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-100"
                             >
-                              <Edit3 size={15} />
+                              <Edit3
+                                size={15}
+                              />
                               Edit
                             </button>
 
@@ -501,75 +600,94 @@ export default function AdminCategories() {
               </table>
             </div>
 
-            {/* Pagination */}
-            {/* {data && data.last_page > 1 && (
-              <div className="flex items-center justify-between border-t border-gray-100 px-6 py-4">
-                <p className="text-sm text-gray-500">
-                  Menampilkan{' '}
-                  <span className="font-semibold text-gray-700">
-                    {data.from ?? 0}
-                  </span>{' '}
-                  -{' '}
-                  <span className="font-semibold text-gray-700">
-                    {data.to ?? 0}
-                  </span>{' '}
-                  dari{' '}
-                  <span className="font-semibold text-gray-700">
-                    {data.total}
-                  </span>{' '}
-                  kategori
-                </p>
+            {/* =========================
+                PAGINATION
+            ========================= */}
 
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    disabled={page === 1}
-                    onClick={() =>
-                      setPage(
-                        (current) =>
-                          current - 1,
-                      )
-                    }
-                    className="flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-600 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
-                  >
-                    <ChevronLeft
-                      size={17}
-                    />
-                  </button>
+            {data &&
+              data.last_page > 1 && (
+                <div className="flex items-center justify-between border-t border-gray-100 px-6 py-4">
+                  <p className="text-sm text-gray-500">
+                    Menampilkan{' '}
 
-                  <div className="flex h-9 min-w-9 items-center justify-center rounded-lg bg-red-600 px-3 text-sm font-semibold text-white">
-                    {page}
+                    <span className="font-semibold text-gray-700">
+                      {data.from ?? 0}
+                    </span>{' '}
+
+                    -{' '}
+
+                    <span className="font-semibold text-gray-700">
+                      {data.to ?? 0}
+                    </span>{' '}
+
+                    dari{' '}
+
+                    <span className="font-semibold text-gray-700">
+                      {data.total}
+                    </span>{' '}
+
+                    kategori
+                  </p>
+
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      disabled={
+                        page === 1 ||
+                        isFetching
+                      }
+                      onClick={() =>
+                        setPage(
+                          (current) =>
+                            current - 1,
+                        )
+                      }
+                      className="flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-600 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
+                    >
+                      <ChevronLeft
+                        size={17}
+                      />
+                    </button>
+
+                    <div className="flex h-9 min-w-9 items-center justify-center rounded-lg bg-red-600 px-3 text-sm font-semibold text-white">
+                      {page}
+                    </div>
+
+                    <button
+                      type="button"
+                      disabled={
+                        page >=
+                          data.last_page ||
+                        isFetching
+                      }
+                      onClick={() =>
+                        setPage(
+                          (current) =>
+                            current + 1,
+                        )
+                      }
+                      className="flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-600 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
+                    >
+                      <ChevronRight
+                        size={17}
+                      />
+                    </button>
                   </div>
-
-                  <button
-                    type="button"
-                    disabled={
-                      page >= data.last_page
-                    }
-                    onClick={() =>
-                      setPage(
-                        (current) =>
-                          current + 1,
-                      )
-                    }
-                    className="flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-600 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
-                  >
-                    <ChevronRight
-                      size={17}
-                    />
-                  </button>
                 </div>
-              </div>
-            )} */}
+              )}
           </div>
         </>
       )}
 
-      {/* Create / Edit Modal */}
+      {/* =========================
+          CREATE / EDIT MODAL
+      ========================= */}
+
       {modalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm">
           <div className="w-full max-w-lg overflow-hidden rounded-2xl bg-white shadow-2xl">
-            {/* Modal Header */}
+            {/* HEADER */}
+
             <div className="flex items-center justify-between border-b border-gray-100 px-6 py-5">
               <div>
                 <h2 className="text-lg font-bold text-gray-900">
@@ -595,12 +713,14 @@ export default function AdminCategories() {
               </button>
             </div>
 
-            {/* Modal Form */}
+            {/* FORM */}
+
             <form
               onSubmit={handleSubmit}
             >
               <div className="space-y-5 p-6">
-                {/* Name */}
+                {/* NAME */}
+
                 <div>
                   <label
                     htmlFor="category-name"
@@ -614,14 +734,17 @@ export default function AdminCategories() {
                     name="name"
                     type="text"
                     value={form.name}
-                    onChange={handleChange}
+                    onChange={
+                      handleChange
+                    }
                     placeholder="Contoh: Nasi Box"
                     disabled={saving}
                     className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-red-500 focus:ring-2 focus:ring-red-500/10 disabled:cursor-not-allowed disabled:bg-gray-50"
                   />
                 </div>
 
-                {/* Slug */}
+                {/* SLUG */}
+
                 <div>
                   <div className="mb-2 flex items-center justify-between">
                     <label
@@ -633,7 +756,9 @@ export default function AdminCategories() {
 
                     <button
                       type="button"
-                      onClick={generateSlug}
+                      onClick={
+                        generateSlug
+                      }
                       disabled={
                         saving ||
                         !form.name.trim()
@@ -649,7 +774,9 @@ export default function AdminCategories() {
                     name="slug"
                     type="text"
                     value={form.slug}
-                    onChange={handleChange}
+                    onChange={
+                      handleChange
+                    }
                     placeholder="nasi-box"
                     disabled={saving}
                     className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 font-mono text-sm outline-none transition focus:border-red-500 focus:ring-2 focus:ring-red-500/10 disabled:cursor-not-allowed disabled:bg-gray-50"
@@ -660,7 +787,8 @@ export default function AdminCategories() {
                   </p>
                 </div>
 
-                {/* Description */}
+                {/* DESCRIPTION */}
+
                 <div>
                   <label
                     htmlFor="category-description"
@@ -673,8 +801,12 @@ export default function AdminCategories() {
                     id="category-description"
                     name="description"
                     rows={4}
-                    value={form.description}
-                    onChange={handleChange}
+                    value={
+                      form.description
+                    }
+                    onChange={
+                      handleChange
+                    }
                     placeholder="Deskripsi kategori..."
                     disabled={saving}
                     className="w-full resize-none rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-red-500 focus:ring-2 focus:ring-red-500/10 disabled:cursor-not-allowed disabled:bg-gray-50"
@@ -682,7 +814,8 @@ export default function AdminCategories() {
                 </div>
               </div>
 
-              {/* Modal Footer */}
+              {/* FOOTER */}
+
               <div className="flex items-center justify-end gap-3 border-t border-gray-100 bg-gray-50/50 px-6 py-4">
                 <button
                   type="button"
