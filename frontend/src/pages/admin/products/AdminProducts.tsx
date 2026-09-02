@@ -1,201 +1,455 @@
-import { useState } from 'react'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
+import {
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query'
+import {
+  Search,
+  ChevronLeft,
+  ChevronRight,
+  X,
+} from 'lucide-react'
 
 import { productService } from '../../../services/products.service'
+import { categoryService } from '../../../services/category.services'
 
 import type { Product } from '../../../types/products'
 
 import ProductTable from '../../../components/admin/products/ProductTable'
 
-export default function AdminProducts() {
+export default function Products() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
-  const [loading, setLoading] = useState(false);
-  const [deleteTarget, setDeleteTarget] =
-    useState<Product | null>(null)
+
+  // =========================
+  // SEARCH
+  // =========================
+
+  const [searchInput, setSearchInput] = useState('')
+  const [search, setSearch] = useState('')
+
+  // =========================
+  // FILTER
+  // =========================
+
+  const [categoryId, setCategoryId] =
+    useState<number | undefined>()
+
+  const [isActive, setIsActive] =
+    useState<boolean | null>(null)
+
+  // =========================
+  // PAGINATION
+  // =========================
+
+  const [page, setPage] = useState(1)
+
+  // =========================
+  // DEBOUNCE SEARCH
+  // =========================
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setSearch(searchInput.trim())
+      setPage(1)
+    }, 400)
+
+    return () => {
+      clearTimeout(timeout)
+    }
+  }, [searchInput])
+
+  // =========================
+  // CATEGORIES
+  // =========================
 
   const {
-    data: products = [],
-    isLoading,
-    isError,
+    data: categoryResponse,
+    isLoading: isCategoryLoading,
   } = useQuery({
-    queryKey: ['admin-products'],
-    queryFn: productService.getAll,
+    queryKey: ['categories'],
+    queryFn: () =>
+      categoryService.getAdminAll(1),
+    staleTime: 5 * 60 * 1000,
   })
 
+  const categories = categoryResponse?.data ?? []
 
-  const deleteMutation = useMutation({
-    mutationFn: (id: number) =>
-      productService.delete(id),
+  // =========================
+  // PRODUCTS
+  // =========================
 
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['admin-products'],
-      })
+  const {
+    data: productResponse,
+    isLoading,
+    isFetching,
+  } = useQuery({
+    queryKey: [
+      'products',
+      {
+        page,
+        search,
+        categoryId,
+        isActive,
+      },
+    ],
 
-      setDeleteTarget(null)
+    queryFn: () =>
+      productService.getAdminAll({
+        page,
+        search,
+        category_id: categoryId,
+        is_active: isActive,
+        per_page: 10,
+      }),
 
-      toast.success('Produk berhasil dihapus.')
-    },
-
-    onError: () => {
-      toast.error('Gagal menghapus produk.')
-    },
+    placeholderData: (previousData) =>
+      previousData,
   })
 
-  const handleTambah = () => {
-    setLoading(true);
-    setTimeout(() => {
-        navigate('/admin/products/create')
-    }, 700)
+  const products: Product[] =
+    productResponse?.data ?? []
+
+  const currentPage =
+    productResponse?.current_page ?? 1
+
+  const lastPage =
+    productResponse?.last_page ?? 1
+
+  const total =
+    productResponse?.total ?? 0
+
+  const from =
+    productResponse?.from ?? 0
+
+  const to =
+    productResponse?.to ?? 0
+
+  // =========================
+  // EDIT
+  // =========================
+
+  const handleEdit = (product: Product) => {
+    navigate(
+      `/admin/products/${product.id}/edit`,
+    )
   }
 
-  const handleDelete = () => {
-    if (!deleteTarget) return
+  // =========================
+  // DELETE
+  // =========================
 
-    deleteMutation.mutate(deleteTarget.id)
+  const handleDelete = async (
+    product: Product,
+  ) => {
+    const confirmed = window.confirm(
+      `Hapus produk "${product.name}"?`,
+    )
+
+    if (!confirmed) {
+      return
+    }
+
+    try {
+      await productService.delete(product.id)
+
+      toast.success(
+        'Produk berhasil dihapus',
+      )
+
+      // Refresh semua query products,
+      // termasuk query dengan filter/page berbeda.
+      await queryClient.invalidateQueries({
+        queryKey: ['products'],
+        refetchType: 'all',
+      })
+
+      // Kalau halaman terakhir cuma punya
+      // satu produk lalu dihapus,
+      // kembali ke halaman sebelumnya.
+      if (
+        products.length === 1 &&
+        page > 1
+      ) {
+        setPage((prev) => prev - 1)
+      }
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.message ||
+          'Gagal menghapus produk',
+      )
+    }
+  }
+
+  // =========================
+  // RESET FILTER
+  // =========================
+
+  const handleResetFilter = () => {
+    setSearchInput('')
+    setSearch('')
+
+    setCategoryId(undefined)
+
+    setIsActive(null)
+
+    setPage(1)
+  }
+
+  // =========================
+  // LOADING
+  // =========================
+
+  if (isLoading) {
+    return (
+      <div className="p-6">
+        <div className="rounded-2xl bg-white p-6 shadow-sm">
+          <p className="text-sm text-gray-500">
+            Memuat produk...
+          </p>
+        </div>
+      </div>
+    )
   }
 
   return (
-    <div className="p-8 rounded-lg space-y-8 bg-white">
-      {/* Header */}
-      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-        <div>
-          <p className="text-sm font-semibold text-red-600">
-            Catalog
-          </p>
+    <div className="p-6">
+      {/* =========================
+          HEADER
+      ========================= */}
 
-          <h1 className="mt-1 text-3xl font-black tracking-tight text-gray-900">
-            Products
+      <div className="mb-6 flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold text-gray-900">
+            Produk
           </h1>
 
-          <p className="mt-2 text-sm text-gray-500">
-            Kelola produk dan menu yang tersedia di HaraBox.
+          <p className="mt-1 text-sm text-gray-500">
+            Kelola produk dan menu.
           </p>
         </div>
 
         <button
-        onClick={handleTambah}
-          className="inline-flex cursor-pointer transition-all transform hover:scale-95 duration-300 items-center justify-center rounded-xl bg-red-500 px-5 py-3 text-sm font-bold text-white hover:bg-red-600"
+          type="button"
+          onClick={() =>
+            navigate(
+              '/admin/products/create',
+            )
+          }
+          className="rounded-xl bg-red-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-red-600"
         >
-          + Tambah Produk
+          Tambah Produk
         </button>
       </div>
 
-      {/* Stats */}
-      <div className="grid gap-4 sm:grid-cols-3">
-        <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
-          <p className="text-sm text-gray-500">
-            Total Produk
-          </p>
+      {/* =========================
+          SEARCH & FILTER
+      ========================= */}
 
-          <p className="mt-2 text-3xl font-black text-gray-900">
-            {products.length}
-          </p>
-        </div>
+      <div className="mb-5 rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
+        <div className="flex flex-col gap-3 lg:flex-row">
+          {/* SEARCH */}
 
-        <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
-          <p className="text-sm text-gray-500">
-            Produk Aktif
-          </p>
+          <div className="relative flex-1">
+            <Search
+              size={18}
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+            />
 
-          <p className="mt-2 text-3xl font-black text-green-600">
-            {products.filter((item) => item.is_active).length}
-          </p>
-        </div>
+            <input
+              type="text"
+              value={searchInput}
+              onChange={(event) =>
+                setSearchInput(
+                  event.target.value,
+                )
+              }
+              placeholder="Cari nama produk..."
+              className="w-full rounded-xl border border-gray-200 py-3 pl-10 pr-4 text-sm outline-none transition focus:border-red-400 focus:ring-2 focus:ring-red-100"
+            />
+          </div>
 
-        <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
-          <p className="text-sm text-gray-500">
-            Produk Nonaktif
-          </p>
+          {/* CATEGORY */}
 
-          <p className="mt-2 text-3xl font-black text-gray-400">
-            {products.filter((item) => !item.is_active).length}
-          </p>
+          <select
+            value={categoryId ?? ''}
+            onChange={(event) => {
+              const value =
+                event.target.value
+
+              setCategoryId(
+                value
+                  ? Number(value)
+                  : undefined,
+              )
+
+              setPage(1)
+            }}
+            disabled={isCategoryLoading}
+            className="rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-red-400 focus:ring-2 focus:ring-red-100 disabled:cursor-not-allowed disabled:bg-gray-50"
+          >
+            <option value="">
+              {isCategoryLoading
+                ? 'Memuat kategori...'
+                : 'Semua kategori'}
+            </option>
+
+            {categories.map(
+              (category) => (
+                <option
+                  key={category.id}
+                  value={category.id}
+                >
+                  {category.name}
+                </option>
+              ),
+            )}
+          </select>
+
+          {/* STATUS */}
+
+          <select
+            value={
+              isActive === null
+                ? ''
+                : isActive
+                  ? '1'
+                  : '0'
+            }
+            onChange={(event) => {
+              const value =
+                event.target.value
+
+              setIsActive(
+                value === ''
+                  ? null
+                  : value === '1',
+              )
+
+              setPage(1)
+            }}
+            className="rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-red-400 focus:ring-2 focus:ring-red-100"
+          >
+            <option value="">
+              Semua status
+            </option>
+
+            <option value="1">
+              Aktif
+            </option>
+
+            <option value="0">
+              Nonaktif
+            </option>
+          </select>
+
+          {/* RESET */}
+
+          {(searchInput ||
+            categoryId !== undefined ||
+            isActive !== null) && (
+            <button
+              type="button"
+              onClick={handleResetFilter}
+              className="inline-flex items-center justify-center gap-2 rounded-xl border border-gray-200 px-4 py-3 text-sm font-semibold text-gray-600 transition hover:bg-gray-50"
+            >
+              <X size={16} />
+              Reset
+            </button>
+          )}
         </div>
       </div>
 
-      {/* Content */}
-      {isLoading && (
-        <div className="rounded-2xl border border-gray-200 bg-white px-6 py-20 text-center">
-          <p className="text-sm font-medium text-gray-500">
-            Memuat produk...
-          </p>
-        </div>
-      )}
+      {/* =========================
+          TABLE
+      ========================= */}
 
-      {isError && (
-        <div className="rounded-2xl border border-red-100 bg-red-50 px-6 py-12 text-center">
-          <p className="font-semibold text-red-700">
-            Gagal mengambil data produk.
-          </p>
+      <div className="relative">
+        {isFetching && !isLoading && (
+          <div className="mb-3 text-xs text-gray-400">
+            Memperbarui data produk...
+          </div>
+        )}
 
-          <button
-            type="button"
-            onClick={() =>
-              queryClient.invalidateQueries({
-                queryKey: ['admin-products'],
-              })
-            }
-            className="mt-4 rounded-lg bg-red-600 px-4 py-2 text-sm font-bold text-white"
-          >
-            Coba Lagi
-          </button>
-        </div>
-      )}
-
-      {!isLoading && !isError && (
         <ProductTable
           products={products}
-          onEdit={(product) =>
-            navigate(`/admin/products/${product.id}/edit`)
-          }
-          onDelete={setDeleteTarget}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
         />
-      )}
 
-      {/* Delete confirmation */}
-      {deleteTarget && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
-          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
-            <h2 className="text-xl font-black text-gray-900">
-              Hapus produk?
-            </h2>
+        {/* =========================
+            PAGINATION
+        ========================= */}
 
-            <p className="mt-2 text-sm leading-6 text-gray-500">
-              Produk{' '}
-              <strong className="text-gray-900">
-                {deleteTarget.name}
-              </strong>{' '}
-              akan dihapus secara permanen.
+        {total > 0 && (
+          <div className="mt-5 flex flex-col gap-3 rounded-2xl border border-gray-200 bg-white px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-sm text-gray-500">
+              Menampilkan{' '}
+
+              <span className="font-semibold text-gray-700">
+                {from}
+              </span>{' '}
+
+              -{' '}
+
+              <span className="font-semibold text-gray-700">
+                {to}
+              </span>{' '}
+
+              dari{' '}
+
+              <span className="font-semibold text-gray-700">
+                {total}
+              </span>{' '}
+
+              produk
             </p>
 
-            <div className="mt-6 flex justify-end gap-3">
+            <div className="flex items-center gap-2">
               <button
                 type="button"
-                onClick={() => setDeleteTarget(null)}
-                disabled={deleteMutation.isPending}
-                className="rounded-xl px-4 py-2.5 text-sm font-bold text-gray-600 hover:bg-gray-100"
+                disabled={
+                  currentPage <= 1 ||
+                  isFetching
+                }
+                onClick={() =>
+                  setPage(
+                    (prev) => prev - 1,
+                  )
+                }
+                className="inline-flex items-center gap-1 rounded-lg border border-gray-200 px-3 py-2 text-sm font-semibold text-gray-600 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
               >
-                Batal
+                <ChevronLeft size={16} />
+                Sebelumnya
               </button>
+
+              <span className="px-3 text-sm font-semibold text-gray-700">
+                {currentPage} / {lastPage}
+              </span>
 
               <button
                 type="button"
-                onClick={handleDelete}
-                disabled={deleteMutation.isPending}
-                className="rounded-xl bg-red-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-red-700 disabled:opacity-50"
+                disabled={
+                  currentPage >=
+                    lastPage ||
+                  isFetching
+                }
+                onClick={() =>
+                  setPage(
+                    (prev) => prev + 1,
+                  )
+                }
+                className="inline-flex items-center gap-1 rounded-lg border border-gray-200 px-3 py-2 text-sm font-semibold text-gray-600 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
               >
-                {deleteMutation.isPending
-                  ? 'Menghapus...'
-                  : 'Ya, Hapus'}
+                Berikutnya
+                <ChevronRight size={16} />
               </button>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   )
 }

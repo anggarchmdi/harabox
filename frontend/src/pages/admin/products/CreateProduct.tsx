@@ -2,22 +2,32 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { ArrowLeft, Save } from 'lucide-react'
+import {
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query'
+
 import { productService } from '../../../services/products.service'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { categoryService } from '../../../services/category.services'
 
 export default function CreateProduct() {
   const navigate = useNavigate()
-
   const queryClient = useQueryClient()
 
+  const [loading, setLoading] =
+    useState(false)
+
   const {
-    data: categories = [],
+    data: categoryResponse,
     isLoading: categoriesLoading,
   } = useQuery({
     queryKey: ['categories'],
-    queryFn: categoryService.getAll,
+    queryFn: () =>
+      categoryService.getAdminAll(1),
   })
+
+  const categories =
+    categoryResponse?.data ?? []
 
   const [form, setForm] = useState({
     category_id: '',
@@ -28,38 +38,50 @@ export default function CreateProduct() {
     is_active: true,
   })
 
-  const [loading, setLoading] = useState(false)
-
   const handleChange = (
-    event: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    e: React.ChangeEvent<
+      | HTMLInputElement
+      | HTMLTextAreaElement
+      | HTMLSelectElement
     >,
   ) => {
-    const { name, value } = event.target
+    const {
+      name,
+      value,
+    } = e.target
 
-    setForm((current) => ({
-      ...current,
+    setForm((prev) => ({
+      ...prev,
       [name]: value,
     }))
   }
 
   const handleSubmit = async (
-    event: React.FormEvent<HTMLFormElement>,
+    e: React.FormEvent,
   ) => {
-    event.preventDefault()
+    e.preventDefault()
 
     if (!form.name.trim()) {
-      toast.error('Nama produk wajib diisi.')
+      toast.error(
+        'Nama produk wajib diisi',
+      )
       return
     }
 
     if (!form.category_id) {
-      toast.error('Kategori wajib dipilih.')
+      toast.error(
+        'Kategori produk wajib dipilih',
+      )
       return
     }
 
-    if (!form.price) {
-      toast.error('Harga wajib diisi.')
+    if (
+      !form.price ||
+      Number(form.price) <= 0
+    ) {
+      toast.error(
+        'Harga produk harus lebih dari 0',
+      )
       return
     }
 
@@ -67,51 +89,65 @@ export default function CreateProduct() {
       setLoading(true)
 
       await productService.create({
-        category_id: Number(form.category_id),
-        name: form.name,
-        description: form.description,
+        category_id: Number(
+          form.category_id,
+        ),
+        name: form.name.trim(),
+        description:
+          form.description.trim(),
         price: Number(form.price),
-        image: form.image || undefined,
+        image:
+          form.image.trim() ||
+          undefined,
         is_active: form.is_active,
       })
 
+      toast.success(
+        'Produk berhasil ditambahkan',
+      )
+
+      // Update cache products
       await queryClient.invalidateQueries({
         queryKey: ['products'],
       })
 
-      toast.success('Produk berhasil dibuat.')
+      // Ambil data produk terbaru
+      await queryClient.refetchQueries({
+        queryKey: ['products'],
+      })
 
       navigate('/admin/products')
     } catch (error: any) {
-      const message =
-        error.response?.data?.message ||
-        'Gagal membuat produk.'
-
-      toast.error(message)
+      toast.error(
+        error?.response?.data?.message ||
+          'Gagal menambahkan produk',
+      )
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <div className="mx-auto max-w-3xl">
+    <div className="p-6">
       {/* Header */}
-      <div className="mb-8 flex items-center gap-4">
+      <div className="mb-6 flex items-center gap-3">
         <button
           type="button"
-          onClick={() => navigate('/admin/products')}
-          className="flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-600 transition hover:bg-gray-50"
+          onClick={() =>
+            navigate('/admin/products')
+          }
+          className="rounded-lg p-2 transition hover:bg-gray-100"
         >
-          <ArrowLeft size={18} />
+          <ArrowLeft size={20} />
         </button>
 
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-gray-900">
+          <h1 className="text-2xl font-semibold text-gray-900">
             Tambah Produk
           </h1>
 
-          <p className="mt-1 text-sm text-gray-500">
-            Tambahkan produk baru ke katalog Harabox.
+          <p className="text-sm text-gray-500">
+            Tambahkan produk baru
           </p>
         </div>
       </div>
@@ -119,14 +155,53 @@ export default function CreateProduct() {
       {/* Form */}
       <form
         onSubmit={handleSubmit}
-        className="rounded-2xl border border-gray-200 bg-white shadow-sm"
+        className="max-w-3xl rounded-2xl bg-white p-6 shadow-sm"
       >
-        <div className="space-y-6 p-6 sm:p-8">
+        <div className="space-y-5">
+          {/* Category */}
+          <div>
+            <label
+              htmlFor="category_id"
+              className="mb-2 block text-sm font-medium text-gray-700"
+            >
+              Kategori
+            </label>
+
+            <select
+              id="category_id"
+              name="category_id"
+              value={form.category_id}
+              onChange={handleChange}
+              disabled={
+                categoriesLoading ||
+                loading
+              }
+              className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-red-500 focus:ring-2 focus:ring-red-500/10"
+            >
+              <option value="">
+                {categoriesLoading
+                  ? 'Memuat kategori...'
+                  : 'Pilih kategori'}
+              </option>
+
+              {categories.map(
+                (category) => (
+                  <option
+                    key={category.id}
+                    value={category.id}
+                  >
+                    {category.name}
+                  </option>
+                ),
+              )}
+            </select>
+          </div>
+
           {/* Name */}
           <div>
             <label
               htmlFor="name"
-              className="mb-2 block text-sm font-semibold text-gray-900"
+              className="mb-2 block text-sm font-medium text-gray-700"
             >
               Nama Produk
             </label>
@@ -137,50 +212,17 @@ export default function CreateProduct() {
               type="text"
               value={form.name}
               onChange={handleChange}
-              placeholder="Contoh: Nasi Box Ayam Krispy"
+              disabled={loading}
+              placeholder="Masukkan nama produk"
               className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-red-500 focus:ring-2 focus:ring-red-500/10"
             />
-          </div>
-
-          {/* Category */}
-          <div>
-            <label
-              htmlFor="category_id"
-              className="mb-2 block text-sm font-semibold text-gray-900"
-            >
-              Kategori
-            </label>
-
-            <select
-              id="category_id"
-              name="category_id"
-              value={form.category_id}
-              onChange={handleChange}
-              disabled={categoriesLoading || loading}
-              className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-red-500 focus:ring-2 focus:ring-red-500/10"
-            >
-              <option value="">
-                {categoriesLoading
-                  ? 'Memuat kategori...'
-                  : 'Pilih kategori'}
-              </option>
-
-              {categories.map((category) => (
-                <option
-                  key={category.id}
-                  value={category.id}
-                >
-                  {category.name}
-                </option>
-              ))}
-            </select>
           </div>
 
           {/* Description */}
           <div>
             <label
               htmlFor="description"
-              className="mb-2 block text-sm font-semibold text-gray-900"
+              className="mb-2 block text-sm font-medium text-gray-700"
             >
               Deskripsi
             </label>
@@ -188,10 +230,11 @@ export default function CreateProduct() {
             <textarea
               id="description"
               name="description"
-              rows={4}
               value={form.description}
               onChange={handleChange}
-              placeholder="Deskripsi produk..."
+              disabled={loading}
+              rows={4}
+              placeholder="Masukkan deskripsi produk"
               className="w-full resize-none rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-red-500 focus:ring-2 focus:ring-red-500/10"
             />
           </div>
@@ -200,34 +243,29 @@ export default function CreateProduct() {
           <div>
             <label
               htmlFor="price"
-              className="mb-2 block text-sm font-semibold text-gray-900"
+              className="mb-2 block text-sm font-medium text-gray-700"
             >
               Harga
             </label>
 
-            <div className="relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-medium text-gray-500">
-                Rp
-              </span>
-
-              <input
-                id="price"
-                name="price"
-                type="number"
-                min="0"
-                value={form.price}
-                onChange={handleChange}
-                placeholder="18000"
-                className="w-full rounded-xl border border-gray-200 py-3 pl-12 pr-4 text-sm outline-none transition focus:border-red-500 focus:ring-2 focus:ring-red-500/10"
-              />
-            </div>
+            <input
+              id="price"
+              name="price"
+              type="number"
+              min="0"
+              value={form.price}
+              onChange={handleChange}
+              disabled={loading}
+              placeholder="Masukkan harga"
+              className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-red-500 focus:ring-2 focus:ring-red-500/10"
+            />
           </div>
 
           {/* Image */}
           <div>
             <label
               htmlFor="image"
-              className="mb-2 block text-sm font-semibold text-gray-900"
+              className="mb-2 block text-sm font-medium text-gray-700"
             >
               URL Gambar
             </label>
@@ -238,70 +276,65 @@ export default function CreateProduct() {
               type="text"
               value={form.image}
               onChange={handleChange}
+              disabled={loading}
               placeholder="https://..."
               className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-red-500 focus:ring-2 focus:ring-red-500/10"
             />
-
-            <p className="mt-2 text-xs text-gray-400">
-              Upload gambar akan kita buat setelah CRUD dasar selesai.
-            </p>
           </div>
 
-          {/* Status */}
-          <div className="flex items-center justify-between rounded-xl border border-gray-200 p-4">
-            <div>
-              <p className="text-sm font-semibold text-gray-900">
-                Status Produk
-              </p>
-
-              <p className="mt-1 text-xs text-gray-500">
-                Produk aktif akan ditampilkan di katalog.
-              </p>
-            </div>
-
-            <button
-              type="button"
-              onClick={() =>
-                setForm((current) => ({
-                  ...current,
-                  is_active: !current.is_active,
+          {/* Active */}
+          <div className="flex items-center gap-3">
+            <input
+              id="is_active"
+              name="is_active"
+              type="checkbox"
+              checked={form.is_active}
+              onChange={(e) =>
+                setForm((prev) => ({
+                  ...prev,
+                  is_active:
+                    e.target.checked,
                 }))
               }
-              className={`relative h-6 w-11 rounded-full transition ${
-                form.is_active
-                  ? 'bg-red-600'
-                  : 'bg-gray-300'
-              }`}
+              disabled={loading}
+              className="h-4 w-4 rounded border-gray-300 text-red-500 focus:ring-red-500"
+            />
+
+            <label
+              htmlFor="is_active"
+              className="text-sm font-medium text-gray-700"
             >
-              <span
-                className={`absolute top-1 h-4 w-4 rounded-full bg-white shadow transition ${
-                  form.is_active
-                    ? 'left-6'
-                    : 'left-1'
-                }`}
-              />
-            </button>
+              Produk aktif
+            </label>
           </div>
         </div>
 
-        {/* Footer */}
-        <div className="flex items-center justify-end gap-3 border-t border-gray-100 bg-gray-50/50 px-6 py-4 sm:px-8">
+        {/* Actions */}
+        <div className="mt-8 flex justify-end gap-3">
           <button
             type="button"
-            onClick={() => navigate('/admin/products')}
-            className="rounded-xl px-5 py-2.5 text-sm font-semibold text-gray-600 transition hover:bg-gray-100"
+            onClick={() =>
+              navigate('/admin/products')
+            }
+            disabled={loading}
+            className="rounded-xl border border-gray-200 px-5 py-3 text-sm font-medium text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
           >
             Batal
           </button>
 
           <button
             type="submit"
-            disabled={loading}
-            className="inline-flex items-center gap-2 rounded-xl bg-red-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
+            disabled={
+              loading ||
+              categoriesLoading
+            }
+            className="flex items-center gap-2 rounded-xl bg-red-500 px-5 py-3 text-sm font-medium text-white transition hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            <Save size={17} />
+            <Save size={18} />
 
-            {loading ? 'Menyimpan...' : 'Simpan Produk'}
+            {loading
+              ? 'Menyimpan...'
+              : 'Simpan Produk'}
           </button>
         </div>
       </form>

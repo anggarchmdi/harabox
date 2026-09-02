@@ -19,7 +19,8 @@ export default function ProductTable({
         </h3>
 
         <p className="mt-2 text-sm text-gray-500">
-          Tambahkan produk pertama untuk mulai mengelola menu.
+          Tambahkan produk pertama untuk mulai
+          mengelola menu.
         </p>
       </div>
     )
@@ -59,6 +60,7 @@ export default function ProductTable({
                 key={product.id}
                 className="transition hover:bg-gray-50"
               >
+                {/* Produk */}
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-4">
                     <div className="h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-gray-100">
@@ -81,24 +83,30 @@ export default function ProductTable({
                       </p>
 
                       <p className="mt-1 text-xs text-gray-400">
-                        {/* {product.slug} */}
+                        {product.slug}
                       </p>
                     </div>
                   </div>
                 </td>
 
+                {/* Kategori */}
                 <td className="px-6 py-4">
                   <span className="text-sm text-gray-600">
-                    {/* {product.category?.name ?? '-'} */}
+                    {product.category?.name ?? '-'}
                   </span>
                 </td>
 
+                {/* Harga */}
                 <td className="px-6 py-4">
                   <span className="font-bold text-gray-900">
-                    Rp {Number(product.price).toLocaleString('id-ID')}
+                    Rp{' '}
+                    {Number(
+                      product.price,
+                    ).toLocaleString('id-ID')}
                   </span>
                 </td>
 
+                {/* Status */}
                 <td className="px-6 py-4">
                   <span
                     className={`inline-flex rounded-full px-3 py-1 text-xs font-bold ${
@@ -113,11 +121,14 @@ export default function ProductTable({
                   </span>
                 </td>
 
+                {/* Aksi */}
                 <td className="px-6 py-4">
                   <div className="flex justify-end gap-2">
                     <button
                       type="button"
-                      onClick={() => onEdit(product)}
+                      onClick={() =>
+                        onEdit(product)
+                      }
                       className="rounded-lg px-3 py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-100"
                     >
                       Edit
@@ -125,7 +136,9 @@ export default function ProductTable({
 
                     <button
                       type="button"
-                      onClick={() => onDelete(product)}
+                      onClick={() =>
+                        onDelete(product)
+                      }
                       className="rounded-lg px-3 py-2 text-sm font-semibold text-red-600 transition hover:bg-red-50"
                     >
                       Hapus
