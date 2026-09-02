@@ -9,14 +9,18 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('orders', function (Blueprint $table) {
-            $table->dropColumn('access_token');
+            $table->dropUnique(['access_token_hash']);
+            $table->dropColumn('access_token_hash');
         });
     }
 
     public function down(): void
     {
         Schema::table('orders', function (Blueprint $table) {
-            $table->string('access_token')->nullable();
+            $table->string('access_token_hash', 64)
+                ->nullable()
+                ->unique()
+                ->after('order_code');
         });
     }
 };

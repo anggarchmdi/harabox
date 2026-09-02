@@ -15,7 +15,7 @@ class AdminUserSeeder extends Seeder
             ],
             [
                 'name' => 'Admin HaraBox',
-                'password' => 'password123',
+                'password' => 'password',
             ]
         );
     }
