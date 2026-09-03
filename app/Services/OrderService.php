@@ -4,7 +4,7 @@ namespace App\Services;
 
 use App\Models\Addon;
 use App\Models\Order;
-use App\Models\Package;
+use App\Models\Product;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use RuntimeException;
@@ -14,45 +14,38 @@ class OrderService
     public function createOrder(array $data): Order
     {
         return DB::transaction(function () use ($data) {
+            $items = collect($data['items']);
 
-            $packages = Package::query()
+            $productIds = $items
+                ->pluck('product_id')
+                ->unique();
+
+            $products = Product::query()
                 ->where('is_active', true)
-                ->whereIn(
-                    'id',
-                    collect($data['items'])
-                        ->pluck('package_id')
-                        ->unique()
-                )
+                ->whereIn('id', $productIds)
                 ->get()
                 ->keyBy('id');
 
-            if ($packages->count() !== collect($data['items'])
-                ->pluck('package_id')
-                ->unique()
-                ->count()) {
+            if ($products->count() !== $productIds->count()) {
                 throw new RuntimeException(
-                    'One or more packages are unavailable.'
+                    'One or more products are unavailable.'
                 );
             }
 
             $addons = collect();
 
             if (!empty($data['addons'])) {
+                $addonIds = collect($data['addons'])
+                    ->pluck('addon_id')
+                    ->unique();
+
                 $addons = Addon::query()
                     ->where('is_active', true)
-                    ->whereIn(
-                        'id',
-                        collect($data['addons'])
-                            ->pluck('addon_id')
-                            ->unique()
-                    )
+                    ->whereIn('id', $addonIds)
                     ->get()
                     ->keyBy('id');
 
-                if ($addons->count() !== collect($data['addons'])
-                    ->pluck('addon_id')
-                    ->unique()
-                    ->count()) {
+                if ($addons->count() !== $addonIds->count()) {
                     throw new RuntimeException(
                         'One or more addons are unavailable.'
                     );
@@ -61,16 +54,16 @@ class OrderService
 
             $subtotal = 0;
 
-            foreach ($data['items'] as $item) {
-                $package = $packages->get($item['package_id']);
+            foreach ($items as $item) {
+                $product = $products->get($item['product_id']);
 
-                if ($item['quantity'] < $package->minimum_order) {
+                if ($item['quantity'] < $product->minimum_order) {
                     throw new RuntimeException(
-                        "Minimum order for {$package->name} is {$package->minimum_order}."
+                        "Minimum order for {$product->name} is {$product->minimum_order}."
                     );
                 }
 
-                $subtotal += $package->price * $item['quantity'];
+                $subtotal += $product->price * $item['quantity'];
             }
 
             foreach ($data['addons'] ?? [] as $addonItem) {
@@ -79,7 +72,6 @@ class OrderService
                 $subtotal += $addon->price * $addonItem['quantity'];
             }
 
-            // $deliveryFee = $data['delivery_fee'] ?? 0;
             $deliveryFee = 10000;
 
             $total = $subtotal + $deliveryFee;
@@ -89,27 +81,32 @@ class OrderService
             $order = Order::create([
                 'order_code' => $this->generateOrderCode(),
                 'access_token_hash' => hash('sha256', $accessToken),
+
                 'customers_name' => $data['customers_name'],
                 'customers_phone' => $data['customers_phone'],
+
                 'event_date' => $data['event_date'],
                 'event_time' => $data['event_time'] ?? null,
+
                 'delivery_address' => $data['delivery_address'],
                 'notes' => $data['notes'] ?? null,
+
                 'subtotal' => $subtotal,
                 'delivery_fee' => $deliveryFee,
                 'total' => $total,
+
                 'status' => 'pending',
             ]);
 
-            foreach ($data['items'] as $item) {
-                $package = $packages->get($item['package_id']);
+            foreach ($items as $item) {
+                $product = $products->get($item['product_id']);
 
                 $order->items()->create([
-                    'package_id' => $package->id,
-                    'item_name' => $package->name,
-                    'price' => $package->price,
+                    'product_id' => $product->id,
+                    'item_name' => $product->name,
+                    'price' => $product->price,
                     'quantity' => $item['quantity'],
-                    'subtotal' => $package->price * $item['quantity'],
+                    'subtotal' => $product->price * $item['quantity'],
                 ]);
             }
 
@@ -126,11 +123,12 @@ class OrderService
             }
 
             $order->load([
-                'items',
-                'addons',
+                'items.product',
+                'addons.addon',
             ]);
 
             $order->access_token = $accessToken;
+
             return $order;
         });
     }

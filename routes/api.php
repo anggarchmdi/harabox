@@ -2,13 +2,11 @@
 
 use App\Http\Controllers\Api\AddonController;
 use App\Http\Controllers\Api\CategoryController;
-use App\Http\Controllers\Api\PackageController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\Admin\AuthController;
 use App\Http\Controllers\Api\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Api\Admin\CategoryController as AdminCategoryController;
-use App\Http\Controllers\Api\Admin\PackageController as AdminPackageController;
 use App\Http\Controllers\Api\Admin\AddonController as AdminAddonController;
 use App\Http\Controllers\Api\Admin\OrderController as AdminOrderController;
 use Illuminate\Support\Facades\Route;
@@ -25,9 +23,6 @@ Route::middleware('throttle:public-api')->group(function () {
 
     Route::get('/products', [ProductController::class, 'index']);
     Route::get('/products/{slug}', [ProductController::class, 'show']);
-
-    Route::get('/packages', [PackageController::class, 'index']);
-    Route::get('/packages/{slug}', [PackageController::class, 'show']);
 
     Route::get('/addons', [AddonController::class, 'index']);
     Route::get('/addons/{slug}', [AddonController::class, 'show']);
@@ -84,12 +79,6 @@ Route::middleware('throttle:public-api')->group(function () {
             Route::apiResource(
                 'categories',
                 AdminCategoryController::class
-            );
-
-            // package
-            Route::apiResource(
-                'packages',
-                AdminPackageController::class
             );
 
             // Addons

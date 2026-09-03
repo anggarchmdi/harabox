@@ -64,7 +64,6 @@ class StoreOrderRequest extends FormRequest
                 'required',
                 'integer',
                 'distinct',
-                'exists:packages,id',
             ],
 
             'items.*.quantity' => [

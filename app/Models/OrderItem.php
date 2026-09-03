@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use App\Models\Package;
 
 class OrderItem extends Model
 {
@@ -13,7 +12,7 @@ class OrderItem extends Model
 
     protected $fillable = [
         'order_id',
-        'package_id',
+        'product_id',
         'item_name',
         'price',
         'quantity',
@@ -31,9 +30,8 @@ class OrderItem extends Model
         return $this->belongsTo(Order::class);
     }
 
-    public function package(): BelongsTo
+    public function product(): BelongsTo
     {
-        return $this->belongsTo(Package::class);
+        return $this->belongsTo(Product::class);
     }
 }
-
