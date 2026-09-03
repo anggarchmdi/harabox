@@ -12,6 +12,21 @@ class UpdateOrderStatusRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation(): void
+    {
+        if ($this->has('status')) {
+            $status = strtolower((string) $this->status);
+            $map = [
+                'proses' => 'processing',
+                'selesai' => 'completed',
+                'canceled' => 'cancelled',
+            ];
+            if (isset($map[$status])) {
+                $this->merge(['status' => $map[$status]]);
+            }
+        }
+    }
+
     public function rules(): array
     {
         return [

@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::table('products', function (Blueprint $table) {
             $table->unsignedInteger('minimum_order')
                 ->default(10)
-                ->after('price');   
+                ->after('price');
         });
     }
 

@@ -12,7 +12,6 @@ class Order extends Model
 
     protected $fillable = [
         'order_code',
-        'access_token_hash',
         'customers_name',
         'customers_phone',
         'event_date',
@@ -29,7 +28,7 @@ class Order extends Model
         'event_date' => 'date',
         'subtotal' => 'decimal:2',
         'delivery_fee' => 'decimal:2',
-        'total' => 'decimal:2'
+        'total' => 'decimal:2',
     ];
 
     public function items(): HasMany

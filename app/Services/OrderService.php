@@ -34,7 +34,7 @@ class OrderService
 
             $addons = collect();
 
-            if (!empty($data['addons'])) {
+            if (! empty($data['addons'])) {
                 $addonIds = collect($data['addons'])
                     ->pluck('addon_id')
                     ->unique();
@@ -76,11 +76,8 @@ class OrderService
 
             $total = $subtotal + $deliveryFee;
 
-            $accessToken = Str::random(64);
-
             $order = Order::create([
                 'order_code' => $this->generateOrderCode(),
-                'access_token_hash' => hash('sha256', $accessToken),
 
                 'customers_name' => $data['customers_name'],
                 'customers_phone' => $data['customers_phone'],
@@ -127,8 +124,6 @@ class OrderService
                 'addons.addon',
             ]);
 
-            $order->access_token = $accessToken;
-
             return $order;
         });
     }
@@ -136,7 +131,7 @@ class OrderService
     private function generateOrderCode(): string
     {
         do {
-            $code = 'HB-' . now()->format('Ymd') . '-' . strtoupper(
+            $code = 'HB-'.now()->format('Ymd').'-'.strtoupper(
                 Str::random(6)
             );
         } while (

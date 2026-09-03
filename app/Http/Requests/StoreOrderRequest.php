@@ -11,6 +11,23 @@ class StoreOrderRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation(): void
+    {
+        if ($this->has('items') && is_array($this->items)) {
+            $items = array_map(function ($item) {
+                if (is_array($item)) {
+                    if (! isset($item['product_id']) && isset($item['package_id'])) {
+                        $item['product_id'] = $item['package_id'];
+                    }
+                }
+
+                return $item;
+            }, $this->items);
+
+            $this->merge(['items' => $items]);
+        }
+    }
+
     public function rules(): array
     {
         return [
@@ -24,7 +41,7 @@ class StoreOrderRequest extends FormRequest
                 'required',
                 'string',
                 'max:20',
-                'regex:/^[0-9+\-\s]+$/'
+                'regex:/^[0-9+\-\s]+$/',
             ],
 
             'event_date' => [
@@ -35,7 +52,7 @@ class StoreOrderRequest extends FormRequest
 
             'event_time' => [
                 'nullable',
-                'date_format:H:i',
+                'string',
             ],
 
             'delivery_address' => [
@@ -48,22 +65,16 @@ class StoreOrderRequest extends FormRequest
                 'string',
             ],
 
-            // 'delivery_fee' => [
-            //     'nullable',
-            //     'numeric',
-            //     'min:0',
-            // ],
-
             'items' => [
                 'required',
                 'array',
                 'min:1',
             ],
 
-            'items.*.package_id' => [
+            'items.*.product_id' => [
                 'required',
                 'integer',
-                'distinct',
+                'exists:products,id',
             ],
 
             'items.*.quantity' => [
