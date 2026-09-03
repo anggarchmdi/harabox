@@ -11,6 +11,7 @@ export interface Product {
   slug: string
   description?: string | null
   price: string
+  minimum_order: number
   image?: string | null
   is_active: boolean
   category?: ProductCategory | null
@@ -21,9 +22,17 @@ export interface CreateProductRequest {
   name: string
   description?: string
   price: number
-  image?: string
+  minimum_order: number
+  image?: File | null
   is_active: boolean
 }
 
-export interface UpdateProductRequest
-  extends CreateProductRequest {}
+export interface UpdateProductRequest {
+  category_id?: number
+  name?: string
+  description?: string
+  price?: number
+  minimum_order?: number
+  image?: File | null
+  is_active?: boolean
+}

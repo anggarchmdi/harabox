@@ -20,7 +20,25 @@ export interface ProductPagination {
   total: number
 }
 
-interface ProductListResponse {
+interface PublicProductListResponse {
+  success: boolean
+  message: string
+  data: Product[]
+  meta: {
+    current_page: number
+    last_page: number
+    per_page: number
+    total: number
+  }
+}
+
+interface ProductResponse {
+  success: boolean
+  message: string
+  data: Product
+}
+
+interface AdminProductListResponse {
   success: boolean
   message: string
   data: ProductPagination
@@ -35,20 +53,32 @@ export interface ProductFilters {
 }
 
 export const productService = {
+  // =====================================================
   // PUBLIC
+  // =====================================================
+
   async getAll(): Promise<Product[]> {
-    const response = await api.get('/products')
+    const response =
+      await api.get<PublicProductListResponse>(
+        '/products?per_page=50',
+      )
 
     return response.data.data
   },
 
   async getBySlug(slug: string): Promise<Product> {
-    const response = await api.get(`/products/${slug}`)
+    const response =
+      await api.get<ProductResponse>(
+        `/products/${slug}`,
+      )
 
     return response.data.data
   },
 
+  // =====================================================
   // ADMIN
+  // =====================================================
+
   async getAdminAll(
     filters: ProductFilters = {},
   ): Promise<ProductPagination> {
@@ -69,8 +99,10 @@ export const productService = {
       )
     }
 
-    if (filters.is_active !== null &&
-        filters.is_active !== undefined) {
+    if (
+      filters.is_active !== null &&
+      filters.is_active !== undefined
+    ) {
       params.set(
         'is_active',
         filters.is_active ? '1' : '0',
@@ -91,15 +123,18 @@ export const productService = {
       : '/admin/products'
 
     const response =
-      await api.get<ProductListResponse>(url)
+      await api.get<AdminProductListResponse>(url)
 
     return response.data.data
   },
 
-  async getAdminById(id: number): Promise<Product> {
-    const response = await api.get(
-      `/admin/products/${id}`,
-    )
+  async getAdminById(
+    id: number,
+  ): Promise<Product> {
+    const response =
+      await api.get<ProductResponse>(
+        `/admin/products/${id}`,
+      )
 
     return response.data.data
   },
@@ -107,10 +142,46 @@ export const productService = {
   async create(
     data: CreateProductRequest,
   ): Promise<Product> {
-    const response = await api.post(
-      '/admin/products',
-      data,
+    const formData = new FormData()
+
+    formData.append(
+      'category_id',
+      String(data.category_id),
     )
+
+    formData.append('name', data.name)
+
+    if (data.description) {
+      formData.append(
+        'description',
+        data.description,
+      )
+    }
+
+    formData.append(
+      'price',
+      String(data.price),
+    )
+
+    formData.append(
+      'minimum_order',
+      String(data.minimum_order),
+    )
+
+    if (data.image) {
+      formData.append('image', data.image)
+    }
+
+    formData.append(
+      'is_active',
+      data.is_active ? '1' : '0',
+    )
+
+    const response =
+      await api.post<ProductResponse>(
+        '/admin/products',
+        formData,
+      )
 
     return response.data.data
   },
@@ -119,10 +190,64 @@ export const productService = {
     id: number,
     data: UpdateProductRequest,
   ): Promise<Product> {
-    const response = await api.put(
-      `/admin/products/${id}`,
-      data,
-    )
+    const formData = new FormData()
+
+    if (data.category_id !== undefined) {
+      formData.append(
+        'category_id',
+        String(data.category_id),
+      )
+    }
+
+    if (data.name !== undefined) {
+      formData.append(
+        'name',
+        data.name,
+      )
+    }
+
+    if (data.description !== undefined) {
+      formData.append(
+        'description',
+        data.description,
+      )
+    }
+
+    if (data.price !== undefined) {
+      formData.append(
+        'price',
+        String(data.price),
+      )
+    }
+
+    if (data.minimum_order !== undefined) {
+      formData.append(
+        'minimum_order',
+        String(data.minimum_order),
+      )
+    }
+
+    if (data.image) {
+      formData.append(
+        'image',
+        data.image,
+      )
+    }
+
+    if (data.is_active !== undefined) {
+      formData.append(
+        'is_active',
+        data.is_active ? '1' : '0',
+      )
+    }
+
+    formData.append('_method', 'PUT')
+
+    const response =
+      await api.post<ProductResponse>(
+        `/admin/products/${id}`,
+        formData,
+      )
 
     return response.data.data
   },
