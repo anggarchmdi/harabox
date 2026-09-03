@@ -20,9 +20,23 @@ class OrderController extends Controller
             50
         );
 
-        $orders = Order::query()
-            ->latest()
-            ->paginate($perPage);
+        $query = Order::query()
+            ->with(['items.product', 'addons.addon'])
+            ->latest();
+
+        if ($status = $request->query('status')) {
+            $query->where('status', $status);
+        }
+
+        if ($search = $request->query('search')) {
+            $query->where(function ($q) use ($search) {
+                $q->where('order_code', 'like', "%{$search}%")
+                    ->orWhere('customers_name', 'like', "%{$search}%")
+                    ->orWhere('customers_phone', 'like', "%{$search}%");
+            });
+        }
+
+        $orders = $query->paginate($perPage);
 
         return response()->json([
             'success' => true,
@@ -37,7 +51,7 @@ class OrderController extends Controller
     public function show(Order $order): JsonResponse
     {
         $order->load([
-            'items.package',
+            'items.product',
             'addons.addon',
         ]);
 
@@ -62,7 +76,7 @@ class OrderController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Order status updated successfully',
-            'data' => $order->fresh(),
+            'data' => $order->fresh(['items.product', 'addons.addon']),
         ]);
     }
 }
