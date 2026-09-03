@@ -11,14 +11,15 @@ class ProductController extends Controller
 {
     /**
      * Display a listing of active products.
+     *
+     * Supported query params:
+     * - search
+     * - category
+     * - per_page
+     * - page
      */
     public function index(Request $request): JsonResponse
     {
-        $perPage = min(
-            $request->integer('per_page', 12),
-            50
-        );
-
         $query = Product::query()
             ->with('category:id,name,slug')
             ->where('is_active', true);
@@ -35,10 +36,18 @@ class ProductController extends Controller
 
         // Filter berdasarkan category slug
         if ($request->filled('category')) {
-            $query->whereHas('category', function ($q) use ($request) {
-                $q->where('slug', $request->string('category')->trim());
+            $category = $request->string('category')->trim();
+
+            $query->whereHas('category', function ($q) use ($category) {
+                $q->where('slug', $category);
             });
         }
+
+        // Pagination
+        $perPage = min(
+            max($request->integer('per_page', 12), 1),
+            50
+        );
 
         $products = $query
             ->latest()
@@ -59,20 +68,7 @@ class ProductController extends Controller
     }
 
     /**
-     * Store a newly created product.
-     *
-     * Admin endpoint - will be implemented later.
-     */
-    public function store(Request $request): JsonResponse
-    {
-        return response()->json([
-            'success' => false,
-            'message' => 'Not implemented yet',
-        ], 501);
-    }
-
-    /**
-     * Display the specified product.
+     * Display the specified active product.
      */
     public function show(string $slug): JsonResponse
     {
@@ -82,7 +78,7 @@ class ProductController extends Controller
             ->where('is_active', true)
             ->first();
 
-        if (!$product) {
+        if (! $product) {
             return response()->json([
                 'success' => false,
                 'message' => 'Product not found',
@@ -94,31 +90,5 @@ class ProductController extends Controller
             'message' => 'Product retrieved successfully',
             'data' => $product,
         ]);
-    }
-
-    /**
-     * Update the specified product.
-     *
-     * Admin endpoint - will be implemented later.
-     */
-    public function update(Request $request, string $id): JsonResponse
-    {
-        return response()->json([
-            'success' => false,
-            'message' => 'Not implemented yet',
-        ], 501);
-    }
-
-    /**
-     * Remove the specified product.
-     *
-     * Admin endpoint - will be implemented later.
-     */
-    public function destroy(string $id): JsonResponse
-    {
-        return response()->json([
-            'success' => false,
-            'message' => 'Not implemented yet',
-        ], 501);
     }
 }

@@ -151,6 +151,8 @@ export default function CreateProduct() {
 
         price: Number(form.price),
 
+        minimum_order: 10,
+
         image: form.image,
 
         is_active: form.is_active,
