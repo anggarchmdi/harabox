@@ -24,10 +24,10 @@ export default function Footer() {
             </p>
 
             <Link
-              to="/order"
-              className="mt-7 inline-flex rounded-full bg-red-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-red-700"
+              to="/menu"
+              className="mt-7 inline-flex rounded-full bg-white px-6 py-3 text-xs sm:text-sm font-bold text-zinc-950 transition hover:bg-zinc-200"
             >
-              Pesan Sekarang
+              Pilih Menu Katering
             </Link>
           </div>
 
@@ -58,7 +58,7 @@ export default function Footer() {
 
               <li>
                 <Link
-                  to="/about"
+                  to="/tentang-kami"
                   className="text-sm text-gray-400 transition hover:text-white"
                 >
                   Tentang Kami
@@ -67,7 +67,7 @@ export default function Footer() {
 
               <li>
                 <Link
-                  to="/how-to-order"
+                  to="/cara-pesan"
                   className="text-sm text-gray-400 transition hover:text-white"
                 >
                   Cara Pesan
