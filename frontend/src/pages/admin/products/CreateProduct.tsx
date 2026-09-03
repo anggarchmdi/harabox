@@ -1,17 +1,23 @@
 import { useState } from 'react'
+
 import { useNavigate } from 'react-router-dom'
+
 import { toast } from 'sonner'
+
 import { ArrowLeft, Save } from 'lucide-react'
+
 import {
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query'
 
 import { productService } from '../../../services/products.service'
+
 import { categoryService } from '../../../services/category.services'
 
 export default function CreateProduct() {
   const navigate = useNavigate()
+
   const queryClient = useQueryClient()
 
   const [loading, setLoading] =
@@ -34,7 +40,7 @@ export default function CreateProduct() {
     name: '',
     description: '',
     price: '',
-    image: '',
+    image: null as File | null,
     is_active: true,
   })
 
@@ -56,6 +62,17 @@ export default function CreateProduct() {
     }))
   }
 
+  const handleImageChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = e.target.files?.[0] ?? null
+
+    setForm((prev) => ({
+      ...prev,
+      image: file,
+    }))
+  }
+
   const handleSubmit = async (
     e: React.FormEvent,
   ) => {
@@ -65,6 +82,7 @@ export default function CreateProduct() {
       toast.error(
         'Nama produk wajib diisi',
       )
+
       return
     }
 
@@ -72,6 +90,7 @@ export default function CreateProduct() {
       toast.error(
         'Kategori produk wajib dipilih',
       )
+
       return
     }
 
@@ -82,7 +101,39 @@ export default function CreateProduct() {
       toast.error(
         'Harga produk harus lebih dari 0',
       )
+
       return
+    }
+
+    if (form.image) {
+      const allowedTypes = [
+        'image/jpeg',
+        'image/png',
+        'image/webp',
+      ]
+
+      if (
+        !allowedTypes.includes(
+          form.image.type,
+        )
+      ) {
+        toast.error(
+          'Format gambar harus JPG, PNG, atau WEBP',
+        )
+
+        return
+      }
+
+      if (
+        form.image.size >
+        2 * 1024 * 1024
+      ) {
+        toast.error(
+          'Ukuran gambar maksimal 2 MB',
+        )
+
+        return
+      }
     }
 
     try {
@@ -92,13 +143,16 @@ export default function CreateProduct() {
         category_id: Number(
           form.category_id,
         ),
+
         name: form.name.trim(),
+
         description:
           form.description.trim(),
+
         price: Number(form.price),
-        image:
-          form.image.trim() ||
-          undefined,
+
+        image: form.image,
+
         is_active: form.is_active,
       })
 
@@ -267,19 +321,24 @@ export default function CreateProduct() {
               htmlFor="image"
               className="mb-2 block text-sm font-medium text-gray-700"
             >
-              URL Gambar
+              Gambar
             </label>
 
             <input
               id="image"
               name="image"
-              type="text"
-              value={form.image}
-              onChange={handleChange}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              onChange={handleImageChange}
               disabled={loading}
-              placeholder="https://..."
               className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-red-500 focus:ring-2 focus:ring-red-500/10"
             />
+
+            {form.image && (
+              <p className="mt-2 text-xs text-gray-500">
+                {form.image.name}
+              </p>
+            )}
           </div>
 
           {/* Active */}

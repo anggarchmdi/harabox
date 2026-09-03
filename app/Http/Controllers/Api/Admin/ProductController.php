@@ -8,7 +8,10 @@ use App\Http\Requests\UpdateProductRequest;
 use App\Models\Product;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Intervention\Image\Laravel\Facades\Image;
+use Intervention\Image\Format;
 
 class ProductController extends Controller
 {
@@ -30,7 +33,11 @@ class ProductController extends Controller
         if ($request->filled('search')) {
             $search = $request->string('search')->trim();
 
-            $query->where('name', 'like', "%{$search}%");
+            $query->where(
+                'name',
+                'like',
+                "%{$search}%"
+            );
         }
 
         // Filter berdasarkan kategori
@@ -74,7 +81,43 @@ class ProductController extends Controller
     {
         $data = $request->validated();
 
+        // Generate slug dari nama produk
         $data['slug'] = Str::slug($data['name']);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Upload & Convert Image
+        |--------------------------------------------------------------------------
+        */
+
+        if ($request->hasFile('image')) {
+            $image = Image::decode(
+                $request->file('image')
+            );
+            $image = Image::decode(
+                $request->file('image')
+            );
+
+            $image->scale(width: 1200);
+
+            $filename = Str::uuid() . '.webp';
+
+            $path = 'products/' . $filename;
+
+            $encoded = $image->encodeUsingFormat(
+                Format::WEBP,
+                quality: 80
+            );
+
+            Storage::disk('public')->put(
+                $path,
+                $encoded
+            );
+
+            $data['image'] = $path;
+        } else {
+            $data['image'] = null;
+        }
 
         $product = Product::create($data);
 
@@ -111,8 +154,43 @@ class ProductController extends Controller
         $data = $request->validated();
 
         // Kalau nama berubah, slug ikut berubah
-        if (isset($data['name']) && $data['name'] !== $product->name) {
+        if (
+            isset($data['name']) &&
+            $data['name'] !== $product->name
+        ) {
             $data['slug'] = Str::slug($data['name']);
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Upload & Replace Image
+        |--------------------------------------------------------------------------
+        */
+
+        if ($request->hasFile('image')) {
+            // Simpan path gambar lama
+            $oldImage = $product->image;
+           $image = Image::decode(
+                $request->file('image')
+            );
+            $image->scale(width: 1200);
+            $filename = Str::uuid() . '.webp';
+            $path = 'products/' . $filename;
+            $encoded = $image->encodeUsingFormat(
+                Format::WEBP,
+                quality: 80
+            );
+            Storage::disk('public')->put(
+                $path,
+                $encoded
+            );
+            $data['image'] = $path;
+            if (
+                $oldImage &&
+                Storage::disk('public')->exists($oldImage)
+            ) {
+                Storage::disk('public')->delete($oldImage);
+            }
         }
 
         $product->update($data);
@@ -131,6 +209,17 @@ class ProductController extends Controller
      */
     public function destroy(Product $product): JsonResponse
     {
+        // Hapus file gambar jika ada
+        if (
+            $product->image &&
+            Storage::disk('public')->exists($product->image)
+        ) {
+            Storage::disk('public')->delete(
+                $product->image
+            );
+        }
+
+        // Hapus product dari database
         $product->delete();
 
         return response()->json([

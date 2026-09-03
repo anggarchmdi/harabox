@@ -11,6 +11,12 @@ export default function ProductTable({
   onEdit,
   onDelete,
 }: ProductTableProps) {
+  const storageUrl =
+    import.meta.env.VITE_API_URL.replace(
+      '/api/v1',
+      '',
+    )
+
   if (products.length === 0) {
     return (
       <div className="rounded-2xl border border-dashed border-gray-300 bg-white px-6 py-16 text-center">
@@ -66,7 +72,7 @@ export default function ProductTable({
                     <div className="h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-gray-100">
                       {product.image ? (
                         <img
-                          src={product.image}
+                          src={`${storageUrl}/storage/${product.image}`}
                           alt={product.name}
                           className="h-full w-full object-cover"
                         />

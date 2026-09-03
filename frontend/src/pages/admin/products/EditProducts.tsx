@@ -21,6 +21,7 @@ import {
 } from '@tanstack/react-query'
 
 import { productService } from '../../../services/products.service'
+
 import { categoryService } from '../../../services/category.services'
 
 interface ProductForm {
@@ -28,13 +29,15 @@ interface ProductForm {
   name: string
   description: string
   price: string
-  image: string
+  image: File | null
   is_active: boolean
 }
 
 export default function EditProduct() {
   const navigate = useNavigate()
+
   const { id } = useParams()
+
   const queryClient = useQueryClient()
 
   const [loading, setLoading] =
@@ -49,9 +52,12 @@ export default function EditProduct() {
       name: '',
       description: '',
       price: '',
-      image: '',
+      image: null,
       is_active: true,
     })
+
+  const [currentImage, setCurrentImage] =
+    useState<string | null>(null)
 
   const {
     data: categoryResponse,
@@ -73,6 +79,7 @@ export default function EditProduct() {
         )
 
         navigate('/admin/products')
+
         return
       }
 
@@ -87,6 +94,7 @@ export default function EditProduct() {
         )
 
         navigate('/admin/products')
+
         return
       }
 
@@ -102,13 +110,23 @@ export default function EditProduct() {
           category_id: String(
             product.category_id,
           ),
+
           name: product.name,
+
           description:
             product.description ?? '',
+
           price: String(product.price),
-          image: product.image ?? '',
-          is_active: product.is_active,
+
+          image: null,
+
+          is_active:
+            product.is_active,
         })
+
+        setCurrentImage(
+          product.image ?? null,
+        )
       } catch (error: any) {
         toast.error(
           error?.response?.data?.message ||
@@ -142,6 +160,17 @@ export default function EditProduct() {
     }))
   }
 
+  const handleImageChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = e.target.files?.[0] ?? null
+
+    setForm((prev) => ({
+      ...prev,
+      image: file,
+    }))
+  }
+
   const handleSubmit = async (
     e: React.FormEvent,
   ) => {
@@ -151,6 +180,7 @@ export default function EditProduct() {
       toast.error(
         'ID produk tidak ditemukan',
       )
+
       return
     }
 
@@ -163,6 +193,7 @@ export default function EditProduct() {
       toast.error(
         'ID produk tidak valid',
       )
+
       return
     }
 
@@ -170,6 +201,7 @@ export default function EditProduct() {
       toast.error(
         'Nama produk wajib diisi',
       )
+
       return
     }
 
@@ -177,6 +209,7 @@ export default function EditProduct() {
       toast.error(
         'Kategori produk wajib dipilih',
       )
+
       return
     }
 
@@ -187,7 +220,39 @@ export default function EditProduct() {
       toast.error(
         'Harga produk harus lebih dari 0',
       )
+
       return
+    }
+
+    if (form.image) {
+      const allowedTypes = [
+        'image/jpeg',
+        'image/png',
+        'image/webp',
+      ]
+
+      if (
+        !allowedTypes.includes(
+          form.image.type,
+        )
+      ) {
+        toast.error(
+          'Format gambar harus JPG, PNG, atau WEBP',
+        )
+
+        return
+      }
+
+      if (
+        form.image.size >
+        2 * 1024 * 1024
+      ) {
+        toast.error(
+          'Ukuran gambar maksimal 2 MB',
+        )
+
+        return
+      }
     }
 
     try {
@@ -199,13 +264,16 @@ export default function EditProduct() {
           category_id: Number(
             form.category_id,
           ),
+
           name: form.name.trim(),
+
           description:
             form.description.trim(),
+
           price: Number(form.price),
-          image:
-            form.image.trim() ||
-            undefined,
+
+          image: form.image,
+
           is_active: form.is_active,
         },
       )
@@ -387,19 +455,33 @@ export default function EditProduct() {
               htmlFor="image"
               className="mb-2 block text-sm font-medium text-gray-700"
             >
-              URL Gambar
+              Gambar
             </label>
 
             <input
               id="image"
               name="image"
-              type="text"
-              value={form.image}
-              onChange={handleChange}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              onChange={handleImageChange}
               disabled={saving}
-              placeholder="https://..."
               className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-red-500 focus:ring-2 focus:ring-red-500/10"
             />
+
+            {form.image && (
+              <p className="mt-2 text-xs text-gray-500">
+                Gambar baru:{' '}
+                {form.image.name}
+              </p>
+            )}
+
+            {!form.image &&
+              currentImage && (
+                <p className="mt-2 text-xs text-gray-500">
+                  Gambar saat ini:{' '}
+                  {currentImage}
+                </p>
+              )}
           </div>
 
           {/* Active */}

@@ -17,18 +17,53 @@ class UpdateProductRequest extends FormRequest
         $product = $this->route('product');
 
         return [
-            'category_id' => ['sometimes', 'integer', 'exists:categories,id'],
-            'name' => ['sometimes', 'string', 'max:255'],
+            'category_id' => [
+                'sometimes',
+                'integer',
+                'exists:categories,id',
+            ],
+
+            'name' => [
+                'sometimes',
+                'string',
+                'max:255',
+            ],
+
             'slug' => [
                 'sometimes',
                 'string',
                 'max:255',
                 Rule::unique('products', 'slug')->ignore($product),
             ],
-            'description' => ['nullable', 'string'],
-            'price' => ['sometimes', 'numeric', 'min:0'],
-            'image' => ['nullable', 'string', 'max:255'],
-            'is_active' => ['sometimes', 'boolean'],
+
+            'description' => [
+                'nullable',
+                'string',
+            ],
+
+            'price' => [
+                'sometimes',
+                'numeric',
+                'min:0',
+            ],
+
+            'minimum_order' => [
+                'sometimes',
+                'integer',
+                'min:1',
+            ],
+
+            'image' => [
+                'nullable',
+                'image',
+                'mimes:jpg,jpeg,png,webp',
+                'max:2048',
+            ],
+
+            'is_active' => [
+                'sometimes',
+                'boolean',
+            ],
         ];
     }
 }
