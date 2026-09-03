@@ -1,181 +1,324 @@
 import {
   ArrowRight,
+  Award,
   Check,
-  Heart,
+  CheckCircle2,
+  Clock,
+  HeartHandshake,
+  MessageCircle,
   ShieldCheck,
+  Sparkles,
+  Star,
+  Users,
   Utensils,
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 import Summary from '../components/ui/Summary'
+import BentoKatsuImg from '../assets/nasibox/bento-katsu-b.webp'
+import RamesBaladoImg from '../assets/nasibox/rames-balado-b.webp'
 
 const values = [
   {
     icon: Utensils,
-    title: 'Rasa yang Konsisten',
+    title: 'Cita Rasa Gurih Meresap',
     description:
-      'Kami menjaga kualitas rasa dan bahan agar setiap pesanan tetap memberikan pengalaman yang sama.',
+      'Setiap menu diolah menggunakan racikan bumbu rempah pilihan dan ayam berkualitas segar, menghasilkan cita rasa gurih yang meresap hingga ke serat terdalam.',
   },
   {
     icon: ShieldCheck,
-    title: 'Bisa Diandalkan',
+    title: '100% Halal & Higienis',
     description:
-      'Mulai dari pemesanan hingga pengiriman, setiap detail kami persiapkan dengan serius.',
+      'Dapur katering kami menerapkan standar kebersihan yang ketat, sertifikasi halal, dan pengemasan bento/box higienis siap santap.',
   },
   {
-    icon: Heart,
-    title: 'Dibuat dengan Kepedulian',
+    icon: Clock,
+    title: 'Pengantaran Disiplin & Tepat Waktu',
     description:
-      'Kami percaya makanan bukan sekadar hidangan, tetapi bagian dari momen yang dibagikan bersama.',
+      'Kami mengerti betapa krusialnya jadwal makan pada acara Anda. Armada pengantaran kami memastikan pesanan tiba hangat sebelum acara dimulai.',
+  },
+  {
+    icon: HeartHandshake,
+    title: 'Pelayanan Ramah & Invoice Resmi',
+    description:
+      'Dari konsultasi porsi, kustomisasi menu, hingga penerbitan invoice resmi untuk kebutuhan administrasi perusahaan, tim kami melayani dengan sigap.',
   },
 ]
 
+const statistics = [
+  { value: '50.000+', label: 'Porsi Sukses Disajikan' },
+  { value: '4.9 / 5', label: 'Tingkat Kepuasan Klien' },
+  { value: '99.8%', label: 'Ketepatan Waktu Antar' },
+  { value: '2.000+', label: 'Kapasitas Harian (Porsi)' },
+]
+
 const highlights = [
-  'Catering untuk berbagai kebutuhan acara',
-  'Pilihan paket yang fleksibel',
-  'Proses pemesanan yang mudah',
-  'Pelayanan yang mengutamakan kepuasan pelanggan',
+  'Solusi katering praktis untuk seminar, meeting kantor, gathering, syukuran, dan pengajian.',
+  'Pilihan porsi fleksibel dengan sistem kelipatan 10 porsi (mulai dari minimal 10 porsi).',
+  'Pengemasan bento box eksklusif, rapi, lengkap dengan alat makan dan tisu berkualitas.',
+  'Dukungan invoice resmi dan sistem pencatatan order digital yang terpantau.',
 ]
 
 export default function TentangKami() {
   return (
-    <>
+    <main className="min-h-screen bg-[#fafaf9] text-zinc-900 selection:bg-zinc-950 selection:text-white">
+      {/* Header */}
       <Summary
-        eyebrow="TENTANG KAMI"
-        title="Lebih dari sekadar catering."
-        description="Kami hadir untuk membantu menyajikan makanan yang praktis, lezat, dan berkesan untuk berbagai momen penting."
+        eyebrow="TENTANG HARA CHICKEN"
+        title="Lebih Dari Sekadar Katering Nasi Box."
+        description="Menyajikan kelezatan otentik, higienitas terjaga, dan pelayanan yang dapat diandalkan untuk menyempurnakan setiap pertemuan penting Anda."
       />
 
-      {/* Intro */}
-      <section className="bg-white">
-        <div className="mx-auto grid max-w-7xl gap-14 px-6 py-20 lg:grid-cols-[1.05fr_0.95fr] lg:px-8 lg:py-28">
-          <div>
-            <p className="text-sm font-bold uppercase tracking-[0.25em] text-red-600">
-              Tentang Harabox
-            </p>
-
-            <h2 className="mt-5 max-w-xl text-4xl font-black leading-tight tracking-tight text-gray-950 sm:text-5xl">
-              Makanan enak untuk momen yang berarti.
-            </h2>
-          </div>
-
-          <div className="space-y-6 text-base leading-8 text-gray-600">
-            <p>
-              Harabox menyediakan layanan catering untuk berbagai kebutuhan,
-              mulai dari acara keluarga, meeting kantor, gathering, pengajian,
-              hingga berbagai kegiatan lainnya.
-            </p>
-
-            <p>
-              Kami memahami bahwa mempersiapkan konsumsi untuk sebuah acara
-              bukan perkara kecil. Karena itu, Harabox hadir dengan proses yang
-              sederhana, pilihan menu yang praktis, dan pelayanan yang dapat
-              diandalkan.
-            </p>
-
-            <p className="font-medium text-gray-900">
-              Tujuan kami sederhana: membuat urusan catering menjadi lebih
-              mudah sehingga Anda bisa fokus menikmati acaranya.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Highlight */}
-      <section className="bg-gray-50">
-        <div className="mx-auto max-w-7xl px-6 py-20 lg:px-8 lg:py-28">
-          <div className="grid gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
-            <div>
-              <span className="inline-flex rounded-full bg-yellow-400 px-4 py-2 text-xs font-black uppercase tracking-wider text-red-950">
-                Kenapa Harabox?
-              </span>
-
-              <h2 className="mt-6 text-4xl font-black leading-tight tracking-tight text-gray-950 sm:text-5xl">
-                Dibuat supaya urusan catering terasa lebih sederhana.
-              </h2>
+      {/* =====================================================
+          SECTION 1: EDITORIAL STORY WITH LUXURY SHOWCASE
+      ====================================================== */}
+      <section className="mx-auto max-w-7xl px-6 py-20 lg:px-8 lg:py-28">
+        <div className="grid gap-14 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+          {/* Text Story */}
+          <div className="space-y-6">
+            <div className="inline-flex items-center gap-2 rounded-full border border-zinc-200 bg-white px-4 py-1.5 text-[11px] font-extrabold uppercase tracking-[0.2em] text-zinc-700 shadow-sm">
+              <Sparkles size={13} className="text-amber-500" />
+              Dedikasi Kami
             </div>
 
-            <div className="rounded-3xl bg-white p-7 shadow-sm ring-1 ring-black/5 sm:p-10">
-              <div className="space-y-6">
-                {highlights.map((item) => (
-                  <div key={item} className="flex gap-4">
-                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-red-600 text-white">
-                      <Check className="h-4 w-4" strokeWidth={3} />
-                    </div>
+            <h2 className="text-3xl font-black tracking-tight text-zinc-950 sm:text-5xl leading-tight">
+              Menghadirkan Makanan Lezat, Menghubungkan Momen Berharga.
+            </h2>
 
-                    <p className="pt-0.5 text-base font-medium text-gray-800">
-                      {item}
-                    </p>
-                  </div>
+            <p className="text-sm sm:text-base leading-relaxed text-zinc-600">
+              Hara Chicken berawal dari keyakinan sederhana: bahwa makanan yang lezat, higienis,
+              dan tiba tepat waktu adalah kunci utama keberhasilan setiap acara kumpul bersama.
+            </p>
+
+            <p className="text-sm sm:text-base leading-relaxed text-zinc-600">
+              Kami menyadari bahwa mempersiapkan konsumsi untuk puluhan hingga ratusan orang bukanlah hal yang mudah.
+              Oleh sebab itu, Hara Chicken hadir dengan alur pemesanan yang ringkas, pilihan menu bento & nasi box
+              yang komprehensif, serta fleksibilitas harga dan invoice katering resmi yang dapat disesuaikan dengan anggaran acara Anda.
+            </p>
+
+            <div className="pt-4 border-t border-zinc-200/80 flex items-center gap-6">
+              <div className="flex items-center gap-1.5 text-amber-500">
+                {[1, 2, 3, 4, 5].map((s) => (
+                  <Star key={s} size={18} className="fill-amber-400 text-amber-400" />
                 ))}
+              </div>
+              <p className="text-xs font-bold text-zinc-700">
+                Dipercaya oleh instansi pemerintah, BUMN, korporasi swasta, dan ribuan keluarga.
+              </p>
+            </div>
+          </div>
+
+          {/* Visual Showcase Stack */}
+          <div className="relative">
+            <div className="relative overflow-hidden rounded-[2.5rem] border border-zinc-200/80 bg-white p-3 shadow-xl">
+              <div className="aspect-[4/3] overflow-hidden rounded-[2rem]">
+                <img
+                  src={BentoKatsuImg}
+                  alt="Hara Chicken Bento Katsu"
+                  className="h-full w-full object-cover transition-transform duration-700 hover:scale-105"
+                />
+              </div>
+            </div>
+
+            {/* Overlapping secondary image card */}
+            <div className="absolute -bottom-8 -right-4 w-48 sm:w-56 overflow-hidden rounded-2xl border-4 border-white bg-white shadow-2xl transition-transform hover:scale-105 hidden sm:block">
+              <img
+                src={RamesBaladoImg}
+                alt="Nasi Rames Balado"
+                className="aspect-square w-full object-cover"
+              />
+              <div className="p-2.5 text-center bg-white">
+                <p className="text-[11px] font-black text-zinc-950">Nasi Rames Balado</p>
+                <p className="text-[10px] text-zinc-400">Favorit Acara Kantor</p>
+              </div>
+            </div>
+
+            {/* Overlapping floating badge */}
+            <div className="absolute -top-6 -left-4 max-w-[240px] rounded-2xl border border-zinc-200/90 bg-white/95 p-4 shadow-xl backdrop-blur-md hidden sm:block">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-zinc-950 text-white">
+                  <Award size={20} />
+                </div>
+                <div>
+                  <p className="text-xs font-black text-zinc-950">Kualitas Prima</p>
+                  <p className="text-[10px] text-zinc-500">Rasa konsisten & selalu fresh.</p>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Values */}
-      <section className="bg-white">
-        <div className="mx-auto max-w-7xl px-6 py-20 lg:px-8 lg:py-28">
-          <div className="max-w-2xl">
-            <p className="text-sm font-bold uppercase tracking-[0.25em] text-red-600">
-              Prinsip Kami
-            </p>
-
-            <h2 className="mt-4 text-4xl font-black tracking-tight text-gray-950 sm:text-5xl">
-              Hal yang kami jaga.
-            </h2>
+      {/* =====================================================
+          SECTION 2: METRICS / STATISTICS (LUXURY CARDS)
+      ====================================================== */}
+      <section className="border-y border-zinc-200/80 bg-white py-16">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+            {statistics.map((stat) => (
+              <div
+                key={stat.label}
+                className="rounded-3xl border border-zinc-100 bg-[#fafaf9] p-7 text-center transition-all duration-300 hover:border-zinc-300 hover:bg-white hover:shadow-md"
+              >
+                <p className="text-4xl font-black tracking-tight text-zinc-950">
+                  {stat.value}
+                </p>
+                <p className="mt-2 text-xs font-bold uppercase tracking-wider text-zinc-500">
+                  {stat.label}
+                </p>
+              </div>
+            ))}
           </div>
+        </div>
+      </section>
 
-          <div className="mt-12 grid gap-5 md:grid-cols-3">
-            {values.map((value) => {
-              const Icon = value.icon
+      {/* =====================================================
+          SECTION 3: VALUES & PILLARS
+      ====================================================== */}
+      <section className="mx-auto max-w-7xl px-6 py-20 lg:px-8 lg:py-28">
+        <div className="text-center max-w-2xl mx-auto">
+          <p className="text-xs font-bold uppercase tracking-[0.25em] text-zinc-400">
+            Prinsip & Nilai Kami
+          </p>
+          <h2 className="mt-3 text-3xl font-black tracking-tight text-zinc-950 sm:text-5xl">
+            Hal Yang Selalu Kami Jaga
+          </h2>
+          <p className="mt-4 text-sm sm:text-base text-zinc-500 leading-relaxed">
+            Komitmen tak tertandingi di setiap box hidangan yang kami sajikan ke meja acara Anda.
+          </p>
+        </div>
 
-              return (
-                <article
-                  key={value.title}
-                  className="group rounded-3xl border border-gray-100 bg-white p-7 transition duration-300 hover:-translate-y-1 hover:border-red-100 hover:shadow-xl hover:shadow-red-950/5"
-                >
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-red-50 text-red-600 transition group-hover:bg-red-600 group-hover:text-white">
-                    <Icon className="h-5 w-5" />
+        <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {values.map((v) => {
+            const Icon = v.icon
+            return (
+              <div
+                key={v.title}
+                className="group flex flex-col justify-between rounded-[2rem] border border-zinc-200/80 bg-white p-7 transition-all duration-300 hover:-translate-y-1.5 hover:border-zinc-400 hover:shadow-xl hover:shadow-zinc-950/5"
+              >
+                <div>
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-zinc-100 text-zinc-900 transition-colors group-hover:bg-zinc-950 group-hover:text-white">
+                    <Icon size={22} />
                   </div>
 
-                  <h3 className="mt-7 text-xl font-bold text-gray-950">
-                    {value.title}
+                  <h3 className="mt-6 text-lg font-black tracking-tight text-zinc-950">
+                    {v.title}
                   </h3>
 
-                  <p className="mt-3 text-sm leading-7 text-gray-500">
-                    {value.description}
+                  <p className="mt-3 text-xs sm:text-sm leading-relaxed text-zinc-500">
+                    {v.description}
                   </p>
-                </article>
-              )
-            })}
+                </div>
+
+                <div className="mt-6 pt-4 border-t border-zinc-100 flex items-center gap-1 text-[11px] font-bold text-zinc-400 group-hover:text-zinc-900">
+                  <span>Standar Hara Chicken</span>
+                  <CheckCircle2 size={13} className="text-emerald-600" />
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      </section>
+
+      {/* =====================================================
+          SECTION 4: KENAPA MEMILIH HARA CHICKEN?
+      ====================================================== */}
+      <section className="border-t border-zinc-200/80 bg-white py-20 lg:py-28">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="grid gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+            <div>
+              <div className="inline-flex items-center gap-2 rounded-full border border-zinc-200 bg-zinc-50 px-3.5 py-1 text-[11px] font-extrabold uppercase tracking-wider text-zinc-700">
+                <Users size={13} className="text-zinc-900" />
+                Partner Katering Terpercaya
+              </div>
+
+              <h2 className="mt-4 text-3xl font-black tracking-tight text-zinc-950 sm:text-5xl leading-tight">
+                Dirancang Agar Urusan Konsumsi Menjadi Sangat Mudah.
+              </h2>
+
+              <p className="mt-5 text-sm sm:text-base leading-relaxed text-zinc-500">
+                Anda tidak perlu bingung menghitung anggaran atau mencemaskan rasa makanan yang tidak konsisten.
+                Cukup pilih menu favorit di website, tentukan jumlah porsi kelipatan 10, dan kami urus selebihnya.
+              </p>
+
+              <div className="mt-8 flex items-center gap-4">
+                <Link
+                  to="/menu"
+                  className="inline-flex items-center gap-2 rounded-2xl bg-zinc-950 px-6 py-3.5 text-xs font-bold text-white transition hover:bg-zinc-800"
+                >
+                  Jelajahi Pilihan Menu
+                  <ArrowRight size={15} />
+                </Link>
+
+                <Link
+                  to="/cara-pesan"
+                  className="inline-flex items-center gap-2 rounded-2xl border border-zinc-200 bg-white px-6 py-3.5 text-xs font-bold text-zinc-800 transition hover:bg-zinc-50"
+                >
+                  Cara Pesan
+                </Link>
+              </div>
+            </div>
+
+            {/* Checkmark List in Crisp White Card */}
+            <div className="rounded-[2.5rem] border border-zinc-200/80 bg-[#fafaf9] p-8 sm:p-10 shadow-sm space-y-5">
+              {highlights.map((item, idx) => (
+                <div key={idx} className="flex items-start gap-4">
+                  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-zinc-950 text-white mt-0.5">
+                    <Check size={14} strokeWidth={3} />
+                  </div>
+                  <p className="text-xs sm:text-sm font-semibold leading-relaxed text-zinc-800">
+                    {item}
+                  </p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="bg-red-600">
-        <div className="mx-auto flex max-w-7xl flex-col gap-8 px-6 py-20 sm:flex-row sm:items-center sm:justify-between lg:px-8">
-          <div>
-            <p className="text-sm font-bold uppercase tracking-[0.25em] text-yellow-400">
-              Siap pesan?
-            </p>
+      {/* =====================================================
+          SECTION 5: BOTTOM CONSULTATION CTA
+      ====================================================== */}
+      <section className="mx-auto max-w-7xl px-6 py-20 lg:px-8">
+        <div className="relative overflow-hidden rounded-[2.5rem] border border-zinc-200/90 bg-gradient-to-br from-white via-white to-zinc-50 p-8 sm:p-12 lg:p-16 shadow-[0_16px_40px_rgba(0,0,0,0.03)]">
+          <div className="grid gap-8 lg:grid-cols-[1.4fr_0.8fr] lg:items-center">
+            <div>
+              <div className="inline-flex items-center gap-2 rounded-full border border-zinc-200 bg-white px-3.5 py-1 text-[11px] font-bold uppercase tracking-wider text-zinc-600 shadow-sm">
+                <CheckCircle2 size={13} className="text-emerald-600" />
+                Konsultasi & Invoice Katering
+              </div>
 
-            <h2 className="mt-3 max-w-xl text-3xl font-black tracking-tight text-white sm:text-4xl">
-              Biar kami yang urus catering untuk acara Anda.
-            </h2>
+              <h2 className="mt-4 text-3xl font-black tracking-tight text-zinc-950 sm:text-4xl lg:text-5xl leading-tight">
+                Rencanakan Konsumsi Acara Anda Bersama Kami.
+              </h2>
+
+              <p className="mt-4 text-sm sm:text-base leading-relaxed text-zinc-500 max-w-2xl">
+                Hubungi tim admin katering kami langsung via WhatsApp untuk mendiskusikan kebutuhan acara,
+                pengiriman invoice penawaran resmi, serta ketersediaan jadwal dapur.
+              </p>
+            </div>
+
+            <div className="flex flex-col gap-3 lg:items-end">
+              <a
+                href="https://wa.me/6289669743193?text=Halo%20Hara%20Chicken,%20saya%20ingin%20konsultasi%20pesanan%20katering%20untuk%20acara%20saya."
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2.5 rounded-2xl bg-emerald-600 px-8 py-4 text-sm font-bold text-white shadow-lg shadow-emerald-600/20 transition-all hover:bg-emerald-700 hover:scale-[1.01] active:scale-[0.99]"
+              >
+                <MessageCircle size={18} />
+                Hubungi Admin WhatsApp
+              </a>
+
+              <Link
+                to="/menu"
+                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-zinc-200 bg-white px-6 py-3.5 text-xs font-bold text-zinc-800 transition hover:bg-zinc-50"
+              >
+                Lihat Koleksi Menu
+              </Link>
+            </div>
           </div>
-
-          <Link
-            to="/menu"
-            className="inline-flex shrink-0 items-center justify-center gap-3 rounded-full bg-white px-6 py-3.5 text-sm font-bold text-red-600 transition hover:bg-yellow-400 hover:text-red-950"
-          >
-            Lihat Menu
-            <ArrowRight className="h-4 w-4" />
-          </Link>
         </div>
       </section>
-    </>
+    </main>
   )
 }

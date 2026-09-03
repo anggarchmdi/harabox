@@ -2,9 +2,12 @@ import {
   ArrowRight,
   CalendarDays,
   CheckCircle2,
-  ClipboardList,
+  HelpCircle,
   MessageCircle,
+  Plus,
+  Receipt,
   ShoppingBag,
+  Sparkles,
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
@@ -14,178 +17,274 @@ const steps = [
   {
     number: '01',
     icon: ShoppingBag,
-    title: 'Pilih Menu',
+    title: 'Pilih Menu Katering',
     description:
-      'Lihat berbagai paket catering yang tersedia dan pilih yang paling sesuai dengan kebutuhan acara Anda.',
+      'Jelajahi koleksi menu katering kami, mulai dari Bento Katsu, Ayam Krisbar, Nasi Kuning, hingga Nasi Rames dengan bahan segar dan bumbu otentik.',
+    badge: 'Katalog Lengkap',
   },
   {
     number: '02',
-    icon: ClipboardList,
-    title: 'Isi Detail Pesanan',
+    icon: Plus,
+    title: 'Tentukan Porsi (Kelipatan 10)',
     description:
-      'Masukkan data pemesan, jumlah porsi, tanggal acara, waktu, dan alamat pengiriman.',
+      'Pilih jumlah porsi dengan mudah menggunakan tombol counter kelipatan 10 (10, 20, 30, 50, 100+ porsi). Minimal pemesanan adalah 10 porsi.',
+    badge: 'Sistem Kelipatan 10',
   },
   {
     number: '03',
     icon: CalendarDays,
-    title: 'Periksa Pesanan',
+    title: 'Lengkapi Data Acara & Lokasi',
     description:
-      'Pastikan semua informasi pesanan sudah benar sebelum melanjutkan ke tahap konfirmasi.',
+      'Masukkan nama lengkap, nomor WhatsApp aktif, tanggal dan perkiraan jam acara, serta alamat pengantaran lengkap beserta catatan khusus.',
+    badge: 'Form Ringkas',
   },
   {
     number: '04',
-    icon: MessageCircle,
-    title: 'Konfirmasi',
+    icon: Receipt,
+    title: 'Terhubung ke WhatsApp & Terima Invoice',
     description:
-      'Pesanan akan dikonfirmasi dan tim Harabox akan menghubungi Anda untuk memastikan detail pesanan.',
+      'Sistem otomatis mencatat pesanan Anda dan mengarahkan ke chat WhatsApp admin. Tim kami akan mengirimkan invoice resmi katering beserta rincian biaya.',
+    badge: 'Invoice Katering Resmi',
   },
   {
     number: '05',
     icon: CheckCircle2,
-    title: 'Pesanan Diproses',
+    title: 'Konfirmasi Pembayaran & Siap Diantar',
     description:
-      'Setelah semua detail disepakati, pesanan akan diproses dan disiapkan sesuai jadwal acara Anda.',
+      'Lakukan pembayaran sesuai invoice dan kirimkan bukti transfer. Pesanan Anda diproses di dapur higienis dan diantar tepat waktu siap santap.',
+    badge: 'Pengantaran Tepat Waktu',
+  },
+]
+
+const proTips = [
+  {
+    title: 'Pemesanan Lebih Awal',
+    desc: 'Untuk pesanan dalam jumlah besar (di atas 100 porsi), kami sarankan memesan H-2 atau H-3 agar persiapan dapur optimal.',
+  },
+  {
+    title: 'Kustomisasi Khusus',
+    desc: 'Butuh sambal dipisah, menu vegetarian, atau penyesuaian lauk? Tuliskan di catatan pemesanan atau sampaikan langsung via WhatsApp.',
+  },
+  {
+    title: 'Faktur & Administrasi Kantor',
+    desc: 'Kami siap menerbitkan invoice penawaran resmi, kuitansi bermaterai, ataupun kelengkapan administrasi instansi/perusahaan Anda.',
   },
 ]
 
 export default function CaraPesan() {
   return (
-    <>
+    <main className="min-h-screen bg-[#fafaf9] text-zinc-900 selection:bg-zinc-950 selection:text-white">
+      {/* Header */}
       <Summary
-        eyebrow="CARA PESAN"
-        title="Pesan catering tanpa ribet."
-        description="Dari pilih menu sampai pesanan siap diproses, semuanya dibuat sederhana supaya Anda tidak perlu repot."
+        eyebrow="PANDUAN PEMESANAN KATERING"
+        title="Pesan Katering Praktis Tanpa Ribet."
+        description="Mulai dari memilih menu, menentukan jumlah porsi, hingga menerima invoice resmi katering via WhatsApp dalam hitungan menit."
       />
 
-      {/* Steps */}
-      <section className="bg-white">
-        <div className="mx-auto max-w-5xl px-6 py-20 lg:px-8 lg:py-28">
-          <div className="mb-14 max-w-2xl">
-            <p className="text-sm font-bold uppercase tracking-[0.25em] text-red-600">
-              Langkah Pemesanan
-            </p>
-
-            <h2 className="mt-4 text-4xl font-black tracking-tight text-gray-950 sm:text-5xl">
-              Cuma beberapa langkah.
-            </h2>
-
-            <p className="mt-5 text-base leading-7 text-gray-500">
-              Ikuti proses berikut untuk melakukan pemesanan catering Harabox.
-            </p>
+      {/* =====================================================
+          STEP BY STEP TIMELINE SECTION
+      ====================================================== */}
+      <section className="mx-auto max-w-5xl px-6 py-20 lg:px-8 lg:py-28">
+        <div className="mb-14 text-center max-w-2xl mx-auto">
+          <div className="inline-flex items-center gap-2 rounded-full border border-zinc-200 bg-white px-4 py-1.5 text-[11px] font-extrabold uppercase tracking-[0.2em] text-zinc-700 shadow-sm">
+            <Sparkles size={13} className="text-amber-500" />
+            Alur Pemesanan 5 Langkah
           </div>
 
-          <div className="relative">
-            {/* Timeline line */}
-            <div className="absolute left-6 top-8 bottom-8 hidden w-px bg-gray-200 sm:block" />
-
-            <div className="space-y-6">
-              {steps.map((step) => {
-                const Icon = step.icon
-
-                return (
-                  <article
-                    key={step.number}
-                    className="group relative grid gap-6 rounded-3xl border border-gray-100 bg-white p-6 transition duration-300 hover:-translate-y-0.5 hover:border-red-100 hover:shadow-xl hover:shadow-red-950/5 sm:grid-cols-[72px_1fr] sm:p-7"
-                  >
-                    {/* Number */}
-                    <div className="relative z-10 flex h-12 w-12 items-center justify-center rounded-2xl bg-red-600 text-sm font-black text-white shadow-lg shadow-red-600/20">
-                      {step.number}
-                    </div>
-
-                    <div>
-                      <div className="flex flex-wrap items-center gap-3">
-                        <h3 className="text-xl font-bold text-gray-950">
-                          {step.title}
-                        </h3>
-
-                        <div className="hidden rounded-full bg-gray-50 p-2 text-red-600 sm:flex">
-                          <Icon className="h-4 w-4" />
-                        </div>
-                      </div>
-
-                      <p className="mt-3 max-w-2xl text-sm leading-7 text-gray-500">
-                        {step.description}
-                      </p>
-                    </div>
-                  </article>
-                )
-              })}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Important info */}
-      <section className="bg-gray-50">
-        <div className="mx-auto max-w-7xl px-6 py-20 lg:px-8 lg:py-24">
-          <div className="grid gap-6 lg:grid-cols-2">
-            <div className="rounded-3xl bg-yellow-400 p-8 sm:p-10">
-              <p className="text-xs font-black uppercase tracking-[0.25em] text-red-950/60">
-                Tips
-              </p>
-
-              <h2 className="mt-4 text-3xl font-black tracking-tight text-red-950">
-                Siapkan detail acara Anda.
-              </h2>
-
-              <p className="mt-4 max-w-lg leading-7 text-red-950/70">
-                Agar proses pemesanan lebih cepat, siapkan informasi seperti
-                jumlah tamu, tanggal acara, waktu, dan lokasi pengiriman.
-              </p>
-            </div>
-
-            <div className="rounded-3xl bg-red-600 p-8 text-white sm:p-10">
-              <p className="text-xs font-black uppercase tracking-[0.25em] text-yellow-400">
-                Butuh bantuan?
-              </p>
-
-              <h2 className="mt-4 text-3xl font-black tracking-tight">
-                Bingung memilih paket?
-              </h2>
-
-              <p className="mt-4 leading-7 text-white/70">
-                Tidak perlu khawatir. Anda bisa menghubungi tim Harabox untuk
-                mendapatkan bantuan memilih menu yang sesuai dengan kebutuhan
-                acara.
-              </p>
-
-              <Link
-                to="/menu"
-                className="mt-7 inline-flex items-center gap-3 rounded-full bg-white px-6 py-3.5 text-sm font-bold text-red-600 transition hover:bg-yellow-400 hover:text-red-950"
-              >
-                Lihat Menu
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Bottom CTA */}
-      <section className="bg-white">
-        <div className="mx-auto max-w-4xl px-6 py-24 text-center">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-red-50 text-red-600">
-            <ShoppingBag className="h-6 w-6" />
-          </div>
-
-          <h2 className="mt-7 text-4xl font-black tracking-tight text-gray-950 sm:text-5xl">
-            Sudah tahu mau pesan apa?
+          <h2 className="mt-4 text-3xl font-black tracking-tight text-zinc-950 sm:text-5xl">
+            Langkah Cepat & Transparan
           </h2>
 
-          <p className="mx-auto mt-5 max-w-xl text-base leading-7 text-gray-500">
-            Jelajahi menu Harabox dan temukan paket yang cocok untuk acara
-            Anda.
+          <p className="mt-4 text-sm sm:text-base leading-relaxed text-zinc-500">
+            Ikuti panduan mudah berikut untuk memesan konsumsi catering Hara Chicken untuk acara Anda.
           </p>
+        </div>
 
-          <Link
-            to="/menu"
-            className="mt-8 inline-flex items-center gap-3 rounded-full bg-red-600 px-7 py-4 text-sm font-bold text-white shadow-lg shadow-red-600/20 transition hover:bg-red-700 hover:shadow-xl"
-          >
-            Jelajahi Menu
-            <ArrowRight className="h-4 w-4" />
-          </Link>
+        {/* Timeline Container */}
+        <div className="relative">
+          {/* Vertical subtle center line */}
+          <div className="absolute left-8 top-12 bottom-12 hidden w-px bg-zinc-200 sm:block" />
+
+          <div className="space-y-6">
+            {steps.map((step) => {
+              const Icon = step.icon
+
+              return (
+                <article
+                  key={step.number}
+                  className="group relative grid gap-6 rounded-[2.2rem] border border-zinc-200/80 bg-white p-6 sm:p-8 transition-all duration-300 hover:-translate-y-1 hover:border-zinc-400 hover:shadow-xl hover:shadow-zinc-950/5 sm:grid-cols-[72px_1fr]"
+                >
+                  {/* Step Number Badge */}
+                  <div className="relative z-10 flex h-14 w-14 items-center justify-center rounded-2xl bg-zinc-950 font-mono text-base font-black text-white shadow-md shadow-zinc-950/20 group-hover:scale-105 transition-transform">
+                    {step.number}
+                  </div>
+
+                  {/* Step Details */}
+                  <div className="flex flex-col justify-center">
+                    <div className="flex flex-wrap items-center gap-3">
+                      <div className="flex items-center gap-2">
+                        <Icon size={18} className="text-zinc-400 group-hover:text-zinc-900 transition-colors" />
+                        <h3 className="text-xl font-black tracking-tight text-zinc-950">
+                          {step.title}
+                        </h3>
+                      </div>
+
+                      <span className="rounded-full bg-zinc-100 border border-zinc-200/60 px-3 py-0.5 text-[11px] font-bold text-zinc-600">
+                        {step.badge}
+                      </span>
+                    </div>
+
+                    <p className="mt-2.5 max-w-2xl text-xs sm:text-sm leading-relaxed text-zinc-500">
+                      {step.description}
+                    </p>
+                  </div>
+                </article>
+              )
+            })}
+          </div>
         </div>
       </section>
-    </>
+
+      {/* =====================================================
+          WHATSAPP INVOICE PREVIEW SECTION
+      ====================================================== */}
+      <section className="border-t border-zinc-200/80 bg-white py-20 lg:py-28">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="grid gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+            {/* Left Info */}
+            <div className="space-y-5">
+              <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3.5 py-1 text-[11px] font-extrabold uppercase tracking-wider text-emerald-800">
+                <Receipt size={13} />
+                Sistem Invoice Digital WhatsApp
+              </div>
+
+              <h2 className="text-3xl font-black tracking-tight text-zinc-950 sm:text-4xl lg:text-5xl leading-tight">
+                Harga Ditentukan Tim Kami, Invoice Resmi Langsung di WhatsApp Anda.
+              </h2>
+
+              <p className="text-sm sm:text-base leading-relaxed text-zinc-500">
+                Setelah Anda memilih menu dan jumlah porsi di website, pesanan Anda tercatat langsung di dashboard admin kami.
+                Tim Hara Chicken akan segera mengirimkan invoice resmi berisi rincian pesanan, konfirmasi ongkir,
+                serta rekening pembayaran resmi.
+              </p>
+
+              <div className="pt-2 flex flex-wrap gap-3 text-xs font-semibold text-zinc-700">
+                <div className="flex items-center gap-1.5 rounded-xl border border-zinc-200 bg-[#fafaf9] px-3.5 py-2">
+                  <CheckCircle2 size={14} className="text-emerald-600" />
+                  Rincian Porsi Jelas
+                </div>
+                <div className="flex items-center gap-1.5 rounded-xl border border-zinc-200 bg-[#fafaf9] px-3.5 py-2">
+                  <CheckCircle2 size={14} className="text-emerald-600" />
+                  Rekening Bank Resmi
+                </div>
+                <div className="flex items-center gap-1.5 rounded-xl border border-zinc-200 bg-[#fafaf9] px-3.5 py-2">
+                  <CheckCircle2 size={14} className="text-emerald-600" />
+                  Tercatat di Sistem
+                </div>
+              </div>
+            </div>
+
+            {/* Right Mockup Card of WhatsApp Invoice */}
+            <div className="relative rounded-[2.5rem] border border-zinc-200 bg-[#fafaf9] p-6 sm:p-8 shadow-lg">
+              <div className="flex items-center gap-3 border-b border-zinc-200 pb-4 mb-4">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-600 text-white">
+                  <MessageCircle size={20} />
+                </div>
+                <div>
+                  <p className="font-extrabold text-sm text-zinc-950">Admin Katering Hara Chicken</p>
+                  <p className="text-[11px] text-emerald-600 font-semibold">● Online • Fast Response</p>
+                </div>
+              </div>
+
+              <div className="rounded-2xl border border-emerald-200/80 bg-white p-4 font-mono text-xs text-zinc-800 space-y-2 shadow-sm">
+                <p className="font-bold text-emerald-700">*INVOICE PESANAN HARA CHICKEN*</p>
+                <div className="text-zinc-400">===============================</div>
+                <p>No. Pesanan: <span className="font-bold text-zinc-950">HB-20260903-XXXX</span></p>
+                <p>Menu: <span className="font-bold text-zinc-950">Nasi Box Bento Katsu (30 Porsi)</span></p>
+                <p>Tanggal Acara: <span className="font-bold text-zinc-950">12 Oktober 2026</span></p>
+                <p>Alamat: <span className="font-bold text-zinc-950">Gedung Pertemuan Lt. 3</span></p>
+                <div className="text-zinc-400">-------------------------------</div>
+                <p className="font-bold text-zinc-950 text-sm">TOTAL TAGIHAN: Rp 750.000</p>
+                <p className="text-[11px] text-zinc-500 font-sans mt-2">
+                  Pembayaran: Bank BCA 1234567890 a/n Hara Chicken
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* =====================================================
+          PRO TIPS SECTION
+      ====================================================== */}
+      <section className="mx-auto max-w-7xl px-6 py-20 lg:px-8">
+        <div className="rounded-[2.5rem] border border-zinc-200/80 bg-white p-8 sm:p-12 shadow-sm">
+          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-zinc-400">
+            <HelpCircle size={15} className="text-zinc-900" />
+            Tips Penting dari Kami
+          </div>
+
+          <h2 className="mt-2 text-2xl sm:text-3xl font-black text-zinc-950 tracking-tight">
+            Agar Pemesanan Anda Berjalan Sempurna
+          </h2>
+
+          <div className="mt-8 grid gap-6 sm:grid-cols-3">
+            {proTips.map((tip) => (
+              <div
+                key={tip.title}
+                className="rounded-2xl border border-zinc-100 bg-[#fafaf9] p-6 space-y-2"
+              >
+                <h4 className="font-black text-sm text-zinc-950">{tip.title}</h4>
+                <p className="text-xs leading-relaxed text-zinc-500">{tip.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* =====================================================
+          BOTTOM CONSULTATION CTA
+      ====================================================== */}
+      <section className="mx-auto max-w-7xl px-6 pb-24 lg:px-8">
+        <div className="relative overflow-hidden rounded-[2.5rem] border border-zinc-200/90 bg-gradient-to-br from-white via-white to-zinc-50 p-8 sm:p-12 lg:p-16 shadow-[0_16px_40px_rgba(0,0,0,0.03)]">
+          <div className="grid gap-8 lg:grid-cols-[1.4fr_0.8fr] lg:items-center">
+            <div>
+              <div className="inline-flex items-center gap-2 rounded-full border border-zinc-200 bg-white px-3.5 py-1 text-[11px] font-bold uppercase tracking-wider text-zinc-600 shadow-sm">
+                <CheckCircle2 size={13} className="text-emerald-600" />
+                Siap Memesan?
+              </div>
+
+              <h2 className="mt-4 text-3xl font-black tracking-tight text-zinc-950 sm:text-4xl lg:text-5xl leading-tight">
+                Pilih Menu Katering Favorit Anda Sekarang.
+              </h2>
+
+              <p className="mt-4 text-sm sm:text-base leading-relaxed text-zinc-500 max-w-2xl">
+                Tersedia beragam pilihan paket nasi box bento katsu, krisbar, dan nasi kuning dengan harga hemat serta rasa lezat.
+              </p>
+            </div>
+
+            <div className="flex flex-col sm:flex-row lg:flex-col gap-3 lg:items-end">
+              <Link
+                to="/menu"
+                className="inline-flex items-center justify-center gap-2.5 rounded-2xl bg-zinc-950 px-8 py-4 text-sm font-bold text-white shadow-md transition-all hover:bg-zinc-800 hover:scale-[1.01] active:scale-[0.99]"
+              >
+                <span>Jelajahi Semua Menu</span>
+                <ArrowRight size={16} />
+              </Link>
+
+              <a
+                href="https://wa.me/6289669743193?text=Halo%20Hara%20Chicken,%20saya%20ingin%20tanya%20cara%20pemesanan%20katering."
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-zinc-200 bg-white px-6 py-3.5 text-xs font-bold text-zinc-800 transition hover:bg-zinc-50"
+              >
+                <MessageCircle size={15} className="text-emerald-600" />
+                Chat WhatsApp Admin
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
   )
 }
