@@ -26,3 +26,7 @@ Homestead.json
 Homestead.yaml
 Thumbs.db
 harabox_db
+.agents
+.claude
+claude.md
+AGENTS.md
