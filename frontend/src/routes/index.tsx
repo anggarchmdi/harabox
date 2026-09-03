@@ -23,6 +23,7 @@ import HomePage from '../pages/HomePage'
 import MenuPage from '../pages/MenuPage'
 import TentangKami from '../pages/TentangKami'
 import CaraPesan from '../pages/CaraPesan'
+import ProductDetailPage from '../pages/ProductDetailPage'
 
 export default function AppRoutes() {
   return (
@@ -63,6 +64,7 @@ export default function AppRoutes() {
 
       <Route element={<MenuLayout />}>
         <Route path="/menu" element={<MenuPage />} />
+        <Route path="/menu/:slug" element={<ProductDetailPage />} />
         <Route path="/tentang-kami" element={<TentangKami />} />
         <Route path="/cara-pesan" element={<CaraPesan />} />
       </Route>
