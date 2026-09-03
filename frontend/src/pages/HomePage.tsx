@@ -23,7 +23,7 @@ import { productService } from '../services/products.service'
 import { getImageUrl } from '../utils/image'
 import type { Product } from '../types/products'
 
-import HeroImg from '../assets/banners1.jpeg'
+import HeroImg from '../assets/banners.webp'
 import BentoKatsuImg from '../assets/nasibox/bento-katsu-b.webp'
 import BentoTelurImg from '../assets/nasibox/bento-telur-mata-sapi-b.webp'
 import KrisbarDadaImg from '../assets/nasibox/krisbar-dada-b.webp'

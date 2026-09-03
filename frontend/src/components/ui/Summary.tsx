@@ -1,4 +1,4 @@
-import { ArrowDown } from 'lucide-react'
+import { ArrowDown, Sparkles } from 'lucide-react'
 
 interface SummaryProps {
   title: string
@@ -9,40 +9,37 @@ interface SummaryProps {
 export default function Summary({
   title,
   description,
-  eyebrow = 'HARA CHICKEN',
+  eyebrow = 'HARA CHICKEN GOURMET CATERING',
 }: SummaryProps) {
   return (
-    <section className="relative overflow-hidden bg-red-600 text-white">
-      {/* Decorative shapes */}
-      <div className="absolute -right-32 -top-32 h-96 w-96 rounded-full bg-red-500" />
-      <div className="absolute -bottom-40 -left-32 h-80 w-80 rounded-full bg-red-700" />
+    <section className="relative overflow-hidden border-b border-zinc-200/70 bg-gradient-to-b from-white via-white to-[#fafaf9] pt-32 pb-16 sm:pt-36 sm:pb-20 lg:pt-40 lg:pb-24 text-zinc-900 selection:bg-zinc-950 selection:text-white">
+      {/* Subtle ambient light patterns */}
+      <div className="pointer-events-none absolute -top-40 left-1/2 h-[500px] w-[800px] -translate-x-1/2 rounded-full bg-gradient-to-b from-zinc-100/70 to-transparent blur-3xl" />
+      <div className="pointer-events-none absolute -right-20 top-20 h-72 w-72 rounded-full bg-amber-50/40 blur-3xl" />
 
-      <div className="absolute right-[18%] top-1/2 hidden h-3 w-3 -translate-y-1/2 rounded-full bg-yellow-400 sm:block" />
-      <div className="absolute right-[12%] top-[35%] hidden h-2 w-2 rounded-full bg-white/40 sm:block" />
-
-      <div className="relative mx-auto flex min-h-[430px] max-w-7xl items-end px-6 pb-16 pt-32 lg:px-8 lg:pb-20">
-        <div className="max-w-4xl">
-          <div className="mb-6 flex items-center gap-3">
-            <span className="h-px w-10 bg-yellow-400" />
-
-            <span className="text-xs font-bold tracking-[0.3em] text-yellow-400">
-              {eyebrow}
-            </span>
+      <div className="relative mx-auto max-w-7xl px-6 lg:px-8">
+        <div className="flex flex-col items-center text-center">
+          {/* Elegant luxury pill badge */}
+          <div className="inline-flex items-center gap-2 rounded-full border border-zinc-200/90 bg-white/90 px-4 py-1.5 text-[11px] font-extrabold uppercase tracking-[0.25em] text-zinc-700 shadow-sm backdrop-blur">
+            <Sparkles size={13} className="text-amber-500" />
+            {eyebrow}
           </div>
 
-          <h1 className="max-w-3xl text-5xl font-black leading-[0.95] tracking-tight sm:text-6xl lg:text-7xl">
+          {/* Main Headline in Timeless High-Contrast Charcoal */}
+          <h1 className="mt-6 max-w-4xl text-4xl font-black tracking-tight text-zinc-950 sm:text-6xl lg:text-7xl leading-[1.08]">
             {title}
           </h1>
 
-          <p className="mt-7 max-w-2xl text-base leading-7 text-white/75 sm:text-lg">
+          {/* Description */}
+          <p className="mt-6 max-w-2xl text-sm leading-relaxed text-zinc-500 sm:text-base lg:text-lg">
             {description}
           </p>
 
-          <div className="mt-10 flex items-center gap-3 text-sm font-semibold text-white/60">
-            <div className="flex h-9 w-9 items-center justify-center rounded-full border border-white/20">
-              <ArrowDown className="h-4 w-4" />
+          {/* Minimalist scroll hint */}
+          <div className="mt-10 inline-flex items-center gap-2 text-xs font-bold text-zinc-400">
+            <div className="flex h-7 w-7 items-center justify-center rounded-full border border-zinc-200 bg-white text-zinc-500 shadow-sm">
+              <ArrowDown size={13} />
             </div>
-
             <span>Scroll untuk menjelajah</span>
           </div>
         </div>

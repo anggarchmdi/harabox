@@ -70,17 +70,17 @@ export default function LoginPage() {
       <div className="relative">
         {/* Header */}
         <div className="mb-7 text-center">
-         <div className="">
-        <div className="bg-linear-to-r from-red-500 to-yellow-500 bg-clip-text">
-          <h1 className="text-4xl font-extrabold text-center tracking-tight text-transparent font-sans">
-            Welcome back
-          </h1>
-         </div>
+          <div className="">
+            <div className="bg-linear-to-r from-red-500 to-yellow-500 bg-clip-text">
+              <h1 className="text-4xl font-extrabold text-center tracking-tight text-transparent font-sans">
+                Welcome back
+              </h1>
+            </div>
 
-          <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-center text-gray-500">
-            Masuk ke dashboard untuk mengelola pesanan dan kebutuhan HaraBox.
-          </p>
-        </div>
+            <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-center text-gray-500">
+              Masuk ke dashboard untuk mengelola pesanan dan kebutuhan HaraBox.
+            </p>
+          </div>
         </div>
 
         {/* Login Card */}
