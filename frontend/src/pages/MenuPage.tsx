@@ -234,7 +234,7 @@ export default function MenuPage() {
         <div className="relative mx-auto max-w-7xl px-6 lg:px-8">
           <div className="flex flex-col items-center text-center">
             {/* Elegant luxury pill badge */}
-            <div className="inline-flex items-center gap-2 rounded-full border border-zinc-200/90 bg-white/90 px-4 py-1.5 text-[11px] font-extrabold uppercase tracking-[0.25em] text-zinc-700 shadow-sm backdrop-blur">
+            <div className="inline-flex items-center gap-2 rounded-full border shadow-yellow-500 border-zinc-200/90 bg-white/90 px-4 py-1.5 text-[11px] font-extrabold uppercase tracking-[0.25em] text-zinc-700 shadow-sm backdrop-blur">
               <Sparkles size={13} className="text-amber-500" />
               Hara Chicken Gourmet Catering
             </div>
