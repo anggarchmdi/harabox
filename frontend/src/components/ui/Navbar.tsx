@@ -78,7 +78,7 @@ export default function Navbar() {
           transition-all duration-300
           ${
             solidNavbar
-              ? 'bg-white shadow-md duration-300'
+              ? 'bg-white shadow-md font-poppins duration-300'
               : 'bg-transparent'
           }
         `}
