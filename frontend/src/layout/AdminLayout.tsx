@@ -399,16 +399,16 @@ export default function AdminLayout() {
           {isCollapsed ? (
             <div className="flex flex-col items-center gap-2">
               <div className="relative group cursor-pointer">
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-zinc-100 border border-zinc-200 overflow-hidden shadow-sm hover:ring-2 hover:ring-zinc-950/20 transition">
-                  <img src={LogoProfile} alt="Admin" className="w-9 h-9 object-cover" />
-                </div>
-                <div className="pointer-events-none absolute left-full bottom-0 ml-3 hidden group-hover:flex flex-col rounded-xl bg-zinc-900 px-3 py-2 text-xs text-white shadow-xl z-50 whitespace-nowrap">
+                {/* <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-zinc-100 border border-zinc-200 overflow-hidden shadow-sm hover:ring-2 hover:ring-zinc-950/20 transition"> */}
+                  {/* <img src={LogoProfile} alt="Admin" className="w-9 h-9 object-cover" /> */}
+                {/* </div> */}
+                {/* <div className="pointer-events-none absolute left-full bottom-0 ml-3 hidden group-hover:flex flex-col rounded-xl bg-zinc-900 px-3 py-2 text-xs text-white shadow-xl z-50 whitespace-nowrap">
                   <span className="font-bold">{user?.name || 'Administrator'}</span>
                   <span className="text-[10px] text-zinc-400">{user?.email || 'admin@harachicken.com'}</span>
-                </div>
+                </div> */}
               </div>
 
-              <div className="relative group">
+              {/* <div className="relative group">
                 <button
                   type="button"
                   onClick={handleLogout}
@@ -421,11 +421,11 @@ export default function AdminLayout() {
                 <div className="pointer-events-none absolute left-full bottom-0 ml-3 hidden group-hover:flex items-center rounded-xl bg-red-600 px-3 py-1.5 text-xs font-bold text-white shadow-xl z-50 whitespace-nowrap">
                   Logout Keluar
                 </div>
-              </div>
+              </div> */}
             </div>
           ) : (
             <div className="rounded-2xl border border-zinc-200/80 bg-[#fafaf9] p-3 flex items-center justify-between">
-              <div className="flex items-center gap-3 min-w-0">
+              {/* <div className="flex items-center gap-3 min-w-0">
                 <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white border border-zinc-200 overflow-hidden shadow-sm">
                   <img src={LogoProfile} alt="Admin" className="w-8 h-8 object-cover" />
                 </div>
@@ -437,9 +437,9 @@ export default function AdminLayout() {
                     {user?.email || 'admin@harachicken.com'}
                   </p>
                 </div>
-              </div>
+              </div> */}
 
-              <button
+              {/* <button
                 type="button"
                 onClick={handleLogout}
                 disabled={loading}
@@ -447,7 +447,7 @@ export default function AdminLayout() {
                 className="p-2 rounded-xl text-zinc-400 hover:text-red-600 hover:bg-red-50 transition cursor-pointer shrink-0"
               >
                 <LogOut size={16} />
-              </button>
+              </button> */}
             </div>
           )}
         </div>
@@ -610,7 +610,7 @@ export default function AdminLayout() {
               <button
                 type="button"
                 onClick={() => setProfileOpen((prev) => !prev)}
-                className="flex items-center gap-3 rounded-2xl border border-zinc-200/80 bg-white p-1.5 pl-3 transition hover:bg-zinc-50 shadow-sm cursor-pointer"
+                className="flex items-center gap-3 rounded-2xl border border-zinc-200/80 fontinter bg-white p-1.5 pl-3 transition hover:bg-zinc-50 shadow-sm cursor-pointer"
               >
                 <div className="hidden text-right sm:block">
                   <p className="text-xs font-black text-zinc-950 truncate max-w-[120px]">
