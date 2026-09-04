@@ -303,9 +303,9 @@ export default function HomePage() {
           <div className="mx-auto w-full max-w-5xl rounded-2xl bg-white px-6 py-7 shadow-[0_10px_40px_rgba(0,0,0,0.12)] md:px-10 border border-zinc-100">
             {/* Heading */}
             <div className="mb-7 text-center">
-              <h1 className="text-xl font-bold tracking-tight text-gray-900 md:text-2xl">
+              <h1 className="text-xl font-poppins tracking-tight text-gray-900 md:text-2xl">
                 Bingung mau pesan apa?
-                <span className="ml-1 font-normal text-gray-500">
+                <span className="ml-1 font-poppins text-gray-500">
                   Yuk, kami pilihkan menu terbaik!
                 </span>
               </h1>
@@ -473,8 +473,8 @@ export default function HomePage() {
                 type="button"
                 onClick={() => setSelectedCategory(tab.id)}
                 className={`shrink-0 rounded-2xl px-4 py-2 text-xs sm:text-sm font-bold transition cursor-pointer ${selectedCategory === tab.id
-                    ? 'bg-zinc-950 text-white shadow-md'
-                    : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200 hover:text-zinc-900'
+                  ? 'bg-zinc-950 text-white shadow-md'
+                  : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200 hover:text-zinc-900'
                   }`}
               >
                 {tab.label}
@@ -525,8 +525,8 @@ export default function HomePage() {
                     </div>
 
                     {/* Rating Pill */}
-                    <div className="absolute top-4 right-4 flex items-center gap-1 rounded-full bg-amber-400 px-2.5 py-1 text-[11px] font-black text-zinc-950 shadow-md">
-                      <Star size={12} className="fill-zinc-950 text-zinc-950" />
+                    <div className="absolute top-4 right-4 flex items-center gap-1 rounded-full bg-black px-2.5 py-1 text-[11px] font-black text-yellow-500 shadow-md">
+                      <Star size={12} className="fill-zinc-950 text-yellow-500" />
                       <span>4.9</span>
                     </div>
                   </div>
