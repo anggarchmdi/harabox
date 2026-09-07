@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
+import AOS from 'aos'
 import {
   ArrowRight,
   CheckCircle2,
@@ -19,6 +20,8 @@ import { Link } from 'react-router-dom'
 import { productService } from '../services/products.service'
 import { getImageUrl } from '../utils/image'
 import type { Product } from '../types/products'
+import PageLoader from '../components/ui/PageLoader'
+import ProductCardSkeleton from '../components/ui/ProductCardSkeleton'
 
 // Aset lokal untuk smart fallback beresolusi tinggi & menggugah selera
 import BentoKatsuImg from '../assets/nasibox/bento-katsu-b.webp'
@@ -84,6 +87,15 @@ export default function MenuPage() {
   const [debouncedSearch, setDebouncedSearch] = useState('')
   const [activeCategory, setActiveCategory] = useState('all')
   const [sortBy, setSortBy] = useState<SortOption>('default')
+
+  useEffect(() => {
+    AOS.init({
+      duration: 650,
+      easing: 'ease-out-cubic',
+      once: false,
+      offset: 40,
+    })
+  }, [])
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -159,6 +171,15 @@ export default function MenuPage() {
     })
   }, [products, debouncedSearch, activeCategory, sortBy])
 
+  useEffect(() => {
+    // Refresh AOS trigger positions after products render or filter changes
+    const timer = setTimeout(() => {
+      AOS.refresh()
+    }, 120)
+
+    return () => clearTimeout(timer)
+  }, [filteredProducts, isLoading])
+
   const hasFilter = Boolean(debouncedSearch) || activeCategory !== 'all' || sortBy !== 'default'
 
   const clearFilters = () => {
@@ -166,34 +187,6 @@ export default function MenuPage() {
     setDebouncedSearch('')
     setActiveCategory('all')
     setSortBy('default')
-  }
-
-  if (isLoading) {
-    return (
-      <main className="min-h-screen bg-white">
-        <section className="mx-auto max-w-7xl px-6 pb-20 pt-32 lg:px-8">
-          <div className="animate-pulse space-y-6">
-            <div className="h-6 w-36 rounded-full bg-zinc-100" />
-            <div className="h-16 w-3/4 max-w-2xl rounded-2xl bg-zinc-100" />
-            <div className="h-5 w-1/2 max-w-lg rounded-xl bg-zinc-100" />
-
-            <div className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-              {[1, 2, 3, 4, 5, 6].map((n) => (
-                <div key={n} className="overflow-hidden rounded-[2.5rem] border border-zinc-100 bg-white p-4">
-                  <div className="aspect-[4/3] rounded-2xl bg-zinc-100" />
-                  <div className="p-4 space-y-3">
-                    <div className="h-4 w-20 rounded bg-zinc-100" />
-                    <div className="h-6 w-3/4 rounded bg-zinc-100" />
-                    <div className="h-4 w-full rounded bg-zinc-100" />
-                    <div className="h-10 w-full rounded-2xl bg-zinc-100 pt-2" />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      </main>
-    )
   }
 
   if (isError) {
@@ -223,6 +216,14 @@ export default function MenuPage() {
 
   return (
     <main className="min-h-screen bg-[#fafaf9] text-zinc-900 selection:bg-zinc-950 selection:text-white">
+      {/* Branded Page Loader with clean LogoSpinner */}
+      <PageLoader
+        isLoading={isLoading}
+        text="Menyiapkan Menu Katering Lezat..."
+        subtext="Memuat daftar lengkap paket bento, krisbar, dan nasi box spesial"
+        minDuration={700}
+      />
+
       {/* =====================================================
           LUXURY WHITE HERO SECTION
       ====================================================== */}
@@ -234,13 +235,22 @@ export default function MenuPage() {
         <div className="relative mx-auto max-w-7xl px-6 lg:px-8">
           <div className="flex flex-col items-center text-center">
             {/* Elegant luxury pill badge */}
-            <div className="inline-flex items-center gap-2 rounded-full border shadow-yellow-500 border-zinc-200/90 bg-white/90 px-4 py-1.5 text-[11px] font-extrabold uppercase tracking-[0.25em] text-zinc-700 shadow-sm backdrop-blur">
+            <div
+              data-aos="fade-down"
+              data-aos-duration="600"
+              className="inline-flex items-center gap-2 rounded-full border shadow-yellow-500 border-zinc-200/90 bg-white/90 px-4 py-1.5 text-[11px] font-extrabold uppercase tracking-[0.25em] text-zinc-700 shadow-sm backdrop-blur transition-all duration-300"
+            >
               <Sparkles size={13} className="text-amber-500" />
               Hara Chicken Gourmet Catering
             </div>
 
             {/* Main Headline in Timeless High-Contrast Charcoal */}
-            <h1 className="mt-6 max-w-4xl text-4xl font-black tracking-tight text-zinc-950 sm:text-6xl lg:text-7xl leading-[1.08]">
+            <h1
+              data-aos="fade-up"
+              data-aos-delay="100"
+              data-aos-duration="700"
+              className="mt-6 max-w-4xl text-4xl font-black tracking-tight text-zinc-950 sm:text-6xl lg:text-7xl leading-[1.08]"
+            >
               Pilihan Menu Katering Istimewa
               <span className="block text-zinc-400 font-serif italic font-normal text-3xl sm:text-5xl lg:text-6xl mt-1">
                 untuk setiap momen berharga.
@@ -248,26 +258,36 @@ export default function MenuPage() {
             </h1>
 
             {/* Description */}
-            <p className="mt-6 max-w-2xl text-sm leading-relaxed text-zinc-500 sm:text-base lg:text-lg">
+            <p
+              data-aos="fade-up"
+              data-aos-delay="200"
+              data-aos-duration="700"
+              className="mt-6 max-w-2xl text-sm leading-relaxed text-zinc-500 sm:text-base lg:text-lg"
+            >
               Sajian katering nasi box premium dengan cita rasa gurih meresap, higienis,
               dan dikemas eksklusif siap santap untuk melengkapi rapat kantor, syukuran, hingga gathering berskala besar.
             </p>
 
             {/* Luxury Trust Indicators Pills */}
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-3 text-xs font-semibold text-zinc-700">
-              <div className="flex items-center gap-2 rounded-2xl border border-zinc-200/90 bg-white px-4 py-2 shadow-[0_2px_8px_rgba(0,0,0,0.02)]">
+            <div
+              data-aos="fade-up"
+              data-aos-delay="300"
+              data-aos-duration="700"
+              className="mt-8 flex flex-wrap items-center justify-center gap-3 text-xs font-semibold text-zinc-700"
+            >
+              <div className="flex items-center gap-2 rounded-2xl border border-zinc-200/90 bg-white px-4 py-2 shadow-[0_2px_8px_rgba(0,0,0,0.02)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md hover:border-zinc-300 cursor-default">
                 <Star size={14} className="fill-amber-400 text-amber-400" />
                 <span>4.9 / 5 Rating Kepuasan</span>
               </div>
-              <div className="flex items-center gap-2 rounded-2xl border border-zinc-200/90 bg-white px-4 py-2 shadow-[0_2px_8px_rgba(0,0,0,0.02)]">
+              <div className="flex items-center gap-2 rounded-2xl border border-zinc-200/90 bg-white px-4 py-2 shadow-[0_2px_8px_rgba(0,0,0,0.02)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md hover:border-zinc-300 cursor-default">
                 <ShieldCheck size={15} className="text-emerald-600" />
                 <span>100% Halal & Bahan Segar</span>
               </div>
-              <div className="flex items-center gap-2 rounded-2xl border border-zinc-200/90 bg-white px-4 py-2 shadow-[0_2px_8px_rgba(0,0,0,0.02)]">
+              <div className="flex items-center gap-2 rounded-2xl border border-zinc-200/90 bg-white px-4 py-2 shadow-[0_2px_8px_rgba(0,0,0,0.02)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md hover:border-zinc-300 cursor-default">
                 <Clock size={14} className="text-zinc-500" />
                 <span>Tepat Waktu & Rapi</span>
               </div>
-              <div className="flex items-center gap-2 rounded-2xl border border-zinc-200/90 bg-white px-4 py-2 shadow-[0_2px_8px_rgba(0,0,0,0.02)]">
+              <div className="flex items-center gap-2 rounded-2xl border border-zinc-200/90 bg-white px-4 py-2 shadow-[0_2px_8px_rgba(0,0,0,0.02)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md hover:border-zinc-300 cursor-default">
                 <ShoppingBag size={14} className="text-zinc-500" />
                 <span>{products?.length ?? 0} Pilihan Menu Aktif</span>
               </div>
@@ -280,7 +300,12 @@ export default function MenuPage() {
           CATALOG CONTROLS: SEARCH, SORT & CATEGORIES
       ====================================================== */}
       <section className="sticky top-20 z-30 -mt-6 mx-auto max-w-7xl px-6 lg:px-8">
-        <div className="rounded-[2rem] border border-zinc-200/90 bg-white/95 p-3.5 shadow-[0_12px_36px_rgba(0,0,0,0.04)] backdrop-blur-md sm:p-4">
+        <div
+        //   data-aos="fade-up"
+        //   data-aos-delay="200"
+        //   data-aos-duration="600"
+          className="rounded-[2rem] border border-zinc-200/90 bg-white/95 p-3.5 shadow-[0_12px_36px_rgba(0,0,0,0.04)] backdrop-blur-md sm:p-4"
+        >
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
             {/* Search Input */}
             <div className="relative flex-1">
@@ -348,11 +373,10 @@ export default function MenuPage() {
             <button
               type="button"
               onClick={() => setActiveCategory('all')}
-              className={`shrink-0 rounded-xl px-4 py-2 text-xs font-extrabold transition-all duration-200 ${
-                activeCategory === 'all'
+              className={`shrink-0 rounded-xl px-4 py-2 text-xs font-extrabold transition-all duration-200 ${activeCategory === 'all'
                   ? 'bg-zinc-950 text-white shadow-sm'
                   : 'bg-zinc-50 text-zinc-600 hover:bg-zinc-100 hover:text-zinc-950 border border-zinc-200/70'
-              }`}
+                }`}
             >
               Semua Menu ({products?.length ?? 0})
             </button>
@@ -364,11 +388,10 @@ export default function MenuPage() {
                   key={category.id}
                   type="button"
                   onClick={() => setActiveCategory(category.slug)}
-                  className={`shrink-0 rounded-xl px-4 py-2 text-xs font-extrabold transition-all duration-200 ${
-                    isActive
+                  className={`shrink-0 rounded-xl px-4 py-2 text-xs font-extrabold transition-all duration-200 ${isActive
                       ? 'bg-zinc-950 text-white shadow-sm'
                       : 'bg-zinc-50 text-zinc-600 hover:bg-zinc-100 hover:text-zinc-950 border border-zinc-200/70'
-                  }`}
+                    }`}
                 >
                   {category.name} ({category.count})
                 </button>
@@ -383,11 +406,21 @@ export default function MenuPage() {
       ====================================================== */}
       <section className="mx-auto max-w-7xl px-6 py-12 lg:px-8 lg:py-16">
         {/* Results Count & Quick Notice */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pb-6 border-b border-zinc-200/60">
+        <div
+          data-aos="fade-in"
+          data-aos-duration="500"
+          className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pb-6 border-b border-zinc-200/60"
+        >
           <p className="text-xs font-bold uppercase tracking-wider text-zinc-500">
-            Menampilkan <span className="text-zinc-950 font-black">{filteredProducts.length}</span> menu pilihan
-            {activeCategory !== 'all' && (
-              <span> dalam kategori <span className="text-zinc-950 font-bold capitalize">"{activeCategory.replace(/-/g, ' ')}"</span></span>
+            {isLoading ? (
+              <span>Memuat menu pilihan katering...</span>
+            ) : (
+              <>
+                Menampilkan <span className="text-zinc-950 font-black">{filteredProducts.length}</span> menu pilihan
+                {activeCategory !== 'all' && (
+                  <span> dalam kategori <span className="text-zinc-950 font-bold capitalize">"{activeCategory.replace(/-/g, ' ')}"</span></span>
+                )}
+              </>
             )}
           </p>
 
@@ -397,9 +430,17 @@ export default function MenuPage() {
           </div>
         </div>
 
-        {/* Empty State */}
-        {filteredProducts.length === 0 ? (
-          <div className="my-16 rounded-[2.5rem] border border-dashed border-zinc-300 bg-white p-12 text-center shadow-sm">
+        {/* Loading Skeletons / Empty State / Cards Grid */}
+        {isLoading ? (
+          <div className="mt-8">
+            <ProductCardSkeleton count={6} />
+          </div>
+        ) : filteredProducts.length === 0 ? (
+          <div
+            data-aos="zoom-in"
+            data-aos-duration="500"
+            className="my-16 rounded-[2.5rem] border border-dashed border-zinc-300 bg-white p-12 text-center shadow-sm"
+          >
             <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-zinc-100 text-zinc-500">
               <Search size={24} />
             </div>
@@ -426,11 +467,15 @@ export default function MenuPage() {
               const unitPrice = Number(item.price)
               const minOrder = Math.max(10, item.minimum_order || 10)
               const isFirstFeatured = index === 0 && !hasFilter
+              const cardDelay = (index % 3) * 100
 
               return (
                 <article
                   key={item.id}
-                  className="group relative flex flex-col overflow-hidden rounded-[2.2rem] border border-zinc-200/80 bg-white shadow-[0_4px_24px_rgba(0,0,0,0.03)] transition-all duration-500 hover:-translate-y-1.5 hover:shadow-[0_20px_45px_rgba(0,0,0,0.08)] hover:border-zinc-300"
+                  data-aos="fade-up"
+                  data-aos-delay={cardDelay}
+                  data-aos-duration="600"
+                  className="group relative flex flex-col overflow-hidden rounded-[2rem] border border-zinc-200/80 bg-white shadow-[0_4px_24px_rgba(0,0,0,0.03)] transition-all duration-500 hover:-translate-y-2 hover:border-red-200 hover:shadow-[0_22px_45px_rgba(220,38,38,0.08),0_10px_20px_rgba(0,0,0,0.03)]"
                 >
                   {/* Image Container with Luxury Floating Badges */}
                   <div className="relative aspect-[4/3] overflow-hidden bg-zinc-100">
@@ -438,48 +483,65 @@ export default function MenuPage() {
                       src={displayImage}
                       alt={item.name}
                       loading="lazy"
-                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                      className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-108"
                     />
 
                     {/* Gradient Soft Shadow for Legibility */}
-                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/10" />
+                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-black/25" />
 
                     {/* Top Left: Minimum Order Badge */}
-                    <div className="absolute left-4 top-4 flex items-center gap-1.5 rounded-full border border-white/60 bg-white/95 px-3 py-1.5 text-[11px] font-extrabold text-zinc-800 shadow-sm backdrop-blur-md">
-                      <ShoppingBag size={13} className="text-zinc-900" />
+                    <div className="absolute left-3.5 top-3.5 flex items-center gap-1.5 rounded-full border border-white/70 bg-white/95 px-3 py-1.5 text-[11px] font-black text-zinc-900 shadow-md backdrop-blur-md transition-transform duration-300 group-hover:scale-105">
+                      <ShoppingBag size={13} className="text-red-600" />
                       <span>Min. {minOrder} Porsi</span>
                     </div>
 
                     {/* Top Right: Best Seller Spotlight on item 1 */}
                     {isFirstFeatured ? (
-                      <div className="absolute right-4 top-4 flex items-center gap-1 rounded-full bg-zinc-950/90 text-amber-300 border border-zinc-800 px-3 py-1 text-[10px] font-black uppercase tracking-wider backdrop-blur-md">
-                        <Flame size={12} className="fill-amber-400 text-amber-400" />
-                        Paling Laris
+                      <div className="absolute right-3.5 top-3.5 flex items-center gap-1 rounded-full bg-gradient-to-r from-red-600 via-red-500 to-amber-500 text-white px-3 py-1 text-[10px] font-black uppercase tracking-wider backdrop-blur-md shadow-md transition-transform duration-300 group-hover:scale-105">
+                        <Flame size={12} className="fill-white" />
+                        <span>Best Seller</span>
                       </div>
                     ) : (
-                      <div className="absolute right-4 top-4 rounded-full bg-white/90 backdrop-blur-md border border-white/60 px-2.5 py-1 text-[11px] font-bold text-zinc-800 shadow-sm">
-                        ★ 4.9
+                      <div className="absolute right-3.5 top-3.5 flex items-center gap-1 rounded-full bg-zinc-950/85 backdrop-blur-md border border-white/20 px-2.5 py-1 text-[11px] font-black text-amber-400 shadow-md transition-transform duration-300 group-hover:scale-105">
+                        <Star size={12} className="fill-amber-400" />
+                        <span>4.9</span>
                       </div>
                     )}
 
                     {/* Bottom overlay preview: kelipatan 10 */}
-                    <div className="absolute bottom-3 left-4 text-[11px] font-bold text-white/95 drop-shadow-sm flex items-center gap-1.5">
-                      <span className="flex h-1.5 w-1.5 rounded-full bg-emerald-400" />
-                      Kelipatan 10 porsi (10, 20, 30...)
+                    <div className="absolute bottom-3 left-3.5 right-3.5 flex items-center justify-between text-[11px] text-white/95 font-semibold drop-shadow">
+                      <span className="flex items-center gap-1.5 bg-black/40 backdrop-blur-md px-2.5 py-0.5 rounded-full border border-white/20">
+                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                        Kelipatan 10 Porsi
+                      </span>
+                      <span className="text-[10px] font-bold text-white/85 bg-black/40 backdrop-blur-md px-2 py-0.5 rounded-full border border-white/20">
+                        Siap Santap
+                      </span>
                     </div>
                   </div>
 
                   {/* Card Body */}
                   <div className="flex flex-1 flex-col p-6 sm:p-7">
-                    {/* Category Eyebrow */}
-                    {item.category && (
-                      <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-zinc-400">
-                        {item.category.name}
-                      </p>
-                    )}
+                    {/* Category Eyebrow & Halal Badge */}
+                    <div className="flex items-center justify-between gap-2 mb-2.5">
+                      {item.category ? (
+                        <span className="inline-flex items-center rounded-lg bg-red-50 border border-red-200/70 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-red-700">
+                          {item.category.name}
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center rounded-lg bg-zinc-100 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-zinc-600">
+                          Paket Nasi Box
+                        </span>
+                      )}
+
+                      <span className="flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200/60 px-2 py-0.5 rounded-md">
+                        <ShieldCheck size={11} className="text-emerald-600" />
+                        100% Halal
+                      </span>
+                    </div>
 
                     {/* Product Name */}
-                    <h3 className="mt-1.5 text-xl font-black text-zinc-950 tracking-tight leading-snug group-hover:text-zinc-800 transition-colors">
+                    <h3 className="text-lg sm:text-xl font-black text-zinc-950 tracking-tight leading-snug group-hover:text-red-600 transition-colors line-clamp-1">
                       <Link to={`/menu/${item.slug}`}>
                         {item.name}
                       </Link>
@@ -492,25 +554,32 @@ export default function MenuPage() {
                     </p>
 
                     {/* Price and Action Section */}
-                    <div className="mt-auto pt-6 border-t border-zinc-100 flex items-end justify-between gap-4">
-                      <div>
-                        <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
-                          Harga Katering
-                        </p>
-                        <div className="mt-0.5 flex items-baseline gap-1">
-                          <span className="text-2xl font-black text-zinc-950 tracking-tight">
-                            Rp {unitPrice.toLocaleString('id-ID')}
+                    <div className="mt-auto pt-5 border-t border-zinc-100 flex items-center justify-between gap-3">
+                      {/* Price Block with Wow Typography */}
+                      <div className="flex flex-col">
+                        <span className="text-[10px] font-extrabold uppercase tracking-widest text-zinc-400">
+                          Mulai Dari
+                        </span>
+                        <div className="flex items-baseline gap-1 mt-0.5">
+                          <span className="text-xs sm:text-sm font-extrabold text-red-600 font-poppins">
+                            Rp
                           </span>
-                          <span className="text-xs text-zinc-400 font-medium">/ porsi</span>
+                          <span className="text-2xl sm:text-[28px] font-black tracking-tight text-zinc-950 font-poppins group-hover:text-red-600 transition-colors">
+                            {unitPrice.toLocaleString('id-ID')}
+                          </span>
+                          <span className="text-[11px] font-semibold text-zinc-400">
+                            /box
+                          </span>
                         </div>
                       </div>
 
+                      {/* Interactive CTA Button */}
                       <Link
                         to={`/menu/${item.slug}`}
-                        className="inline-flex items-center gap-2 rounded-2xl bg-zinc-950 px-5 py-3.5 text-xs font-bold text-white shadow-sm transition-all duration-300 hover:bg-zinc-800 hover:scale-[1.02] active:scale-[0.98]"
+                        className="group/btn relative inline-flex shrink-0 items-center gap-1.5 rounded-2xl bg-zinc-950 px-4 sm:px-5 py-3 text-xs font-black text-white shadow-md shadow-zinc-950/15 transition-all duration-300 hover:bg-gradient-to-r hover:from-red-600 hover:to-orange-500 hover:shadow-lg hover:shadow-red-500/25 hover:scale-[1.02] active:scale-[0.98]"
                       >
-                        <span>Pilih Porsi</span>
-                        <ArrowRight size={14} />
+                        <span>Pesan</span>
+                        <ArrowRight size={14} className="transition-transform duration-300 group-hover/btn:translate-x-1" />
                       </Link>
                     </div>
                   </div>
@@ -525,9 +594,14 @@ export default function MenuPage() {
           LUXURY WHITE CONSULTATION BANNER (BOTTOM)
       ====================================================== */}
       <section className="mx-auto max-w-7xl px-6 pb-24 lg:px-8">
-        <div className="relative overflow-hidden rounded-[2.5rem] border border-zinc-200/90 bg-gradient-to-br from-white via-white to-zinc-50 p-8 sm:p-12 lg:p-16 shadow-[0_16px_40px_rgba(0,0,0,0.03)]">
+        <div
+          data-aos="fade-up"
+          data-aos-duration="700"
+          data-aos-offset="60"
+          className="relative overflow-hidden rounded-[2.5rem] border border-zinc-200/90 bg-gradient-to-br from-white via-white to-zinc-50 p-8 sm:p-12 lg:p-16 shadow-[0_16px_40px_rgba(0,0,0,0.03)]"
+        >
           <div className="grid gap-8 lg:grid-cols-[1.4fr_0.8fr] lg:items-center">
-            <div>
+            <div data-aos="fade-right" data-aos-delay="100" data-aos-duration="650">
               <div className="inline-flex items-center gap-2 rounded-full border border-zinc-200 bg-white px-3.5 py-1 text-[11px] font-bold uppercase tracking-wider text-zinc-600 shadow-sm">
                 <CheckCircle2 size={13} className="text-emerald-600" />
                 Konsultasi & Penawaran Katering Resmi
@@ -558,7 +632,12 @@ export default function MenuPage() {
               </div>
             </div>
 
-            <div className="flex flex-col gap-3 lg:items-end">
+            <div
+              data-aos="fade-left"
+              data-aos-delay="200"
+              data-aos-duration="650"
+              className="flex flex-col gap-3 lg:items-end"
+            >
               <a
                 href="https://wa.me/6289669743193?text=Halo%20Hara%20Chicken,%20saya%20ingin%20konsultasi%20pesanan%20katering%20nasi%20box%20untuk%20acara%20saya."
                 target="_blank"

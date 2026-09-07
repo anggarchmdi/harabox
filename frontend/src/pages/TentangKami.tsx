@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react'
 import {
   ArrowRight,
   Award,
@@ -13,8 +14,10 @@ import {
   Utensils,
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import AOS from 'aos'
 
 import Summary from '../components/ui/Summary'
+import PageLoader from '../components/ui/PageLoader'
 import BentoKatsuImg from '../assets/nasibox/bento-katsu-b.webp'
 import RamesBaladoImg from '../assets/nasibox/rames-balado-b.webp'
 
@@ -45,12 +48,98 @@ const values = [
   },
 ]
 
-const statistics = [
-  { value: '50.000+', label: 'Porsi Sukses Disajikan' },
-  { value: '4.9 / 5', label: 'Tingkat Kepuasan Klien' },
-  { value: '99.8%', label: 'Ketepatan Waktu Antar' },
-  { value: '2.000+', label: 'Kapasitas Harian (Porsi)' },
+interface StatItem {
+  target: number
+  decimals?: number
+  prefix?: string
+  suffix?: string
+  label: string
+}
+
+const statistics: StatItem[] = [
+  { target: 50000, suffix: '+', label: 'Porsi Sukses Disajikan' },
+  { target: 4.9, decimals: 1, suffix: ' / 5', label: 'Tingkat Kepuasan Klien' },
+  { target: 99.8, decimals: 1, suffix: '%', label: 'Ketepatan Waktu Antar' },
+  { target: 2000, suffix: '+', label: 'Kapasitas Harian (Porsi)' },
 ]
+
+function StatCounter({
+  target,
+  decimals = 0,
+  prefix = '',
+  suffix = '',
+  duration = 2000,
+}: {
+  target: number
+  decimals?: number
+  prefix?: string
+  suffix?: string
+  duration?: number
+}) {
+  const [displayValue, setDisplayValue] = useState<string>(() => {
+    return decimals > 0 ? (0).toFixed(decimals) : '0'
+  })
+  const containerRef = useRef<HTMLSpanElement>(null)
+  const animatedRef = useRef(false)
+
+  useEffect(() => {
+    const el = containerRef.current
+    if (!el) return
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const [entry] = entries
+        if (entry.isIntersecting && !animatedRef.current) {
+          animatedRef.current = true
+          observer.disconnect()
+
+          let startTimestamp: number | null = null
+          const step = (timestamp: number) => {
+            if (!startTimestamp) startTimestamp = timestamp
+            const progress = Math.min((timestamp - startTimestamp) / duration, 1)
+
+            // Ease-out Quart curve for a snappy start and smooth landing
+            const easeProgress = 1 - Math.pow(1 - progress, 4)
+            const currentVal = easeProgress * target
+
+            if (decimals > 0) {
+              setDisplayValue(currentVal.toFixed(decimals))
+            } else {
+              setDisplayValue(Math.floor(currentVal).toLocaleString('id-ID'))
+            }
+
+            if (progress < 1) {
+              requestAnimationFrame(step)
+            } else {
+              if (decimals > 0) {
+                setDisplayValue(target.toFixed(decimals))
+              } else {
+                setDisplayValue(target.toLocaleString('id-ID'))
+              }
+            }
+          }
+
+          requestAnimationFrame(step)
+        }
+      },
+      { threshold: 0.15 }
+    )
+
+    observer.observe(el)
+
+    return () => {
+      observer.disconnect()
+    }
+  }, [target, decimals, duration])
+
+  return (
+    <span ref={containerRef} className="tabular-nums">
+      {prefix}
+      {displayValue}
+      {suffix}
+    </span>
+  )
+}
 
 const highlights = [
   'Solusi katering praktis untuk seminar, meeting kantor, gathering, syukuran, dan pengajian.',
@@ -60,8 +149,33 @@ const highlights = [
 ]
 
 export default function TentangKami() {
+  const [pageLoading, setPageLoading] = useState(true)
+
+  useEffect(() => {
+    AOS.init({
+      duration: 650,
+      easing: 'ease-out-cubic',
+      once: false,
+      offset: 40,
+    })
+    AOS.refresh()
+
+    const timer = setTimeout(() => {
+      setPageLoading(false)
+    }, 650)
+    return () => clearTimeout(timer)
+  }, [])
+
   return (
     <main className="min-h-screen bg-[#fafaf9] text-zinc-900 selection:bg-zinc-950 selection:text-white">
+      {/* Branded Initial Page Loader with clean LogoSpinner */}
+      <PageLoader
+        isLoading={pageLoading}
+        text="Memuat Cerita Dapur Hara Chicken..."
+        subtext="Mengenal komitmen rasa, sertifikasi halal, dan standar higienis kami"
+        minDuration={650}
+      />
+
       {/* Header */}
       <Summary
         eyebrow="TENTANG HARA CHICKEN"
@@ -75,7 +189,7 @@ export default function TentangKami() {
       <section className="mx-auto max-w-7xl px-6 py-20 lg:px-8 lg:py-28">
         <div className="grid gap-14 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
           {/* Text Story */}
-          <div className="space-y-6">
+          <div data-aos="fade-right" className="space-y-6">
             <div className="inline-flex items-center gap-2 rounded-full border border-zinc-200 bg-white px-4 py-1.5 text-[11px] font-extrabold uppercase tracking-[0.2em] text-zinc-700 shadow-sm">
               <Sparkles size={13} className="text-amber-500" />
               Dedikasi Kami
@@ -109,7 +223,7 @@ export default function TentangKami() {
           </div>
 
           {/* Visual Showcase Stack */}
-          <div className="relative">
+          <div data-aos="fade-left" className="relative">
             <div className="relative overflow-hidden rounded-[2.5rem] border border-zinc-200/80 bg-white p-3 shadow-xl">
               <div className="aspect-[4/3] overflow-hidden rounded-[2rem]">
                 <img
@@ -121,7 +235,11 @@ export default function TentangKami() {
             </div>
 
             {/* Overlapping secondary image card */}
-            <div className="absolute -bottom-8 -right-4 w-48 sm:w-56 overflow-hidden rounded-2xl border-4 border-white bg-white shadow-2xl transition-transform hover:scale-105 hidden sm:block">
+            <div
+              data-aos="zoom-in"
+              data-aos-delay="200"
+              className="absolute -bottom-8 -right-4 w-48 sm:w-56 overflow-hidden rounded-2xl border-4 border-white bg-white shadow-2xl transition-transform hover:scale-105 hidden sm:block"
+            >
               <img
                 src={RamesBaladoImg}
                 alt="Nasi Rames Balado"
@@ -134,7 +252,11 @@ export default function TentangKami() {
             </div>
 
             {/* Overlapping floating badge */}
-            <div className="absolute -top-6 -left-4 max-w-[240px] rounded-2xl border border-zinc-200/90 bg-white/95 p-4 shadow-xl backdrop-blur-md hidden sm:block">
+            <div
+              data-aos="zoom-in"
+              data-aos-delay="300"
+              className="absolute -top-6 -left-4 max-w-[240px] rounded-2xl border border-zinc-200/90 bg-white/95 p-4 shadow-xl backdrop-blur-md hidden sm:block"
+            >
               <div className="flex items-center gap-3">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-zinc-950 text-white">
                   <Award size={20} />
@@ -155,13 +277,20 @@ export default function TentangKami() {
       <section className="border-y border-zinc-200/80 bg-white py-16">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-            {statistics.map((stat) => (
+            {statistics.map((stat, idx) => (
               <div
                 key={stat.label}
+                data-aos="fade-up"
+                data-aos-delay={idx * 100}
                 className="rounded-3xl border border-zinc-100 bg-[#fafaf9] p-7 text-center transition-all duration-300 hover:border-zinc-300 hover:bg-white hover:shadow-md"
               >
                 <p className="text-4xl font-black tracking-tight text-zinc-950">
-                  {stat.value}
+                  <StatCounter
+                    target={stat.target}
+                    decimals={stat.decimals}
+                    prefix={stat.prefix}
+                    suffix={stat.suffix}
+                  />
                 </p>
                 <p className="mt-2 text-xs font-bold uppercase tracking-wider text-zinc-500">
                   {stat.label}
@@ -176,7 +305,7 @@ export default function TentangKami() {
           SECTION 3: VALUES & PILLARS
       ====================================================== */}
       <section className="mx-auto max-w-7xl px-6 py-20 lg:px-8 lg:py-28">
-        <div className="text-center max-w-2xl mx-auto">
+        <div data-aos="fade-up" className="text-center max-w-2xl mx-auto">
           <p className="text-xs font-bold uppercase tracking-[0.25em] text-zinc-400">
             Prinsip & Nilai Kami
           </p>
@@ -189,11 +318,13 @@ export default function TentangKami() {
         </div>
 
         <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {values.map((v) => {
+          {values.map((v, idx) => {
             const Icon = v.icon
             return (
               <div
                 key={v.title}
+                data-aos="fade-up"
+                data-aos-delay={idx * 100}
                 className="group flex flex-col justify-between rounded-[2rem] border border-zinc-200/80 bg-white p-7 transition-all duration-300 hover:-translate-y-1.5 hover:border-zinc-400 hover:shadow-xl hover:shadow-zinc-950/5"
               >
                 <div>
@@ -226,7 +357,7 @@ export default function TentangKami() {
       <section className="border-t border-zinc-200/80 bg-white py-20 lg:py-28">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="grid gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
-            <div>
+            <div data-aos="fade-right">
               <div className="inline-flex items-center gap-2 rounded-full border border-zinc-200 bg-zinc-50 px-3.5 py-1 text-[11px] font-extrabold uppercase tracking-wider text-zinc-700">
                 <Users size={13} className="text-zinc-900" />
                 Partner Katering Terpercaya
@@ -260,7 +391,11 @@ export default function TentangKami() {
             </div>
 
             {/* Checkmark List in Crisp White Card */}
-            <div className="rounded-[2.5rem] border border-zinc-200/80 bg-[#fafaf9] p-8 sm:p-10 shadow-sm space-y-5">
+            <div
+              data-aos="fade-left"
+              data-aos-delay="150"
+              className="rounded-[2.5rem] border border-zinc-200/80 bg-[#fafaf9] p-8 sm:p-10 shadow-sm space-y-5"
+            >
               {highlights.map((item, idx) => (
                 <div key={idx} className="flex items-start gap-4">
                   <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-zinc-950 text-white mt-0.5">
@@ -280,7 +415,11 @@ export default function TentangKami() {
           SECTION 5: BOTTOM CONSULTATION CTA
       ====================================================== */}
       <section className="mx-auto max-w-7xl px-6 py-20 lg:px-8">
-        <div className="relative overflow-hidden rounded-[2.5rem] border border-zinc-200/90 bg-gradient-to-br from-white via-white to-zinc-50 p-8 sm:p-12 lg:p-16 shadow-[0_16px_40px_rgba(0,0,0,0.03)]">
+        <div
+          data-aos="zoom-in"
+          data-aos-duration="650"
+          className="relative overflow-hidden rounded-[2.5rem] border border-zinc-200/90 bg-gradient-to-br from-white via-white to-zinc-50 p-8 sm:p-12 lg:p-16 shadow-[0_16px_40px_rgba(0,0,0,0.03)]"
+        >
           <div className="grid gap-8 lg:grid-cols-[1.4fr_0.8fr] lg:items-center">
             <div>
               <div className="inline-flex items-center gap-2 rounded-full border border-zinc-200 bg-white px-3.5 py-1 text-[11px] font-bold uppercase tracking-wider text-zinc-600 shadow-sm">

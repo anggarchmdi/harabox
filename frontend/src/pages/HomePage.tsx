@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
+import AOS from 'aos'
 import {
   ArrowRight,
   Award,
@@ -22,6 +23,8 @@ import {
 import { productService } from '../services/products.service'
 import { getImageUrl } from '../utils/image'
 import type { Product } from '../types/products'
+import PageLoader from '../components/ui/PageLoader'
+import ProductCardSkeleton from '../components/ui/ProductCardSkeleton'
 
 import HeroImg from '../assets/banners.webp'
 import BentoKatsuImg from '../assets/nasibox/bento-katsu-b.webp'
@@ -247,6 +250,15 @@ export default function HomePage() {
   // State untuk accordion FAQ
   const [openFaq, setOpenFaq] = useState<number | null>(0)
 
+  useEffect(() => {
+    AOS.init({
+      duration: 650,
+      easing: 'ease-out-cubic',
+      once: false,
+      offset: 40,
+    })
+  }, [])
+
   // Ambil data produk real dari API
   const { data: apiProducts, isLoading: loadingProducts } = useQuery({
     queryKey: ['products'],
@@ -276,10 +288,26 @@ export default function HomePage() {
     return curatedFeaturedProducts.filter((p) => p.category === selectedCategory)
   })()
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      AOS.refresh()
+    }, 100)
+    return () => clearTimeout(timer)
+  }, [selectedCategory, displayProducts])
+
   const handleRecommendationSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     navigate('/menu')
   }
+
+  const [pageLoading, setPageLoading] = useState(true)
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setPageLoading(false)
+    }, 700)
+    return () => clearTimeout(timer)
+  }, [])
 
   const whatsappUrl =
     'https://wa.me/6289669743193?text=' +
@@ -287,6 +315,14 @@ export default function HomePage() {
 
   return (
     <div className="overflow-hidden bg-[#fafaf9] text-zinc-900 selection:bg-red-600 selection:text-white">
+      {/* Branded Initial Page Loader */}
+      <PageLoader
+        isLoading={pageLoading}
+        text="Menyiapkan Pengalaman Katering..."
+        subtext="Menghadirkan hidangan lezat dan higienis siap santap"
+        minDuration={700}
+      />
+
       {/* =====================================================
           1. HERO BANNER & FLOATING RECOMMENDATION CARD (SUMMARY HOME)
       ====================================================== */}
@@ -300,7 +336,11 @@ export default function HomePage() {
 
         {/* Floating Recommendation Card */}
         <div className="absolute z-20 w-full px-4 -translate-y-28 md:-translate-y-32 xl:-translate-y-36">
-          <div className="mx-auto w-full max-w-5xl rounded-2xl bg-white px-6 py-7 shadow-[0_10px_40px_rgba(0,0,0,0.12)] md:px-10 border border-zinc-100">
+          <div
+            data-aos="fade-up"
+            data-aos-duration="700"
+            className="mx-auto w-full max-w-5xl rounded-2xl bg-white px-6 py-7 shadow-[0_10px_40px_rgba(0,0,0,0.12)] md:px-10 border border-zinc-100"
+          >
             {/* Heading */}
             <div className="mb-7 text-center">
               <h1 className="text-xl font-poppins tracking-tight text-gray-900 md:text-2xl">
@@ -416,6 +456,8 @@ export default function HomePage() {
             return (
               <div
                 key={idx}
+                data-aos="fade-up"
+                data-aos-delay={idx * 100}
                 className="group relative rounded-3xl border border-zinc-200/70 bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-red-200 hover:shadow-xl hover:shadow-red-950/5"
               >
                 <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-red-50 text-red-600 transition-colors duration-300 group-hover:bg-red-600 group-hover:text-white">
@@ -437,7 +479,10 @@ export default function HomePage() {
       <section id="menu" className="py-16 sm:py-24 bg-white border-y border-zinc-200/80">
         <div className="mx-auto max-w-7xl px-5 sm:px-8">
           {/* Section Header */}
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div
+            data-aos="fade-up"
+            className="flex flex-col md:flex-row md:items-end justify-between gap-6"
+          >
             <div>
               <span className="rounded-full bg-red-50 border border-red-200 px-3.5 py-1 text-xs font-black uppercase tracking-wider text-red-700">
                 Pilihan Favorit
@@ -460,7 +505,11 @@ export default function HomePage() {
           </div>
 
           {/* Filter Tabs */}
-          <div className="mt-8 flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+          <div
+            data-aos="fade-up"
+            data-aos-delay="100"
+            className="mt-8 flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none"
+          >
             {[
               { id: 'all', label: 'Semua Menu' },
               { id: 'bento', label: 'Bento Katsu' },
@@ -483,8 +532,13 @@ export default function HomePage() {
           </div>
 
           {/* Product Grid */}
-          <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {displayProducts.map((item, idx) => {
+          {loadingProducts ? (
+            <div className="mt-10">
+              <ProductCardSkeleton count={6} />
+            </div>
+          ) : (
+            <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {displayProducts.map((item, idx) => {
               const isApiItem = 'category_id' in item
               const name = item.name
               const description = item.description || 'Pilihan katering praktis higienis dengan lauk lengkap dan porsi mengenyangkan.'
@@ -504,6 +558,8 @@ export default function HomePage() {
               return (
                 <article
                   key={idx}
+                  data-aos="fade-up"
+                  data-aos-delay={(idx % 3) * 100}
                   className="group flex flex-col overflow-hidden rounded-3xl border border-zinc-200/80 bg-white transition duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-zinc-950/10"
                 >
                   {/* Image Container */}
@@ -563,9 +619,13 @@ export default function HomePage() {
               )
             })}
           </div>
+          )}
 
           {/* Bottom Callout */}
-          <div className="mt-12 rounded-3xl border border-zinc-200 bg-[#fafaf9] p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 text-center sm:text-left">
+          <div
+            data-aos="fade-up"
+            className="mt-12 rounded-3xl border border-zinc-200 bg-[#fafaf9] p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 text-center sm:text-left"
+          >
             <div>
               <h4 className="text-lg font-black text-zinc-950">
                 Punya Kebutuhan Menu atau Anggaran Khusus?
@@ -593,7 +653,10 @@ export default function HomePage() {
       <section className="py-20 sm:py-28 max-w-7xl mx-auto px-5 sm:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
           {/* Main Story (Col 5) */}
-          <div className="lg:col-span-5 flex flex-col justify-between rounded-3xl bg-zinc-950 text-white p-8 sm:p-10 relative overflow-hidden">
+          <div
+            data-aos="fade-right"
+            className="lg:col-span-5 flex flex-col justify-between rounded-3xl bg-zinc-950 text-white p-8 sm:p-10 relative overflow-hidden"
+          >
             <div className="relative z-10">
               <span className="rounded-full bg-red-600/30 border border-red-500/50 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-red-300">
                 Kualitas Terpercaya
@@ -638,7 +701,11 @@ export default function HomePage() {
           {/* 3 Bento Feature Tiles (Col 7) */}
           <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-6">
             {/* Tile 1 */}
-            <div className="rounded-3xl border border-zinc-200/80 bg-white p-7 shadow-sm flex flex-col justify-between hover:border-red-200 transition">
+            <div
+              data-aos="fade-left"
+              data-aos-delay="100"
+              className="rounded-3xl border border-zinc-200/80 bg-white p-7 shadow-sm flex flex-col justify-between hover:border-red-200 transition"
+            >
               <div>
                 <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-50 text-amber-600 mb-5">
                   <UtensilsCrossed size={22} />
@@ -655,7 +722,11 @@ export default function HomePage() {
             </div>
 
             {/* Tile 2 */}
-            <div className="rounded-3xl border border-zinc-200/80 bg-white p-7 shadow-sm flex flex-col justify-between hover:border-red-200 transition">
+            <div
+              data-aos="fade-left"
+              data-aos-delay="200"
+              className="rounded-3xl border border-zinc-200/80 bg-white p-7 shadow-sm flex flex-col justify-between hover:border-red-200 transition"
+            >
               <div>
                 <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-red-50 text-red-600 mb-5">
                   <Truck size={22} />
@@ -672,7 +743,11 @@ export default function HomePage() {
             </div>
 
             {/* Tile 3 (Full Width) */}
-            <div className="sm:col-span-2 rounded-3xl border border-zinc-200/80 bg-gradient-to-br from-white to-zinc-50 p-7 shadow-sm hover:border-amber-200 transition">
+            <div
+              data-aos="fade-up"
+              data-aos-delay="300"
+              className="sm:col-span-2 rounded-3xl border border-zinc-200/80 bg-gradient-to-br from-white to-zinc-50 p-7 shadow-sm hover:border-amber-200 transition"
+            >
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="flex items-center gap-4">
                   <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600">
@@ -696,7 +771,7 @@ export default function HomePage() {
       ====================================================== */}
       <section className="py-20 sm:py-28 bg-white border-t border-zinc-200/80">
         <div className="mx-auto max-w-7xl px-5 sm:px-8">
-          <div className="max-w-2xl">
+          <div data-aos="fade-up" className="max-w-2xl">
             <span className="rounded-full bg-amber-50 border border-amber-200 px-3.5 py-1 text-xs font-black uppercase tracking-wider text-amber-800">
               Fleksibel & Serbaguna
             </span>
@@ -714,6 +789,8 @@ export default function HomePage() {
               return (
                 <div
                   key={idx}
+                  data-aos="fade-up"
+                  data-aos-delay={idx * 100}
                   className="group rounded-3xl border border-zinc-200/80 bg-white p-7 transition duration-300 hover:-translate-y-1.5 hover:border-red-200 hover:shadow-xl hover:shadow-red-950/5"
                 >
                   <div className="flex items-center justify-between">
@@ -741,7 +818,10 @@ export default function HomePage() {
       ====================================================== */}
       <section className="py-20 sm:py-28 bg-zinc-950 text-white">
         <div className="mx-auto max-w-7xl px-5 sm:px-8">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-12 border-b border-white/10">
+          <div
+            data-aos="fade-up"
+            className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-12 border-b border-white/10"
+          >
             <div>
               <span className="text-xs font-black uppercase tracking-[0.25em] text-amber-400">
                 Cara Pemesanan
@@ -782,7 +862,12 @@ export default function HomePage() {
                 desc: 'Dapur menyiapkan hidangan segar dan kurir mengantar tepat waktu sebelum acara dimulai.',
               },
             ].map((item, idx) => (
-              <div key={idx} className="relative group">
+              <div
+                key={idx}
+                data-aos="fade-up"
+                data-aos-delay={idx * 150}
+                className="relative group"
+              >
                 <span className="text-4xl sm:text-5xl font-black text-amber-400/30 group-hover:text-amber-400 transition-colors duration-300">
                   {item.step}
                 </span>
@@ -801,7 +886,7 @@ export default function HomePage() {
       ====================================================== */}
       <section className="py-20 sm:py-28 bg-[#fafaf9]">
         <div className="mx-auto max-w-7xl px-5 sm:px-8">
-          <div className="text-center max-w-2xl mx-auto">
+          <div data-aos="fade-up" className="text-center max-w-2xl mx-auto">
             <span className="rounded-full bg-amber-50 border border-amber-200 px-3.5 py-1 text-xs font-black uppercase tracking-wider text-amber-800">
               Ulasan Nyata
             </span>
@@ -842,6 +927,8 @@ export default function HomePage() {
             ].map((t, idx) => (
               <div
                 key={idx}
+                data-aos="fade-up"
+                data-aos-delay={idx * 150}
                 className="rounded-3xl border border-zinc-200/80 bg-white p-7 shadow-sm flex flex-col justify-between hover:shadow-xl hover:border-red-200 transition duration-300"
               >
                 <div>
@@ -875,7 +962,7 @@ export default function HomePage() {
       ====================================================== */}
       <section className="py-20 sm:py-24 bg-white border-t border-zinc-200/80">
         <div className="mx-auto max-w-4xl px-5 sm:px-8">
-          <div className="text-center mb-12">
+          <div data-aos="fade-up" className="text-center mb-12">
             <span className="rounded-full bg-red-50 border border-red-200 px-3.5 py-1 text-xs font-black uppercase tracking-wider text-red-700">
               Bantuan & FAQ
             </span>
@@ -893,6 +980,8 @@ export default function HomePage() {
               return (
                 <div
                   key={idx}
+                  data-aos="fade-up"
+                  data-aos-delay={idx * 80}
                   className="rounded-2xl border border-zinc-200 bg-[#fafaf9] overflow-hidden transition"
                 >
                   <button
@@ -925,7 +1014,11 @@ export default function HomePage() {
       ====================================================== */}
       <section className="py-16 sm:py-20 bg-[#fafaf9]">
         <div className="mx-auto max-w-7xl px-5 sm:px-8">
-          <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-r from-red-600 via-red-500 to-amber-500 p-8 sm:p-14 lg:p-16 text-white shadow-2xl shadow-red-600/20">
+          <div
+            data-aos="zoom-in"
+            data-aos-duration="650"
+            className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-r from-red-600 via-red-500 to-amber-500 p-8 sm:p-14 lg:p-16 text-white shadow-2xl shadow-red-600/20"
+          >
             {/* Background Accent Rings */}
             <div className="absolute -right-16 -top-16 h-72 w-72 rounded-full bg-white/10 blur-2xl" />
             <div className="absolute -left-16 -bottom-16 h-72 w-72 rounded-full bg-amber-300/20 blur-2xl" />

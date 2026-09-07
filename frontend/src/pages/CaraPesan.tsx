@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import {
   ArrowRight,
   CalendarDays,
@@ -10,8 +11,10 @@ import {
   Sparkles,
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import AOS from 'aos'
 
 import Summary from '../components/ui/Summary'
+import PageLoader from '../components/ui/PageLoader'
 
 const steps = [
   {
@@ -72,8 +75,33 @@ const proTips = [
 ]
 
 export default function CaraPesan() {
+  const [pageLoading, setPageLoading] = useState(true)
+
+  useEffect(() => {
+    AOS.init({
+      duration: 650,
+      easing: 'ease-out-cubic',
+      once: false,
+      offset: 40,
+    })
+    AOS.refresh()
+
+    const timer = setTimeout(() => {
+      setPageLoading(false)
+    }, 650)
+    return () => clearTimeout(timer)
+  }, [])
+
   return (
     <main className="min-h-screen bg-[#fafaf9] text-zinc-900 selection:bg-zinc-950 selection:text-white">
+      {/* Branded Initial Page Loader with clean LogoSpinner */}
+      <PageLoader
+        isLoading={pageLoading}
+        text="Menyiapkan Panduan Pemesanan..."
+        subtext="Langkah mudah memesan katering lezat siap santap untuk acara Anda"
+        minDuration={650}
+      />
+
       {/* Header */}
       <Summary
         eyebrow="PANDUAN PEMESANAN KATERING"
@@ -85,7 +113,7 @@ export default function CaraPesan() {
           STEP BY STEP TIMELINE SECTION
       ====================================================== */}
       <section className="mx-auto max-w-5xl px-6 py-20 lg:px-8 lg:py-28">
-        <div className="mb-14 text-center max-w-2xl mx-auto">
+        <div data-aos="fade-up" className="mb-14 text-center max-w-2xl mx-auto">
           <div className="inline-flex items-center gap-2 rounded-full border border-zinc-200 bg-white px-4 py-1.5 text-[11px] font-extrabold uppercase tracking-[0.2em] text-zinc-700 shadow-sm">
             <Sparkles size={13} className="text-amber-500" />
             Alur Pemesanan 5 Langkah
@@ -106,12 +134,14 @@ export default function CaraPesan() {
           <div className="absolute left-8 top-12 bottom-12 hidden w-px bg-zinc-200 sm:block" />
 
           <div className="space-y-6">
-            {steps.map((step) => {
+            {steps.map((step, idx) => {
               const Icon = step.icon
 
               return (
                 <article
                   key={step.number}
+                  data-aos="fade-up"
+                  data-aos-delay={idx * 100}
                   className="group relative grid gap-6 rounded-[2.2rem] border border-zinc-200/80 bg-white p-6 sm:p-8 transition-all duration-300 hover:-translate-y-1 hover:border-zinc-400 hover:shadow-xl hover:shadow-zinc-950/5 sm:grid-cols-[72px_1fr]"
                 >
                   {/* Step Number Badge */}
@@ -152,7 +182,7 @@ export default function CaraPesan() {
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="grid gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
             {/* Left Info */}
-            <div className="space-y-5">
+            <div data-aos="fade-right" className="space-y-5">
               <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3.5 py-1 text-[11px] font-extrabold uppercase tracking-wider text-emerald-800">
                 <Receipt size={13} />
                 Sistem Invoice Digital WhatsApp
@@ -185,7 +215,11 @@ export default function CaraPesan() {
             </div>
 
             {/* Right Mockup Card of WhatsApp Invoice */}
-            <div className="relative rounded-[2.5rem] border border-zinc-200 bg-[#fafaf9] p-6 sm:p-8 shadow-lg">
+            <div
+              data-aos="fade-left"
+              data-aos-delay="150"
+              className="relative rounded-[2.5rem] border border-zinc-200 bg-[#fafaf9] p-6 sm:p-8 shadow-lg"
+            >
               <div className="flex items-center gap-3 border-b border-zinc-200 pb-4 mb-4">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-600 text-white">
                   <MessageCircle size={20} />
@@ -218,7 +252,7 @@ export default function CaraPesan() {
           PRO TIPS SECTION
       ====================================================== */}
       <section className="mx-auto max-w-7xl px-6 py-20 lg:px-8">
-        <div className="rounded-[2.5rem] border border-zinc-200/80 bg-white p-8 sm:p-12 shadow-sm">
+        <div data-aos="fade-up" className="rounded-[2.5rem] border border-zinc-200/80 bg-white p-8 sm:p-12 shadow-sm">
           <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-zinc-400">
             <HelpCircle size={15} className="text-zinc-900" />
             Tips Penting dari Kami
@@ -229,9 +263,11 @@ export default function CaraPesan() {
           </h2>
 
           <div className="mt-8 grid gap-6 sm:grid-cols-3">
-            {proTips.map((tip) => (
+            {proTips.map((tip, idx) => (
               <div
                 key={tip.title}
+                data-aos="fade-up"
+                data-aos-delay={idx * 100}
                 className="rounded-2xl border border-zinc-100 bg-[#fafaf9] p-6 space-y-2"
               >
                 <h4 className="font-black text-sm text-zinc-950">{tip.title}</h4>
@@ -246,7 +282,11 @@ export default function CaraPesan() {
           BOTTOM CONSULTATION CTA
       ====================================================== */}
       <section className="mx-auto max-w-7xl px-6 pb-24 lg:px-8">
-        <div className="relative overflow-hidden rounded-[2.5rem] border border-zinc-200/90 bg-gradient-to-br from-white via-white to-zinc-50 p-8 sm:p-12 lg:p-16 shadow-[0_16px_40px_rgba(0,0,0,0.03)]">
+        <div
+          data-aos="zoom-in"
+          data-aos-duration="650"
+          className="relative overflow-hidden rounded-[2.5rem] border border-zinc-200/90 bg-gradient-to-br from-white via-white to-zinc-50 p-8 sm:p-12 lg:p-16 shadow-[0_16px_40px_rgba(0,0,0,0.03)]"
+        >
           <div className="grid gap-8 lg:grid-cols-[1.4fr_0.8fr] lg:items-center">
             <div>
               <div className="inline-flex items-center gap-2 rounded-full border border-zinc-200 bg-white px-3.5 py-1 text-[11px] font-bold uppercase tracking-wider text-zinc-600 shadow-sm">
