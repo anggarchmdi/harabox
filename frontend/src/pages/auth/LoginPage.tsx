@@ -20,6 +20,7 @@ import { authService } from '../../services/auth.service'
 import { useAuthStore } from '../../stores/auth.store'
 import type { ApiErrorResponse } from '../../types/api'
 import LogoImg from '../../assets/Logo.webp'
+import LogoSpinner from '../../components/ui/LogoSpinner'
 
 const REMEMBERED_EMAIL_KEY = 'harabox_remember_email'
 
@@ -33,6 +34,8 @@ export default function LoginPage() {
   const [rememberMe, setRememberMe] = useState(false)
   const [isSavedEmail, setIsSavedEmail] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [loadingText, setLoadingText] = useState('Memproses Masuk...')
+  const [loadingSubtext, setLoadingSubtext] = useState('Sedang memverifikasi kredensial admin...')
   const [showForgotModal, setShowForgotModal] = useState(false)
 
   // Inisialisasi fitur 'Ingat Saya' saat halaman dimuat
@@ -45,16 +48,13 @@ export default function LoginPage() {
         setIsSavedEmail(true)
       }
     } catch {
-      // Abaikan jika storage tidak dapat diakses
     }
   }, [])
 
-  // Bersihkan email tersimpan jika admin ingin mereset
   const handleClearSavedEmail = () => {
     try {
       localStorage.removeItem(REMEMBERED_EMAIL_KEY)
     } catch {
-      // no-op
     }
     setEmail('')
     setRememberMe(false)
@@ -74,11 +74,31 @@ export default function LoginPage() {
 
     try {
       setLoading(true)
+      setLoadingText('Memproses Masuk...')
+      setLoadingSubtext('Sedang memverifikasi kredensial admin...')
 
-      const response = await authService.login({
-        email: cleanEmail,
-        password,
-      })
+      const textTimer = setTimeout(() => {
+        setLoadingText('Menyiapkan Akses...')
+        setLoadingSubtext('Menghubungkan ke sistem manajemen HaraBox...')
+      }, 1200)
+
+      // Jeda minimum 2.4 detik agar animasi loading tampil anggun dan mantap (2-3 detik)
+      const minDelay = new Promise((resolve) => setTimeout(resolve, 2400))
+
+      let response: Awaited<ReturnType<typeof authService.login>>
+      try {
+        response = await authService.login({
+          email: cleanEmail,
+          password,
+        })
+      } catch (err) {
+        await minDelay
+        clearTimeout(textTimer)
+        throw err
+      }
+
+      await minDelay
+      clearTimeout(textTimer)
 
       // Proses logika 'Ingat Saya'
       try {
@@ -114,6 +134,18 @@ export default function LoginPage() {
 
   return (
     <div className="w-full z-10">
+      {/* Loading Overlay dengan LogoSpinner Variant Terang Small */}
+      {loading && (
+        <LogoSpinner
+          fullScreen
+          theme="light"
+          size="sm"
+          logoVariant="mascot"
+          text={loadingText}
+          subtext={loadingSubtext}
+        />
+      )}
+
       {/* Login Card */}
       <div className="relative overflow-hidden rounded-2xl border border-stone-200/90 bg-white shadow-[0_4px_24px_-4px_rgba(0,0,0,0.06),0_1px_2px_rgba(0,0,0,0.04)] sm:rounded-3xl">
         {/* Subtle Top Accent (Merah & Amber HaraBox) */}
