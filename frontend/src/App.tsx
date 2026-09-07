@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { useAuthStore } from './stores/auth.store'
 import AppRoutes from './routes'
+import ScrollToTop from './components/ui/ScrollToTop'
 
 export default function App() {
   const hydrate = useAuthStore((state) => state.hydrate)
@@ -20,5 +21,10 @@ export default function App() {
     }
   }, [hydrate, logout])
 
-  return <AppRoutes />
+  return (
+    <>
+      <ScrollToTop />
+      <AppRoutes />
+    </>
+  )
 }
