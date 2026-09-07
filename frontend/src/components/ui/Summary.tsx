@@ -20,23 +20,38 @@ export default function Summary({
       <div className="relative mx-auto max-w-7xl px-6 lg:px-8">
         <div className="flex flex-col items-center text-center">
           {/* Elegant luxury pill badge */}
-          <div className="inline-flex items-center gap-2 rounded-full border shadow-sm shadow-yellow-500 border-zinc-200/90 bg-white/90 px-4 py-1.5 text-[11px] font-extrabold uppercase tracking-[0.25em] text-zinc-700 backdrop-blur">
+          <div
+            data-aos="fade-down"
+            className="inline-flex items-center gap-2 rounded-full border shadow-sm shadow-yellow-500 border-zinc-200/90 bg-white/90 px-4 py-1.5 text-[11px] font-extrabold uppercase tracking-[0.25em] text-zinc-700 backdrop-blur"
+          >
             <Sparkles size={13} className="text-amber-500" />
             {eyebrow}
           </div>
 
           {/* Main Headline in Timeless High-Contrast Charcoal */}
-          <h1 className="mt-6 max-w-4xl text-4xl font-black tracking-tight text-zinc-950 sm:text-6xl lg:text-7xl leading-[1.08]">
+          <h1
+            data-aos="fade-up"
+            data-aos-delay="100"
+            className="mt-6 max-w-4xl text-4xl font-black tracking-tight text-zinc-950 sm:text-6xl lg:text-7xl leading-[1.08]"
+          >
             {title}
           </h1>
 
           {/* Description */}
-          <p className="mt-6 max-w-2xl text-sm leading-relaxed text-zinc-500 sm:text-base lg:text-lg">
+          <p
+            data-aos="fade-up"
+            data-aos-delay="200"
+            className="mt-6 max-w-2xl text-sm leading-relaxed text-zinc-500 sm:text-base lg:text-lg"
+          >
             {description}
           </p>
 
           {/* Minimalist scroll hint */}
-          <div className="mt-10 inline-flex items-center gap-2 text-xs font-bold text-zinc-400">
+          <div
+            data-aos="fade-up"
+            data-aos-delay="300"
+            className="mt-10 inline-flex items-center gap-2 text-xs font-bold text-zinc-400"
+          >
             <div className="flex h-7 w-7 items-center justify-center rounded-full border border-zinc-200 bg-white text-zinc-500 shadow-sm">
               <ArrowDown size={13} />
             </div>
