@@ -16,3 +16,55 @@
   --font-brand: "Lobster Two", cursive;
   --font-poppins: "Poppins", sans-serif;
 }
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+/* ==========================================================================
+   ANIMASI KHUSUS LOGO SPINNER & LOADER
+   ========================================================================== */
+@keyframes spin-reverse {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes pulse-subtle {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+@keyframes shimmer-slide {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.animate-spin-reverse {
+  animation: spin-reverse 2.5s linear infinite;
+}
+
+.animate-pulse-subtle {
+  animation: pulse-subtle 2s ease-in-out infinite;
+}
+
+.animate-shimmer {
+  animation: shimmer-slide 1.6s ease-in-out infinite;
+}
+
+
