@@ -78,8 +78,8 @@ export default function Navbar() {
           transition-all duration-300
           ${
             solidNavbar
-              ? 'bg-white shadow-md font-poppins duration-300'
-              : 'bg-transparent'
+            ? 'bg-white shadow-md fontpoppins duration-300'
+            : 'bg-transparent'
           }
         `}
       >
@@ -129,10 +129,10 @@ export default function Navbar() {
 
                   ${
                     isActive
-                      ? 'text-red-500'
-                      : solidNavbar
-                        ? 'text-gray-800 hover:text-red-500'
-                        : 'text-gray-900 hover:text-red-500'
+                    ? 'text-red-500'
+                    : solidNavbar
+                      ? 'text-gray-800 hover:text-red-500'
+                      : 'text-gray-900 hover:text-red-500'
                   }
                 `}
               >
@@ -152,9 +152,9 @@ export default function Navbar() {
                         bg-red-500
                         transition-all duration-300 ease-out
                         ${
-                          isActive
-                            ? 'w-full opacity-100'
-                            : 'w-0 opacity-0 group-hover:w-full group-hover:opacity-100'
+                            isActive
+                          ? 'w-full opacity-100'
+                          : 'w-0 opacity-0 group-hover:w-full group-hover:opacity-100'
                         }
                       `}
                     />
@@ -209,12 +209,11 @@ export default function Navbar() {
               transition-all duration-300
               lg:hidden
 
-              ${
-                mobileOpen
-                  ? 'bg-gray-100 text-gray-900'
-                  : solidNavbar
-                    ? 'bg-gray-100 text-gray-900 hover:bg-gray-200'
-                    : 'bg-white text-gray-900 shadow-sm'
+              ${mobileOpen
+                ? 'bg-gray-100 text-gray-900'
+                : solidNavbar
+                  ? 'bg-gray-100 text-gray-900 hover:bg-gray-200'
+                  : 'bg-white text-gray-900 shadow-sm'
               }
             `}
             aria-label={
@@ -252,8 +251,8 @@ export default function Navbar() {
 
           ${
             mobileOpen
-              ? 'visible opacity-100'
-              : 'invisible opacity-0 pointer-events-none'
+            ? 'visible opacity-100'
+            : 'invisible opacity-0 pointer-events-none'
           }
         `}
       >
@@ -266,8 +265,8 @@ export default function Navbar() {
               transition-all duration-500
               ${
                 mobileOpen
-                  ? 'translate-y-0 opacity-100'
-                  : '-translate-y-3 opacity-0'
+                ? 'translate-y-0 opacity-100'
+                : '-translate-y-3 opacity-0'
               }
             `}
           >
@@ -296,14 +295,14 @@ export default function Navbar() {
 
                   ${
                     mobileOpen
-                      ? 'translate-x-0 opacity-100'
-                      : '-translate-x-5 opacity-0'
+                    ? 'translate-x-0 opacity-100'
+                    : '-translate-x-5 opacity-0'
                   }
 
                   ${
                     isActive
-                      ? 'text-red-500'
-                      : 'text-gray-900'
+                    ? 'text-red-500'
+                    : 'text-gray-900'
                   }
                 `}
                 style={{
@@ -319,9 +318,9 @@ export default function Navbar() {
                         text-2xl
                         transition-all duration-300
                         ${
-                          isActive
-                            ? 'font-bold'
-                            : 'font-medium group-hover:translate-x-1'
+                            isActive
+                          ? 'font-bold'
+                          : 'font-medium group-hover:translate-x-1'
                         }
                       `}
                     >
@@ -336,9 +335,9 @@ export default function Navbar() {
                         bg-red-500
                         transition-all duration-300
                         ${
-                          isActive
-                            ? 'scale-100 opacity-100'
-                            : 'scale-0 opacity-0'
+                            isActive
+                          ? 'scale-100 opacity-100'
+                          : 'scale-0 opacity-0'
                         }
                       `}
                     />
@@ -357,8 +356,8 @@ export default function Navbar() {
               transition-all duration-500
               ${
                 mobileOpen
-                  ? 'translate-y-0 opacity-100'
-                  : 'translate-y-5 opacity-0'
+                ? 'translate-y-0 opacity-100'
+                : 'translate-y-5 opacity-0'
               }
             `}
             style={{
@@ -412,8 +411,8 @@ export default function Navbar() {
               transition-all duration-500
               ${
                 mobileOpen
-                  ? 'opacity-100'
-                  : 'opacity-0'
+                ? 'opacity-100'
+                : 'opacity-0'
               }
             `}
             style={{
