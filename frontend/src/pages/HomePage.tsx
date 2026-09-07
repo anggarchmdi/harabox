@@ -36,7 +36,7 @@ import NasiKuningPahaImg from '../assets/nasibox/nasi-kuning-paha-krispi-b.webp'
 import RamesBaladoImg from '../assets/nasibox/rames-balado-b.webp'
 import RamesPahaImg from '../assets/nasibox/rames-paha-b.webp'
 import EkonomisBaladoImg from '../assets/nasibox/ekonomis-balado-b.webp'
-
+import BannerMobile from '../assets/bannersss.webp'
 // Curated fallback data untuk produk unggulan jika offline/loading
 interface CuratedProduct {
   name: string
@@ -327,15 +327,18 @@ export default function HomePage() {
           1. HERO BANNER & FLOATING RECOMMENDATION CARD (SUMMARY HOME)
       ====================================================== */}
       <section className="w-full h-[400px] xl:h-[600px] bg-gray-100 relative">
-        <div className="w-full absolute z-10 h-[600px] bg-black/10" />
+        <div className="flex justify-center items-center w-full h-full md:hidden bg-linear-to-l">
+            <img src={BannerMobile} className='w-full h-full object-cover object-bottomx' alt="" />
+        </div>
+        <div className="w-full absolute hidden md:flex z-10 h-[600px] bg-black/10" />
         <img
           src={HeroImg}
           alt="Hara Chicken Catering"
-          className="w-full h-full object-cover"
+          className="w-full h-full hidden md:flex object-cover"
         />
 
         {/* Floating Recommendation Card */}
-        <div className="absolute z-20 w-full px-4 -translate-y-28 md:-translate-y-32 xl:-translate-y-36">
+        <div className="absolute z-20 w-full px-4 -translate-y-44 md:-translate-y-32 xl:-translate-y-36">
           <div
             data-aos="fade-up"
             data-aos-duration="700"
@@ -449,7 +452,7 @@ export default function HomePage() {
       {/* =====================================================
           2. TRUST PILLARS (STRIP 4 KEUNGGULAN)
       ====================================================== */}
-      <section className="pt-32 md:pt-36 xl:pt-44 pb-16 sm:pb-20 max-w-7xl mx-auto px-5 sm:px-8">
+      <section className="pt-80 md:pt-80 xl:pt-44 pb-16 sm:pb-20 max-w-7xl mx-auto px-5 sm:px-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {trustPillars.map((pillar, idx) => {
             const Icon = pillar.icon
