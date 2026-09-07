@@ -12,8 +12,6 @@ import {
   LogOut,
   Menu,
   Package,
-  PanelLeftClose,
-  PanelLeftOpen,
   ShieldCheck,
   ShoppingCart,
   Tags,
@@ -127,22 +125,22 @@ export default function AdminLayout() {
   }
 
   return (
-    <div className="min-h-screen bg-[#fafaf9] text-zinc-900 selection:bg-zinc-950 selection:text-white">
+    <div className="min-h-screen bg-[#fafaf9] text-stone-900 font-sans selection:bg-red-500/15 selection:text-red-700">
       {/* =====================================================
-          DESKTOP SIDEBAR (EXPAND / COLLAPSE WITH SLIDE TRANSITION)
+          DESKTOP SIDEBAR (EXPAND / COLLAPSE)
       ====================================================== */}
       <aside
-        className={`fixed inset-y-0 left-0 hidden flex-col border-r border-zinc-200/80 bg-white shadow-[1px_0_12px_rgba(0,0,0,0.02)] z-30 lg:flex transition-all duration-300 ease-in-out ${
+        className={`fixed inset-y-0 left-0 hidden flex-col border-r border-stone-200/80 bg-white shadow-[1px_0_12px_rgba(0,0,0,0.02)] z-30 lg:flex transition-all duration-300 ease-in-out ${
           isCollapsed ? 'w-20' : 'w-72'
         }`}
       >
-        {/* Floating Expand/Collapse Toggle Button pada border kanan sidebar */}
+        {/* Floating Expand/Collapse Toggle Button */}
         <button
           type="button"
           onClick={toggleCollapse}
           aria-label={isCollapsed ? 'Perluas Sidebar' : 'Perkecil Sidebar'}
           title={isCollapsed ? 'Perluas Sidebar' : 'Perkecil Sidebar'}
-          className="absolute -right-3.5 top-7 hidden lg:flex h-7 w-7 items-center justify-center rounded-full bg-white border border-zinc-200 shadow-sm text-zinc-500 hover:text-zinc-950 hover:bg-zinc-50 hover:scale-110 active:scale-95 transition-all z-40 focus:outline-none focus:ring-2 focus:ring-zinc-900/10 cursor-pointer"
+          className="absolute -right-3.5 top-7 hidden lg:flex h-7 w-7 items-center justify-center rounded-full bg-white border border-stone-200 shadow-xs text-stone-500 hover:text-stone-950 hover:bg-stone-50 hover:scale-105 active:scale-95 transition-all z-40 focus:outline-none focus:ring-2 focus:ring-red-500/20 cursor-pointer"
         >
           <ChevronLeft
             size={14}
@@ -153,41 +151,32 @@ export default function AdminLayout() {
 
         {/* Brand / Logo Header */}
         <div
-          className={`flex h-20 items-center border-b border-zinc-100 transition-all duration-300 ${
+          className={`flex h-20 items-center border-b border-stone-100 transition-all duration-300 ${
             isCollapsed ? 'justify-center px-2' : 'justify-between px-6'
           }`}
         >
           {isCollapsed ? (
             <Link
               to="/admin"
-              className="group relative flex h-11 w-11 items-center justify-center rounded-2xl bg-zinc-950 text-white shadow-md transition hover:scale-105"
-              title="Hara Chicken - Ke Dashboard"
+              className="group relative flex h-11 w-11 items-center justify-center rounded-2xl bg-gray-200 text-white shadow-xs transition hover:scale-105"
+              title="HaraBox Admin"
             >
-              <span className="font-extrabold text-sm tracking-tighter text-amber-400">H</span>
-              <span className="font-extrabold text-sm tracking-tighter text-white">C</span>
+              <img src={LogoProfile} alt="logo" className='w-8' />
 
               {/* Tooltip */}
-              <div className="pointer-events-none absolute left-full ml-3 hidden group-hover:flex items-center rounded-xl bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-white shadow-xl z-50 whitespace-nowrap">
-                Hara Chicken Admin
+              <div className="pointer-events-none absolute left-full ml-3 hidden group-hover:flex items-center rounded-xl bg-stone-900 px-3 py-1.5 text-xs font-semibold text-white shadow-xl z-50 whitespace-nowrap">
+                HaraBox Admin
               </div>
             </Link>
           ) : (
             <>
               <Link to="/admin" className="flex items-center gap-3">
-                <img src={LogoImg} alt="Hara Chicken" className="w-28 object-contain" />
+                <img src={LogoImg} alt="HaraBox" className="h-8 w-auto object-contain drop-shadow-xs" />
               </Link>
               <div className="flex items-center gap-1.5">
-                <span className="rounded-full bg-zinc-100 border border-zinc-200/80 px-2 py-0.5 text-[10px] font-black uppercase text-zinc-600">
+                <span className="rounded-full bg-stone-100 border border-stone-200/80 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-stone-600">
                   Admin
                 </span>
-                <button
-                  type="button"
-                  onClick={toggleCollapse}
-                  title="Perkecil Sidebar"
-                  className="flex h-7 w-7 items-center justify-center rounded-lg text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100 transition cursor-pointer"
-                >
-                  <PanelLeftClose size={16} />
-                </button>
               </div>
             </>
           )}
@@ -195,35 +184,35 @@ export default function AdminLayout() {
 
         {/* Live Status Pill */}
         {isCollapsed ? (
-          <div className="py-3.5 bg-zinc-50/60 border-b border-zinc-100 flex justify-center group relative cursor-help">
-            <span className="relative flex h-2.5 w-2.5">
+          <div className="py-3 bg-stone-50/60 border-b border-stone-100 flex justify-center group relative cursor-help">
+            <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
             </span>
-            <div className="pointer-events-none absolute left-full ml-3 hidden group-hover:flex items-center rounded-xl bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-white shadow-xl z-50 whitespace-nowrap">
-              Sistem Katering Online (Aktif)
+            <div className="pointer-events-none absolute left-full ml-3 hidden group-hover:flex items-center rounded-xl bg-stone-900 px-3 py-1.5 text-xs font-semibold text-white shadow-xl z-50 whitespace-nowrap">
+              Sistem Katering Online
             </div>
           </div>
         ) : (
-          <div className="px-6 py-3.5 bg-zinc-50/60 border-b border-zinc-100">
+          <div className="px-6 py-3 bg-stone-50/60 border-b border-stone-100">
             <div className="flex items-center gap-2">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
               </span>
-              <span className="text-[11px] font-bold text-zinc-600">
-                Sistem Katering Online
+              <span className="text-[11px] font-semibold text-stone-600">
+                Sistem Katering Online (Aktif)
               </span>
             </div>
           </div>
         )}
 
         {/* Navigation Menus */}
-        <div className="flex-1 overflow-y-auto px-3 py-6 space-y-6">
+        <div className="flex-1 overflow-y-auto px-3 py-5 space-y-6">
           {/* Main Menus */}
           <div>
             {!isCollapsed && (
-              <p className="px-3 text-[10px] font-extrabold uppercase tracking-[0.2em] text-zinc-400 mb-2 transition-opacity">
+              <p className="px-3 text-[10px] font-bold uppercase tracking-[0.18em] text-stone-400 mb-2">
                 Menu Utama
               </p>
             )}
@@ -240,14 +229,14 @@ export default function AdminLayout() {
                       to={menu.to}
                       end={menu.to === '/admin'}
                       className={({ isActive }) =>
-                        `group relative flex items-center rounded-2xl transition-all ${
+                        `group relative flex items-center rounded-xl transition-all ${
                           isCollapsed
-                            ? 'h-12 w-12 mx-auto justify-center'
-                            : 'justify-between px-3.5 py-3 text-xs sm:text-sm font-bold'
+                            ? 'h-11 w-11 mx-auto justify-center'
+                            : 'justify-between px-3.5 py-2.5 text-xs sm:text-sm font-semibold'
                         } ${
                           isActive
-                            ? 'bg-zinc-950 text-white shadow-md shadow-zinc-950/20'
-                            : 'text-zinc-600 hover:bg-zinc-100 hover:text-zinc-950'
+                            ? 'bg-stone-900 text-white shadow-xs'
+                            : 'text-stone-600 hover:bg-stone-100 hover:text-stone-950'
                         }`
                       }
                     >
@@ -255,12 +244,12 @@ export default function AdminLayout() {
                         <>
                           <div className={`flex items-center ${isCollapsed ? 'justify-center relative' : 'gap-3'}`}>
                             <Icon
-                              size={isCollapsed ? 20 : 18}
-                              strokeWidth={isActive ? 2.5 : 2}
+                              size={isCollapsed ? 19 : 17}
+                              strokeWidth={isActive ? 2.2 : 1.8}
                               className={`transition-colors ${
                                 isActive
                                   ? 'text-white'
-                                  : 'text-zinc-400 group-hover:text-zinc-900'
+                                  : 'text-stone-400 group-hover:text-stone-900'
                               }`}
                             />
 
@@ -268,7 +257,7 @@ export default function AdminLayout() {
 
                             {/* Collapsed Badge Dot / Number Counter */}
                             {isCollapsed && isPendingBadge && (
-                              <span className="absolute -top-1.5 -right-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-amber-500 px-1 text-[9px] font-black text-white ring-2 ring-white animate-pulse">
+                              <span className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-600 px-1 text-[9px] font-bold text-white ring-2 ring-white">
                                 {pendingOrdersCount}
                               </span>
                             )}
@@ -277,10 +266,10 @@ export default function AdminLayout() {
                           {/* Expanded Badges */}
                           {!isCollapsed && isPendingBadge && (
                             <span
-                              className={`rounded-full px-2 py-0.5 text-[10px] font-black ${
+                              className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
                                 isActive
-                                  ? 'bg-amber-400 text-zinc-950'
-                                  : 'bg-amber-100 text-amber-900 border border-amber-200 animate-pulse'
+                                  ? 'bg-amber-400 text-stone-950'
+                                  : 'bg-red-50 text-red-700 border border-red-200'
                               }`}
                             >
                               {pendingOrdersCount} baru
@@ -289,8 +278,8 @@ export default function AdminLayout() {
 
                           {!isCollapsed && isActiveProductBadge && !isPendingBadge && (
                             <span
-                              className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${
-                                isActive ? 'bg-zinc-800 text-zinc-300' : 'text-zinc-400'
+                              className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${
+                                isActive ? 'bg-stone-800 text-stone-300' : 'text-stone-400'
                               }`}
                             >
                               {activeProductsCount} menu
@@ -302,15 +291,15 @@ export default function AdminLayout() {
 
                     {/* Floating Tooltip saat Collapsed */}
                     {isCollapsed && (
-                      <div className="pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-3 hidden group-hover:flex items-center gap-2 rounded-xl bg-zinc-900 px-3 py-2 text-xs font-bold text-white shadow-xl z-50 whitespace-nowrap">
+                      <div className="pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-3 hidden group-hover:flex items-center gap-2 rounded-xl bg-stone-900 px-3 py-2 text-xs font-semibold text-white shadow-xl z-50 whitespace-nowrap">
                         <span>{menu.label}</span>
                         {isPendingBadge && (
-                          <span className="rounded-full bg-amber-400 px-1.5 py-0.2 text-[10px] font-black text-zinc-950">
+                          <span className="rounded-full bg-red-600 px-1.5 py-0.2 text-[10px] font-bold text-white">
                             {pendingOrdersCount} baru
                           </span>
                         )}
                         {isActiveProductBadge && !isPendingBadge && (
-                          <span className="rounded-full bg-zinc-800 px-1.5 py-0.2 text-[10px] font-semibold text-zinc-300">
+                          <span className="rounded-full bg-stone-800 px-1.5 py-0.2 text-[10px] font-medium text-stone-300">
                             {activeProductsCount}
                           </span>
                         )}
@@ -322,16 +311,11 @@ export default function AdminLayout() {
             </nav>
           </div>
 
-          {/* Divider in Collapsed Mode */}
-          {isCollapsed ? (
-            <div className="mx-auto my-2 h-px w-8 bg-zinc-200/60" />
-          ) : null}
-
           {/* Quick External Links */}
           <div>
             {!isCollapsed && (
-              <p className="px-3 text-[10px] font-extrabold uppercase tracking-[0.2em] text-zinc-400 mb-2">
-                Akses Cepat Website
+              <p className="px-3 text-[10px] font-bold uppercase tracking-[0.18em] text-stone-400 mb-2">
+                Akses Publik
               </p>
             )}
             <div className="space-y-1">
@@ -340,25 +324,25 @@ export default function AdminLayout() {
                   to="/menu"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={`group flex items-center rounded-2xl text-xs font-semibold text-zinc-600 hover:bg-zinc-100 hover:text-zinc-950 transition ${
+                  className={`group flex items-center rounded-xl text-xs font-medium text-stone-600 hover:bg-stone-100 hover:text-stone-950 transition ${
                     isCollapsed
-                      ? 'h-11 w-11 mx-auto justify-center'
-                      : 'justify-between px-3.5 py-2.5'
+                      ? 'h-10 w-10 mx-auto justify-center'
+                      : 'justify-between px-3.5 py-2'
                   }`}
                 >
                   <div className={`flex items-center ${isCollapsed ? 'justify-center' : 'gap-3'}`}>
-                    <Boxes size={isCollapsed ? 18 : 16} className="text-zinc-400 group-hover:text-zinc-900" />
+                    <Boxes size={isCollapsed ? 17 : 16} className="text-stone-400 group-hover:text-stone-900" />
                     {!isCollapsed && <span>Buka Menu Publik</span>}
                   </div>
                   {!isCollapsed && (
-                    <ExternalLink size={14} className="text-zinc-400 group-hover:text-zinc-900" />
+                    <ExternalLink size={13} className="text-stone-400 group-hover:text-stone-900" />
                   )}
                 </Link>
 
                 {isCollapsed && (
-                  <div className="pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-3 hidden group-hover:flex items-center gap-1.5 rounded-xl bg-zinc-900 px-3 py-2 text-xs font-bold text-white shadow-xl z-50 whitespace-nowrap">
+                  <div className="pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-3 hidden group-hover:flex items-center gap-1.5 rounded-xl bg-stone-900 px-3 py-2 text-xs font-semibold text-white shadow-xl z-50 whitespace-nowrap">
                     <span>Buka Menu Publik</span>
-                    <ExternalLink size={12} className="text-zinc-400" />
+                    <ExternalLink size={12} className="text-stone-400" />
                   </div>
                 )}
               </div>
@@ -368,88 +352,30 @@ export default function AdminLayout() {
                   to="/cara-pesan"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={`group flex items-center rounded-2xl text-xs font-semibold text-zinc-600 hover:bg-zinc-100 hover:text-zinc-950 transition ${
+                  className={`group flex items-center rounded-xl text-xs font-medium text-stone-600 hover:bg-stone-100 hover:text-stone-950 transition ${
                     isCollapsed
-                      ? 'h-11 w-11 mx-auto justify-center'
-                      : 'justify-between px-3.5 py-2.5'
+                      ? 'h-10 w-10 mx-auto justify-center'
+                      : 'justify-between px-3.5 py-2'
                   }`}
                 >
                   <div className={`flex items-center ${isCollapsed ? 'justify-center' : 'gap-3'}`}>
-                    <HelpCircle size={isCollapsed ? 18 : 16} className="text-zinc-400 group-hover:text-zinc-900" />
+                    <HelpCircle size={isCollapsed ? 17 : 16} className="text-stone-400 group-hover:text-stone-900" />
                     {!isCollapsed && <span>Panduan Cara Pesan</span>}
                   </div>
                   {!isCollapsed && (
-                    <ExternalLink size={14} className="text-zinc-400 group-hover:text-zinc-900" />
+                    <ExternalLink size={13} className="text-stone-400 group-hover:text-stone-900" />
                   )}
                 </Link>
 
                 {isCollapsed && (
-                  <div className="pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-3 hidden group-hover:flex items-center gap-1.5 rounded-xl bg-zinc-900 px-3 py-2 text-xs font-bold text-white shadow-xl z-50 whitespace-nowrap">
+                  <div className="pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-3 hidden group-hover:flex items-center gap-1.5 rounded-xl bg-stone-900 px-3 py-2 text-xs font-semibold text-white shadow-xl z-50 whitespace-nowrap">
                     <span>Panduan Cara Pesan</span>
-                    <ExternalLink size={12} className="text-zinc-400" />
+                    <ExternalLink size={12} className="text-stone-400" />
                   </div>
                 )}
               </div>
             </div>
           </div>
-        </div>
-
-        {/* Sidebar Footer / User Info */}
-        <div className="border-t border-zinc-100 p-3 bg-white">
-          {isCollapsed ? (
-            <div className="flex flex-col items-center gap-2">
-              <div className="relative group cursor-pointer">
-                {/* <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-zinc-100 border border-zinc-200 overflow-hidden shadow-sm hover:ring-2 hover:ring-zinc-950/20 transition"> */}
-                  {/* <img src={LogoProfile} alt="Admin" className="w-9 h-9 object-cover" /> */}
-                {/* </div> */}
-                {/* <div className="pointer-events-none absolute left-full bottom-0 ml-3 hidden group-hover:flex flex-col rounded-xl bg-zinc-900 px-3 py-2 text-xs text-white shadow-xl z-50 whitespace-nowrap">
-                  <span className="font-bold">{user?.name || 'Administrator'}</span>
-                  <span className="text-[10px] text-zinc-400">{user?.email || 'admin@harachicken.com'}</span>
-                </div> */}
-              </div>
-
-              {/* <div className="relative group">
-                <button
-                  type="button"
-                  onClick={handleLogout}
-                  disabled={loading}
-                  aria-label="Logout Keluar"
-                  className="flex h-10 w-10 items-center justify-center rounded-xl text-zinc-400 hover:text-red-600 hover:bg-red-50 transition cursor-pointer"
-                >
-                  <LogOut size={17} />
-                </button>
-                <div className="pointer-events-none absolute left-full bottom-0 ml-3 hidden group-hover:flex items-center rounded-xl bg-red-600 px-3 py-1.5 text-xs font-bold text-white shadow-xl z-50 whitespace-nowrap">
-                  Logout Keluar
-                </div>
-              </div> */}
-            </div>
-          ) : (
-            <div className="rounded-2xl border border-zinc-200/80 bg-[#fafaf9] p-3 flex items-center justify-between">
-              {/* <div className="flex items-center gap-3 min-w-0">
-                <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white border border-zinc-200 overflow-hidden shadow-sm">
-                  <img src={LogoProfile} alt="Admin" className="w-8 h-8 object-cover" />
-                </div>
-                <div className="min-w-0">
-                  <p className="font-black text-xs text-zinc-900 truncate">
-                    {user?.name || 'Administrator'}
-                  </p>
-                  <p className="text-[10px] text-zinc-400 truncate">
-                    {user?.email || 'admin@harachicken.com'}
-                  </p>
-                </div>
-              </div> */}
-
-              {/* <button
-                type="button"
-                onClick={handleLogout}
-                disabled={loading}
-                title="Logout"
-                className="p-2 rounded-xl text-zinc-400 hover:text-red-600 hover:bg-red-50 transition cursor-pointer shrink-0"
-              >
-                <LogOut size={16} />
-              </button> */}
-            </div>
-          )}
         </div>
       </aside>
 
@@ -460,30 +386,33 @@ export default function AdminLayout() {
         <div className="fixed inset-0 z-50 lg:hidden">
           {/* Backdrop */}
           <div
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm animate-fade-in"
+            className="fixed inset-0 bg-stone-950/60 backdrop-blur-xs transition-opacity"
             onClick={() => setMobileSidebarOpen(false)}
           />
 
           {/* Drawer Content */}
-          <aside className="fixed inset-y-0 left-0 w-72 flex-col bg-white border-r border-zinc-200 shadow-2xl flex z-10 animate-slide-in">
-            <div className="flex h-20 items-center justify-between border-b border-zinc-100 px-6">
-              <img src={LogoImg} alt="HaraBox" className="w-28" />
+          <aside className="fixed inset-y-0 left-0 w-72 flex-col bg-white border-r border-stone-200 shadow-2xl flex z-10">
+            <div className="flex h-20 items-center justify-between border-b border-stone-100 px-6">
+              <img src={LogoImg} alt="HaraBox" className="h-8 w-auto object-contain" />
               <button
                 type="button"
                 onClick={() => setMobileSidebarOpen(false)}
-                className="rounded-full p-2 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700"
+                className="rounded-lg p-2 text-stone-400 hover:bg-stone-100 hover:text-stone-700 transition"
+                aria-label="Tutup"
               >
                 <X size={18} />
               </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto px-4 py-6 space-y-4">
-              <p className="px-3 text-[10px] font-extrabold uppercase tracking-[0.2em] text-zinc-400">
+            <div className="flex-1 overflow-y-auto px-4 py-6 space-y-5">
+              <p className="px-3 text-[10px] font-bold uppercase tracking-[0.18em] text-stone-400">
                 Menu Utama
               </p>
               <nav className="space-y-1">
                 {mainMenus.map((menu) => {
                   const Icon = menu.icon
+                  const isPendingBadge = menu.badgeKey === 'pending_orders' && pendingOrdersCount > 0
+
                   return (
                     <NavLink
                       key={menu.to}
@@ -491,10 +420,10 @@ export default function AdminLayout() {
                       end={menu.to === '/admin'}
                       onClick={() => setMobileSidebarOpen(false)}
                       className={({ isActive }) =>
-                        `flex items-center justify-between rounded-2xl px-4 py-3 text-sm font-bold transition ${
+                        `flex items-center justify-between rounded-xl px-3.5 py-3 text-sm font-semibold transition ${
                           isActive
-                            ? 'bg-zinc-950 text-white shadow-md'
-                            : 'text-zinc-600 hover:bg-zinc-100 hover:text-zinc-950'
+                            ? 'bg-stone-900 text-white shadow-xs'
+                            : 'text-stone-600 hover:bg-stone-100 hover:text-stone-950'
                         }`
                       }
                     >
@@ -502,28 +431,42 @@ export default function AdminLayout() {
                         <Icon size={18} />
                         <span>{menu.label}</span>
                       </div>
+
+                      {isPendingBadge && (
+                        <span className="rounded-full bg-red-600 px-2 py-0.5 text-[10px] font-bold text-white">
+                          {pendingOrdersCount}
+                        </span>
+                      )}
                     </NavLink>
                   )
                 })}
               </nav>
 
-              <div className="pt-4 border-t border-zinc-100">
+              <div className="pt-4 border-t border-stone-100 space-y-1">
                 <Link
                   to="/menu"
                   target="_blank"
-                  className="flex items-center justify-between px-4 py-2.5 text-xs font-bold text-zinc-600 hover:bg-zinc-50 rounded-xl"
+                  className="flex items-center justify-between px-3.5 py-2.5 text-xs font-medium text-stone-600 hover:bg-stone-50 rounded-xl"
                 >
                   <span>Buka Menu Publik</span>
+                  <ExternalLink size={14} />
+                </Link>
+                <Link
+                  to="/cara-pesan"
+                  target="_blank"
+                  className="flex items-center justify-between px-3.5 py-2.5 text-xs font-medium text-stone-600 hover:bg-stone-50 rounded-xl"
+                >
+                  <span>Panduan Cara Pesan</span>
                   <ExternalLink size={14} />
                 </Link>
               </div>
             </div>
 
-            <div className="border-t border-zinc-100 p-4">
+            <div className="border-t border-stone-100 p-4">
               <button
                 type="button"
                 onClick={handleLogout}
-                className="flex w-full items-center justify-center gap-2 rounded-xl bg-zinc-100 px-4 py-3 text-xs font-bold text-red-600 hover:bg-red-50 transition"
+                className="flex w-full items-center justify-center gap-2 rounded-xl bg-stone-100 px-4 py-2.5 text-xs font-bold text-red-600 hover:bg-red-50 transition"
               >
                 <LogOut size={16} />
                 <span>Logout Keluar</span>
@@ -544,49 +487,37 @@ export default function AdminLayout() {
         {/* =====================================================
             TOP NAVBAR (STICKY BLUR HEADER)
         ====================================================== */}
-        <header className="sticky top-0 z-20 flex h-20 items-center justify-between border-b border-zinc-200/80 bg-white/85 px-6 backdrop-blur-md sm:px-8">
-          {/* Left: Mobile Toggle, Desktop Collapse Toggle & Dynamic Breadcrumb Title */}
+        <header className="sticky top-0 z-20 flex h-20 items-center justify-between border-b border-stone-200/80 bg-white/90 px-4 backdrop-blur-md sm:px-8">
+          {/* Left: Mobile Toggle, Desktop Collapse Toggle & Dynamic Title */}
           <div className="flex items-center gap-3 sm:gap-4">
             {/* Mobile Toggle Button */}
             <button
               type="button"
               onClick={() => setMobileSidebarOpen(true)}
-              className="flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-200 text-zinc-700 hover:bg-zinc-50 lg:hidden cursor-pointer"
+              className="flex h-10 w-10 items-center justify-center rounded-xl border border-stone-200 text-stone-700 hover:bg-stone-50 lg:hidden cursor-pointer"
               aria-label="Buka Menu Sidebar"
             >
               <Menu size={18} />
             </button>
-
-            {/* Desktop Expand / Collapse Toggle Button */}
-            <button
-              type="button"
-              onClick={toggleCollapse}
-              className="hidden lg:flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-200/80 bg-white text-zinc-600 hover:text-zinc-950 hover:bg-zinc-100 shadow-sm transition cursor-pointer"
-              title={isCollapsed ? 'Perluas Sidebar' : 'Perkecil Sidebar'}
-              aria-label={isCollapsed ? 'Perluas Sidebar' : 'Perkecil Sidebar'}
-            >
-              {isCollapsed ? <PanelLeftOpen size={18} /> : <PanelLeftClose size={18} />}
-            </button>
-
             <div>
-              <div className="flex items-center gap-1.5 text-[11px] font-bold text-zinc-400">
-                <span>Hara Chicken</span>
+              <div className="flex items-center gap-1.5 text-[11px] font-medium text-stone-400">
+                <span>HaraBox</span>
                 <span>/</span>
-                <span className="text-zinc-600">Admin Control</span>
+                <span className="text-stone-600">Admin Control</span>
               </div>
-              <h2 className="text-base sm:text-lg font-black text-zinc-950 tracking-tight">
+              <h2 className="text-base sm:text-lg font-bold text-stone-950 tracking-tight">
                 {pageTitle}
               </h2>
             </div>
           </div>
 
           {/* Right: Quick Alert Pills & Profile Dropdown */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5 sm:gap-3">
             {/* Pending Orders Notification Pill */}
             {pendingOrdersCount > 0 && (
               <Link
                 to="/admin/orders"
-                className="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-amber-200 bg-amber-50 px-3.5 py-1.5 text-xs font-extrabold text-amber-800 shadow-sm transition hover:bg-amber-100 animate-pulse"
+                className="inline-flex items-center gap-1.5 rounded-full border border-red-200 bg-red-50 px-3 py-1 text-xs font-bold text-red-700 shadow-2xs transition hover:bg-red-100"
                 title="Pesanan baru yang menunggu konfirmasi"
               >
                 <ShoppingCart size={13} />
@@ -599,10 +530,10 @@ export default function AdminLayout() {
               to="/menu"
               target="_blank"
               rel="noopener noreferrer"
-              className="hidden md:inline-flex items-center gap-1.5 rounded-xl border border-zinc-200 bg-white px-3.5 py-2 text-xs font-bold text-zinc-700 shadow-sm transition hover:bg-zinc-50"
+              className="hidden md:inline-flex items-center gap-1.5 rounded-xl border border-stone-200 bg-white px-3.5 py-2 text-xs font-semibold text-stone-700 shadow-2xs transition hover:bg-stone-50"
             >
               <span>Website</span>
-              <ExternalLink size={13} className="text-zinc-400" />
+              <ExternalLink size={13} className="text-stone-400" />
             </Link>
 
             {/* Admin Profile Dropdown */}
@@ -610,22 +541,22 @@ export default function AdminLayout() {
               <button
                 type="button"
                 onClick={() => setProfileOpen((prev) => !prev)}
-                className="flex items-center gap-3 rounded-2xl border border-zinc-200/80 fontinter bg-white p-1.5 pl-3 transition hover:bg-zinc-50 shadow-sm cursor-pointer"
+                className="flex items-center gap-2.5 rounded-xl border border-stone-200/80 bg-white p-1.5 pl-3 transition hover:bg-stone-50 shadow-2xs cursor-pointer"
               >
                 <div className="hidden text-right sm:block">
-                  <p className="text-xs font-black text-zinc-950 truncate max-w-[120px]">
+                  <p className="text-xs font-bold text-stone-950 truncate max-w-[130px]">
                     {user?.name || 'Admin'}
                   </p>
-                  <p className="text-[10px] font-semibold text-emerald-600">● Aktif</p>
+                  <p className="text-[10px] font-medium text-emerald-600">Online</p>
                 </div>
 
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-zinc-100 border border-zinc-200 overflow-hidden shadow-inner">
-                  <img src={LogoProfile} className="h-7 w-7 object-cover" alt="Profile" />
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-stone-100 border border-stone-200 overflow-hidden">
+                  <img src={LogoProfile} className="h-6 w-6 object-cover" alt="Profile" />
                 </div>
 
                 <ChevronDown
                   size={14}
-                  className={`text-zinc-400 transition-transform duration-200 mr-1 ${
+                  className={`text-stone-400 transition-transform duration-200 mr-1 ${
                     profileOpen ? 'rotate-180' : ''
                   }`}
                 />
@@ -633,17 +564,17 @@ export default function AdminLayout() {
 
               {/* Profile Menu Dropdown */}
               {profileOpen && (
-                <div className="absolute right-0 top-full mt-2 w-60 overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-xl animate-fade-in z-50">
-                  <div className="border-b border-zinc-100 bg-[#fafaf9] px-4 py-3">
-                    <p className="text-xs font-black text-zinc-950">
+                <div className="absolute right-0 top-full mt-2 w-60 overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-xl z-50 animate-in fade-in slide-in-from-top-1 duration-150">
+                  <div className="border-b border-stone-100 bg-stone-50/80 px-4 py-3">
+                    <p className="text-xs font-bold text-stone-950">
                       {user?.name || 'Administrator'}
                     </p>
-                    <p className="text-[11px] text-zinc-400 truncate">
-                      {user?.email || 'admin@harachicken.com'}
+                    <p className="text-[11px] text-stone-400 truncate">
+                      {user?.email || 'admin@harabox.com'}
                     </p>
-                    <div className="mt-2 flex items-center gap-1.5 text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-lg px-2 py-0.5">
+                    <div className="mt-2 flex items-center gap-1.5 text-[10px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200/60 rounded-md px-2 py-0.5">
                       <ShieldCheck size={12} />
-                      Hak Akses Super Admin
+                      <span>Hak Akses Super Admin</span>
                     </div>
                   </div>
 
@@ -651,9 +582,9 @@ export default function AdminLayout() {
                     <Link
                       to="/admin"
                       onClick={() => setProfileOpen(false)}
-                      className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold text-zinc-700 transition hover:bg-zinc-100 hover:text-zinc-950"
+                      className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-medium text-stone-700 transition hover:bg-stone-100 hover:text-stone-950"
                     >
-                      <LayoutDashboard size={15} className="text-zinc-400" />
+                      <LayoutDashboard size={14} className="text-stone-400" />
                       <span>Dashboard Utama</span>
                     </Link>
 
@@ -661,21 +592,21 @@ export default function AdminLayout() {
                       to="/menu"
                       target="_blank"
                       onClick={() => setProfileOpen(false)}
-                      className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold text-zinc-700 transition hover:bg-zinc-100 hover:text-zinc-950"
+                      className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-medium text-stone-700 transition hover:bg-stone-100 hover:text-stone-950"
                     >
-                      <ExternalLink size={15} className="text-zinc-400" />
+                      <ExternalLink size={14} className="text-stone-400" />
                       <span>Lihat Menu Publik</span>
                     </Link>
 
-                    <div className="my-1 border-t border-zinc-100" />
+                    <div className="my-1 border-t border-stone-100" />
 
                     <button
                       type="button"
                       onClick={handleLogout}
                       disabled={loading}
-                      className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-bold text-red-600 transition hover:bg-red-50 disabled:opacity-50 cursor-pointer"
+                      className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-semibold text-red-600 transition hover:bg-red-50 disabled:opacity-50 cursor-pointer"
                     >
-                      <LogOut size={15} />
+                      <LogOut size={14} />
                       <span>{loading ? 'Sedang Logout...' : 'Logout Keluar'}</span>
                     </button>
                   </div>
@@ -693,5 +624,3 @@ export default function AdminLayout() {
     </div>
   )
 }
-
-

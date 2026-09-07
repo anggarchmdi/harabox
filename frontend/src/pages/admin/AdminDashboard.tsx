@@ -4,11 +4,14 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   Boxes,
   Calendar,
+  CheckCircle2,
+  ChefHat,
   ChevronRight,
   CircleAlert,
   Clock,
   Edit,
   Eye,
+  LayoutGrid,
   MapPin,
   MessageCircle,
   Plus,
@@ -19,6 +22,7 @@ import {
   TrendingUp,
   User,
   X,
+  XCircle,
 } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -120,9 +124,9 @@ export function generateDashboardWhatsAppInvoice(order: DashboardRecentOrder): s
 
   const statusLabel = formatStatus(order.status)
 
-  const message = `*INVOICE PESANAN HARA CHICKEN*
+  const message = `*INVOICE PESANAN HARABOX*
 ===============================
-Halo Kak *${order.customers_name}*, terima kasih telah memesan catering di Hara Chicken!
+Halo Kak *${order.customers_name}*, terima kasih telah memesan katering di HaraBox!
 
 Berikut adalah rincian invoice resmi pesanan Anda:
 
@@ -141,9 +145,9 @@ Ongkos Kirim: ${formatRupiah(order.delivery_fee || 0)}
 ${order.notes ? `*Catatan Khusus:* ${order.notes}\n` : ''}
 Silakan melakukan pembayaran ke rekening resmi:
 *Bank BCA: 1234567890*
-*A/N: Hara Chicken*
+*A/N: HaraBox Catering*
 
-Mohon konfirmasi dan kirimkan bukti transfer melalui chat ini. Terima kasih! 🙏`
+Mohon konfirmasi dan kirimkan bukti transfer melalui pesan ini. Terima kasih!`
 
   return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`
 }
@@ -234,18 +238,18 @@ export default function AdminDashboard() {
   if (isError || !data) {
     return (
       <div className="mx-auto max-w-7xl p-6">
-        <div className="rounded-3xl border border-red-200 bg-white p-12 text-center shadow-sm">
+        <div className="rounded-3xl border border-red-200 bg-white p-12 text-center shadow-xs">
           <CircleAlert size={48} className="mx-auto text-red-500" />
-          <h2 className="mt-4 text-xl font-bold text-zinc-900">
+          <h2 className="mt-4 text-xl font-bold text-stone-900">
             Gagal Memuat Data Dashboard
           </h2>
-          <p className="mt-2 text-sm text-zinc-500 max-w-md mx-auto">
-            Terjadi masalah saat menghubungkan ke database admin Hara Chicken.
+          <p className="mt-2 text-sm text-stone-500 max-w-md mx-auto">
+            Terjadi masalah saat menghubungkan ke database server HaraBox.
           </p>
           <button
             type="button"
             onClick={() => refetch()}
-            className="mt-6 inline-flex items-center gap-2 rounded-2xl bg-zinc-950 px-6 py-3 text-xs font-bold text-white transition hover:bg-zinc-800"
+            className="mt-6 inline-flex items-center gap-2 rounded-xl bg-stone-900 px-6 py-2.5 text-xs font-semibold text-white transition hover:bg-stone-800"
           >
             <RefreshCw size={14} />
             Coba Muat Ulang
@@ -258,80 +262,80 @@ export default function AdminDashboard() {
   const queueTotal = (summary?.pending_orders ?? 0) + (summary?.processing_orders ?? 0)
 
   return (
-    <div className="mx-auto max-w-7xl space-y-8 p-6 pb-24 text-zinc-900">
+    <div className="mx-auto max-w-7xl space-y-6 sm:space-y-8 p-4 sm:p-6 lg:p-8 pb-24 text-stone-900">
       {/* =====================================================
           HEADER & REAL-TIME CONTROLS
       ====================================================== */}
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <div>
           <div className="flex items-center gap-2">
-            <span className="flex h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse" />
-            <p className="text-xs font-extrabold uppercase tracking-wider text-emerald-700">
-              Live Catering Monitoring
+            <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+            <p className="text-xs font-bold uppercase tracking-wider text-emerald-700">
+              Live Monitoring System
             </p>
           </div>
 
-          <h1 className="mt-1 text-3xl font-black tracking-tight text-zinc-950 sm:text-4xl">
-            Monitoring & Operasional Katering
+          <h1 className="mt-1 text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-stone-950">
+            Monitoring Operasional Katering
           </h1>
 
-          <p className="mt-1 text-sm text-zinc-500 max-w-2xl">
-            Pantau arus pesanan masuk, pantau status pengerjaan dapur, kirim invoice WhatsApp ke pemesan, dan pantau produk aktif di menu.
+          <p className="mt-1 text-xs sm:text-sm text-stone-500 max-w-2xl">
+            Pantau arus pesanan masuk, antrean dapur, pengiriman invoice WhatsApp, serta katalog menu aktif dalam satu kendali.
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2.5">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
           <button
             type="button"
             onClick={() => refetch()}
             disabled={isFetching}
-            className="inline-flex items-center gap-2 rounded-2xl border border-zinc-200 bg-white px-4 py-2.5 text-xs font-bold text-zinc-700 shadow-sm transition hover:bg-zinc-50 disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 rounded-xl border border-stone-200 bg-white px-3.5 py-2 text-xs font-semibold text-stone-700 shadow-2xs transition hover:bg-stone-50 disabled:opacity-50"
             title="Refresh data dashboard"
           >
-            <RefreshCw size={14} className={isFetching ? 'animate-spin' : ''} />
-            Segarkan
+            <RefreshCw size={13} className={isFetching ? 'animate-spin' : ''} />
+            <span>Segarkan</span>
           </button>
 
           <Link
             to="/admin/orders"
-            className="inline-flex items-center gap-2 rounded-2xl border border-zinc-200 bg-white px-4 py-2.5 text-xs font-bold text-zinc-800 shadow-sm transition hover:bg-zinc-50"
+            className="inline-flex items-center gap-1.5 rounded-xl border border-stone-200 bg-white px-3.5 py-2 text-xs font-semibold text-stone-800 shadow-2xs transition hover:bg-stone-50"
           >
-            Kelola Orders
+            <span>Kelola Pesanan</span>
           </Link>
 
           <Link
             to="/admin/products/create"
-            className="inline-flex items-center gap-2 rounded-2xl bg-zinc-950 px-5 py-2.5 text-xs font-bold text-white shadow-sm transition hover:bg-zinc-800"
+            className="inline-flex items-center gap-1.5 rounded-xl bg-red-600 px-4 py-2 text-xs font-bold text-white shadow-xs transition hover:bg-red-700"
           >
-            <Plus size={15} />
-            Tambah Menu
+            <Plus size={14} />
+            <span>Tambah Menu</span>
           </Link>
         </div>
       </div>
 
       {/* =====================================================
-          TOP KPI METRIC CARDS (PROPER MONITORING)
+          TOP KPI METRIC CARDS
       ====================================================== */}
-      <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-4 sm:gap-5 sm:grid-cols-2 xl:grid-cols-4">
         {/* Card 1: Revenue Month & Today */}
-        <div className="rounded-3xl border border-zinc-200/90 bg-white p-6 shadow-sm hover:shadow-md transition">
+        <div className="rounded-2xl border border-stone-200/90 bg-white p-5 sm:p-6 shadow-2xs transition hover:shadow-xs">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-zinc-400">
+            <span className="text-xs font-semibold tracking-wider uppercase text-stone-400">
               Pendapatan Bulan Ini
             </span>
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600">
-              <TrendingUp size={20} />
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
+              <TrendingUp size={18} />
             </div>
           </div>
 
-          <div className="mt-4">
-            <h3 className="text-2xl sm:text-3xl font-black tracking-tight text-zinc-950">
+          <div className="mt-3 sm:mt-4">
+            <h3 className="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight text-stone-950 font-mono">
               {formatRupiah(summary?.revenue_this_month ?? 0)}
             </h3>
 
-            <div className="mt-3 flex items-center justify-between text-xs pt-3 border-t border-zinc-100">
-              <span className="text-zinc-500 font-medium">Hari ini:</span>
-              <span className="font-bold text-emerald-700">
+            <div className="mt-3 flex items-center justify-between text-xs pt-3 border-t border-stone-100">
+              <span className="text-stone-500 font-medium">Hari ini:</span>
+              <span className="font-bold text-emerald-700 font-mono">
                 {formatRupiah(summary?.revenue_today ?? 0)}
               </span>
             </div>
@@ -339,24 +343,24 @@ export default function AdminDashboard() {
         </div>
 
         {/* Card 2: Orders Month & Today */}
-        <div className="rounded-3xl border border-zinc-200/90 bg-white p-6 shadow-sm hover:shadow-md transition">
+        <div className="rounded-2xl border border-stone-200/90 bg-white p-5 sm:p-6 shadow-2xs transition hover:shadow-xs">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-zinc-400">
+            <span className="text-xs font-semibold tracking-wider uppercase text-stone-400">
               Volume Pesanan
             </span>
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-blue-50 text-blue-600">
-              <ShoppingCart size={20} />
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+              <ShoppingCart size={18} />
             </div>
           </div>
 
-          <div className="mt-4">
-            <h3 className="text-2xl sm:text-3xl font-black tracking-tight text-zinc-950">
+          <div className="mt-3 sm:mt-4">
+            <h3 className="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight text-stone-950">
               {summary?.orders_this_month ?? 0}{' '}
-              <span className="text-sm font-normal text-zinc-400">Pesanan</span>
+              <span className="text-sm font-normal text-stone-400">Pesanan</span>
             </h3>
 
-            <div className="mt-3 flex items-center justify-between text-xs pt-3 border-t border-zinc-100">
-              <span className="text-zinc-500 font-medium">Masuk hari ini:</span>
+            <div className="mt-3 flex items-center justify-between text-xs pt-3 border-t border-stone-100">
+              <span className="text-stone-500 font-medium">Masuk hari ini:</span>
               <span className="font-bold text-blue-700">
                 {summary?.orders_today ?? 0} Pesanan
               </span>
@@ -365,60 +369,67 @@ export default function AdminDashboard() {
         </div>
 
         {/* Card 3: Antrean Dapur & Konfirmasi (Action Required) */}
-        <div className="rounded-3xl border border-zinc-200/90 bg-white p-6 shadow-sm hover:shadow-md transition">
+        <div className="rounded-2xl border border-stone-200/90 bg-white p-5 sm:p-6 shadow-2xs transition hover:shadow-xs">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-zinc-400">
-              Perlu Diproses Dapur
+            <span className="text-xs font-semibold tracking-wider uppercase text-stone-400">
+              Antrean & Konfirmasi
             </span>
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-amber-50 text-amber-600">
-              <Clock size={20} />
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-50 text-amber-600">
+              <Clock size={18} />
             </div>
           </div>
 
-          <div className="mt-4">
-            <h3 className="text-2xl sm:text-3xl font-black tracking-tight text-zinc-950 flex items-center gap-2">
+          <div className="mt-3 sm:mt-4">
+            <h3 className="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight text-stone-950 flex items-center gap-2">
               {queueTotal}
-              <span className="text-sm font-normal text-zinc-400">Pesanan</span>
+              <span className="text-sm font-normal text-stone-400">Pesanan</span>
               {summary?.pending_orders ? (
-                <span className="inline-flex rounded-full bg-amber-100 px-2.5 py-0.5 text-[10px] font-black text-amber-800 animate-pulse">
-                  Butuh Tindakan
+                <span className="inline-flex rounded-full bg-red-50 border border-red-200 px-2 py-0.5 text-[10px] font-bold text-red-700">
+                  Perlu Tindakan
                 </span>
               ) : null}
             </h3>
 
-            <div className="mt-3 flex items-center justify-between text-xs pt-3 border-t border-zinc-100">
-              <span className="text-zinc-500">⏳ {summary?.pending_orders ?? 0} Pending</span>
-              <span className="text-zinc-500">👨‍🍳 {summary?.processing_orders ?? 0} Dimasak</span>
+            <div className="mt-3 flex items-center justify-between text-xs pt-3 border-t border-stone-100">
+              <span className="text-stone-600 flex items-center gap-1 font-medium">
+                <Clock size={12} className="text-amber-500" />
+                <span>{summary?.pending_orders ?? 0} Menunggu</span>
+              </span>
+              <span className="text-stone-600 flex items-center gap-1 font-medium">
+                <ChefHat size={12} className="text-blue-500" />
+                <span>{summary?.processing_orders ?? 0} Diproses</span>
+              </span>
             </div>
           </div>
         </div>
 
         {/* Card 4: Active Products Monitoring */}
-        <div className="rounded-3xl border border-zinc-200/90 bg-white p-6 shadow-sm hover:shadow-md transition">
+        <div className="rounded-2xl border border-stone-200/90 bg-white p-5 sm:p-6 shadow-2xs transition hover:shadow-xs">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-zinc-400">
-              Produk Tampil di Menu
+            <span className="text-xs font-semibold tracking-wider uppercase text-stone-400">
+              Menu Siap Saji
             </span>
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-zinc-100 text-zinc-900">
-              <Boxes size={20} />
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-stone-100 text-stone-900">
+              <Boxes size={18} />
             </div>
           </div>
 
-          <div className="mt-4">
-            <h3 className="text-2xl sm:text-3xl font-black tracking-tight text-zinc-950">
+          <div className="mt-3 sm:mt-4">
+            <h3 className="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight text-stone-950">
               {summary?.active_products ?? 0}{' '}
-              <span className="text-sm font-normal text-zinc-400">
+              <span className="text-sm font-normal text-stone-400">
                 / {summary?.total_products ?? 0} Menu
               </span>
             </h3>
 
-            <div className="mt-3 flex items-center justify-between text-xs pt-3 border-t border-zinc-100">
-              <span className="font-semibold text-emerald-700 flex items-center gap-1">
-                ● 100% Siap Dipesan di Web
+            <div className="mt-3 flex items-center justify-between text-xs pt-3 border-t border-stone-100">
+              <span className="font-semibold text-emerald-700 flex items-center gap-1.5">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                Aktif di Web
               </span>
               <Link
                 to="/admin/products"
-                className="text-zinc-400 hover:text-zinc-900 font-bold"
+                className="text-stone-500 hover:text-stone-900 font-semibold transition-colors"
               >
                 Kelola &rarr;
               </Link>
@@ -432,53 +443,53 @@ export default function AdminDashboard() {
       ====================================================== */}
       <div className="grid gap-6 xl:grid-cols-3">
         {/* Left: 7 Days Revenue Trend */}
-        <div className="rounded-3xl border border-zinc-200/90 bg-white p-6 sm:p-7 shadow-sm xl:col-span-2 space-y-6">
+        <div className="rounded-2xl border border-stone-200/90 bg-white p-5 sm:p-6 shadow-2xs xl:col-span-2 space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div>
               <div className="flex items-center gap-2">
-                <span className="flex h-2 w-2 rounded-full bg-zinc-900" />
-                <h2 className="font-bold text-zinc-900 text-lg">
+                <span className="flex h-2 w-2 rounded-full bg-stone-900" />
+                <h2 className="font-bold text-stone-900 text-base sm:text-lg">
                   Tren Pendapatan 7 Hari Terakhir
                 </h2>
               </div>
-              <p className="mt-0.5 text-xs text-zinc-500">
-                Aktivitas pesanan dan omset katering yang masuk dalam sepekan terakhir.
+              <p className="mt-0.5 text-xs text-stone-500">
+                Aktivitas omset katering yang masuk dalam sepekan terakhir.
               </p>
             </div>
 
-            <div className="text-right">
-              <p className="text-[11px] text-zinc-400">Total 7 Hari:</p>
-              <p className="text-lg font-black text-zinc-950 font-mono">
+            <div className="sm:text-right">
+              <p className="text-[11px] text-stone-400">Total 7 Hari:</p>
+              <p className="text-base sm:text-lg font-extrabold text-stone-950 font-mono">
                 {formatRupiah(totalSevenDaysRevenue)}
               </p>
             </div>
           </div>
 
           {/* Bar Chart Visualization */}
-          <div className="pt-6">
-            <div className="grid grid-cols-7 gap-3 sm:gap-6 items-end h-52 border-b border-zinc-100 pb-3">
+          <div className="pt-4">
+            <div className="grid grid-cols-7 gap-2 sm:gap-6 items-end h-48 sm:h-52 border-b border-stone-100 pb-3">
               {data.last_seven_days.map((day, index) => {
                 const heightPercentage = revenueChart[index] ?? 8
 
                 return (
                   <div key={day.date} className="group relative flex flex-col items-center h-full justify-end">
                     {/* Tooltip on hover */}
-                    <div className="absolute -top-12 z-20 hidden rounded-xl bg-zinc-950 px-2.5 py-1.5 text-center text-white shadow-xl group-hover:block transition-all pointer-events-none">
-                      <p className="text-[10px] font-bold text-zinc-400">{day.date}</p>
-                      <p className="text-xs font-black">{formatRupiah(day.revenue)}</p>
-                      <p className="text-[10px] text-emerald-400 font-semibold">{day.orders} Pesanan</p>
+                    <div className="absolute -top-12 z-20 hidden rounded-xl bg-stone-900 px-2.5 py-1.5 text-center text-white shadow-xl group-hover:block transition-all pointer-events-none">
+                      <p className="text-[10px] font-medium text-stone-400">{day.date}</p>
+                      <p className="text-xs font-bold font-mono">{formatRupiah(day.revenue)}</p>
+                      <p className="text-[10px] text-emerald-400 font-medium">{day.orders} Pesanan</p>
                     </div>
 
                     {/* Bar */}
                     <div
                       style={{ height: `${heightPercentage}%` }}
-                      className="w-full max-w-[48px] rounded-2xl bg-zinc-900 group-hover:bg-emerald-600 transition-all duration-300 relative overflow-hidden"
+                      className="w-full max-w-[44px] rounded-xl bg-stone-900 group-hover:bg-red-600 transition-colors duration-200 relative overflow-hidden"
                     >
-                      <div className="absolute inset-x-0 top-0 h-2 bg-white/20" />
+                      <div className="absolute inset-x-0 top-0 h-1.5 bg-white/20" />
                     </div>
 
                     {/* Day label */}
-                    <span className="mt-3 text-xs font-bold text-zinc-500 group-hover:text-zinc-950 transition">
+                    <span className="mt-2 text-[11px] font-semibold text-stone-500 group-hover:text-stone-950 transition-colors">
                       {day.label}
                     </span>
                   </div>
@@ -486,26 +497,26 @@ export default function AdminDashboard() {
               })}
             </div>
 
-            <div className="mt-3 flex items-center justify-between text-xs text-zinc-400">
-              <span>* Data diperbarui otomatis setiap transaksi masuk.</span>
-              <span className="flex items-center gap-2 font-medium text-zinc-600">
-                <span className="h-2 w-2 rounded-full bg-zinc-900" /> Omset Harian
+            <div className="mt-3 flex items-center justify-between text-xs text-stone-400">
+              <span className="text-[11px]">Data diperbarui real-time per transaksi.</span>
+              <span className="flex items-center gap-1.5 font-medium text-stone-600 text-[11px]">
+                <span className="h-1.5 w-1.5 rounded-full bg-stone-900" /> Omset Harian
               </span>
             </div>
           </div>
         </div>
 
         {/* Right: Order Status Distribution */}
-        <div className="rounded-3xl border border-zinc-200/90 bg-white p-6 sm:p-7 shadow-sm flex flex-col justify-between">
+        <div className="rounded-2xl border border-stone-200/90 bg-white p-5 sm:p-6 shadow-2xs flex flex-col justify-between">
           <div>
-            <h2 className="font-bold text-zinc-900 text-lg">
+            <h2 className="font-bold text-stone-900 text-base sm:text-lg">
               Distribusi Status Pesanan
             </h2>
-            <p className="mt-0.5 text-xs text-zinc-500">
-              Proporsi seluruh order yang tercatat di sistem.
+            <p className="mt-0.5 text-xs text-stone-500">
+              Proporsi seluruh pesanan yang tercatat di sistem.
             </p>
 
-            <div className="mt-7 space-y-4">
+            <div className="mt-6 space-y-4">
               {data.order_statuses && data.order_statuses.length > 0 ? (
                 data.order_statuses.map((item) => {
                   const totalAll = data.order_statuses.reduce((sum, s) => sum + s.total, 0)
@@ -516,22 +527,22 @@ export default function AdminDashboard() {
                     confirmed: 'bg-blue-400',
                     processing: 'bg-blue-500',
                     completed: 'bg-emerald-500',
-                    cancelled: 'bg-red-400',
-                  }[item.status.toLowerCase()] ?? 'bg-zinc-400'
+                    cancelled: 'bg-red-500',
+                  }[item.status.toLowerCase()] ?? 'bg-stone-400'
 
                   return (
                     <div key={item.status} className="space-y-1.5">
                       <div className="flex items-center justify-between text-xs">
-                        <span className="font-bold text-zinc-700 flex items-center gap-1.5">
+                        <span className="font-semibold text-stone-700 flex items-center gap-1.5">
                           <span className={`h-2 w-2 rounded-full ${statusColor}`} />
                           {formatStatus(item.status)}
                         </span>
-                        <span className="text-zinc-500 font-mono">
+                        <span className="text-stone-500 font-mono text-[11px]">
                           {item.total} order ({percentage}%)
                         </span>
                       </div>
 
-                      <div className="h-2 w-full rounded-full bg-zinc-100 overflow-hidden">
+                      <div className="h-2 w-full rounded-full bg-stone-100 overflow-hidden">
                         <div
                           style={{ width: `${percentage}%` }}
                           className={`h-full rounded-full ${statusColor} transition-all duration-500`}
@@ -541,16 +552,16 @@ export default function AdminDashboard() {
                   )
                 })
               ) : (
-                <div className="py-12 text-center text-xs text-zinc-400">
+                <div className="py-12 text-center text-xs text-stone-400">
                   Belum ada data status pesanan.
                 </div>
               )}
             </div>
           </div>
 
-          <div className="mt-6 pt-4 border-t border-zinc-100 flex items-center justify-between text-xs">
-            <span className="text-zinc-400">Total Keseluruhan Order:</span>
-            <span className="font-black text-zinc-950 font-mono">
+          <div className="mt-6 pt-4 border-t border-stone-100 flex items-center justify-between text-xs">
+            <span className="text-stone-400">Total Keseluruhan Order:</span>
+            <span className="font-bold text-stone-950 font-mono">
               {data.order_statuses.reduce((sum, s) => sum + s.total, 0)} Pesanan
             </span>
           </div>
@@ -565,94 +576,100 @@ export default function AdminDashboard() {
       {/* =====================================================
           PESANAN MASUK TERBARU (ACTION HUB & INVOICE WA)
       ====================================================== */}
-      <div className="rounded-3xl border border-zinc-200/90 bg-white shadow-sm overflow-hidden space-y-4">
+      <div className="rounded-2xl border border-stone-200/90 bg-white shadow-2xs overflow-hidden">
         {/* Table Header & Search */}
-        <div className="border-b border-zinc-100 p-6 sm:p-7 bg-[#fafaf9]">
+        <div className="border-b border-stone-100 p-4 sm:p-6 bg-stone-50/60">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             <div>
               <div className="flex items-center gap-2">
-                <span className="flex h-2 w-2 rounded-full bg-red-600 animate-ping" />
-                <h2 className="font-black text-zinc-950 text-xl tracking-tight">
+                <span className="flex h-2 w-2 rounded-full bg-red-600" />
+                <h2 className="font-bold text-stone-950 text-base sm:text-lg">
                   Pesanan Masuk Terbaru
                 </h2>
               </div>
-              <p className="mt-1 text-xs sm:text-sm text-zinc-500">
-                Lihat nomor WhatsApp pemesan, perbarui status proses, dan kirimkan invoice katering langsung dari sini.
+              <p className="mt-0.5 text-xs text-stone-500">
+                Kirim invoice resmi ke WhatsApp pemesan dan perbarui status proses dapur langsung dari sini.
               </p>
             </div>
 
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
               {/* Search Bar */}
               <div className="relative">
-                <Search size={15} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400" />
+                <Search size={14} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400" />
                 <input
                   type="text"
                   placeholder="Cari no. order / nama / WA..."
                   value={orderSearch}
                   onChange={(e) => setOrderSearch(e.target.value)}
-                  className="h-10 w-full sm:w-64 rounded-xl border border-zinc-200 bg-white pl-9 pr-8 text-xs font-medium outline-none focus:border-zinc-950 focus:ring-1 focus:ring-zinc-950 transition"
+                  className="h-10 w-full sm:w-64 rounded-xl border border-stone-200 bg-white pl-9 pr-8 text-xs font-medium outline-none focus:border-red-600 focus:ring-1 focus:ring-red-600 transition"
                 />
                 {orderSearch && (
                   <button
                     type="button"
                     onClick={() => setOrderSearch('')}
-                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-700"
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-700"
                   >
-                    <X size={14} />
+                    <X size={13} />
                   </button>
                 )}
               </div>
 
               <Link
                 to="/admin/orders"
-                className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-xs font-bold text-zinc-800 shadow-sm hover:bg-zinc-50 transition shrink-0"
+                className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-stone-200 bg-white px-3.5 py-2 text-xs font-semibold text-stone-800 shadow-2xs hover:bg-stone-50 transition shrink-0"
               >
-                Lihat Semua ({data.recent_orders?.length ?? 0})
-                <ChevronRight size={15} />
+                <span>Lihat Semua ({data.recent_orders?.length ?? 0})</span>
+                <ChevronRight size={14} />
               </Link>
             </div>
           </div>
 
-          {/* Status Tabs Filter */}
-          <div className="mt-4 flex items-center gap-1.5 overflow-x-auto pt-2 border-t border-zinc-200/60 scrollbar-none">
+          {/* Status Tabs Filter (Clean Lucide Icons - No Emojis!) */}
+          <div className="mt-4 flex items-center gap-1.5 overflow-x-auto pt-2 border-t border-stone-200/60 scrollbar-none">
             {[
-              { label: 'Semua Pesanan', value: '' },
-              { label: '⏳ Pending', value: 'pending' },
-              { label: '👨‍🍳 Diproses', value: 'processing' },
-              { label: '✅ Selesai', value: 'completed' },
-              { label: '❌ Canceled', value: 'cancelled' },
-            ].map((tab) => (
-              <button
-                key={tab.value}
-                type="button"
-                onClick={() => setOrderFilterStatus(tab.value)}
-                className={`shrink-0 rounded-xl px-3 py-1.5 text-xs font-bold transition ${
-                  orderFilterStatus === tab.value
-                    ? 'bg-zinc-950 text-white shadow-sm'
-                    : 'bg-white text-zinc-600 hover:bg-zinc-100 hover:text-zinc-950 border border-zinc-200'
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
+              { label: 'Semua Pesanan', value: '', icon: LayoutGrid },
+              { label: 'Menunggu', value: 'pending', icon: Clock },
+              { label: 'Diproses Dapur', value: 'processing', icon: ChefHat },
+              { label: 'Selesai', value: 'completed', icon: CheckCircle2 },
+              { label: 'Dibatalkan', value: 'cancelled', icon: XCircle },
+            ].map((tab) => {
+              const TabIcon = tab.icon
+              const isActive = orderFilterStatus === tab.value
+
+              return (
+                <button
+                  key={tab.value}
+                  type="button"
+                  onClick={() => setOrderFilterStatus(tab.value)}
+                  className={`inline-flex items-center gap-1.5 shrink-0 rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
+                    isActive
+                      ? 'bg-stone-900 text-white shadow-2xs'
+                      : 'bg-white text-stone-600 hover:bg-stone-100 hover:text-stone-950 border border-stone-200'
+                  }`}
+                >
+                  <TabIcon size={13} className={isActive ? 'text-white' : 'text-stone-400'} />
+                  <span>{tab.label}</span>
+                </button>
+              )
+            })}
           </div>
         </div>
 
-        {/* Table View */}
-        <div className="overflow-x-auto px-6 pb-6">
-          <table className="w-full min-w-[950px] text-left">
-            <thead className="bg-zinc-50/70 text-xs font-bold uppercase tracking-wider text-zinc-400 border-b border-zinc-100">
+        {/* Desktop Table View (>= md) */}
+        <div className="hidden md:block overflow-x-auto">
+          <table className="w-full text-left">
+            <thead className="bg-stone-50/70 text-[11px] font-bold uppercase tracking-wider text-stone-400 border-b border-stone-100">
               <tr>
                 <th className="px-5 py-3.5">Kode Order</th>
                 <th className="px-5 py-3.5">Pemesan & WhatsApp</th>
                 <th className="px-5 py-3.5">Rincian Menu & Porsi</th>
                 <th className="px-5 py-3.5">Status Pesanan</th>
                 <th className="px-5 py-3.5 text-right">Total Tagihan</th>
-                <th className="px-5 py-3.5 text-right">Aksi Invoice & Detail</th>
+                <th className="px-5 py-3.5 text-right">Aksi</th>
               </tr>
             </thead>
 
-            <tbody className="divide-y divide-zinc-100">
+            <tbody className="divide-y divide-stone-100 text-xs">
               {filteredRecentOrders.length > 0 ? (
                 filteredRecentOrders.map((order) => {
                   const invoiceUrl = generateDashboardWhatsAppInvoice(order)
@@ -660,28 +677,28 @@ export default function AdminDashboard() {
                   const waChatUrl = `https://wa.me/${cleanPhone.startsWith('0') ? '62' + cleanPhone.slice(1) : cleanPhone}`
 
                   return (
-                    <tr key={order.id} className="transition hover:bg-zinc-50/80">
+                    <tr key={order.id} className="transition hover:bg-stone-50/80">
                       {/* Order Code */}
                       <td className="whitespace-nowrap px-5 py-4 align-top">
-                        <p className="font-extrabold text-zinc-950 text-xs font-mono">
+                        <p className="font-bold text-stone-950 font-mono">
                           {order.order_code}
                         </p>
-                        <p className="mt-0.5 text-[11px] text-zinc-400">
+                        <p className="mt-0.5 text-[11px] text-stone-400">
                           {formatDate(order.created_at)}
                         </p>
                       </td>
 
                       {/* Customer & WA */}
                       <td className="whitespace-nowrap px-5 py-4 align-top">
-                        <p className="text-xs font-bold text-zinc-900 flex items-center gap-1.5">
-                          <User size={13} className="text-zinc-400" />
+                        <p className="font-bold text-stone-900 flex items-center gap-1.5">
+                          <User size={13} className="text-stone-400" />
                           {order.customers_name}
                         </p>
                         <a
                           href={waChatUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="mt-1 inline-flex items-center gap-1 text-xs font-bold text-emerald-600 hover:text-emerald-700 hover:underline"
+                          className="mt-1 inline-flex items-center gap-1 text-xs font-semibold text-emerald-600 hover:text-emerald-700 hover:underline"
                           title="Hubungi pelanggan via WhatsApp"
                         >
                           <MessageCircle size={13} />
@@ -695,23 +712,23 @@ export default function AdminDashboard() {
                           <div className="space-y-1">
                             {order.items.map((it) => (
                               <div key={it.id} className="text-xs">
-                                <span className="font-bold text-zinc-900">{it.item_name}</span>
-                                <span className="ml-1.5 inline-block rounded bg-zinc-100 px-1.5 py-0.2 text-[10px] font-black text-zinc-700">
+                                <span className="font-semibold text-stone-900">{it.item_name}</span>
+                                <span className="ml-1.5 inline-block rounded bg-stone-100 px-1.5 py-0.2 text-[10px] font-bold text-stone-700">
                                   {it.quantity} porsi
                                 </span>
                               </div>
                             ))}
                           </div>
                         ) : (
-                          <p className="text-xs text-zinc-500">Menu Katering</p>
+                          <p className="text-xs text-stone-500">Menu Katering</p>
                         )}
-                        <p className="mt-1 text-[11px] text-zinc-400 flex items-center gap-1">
+                        <p className="mt-1 text-[11px] text-stone-400 flex items-center gap-1">
                           <Calendar size={11} />
                           Acara: {formatDate(order.event_date)} {order.event_time ? `(${order.event_time})` : ''}
                         </p>
                       </td>
 
-                      {/* Status Selector */}
+                      {/* Status Selector (No Emojis!) */}
                       <td className="px-5 py-4 align-top">
                         <div className="space-y-1.5 w-36">
                           <StatusBadge status={order.status} />
@@ -722,23 +739,23 @@ export default function AdminDashboard() {
                             onChange={(e) =>
                               handleStatusChange(order.id, e.target.value as OrderStatus)
                             }
-                            className="block w-full text-[11px] font-semibold text-zinc-800 bg-white border border-zinc-200 rounded-lg px-2 py-1 outline-none focus:border-zinc-950 transition disabled:opacity-50"
+                            className="block w-full text-[11px] font-semibold text-stone-800 bg-white border border-stone-200 rounded-lg px-2 py-1 outline-none focus:border-red-600 transition disabled:opacity-50"
                           >
-                            <option value="pending">⏳ Pending</option>
-                            <option value="processing">👨‍🍳 Diproses</option>
-                            <option value="completed">✅ Selesai</option>
-                            <option value="cancelled">❌ Canceled</option>
+                            <option value="pending">Menunggu</option>
+                            <option value="processing">Diproses Dapur</option>
+                            <option value="completed">Selesai</option>
+                            <option value="cancelled">Dibatalkan</option>
                           </select>
                         </div>
                       </td>
 
                       {/* Total */}
                       <td className="whitespace-nowrap px-5 py-4 text-right align-top">
-                        <p className="text-xs sm:text-sm font-black text-zinc-950 font-mono">
+                        <p className="font-bold text-stone-950 font-mono">
                           {formatRupiah(order.total)}
                         </p>
                         {order.subtotal && (
-                          <p className="text-[10px] text-zinc-400">
+                          <p className="text-[10px] text-stone-400">
                             Subtotal: {formatRupiah(order.subtotal)}
                           </p>
                         )}
@@ -747,26 +764,24 @@ export default function AdminDashboard() {
                       {/* Actions */}
                       <td className="whitespace-nowrap px-5 py-4 text-right align-top">
                         <div className="flex flex-col items-end gap-1.5">
-                          {/* Send WhatsApp Invoice Button */}
                           <a
                             href={invoiceUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 px-3 py-1.5 text-xs font-bold text-white shadow-sm hover:bg-emerald-700 transition"
-                            title="Kirim invoice WhatsApp katering ke nomor pemesan ini"
+                            className="inline-flex items-center gap-1 rounded-lg bg-emerald-600 px-2.5 py-1 text-xs font-semibold text-white shadow-2xs hover:bg-emerald-700 transition"
+                            title="Kirim invoice WhatsApp"
                           >
                             <Receipt size={13} />
-                            Kirim Invoice WA
+                            <span>Invoice WA</span>
                           </a>
 
-                          {/* Detail Button (Opens Modal on Dashboard!) */}
                           <button
                             type="button"
                             onClick={() => setSelectedOrder(order)}
-                            className="inline-flex items-center gap-1 rounded-xl border border-zinc-200 bg-white px-3 py-1 text-xs font-bold text-zinc-700 hover:bg-zinc-100 transition"
+                            className="inline-flex items-center gap-1 rounded-lg border border-stone-200 bg-white px-2.5 py-1 text-xs font-medium text-stone-700 hover:bg-stone-50 transition"
                           >
                             <Eye size={13} />
-                            Detail
+                            <span>Detail</span>
                           </button>
                         </div>
                       </td>
@@ -775,33 +790,128 @@ export default function AdminDashboard() {
                 })
               ) : (
                 <tr>
-                  <td colSpan={6} className="px-6 py-12 text-center text-xs text-zinc-400">
-                    Tidak ada pesanan yang cocok dengan pencarian / filter ini.
+                  <td colSpan={6} className="py-12 text-center text-xs text-stone-400">
+                    Tidak ada pesanan yang sesuai filter.
                   </td>
                 </tr>
               )}
             </tbody>
           </table>
         </div>
+
+        {/* Mobile Responsive Order Cards (< md) */}
+        <div className="block md:hidden divide-y divide-stone-100 p-4 space-y-4">
+          {filteredRecentOrders.length > 0 ? (
+            filteredRecentOrders.map((order) => {
+              const invoiceUrl = generateDashboardWhatsAppInvoice(order)
+              const cleanPhone = order.customers_phone.replace(/[^0-9]/g, '')
+              const waChatUrl = `https://wa.me/${cleanPhone.startsWith('0') ? '62' + cleanPhone.slice(1) : cleanPhone}`
+
+              return (
+                <div
+                  key={order.id}
+                  className="rounded-xl border border-stone-200 bg-white p-4 shadow-2xs space-y-3"
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <span className="font-bold text-stone-900 font-mono text-sm">
+                        {order.order_code}
+                      </span>
+                      <p className="text-[11px] text-stone-400">
+                        {formatDate(order.created_at)}
+                      </p>
+                    </div>
+
+                    <StatusBadge status={order.status} />
+                  </div>
+
+                  <div className="space-y-1 text-xs">
+                    <p className="font-semibold text-stone-900 flex items-center gap-1.5">
+                      <User size={13} className="text-stone-400" />
+                      {order.customers_name}
+                    </p>
+                    <a
+                      href={waChatUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-600 hover:underline"
+                    >
+                      <MessageCircle size={13} />
+                      {order.customers_phone}
+                    </a>
+                  </div>
+
+                  {/* Items preview */}
+                  <div className="rounded-lg bg-stone-50 p-2 text-xs space-y-0.5">
+                    {order.items && order.items.length > 0 ? (
+                      order.items.map((it) => (
+                        <div key={it.id} className="flex justify-between">
+                          <span className="font-medium text-stone-800">{it.item_name}</span>
+                          <span className="font-bold text-stone-600">{it.quantity} porsi</span>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-stone-500">Menu Katering</p>
+                    )}
+                  </div>
+
+                  <div className="flex items-center justify-between pt-1 border-t border-stone-100 text-xs">
+                    <div>
+                      <span className="text-[10px] text-stone-400">Total Tagihan:</span>
+                      <p className="font-bold text-stone-950 font-mono text-sm">
+                        {formatRupiah(order.total)}
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <a
+                        href={invoiceUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white shadow-2xs"
+                      >
+                        <Receipt size={13} />
+                        <span>WA</span>
+                      </a>
+
+                      <button
+                        type="button"
+                        onClick={() => setSelectedOrder(order)}
+                        className="inline-flex items-center gap-1 rounded-lg border border-stone-200 bg-white px-3 py-1.5 text-xs font-medium text-stone-700"
+                      >
+                        <Eye size={13} />
+                        <span>Detail</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )
+            })
+          ) : (
+            <div className="py-8 text-center text-xs text-stone-400">
+              Tidak ada pesanan yang sesuai filter.
+            </div>
+          )}
+        </div>
       </div>
 
       {/* =====================================================
-          ORDER DETAIL & INVOICE MODAL (ON DASHBOARD)
+          ORDER DETAIL MODAL
       ====================================================== */}
       {selectedOrder && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm animate-fade-in">
-          <div className="relative w-full max-w-2xl overflow-hidden rounded-3xl bg-white shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-950/40 backdrop-blur-xs transition-opacity">
+          <div className="w-full max-w-xl rounded-2xl border border-stone-200 bg-white shadow-2xl overflow-hidden">
             {/* Modal Header */}
-            <div className="flex items-center justify-between border-b border-zinc-100 bg-[#fafaf9] px-6 py-5">
+            <div className="border-b border-stone-100 bg-stone-50 px-6 py-4 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-zinc-950 text-white">
-                  <Receipt size={20} />
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-stone-900 text-white shadow-xs">
+                  <Receipt size={18} />
                 </div>
                 <div>
-                  <h3 className="font-black text-zinc-950 text-base">
+                  <h3 className="font-bold text-stone-950 text-base">
                     Detail Pesanan: {selectedOrder.order_code}
                   </h3>
-                  <p className="text-xs text-zinc-400">
+                  <p className="text-xs text-stone-400">
                     Masuk pada {formatDate(selectedOrder.created_at)}
                   </p>
                 </div>
@@ -810,7 +920,7 @@ export default function AdminDashboard() {
               <button
                 type="button"
                 onClick={() => setSelectedOrder(null)}
-                className="rounded-full p-2 text-zinc-400 hover:bg-zinc-200 hover:text-zinc-700 transition"
+                className="rounded-lg p-1.5 text-stone-400 hover:bg-stone-200 hover:text-stone-700 transition"
               >
                 <X size={18} />
               </button>
@@ -819,9 +929,9 @@ export default function AdminDashboard() {
             {/* Modal Body */}
             <div className="p-6 space-y-5 max-h-[75vh] overflow-y-auto">
               {/* Status Switcher Row */}
-              <div className="rounded-2xl border border-zinc-200 bg-zinc-50/70 p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div className="rounded-xl border border-stone-200 bg-stone-50/70 p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div>
-                  <p className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-stone-400">
                     Status Saat Ini
                   </p>
                   <div className="mt-1">
@@ -830,15 +940,15 @@ export default function AdminDashboard() {
                 </div>
 
                 <div>
-                  <p className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 mb-1.5">
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-stone-400 mb-1.5">
                     Ubah Status Cepat:
                   </p>
                   <div className="flex flex-wrap gap-1.5">
                     {[
-                      { status: 'pending', label: 'Pending' },
-                      { status: 'processing', label: 'Proses Dapur' },
+                      { status: 'pending', label: 'Menunggu' },
+                      { status: 'processing', label: 'Diproses Dapur' },
                       { status: 'completed', label: 'Selesai' },
-                      { status: 'cancelled', label: 'Canceled' },
+                      { status: 'cancelled', label: 'Dibatalkan' },
                     ].map((st) => (
                       <button
                         key={st.status}
@@ -847,10 +957,10 @@ export default function AdminDashboard() {
                         onClick={() =>
                           handleStatusChange(selectedOrder.id, st.status as OrderStatus)
                         }
-                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${
+                        className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
                           selectedOrder.status === st.status
-                            ? 'bg-zinc-950 text-white shadow-sm'
-                            : 'bg-white border border-zinc-200 text-zinc-700 hover:bg-zinc-100'
+                            ? 'bg-stone-900 text-white shadow-2xs'
+                            : 'bg-white border border-stone-200 text-stone-700 hover:bg-stone-100'
                         } disabled:opacity-50`}
                       >
                         {st.label}
@@ -862,37 +972,37 @@ export default function AdminDashboard() {
 
               {/* Customer & Event Details */}
               <div className="grid gap-4 sm:grid-cols-2">
-                <div className="rounded-2xl border border-zinc-200 p-4 space-y-2">
-                  <p className="text-xs font-bold uppercase tracking-wider text-zinc-400">
+                <div className="rounded-xl border border-stone-200 p-4 space-y-2">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-stone-400">
                     Data Pemesan
                   </p>
-                  <p className="font-black text-zinc-900 text-sm flex items-center gap-1.5">
-                    <User size={15} className="text-zinc-400" />
+                  <p className="font-bold text-stone-900 text-sm flex items-center gap-1.5">
+                    <User size={15} className="text-stone-400" />
                     {selectedOrder.customers_name}
                   </p>
                   <a
                     href={`https://wa.me/${selectedOrder.customers_phone.replace(/[^0-9]/g, '')}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-xs font-bold text-emerald-600 hover:underline flex items-center gap-1.5"
+                    className="text-xs font-semibold text-emerald-600 hover:underline flex items-center gap-1.5"
                   >
                     <MessageCircle size={14} />
                     {selectedOrder.customers_phone}
                   </a>
                 </div>
 
-                <div className="rounded-2xl border border-zinc-200 p-4 space-y-2">
-                  <p className="text-xs font-bold uppercase tracking-wider text-zinc-400">
+                <div className="rounded-xl border border-stone-200 p-4 space-y-2">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-stone-400">
                     Waktu & Alamat Acara
                   </p>
-                  <p className="text-xs font-bold text-zinc-900 flex items-center gap-1.5">
-                    <Calendar size={14} className="text-zinc-400" />
+                  <p className="text-xs font-bold text-stone-900 flex items-center gap-1.5">
+                    <Calendar size={14} className="text-stone-400" />
                     {formatDate(selectedOrder.event_date)}{' '}
                     {selectedOrder.event_time && `(${selectedOrder.event_time})`}
                   </p>
                   {selectedOrder.delivery_address && (
-                    <p className="text-xs text-zinc-500 flex items-start gap-1.5">
-                      <MapPin size={14} className="text-zinc-400 shrink-0 mt-0.5" />
+                    <p className="text-xs text-stone-500 flex items-start gap-1.5">
+                      <MapPin size={14} className="text-stone-400 shrink-0 mt-0.5" />
                       <span>{selectedOrder.delivery_address}</span>
                     </p>
                   )}
@@ -907,44 +1017,44 @@ export default function AdminDashboard() {
               )}
 
               {/* Items Breakdown */}
-              <div className="rounded-2xl border border-zinc-200 overflow-hidden">
-                <div className="bg-zinc-50 px-4 py-2.5 border-b border-zinc-200 text-xs font-bold uppercase text-zinc-500">
+              <div className="rounded-xl border border-stone-200 overflow-hidden">
+                <div className="bg-stone-50 px-4 py-2 border-b border-stone-200 text-xs font-bold uppercase tracking-wider text-stone-500">
                   Rincian Item Menu
                 </div>
-                <div className="divide-y divide-zinc-100 p-2">
+                <div className="divide-y divide-stone-100 p-2">
                   {selectedOrder.items && selectedOrder.items.length > 0 ? (
                     selectedOrder.items.map((item) => (
-                      <div key={item.id} className="flex items-center justify-between p-3 text-xs">
+                      <div key={item.id} className="flex items-center justify-between p-2.5 text-xs">
                         <div>
-                          <p className="font-bold text-zinc-900">{item.item_name}</p>
-                          <p className="text-zinc-400">
+                          <p className="font-semibold text-stone-900">{item.item_name}</p>
+                          <p className="text-stone-400 font-mono text-[11px]">
                             {formatRupiah(item.price)} x {item.quantity} porsi
                           </p>
                         </div>
-                        <p className="font-black text-zinc-950 text-sm font-mono">
+                        <p className="font-bold text-stone-950 font-mono">
                           {formatRupiah(item.subtotal)}
                         </p>
                       </div>
                     ))
                   ) : (
-                    <div className="p-4 text-center text-xs text-zinc-400">
+                    <div className="p-4 text-center text-xs text-stone-400">
                       Rincian menu katering standar.
                     </div>
                   )}
                 </div>
 
                 {/* Total Cost Breakdown */}
-                <div className="bg-zinc-50 p-4 border-t border-zinc-200 space-y-1.5 text-xs">
-                  <div className="flex justify-between text-zinc-600">
+                <div className="bg-stone-50 p-4 border-t border-stone-200 space-y-1 text-xs">
+                  <div className="flex justify-between text-stone-600">
                     <span>Subtotal Menu</span>
-                    <span>{formatRupiah(selectedOrder.subtotal || selectedOrder.total)}</span>
+                    <span className="font-mono">{formatRupiah(selectedOrder.subtotal || selectedOrder.total)}</span>
                   </div>
-                  <div className="flex justify-between text-zinc-600">
+                  <div className="flex justify-between text-stone-600">
                     <span>Ongkos Kirim</span>
-                    <span>{formatRupiah(selectedOrder.delivery_fee || 0)}</span>
+                    <span className="font-mono">{formatRupiah(selectedOrder.delivery_fee || 0)}</span>
                   </div>
-                  <div className="flex justify-between text-sm font-black text-zinc-950 pt-2 border-t border-zinc-200">
-                    <span>Total Tagihan Invoice</span>
+                  <div className="flex justify-between text-sm font-bold text-stone-950 pt-2 border-t border-stone-200">
+                    <span>Total Tagihan</span>
                     <span className="font-mono">{formatRupiah(selectedOrder.total)}</span>
                   </div>
                 </div>
@@ -952,16 +1062,16 @@ export default function AdminDashboard() {
             </div>
 
             {/* Modal Actions Footer */}
-            <div className="border-t border-zinc-100 bg-zinc-50 px-6 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-              <p className="text-xs text-zinc-400">
-                Kirimkan invoice resmi ke WhatsApp pemesan untuk mempercepat proses pembayaran.
+            <div className="border-t border-stone-100 bg-stone-50 px-6 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <p className="text-xs text-stone-400">
+                Kirim invoice resmi langsung ke nomor WhatsApp pemesan.
               </p>
 
               <div className="flex items-center gap-2 self-end sm:self-auto">
                 <button
                   type="button"
                   onClick={() => setSelectedOrder(null)}
-                  className="px-4 py-2.5 rounded-xl border border-zinc-200 text-xs font-bold text-zinc-700 hover:bg-white transition"
+                  className="px-4 py-2 rounded-xl border border-stone-200 text-xs font-semibold text-stone-700 hover:bg-white transition"
                 >
                   Tutup
                 </button>
@@ -970,10 +1080,10 @@ export default function AdminDashboard() {
                   href={generateDashboardWhatsAppInvoice(selectedOrder)}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 text-white text-xs font-bold shadow-md shadow-emerald-600/20 hover:bg-emerald-700 transition"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 text-white text-xs font-bold shadow-xs hover:bg-emerald-700 transition"
                 >
-                  <Receipt size={16} />
-                  Kirim Invoice WA
+                  <Receipt size={14} />
+                  <span>Kirim Invoice WA</span>
                 </a>
               </div>
             </div>
@@ -994,47 +1104,47 @@ function ProductMonitoringSection() {
   })
 
   return (
-    <div className="rounded-3xl border border-zinc-200/90 bg-white p-6 sm:p-7 shadow-sm space-y-5">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-5 border-b border-zinc-100">
+    <div className="rounded-2xl border border-stone-200/90 bg-white p-5 sm:p-6 shadow-2xs space-y-4 sm:space-y-5">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-4 border-b border-stone-100">
         <div>
           <div className="flex items-center gap-2">
-            <span className="flex h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse" />
-            <h2 className="font-bold text-zinc-950 text-lg">
-              Monitoring Produk yang Tampil di Menu Publik
+            <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+            <h2 className="font-bold text-stone-950 text-base sm:text-lg">
+              Monitoring Produk Menu Publik
             </h2>
           </div>
-          <p className="mt-1 text-xs text-zinc-500">
-            Katalog katering yang saat ini berstatus aktif dan dapat langsung dilihat serta dipesan oleh pelanggan di website.
+          <p className="mt-0.5 text-xs text-stone-500">
+            Katalog katering aktif yang saat ini tampil dan dapat langsung dipesan oleh pelanggan di website.
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-2">
           <Link
             to="/admin/products/create"
-            className="inline-flex items-center gap-1.5 rounded-xl border border-zinc-200 bg-white px-3.5 py-2 text-xs font-bold text-zinc-800 hover:bg-zinc-50 shadow-sm transition"
+            className="inline-flex items-center gap-1.5 rounded-xl border border-stone-200 bg-white px-3 py-1.5 text-xs font-semibold text-stone-800 hover:bg-stone-50 shadow-2xs transition"
           >
-            <Plus size={14} />
-            Tambah Produk
+            <Plus size={13} />
+            <span>Tambah Produk</span>
           </Link>
 
           <Link
             to="/admin/products"
-            className="inline-flex items-center gap-1 text-xs font-bold text-zinc-950 hover:underline"
+            className="inline-flex items-center gap-1 text-xs font-semibold text-stone-900 hover:text-red-600 transition-colors"
           >
-            Kelola Semua ({products?.length ?? 0})
-            <ChevronRight size={15} />
+            <span>Kelola Semua ({products?.length ?? 0})</span>
+            <ChevronRight size={14} />
           </Link>
         </div>
       </div>
 
       {isLoading ? (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 pt-2">
+        <div className="grid gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-4 pt-1">
           {[1, 2, 3, 4].map((n) => (
-            <div key={n} className="h-24 rounded-2xl bg-zinc-100 animate-pulse" />
+            <div key={n} className="h-20 rounded-xl bg-stone-100 animate-pulse" />
           ))}
         </div>
       ) : products && products.length > 0 ? (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 pt-2">
+        <div className="grid gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-4 pt-1">
           {products.map((product) => {
             const displayImage = getProductDisplayImage(product)
             const minOrder = product.minimum_order || 10
@@ -1042,57 +1152,57 @@ function ProductMonitoringSection() {
             return (
               <div
                 key={product.id}
-                className="group relative flex items-center gap-3.5 rounded-2xl border border-zinc-200/80 bg-zinc-50/70 p-3.5 transition-all hover:bg-white hover:border-zinc-300 hover:shadow-md"
+                className="group relative flex items-center gap-3 rounded-xl border border-stone-200/80 bg-stone-50/60 p-3 transition-all hover:bg-white hover:border-stone-300 hover:shadow-2xs"
               >
                 {/* Thumbnail */}
-                <div className="h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-zinc-200 relative">
+                <div className="h-14 w-14 shrink-0 overflow-hidden rounded-lg bg-stone-200 relative">
                   <img
                     src={displayImage}
                     alt={product.name}
-                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                   />
                 </div>
 
                 {/* Details */}
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-1.5">
-                    <span className="inline-block rounded bg-emerald-100/70 px-1.5 py-0.2 text-[9px] font-black text-emerald-800">
-                      ● Tampil
+                    <span className="inline-block rounded bg-emerald-100/70 px-1.5 py-0.2 text-[9px] font-bold text-emerald-800">
+                      Aktif
                     </span>
                     {product.category && (
-                      <span className="text-[10px] text-zinc-400 truncate">
+                      <span className="text-[10px] text-stone-400 truncate">
                         {product.category.name}
                       </span>
                     )}
                   </div>
 
-                  <h4 className="font-extrabold text-xs text-zinc-950 truncate mt-0.5" title={product.name}>
+                  <h4 className="font-bold text-xs text-stone-950 truncate mt-0.5" title={product.name}>
                     {product.name}
                   </h4>
 
-                  <p className="text-xs font-black text-zinc-950 font-mono mt-0.5">
+                  <p className="text-xs font-bold text-stone-950 font-mono mt-0.5">
                     {formatRupiah(product.price)}
                   </p>
 
-                  <p className="text-[10px] text-zinc-400">
-                    Min. {minOrder} porsi (kelipatan 10)
+                  <p className="text-[10px] text-stone-400">
+                    Min. {minOrder} porsi
                   </p>
                 </div>
 
                 {/* Quick Edit Icon Link */}
                 <Link
                   to={`/admin/products/${product.id}/edit`}
-                  className="opacity-0 group-hover:opacity-100 transition-opacity p-2 rounded-lg bg-white border border-zinc-200 shadow-sm text-zinc-600 hover:text-zinc-950 hover:bg-zinc-100 shrink-0"
+                  className="opacity-0 group-hover:opacity-100 transition-opacity p-1.5 rounded-lg bg-white border border-stone-200 shadow-2xs text-stone-600 hover:text-stone-950 hover:bg-stone-50 shrink-0"
                   title="Edit produk ini"
                 >
-                  <Edit size={14} />
+                  <Edit size={13} />
                 </Link>
               </div>
             )
           })}
         </div>
       ) : (
-        <div className="py-10 text-center text-xs text-zinc-400">
+        <div className="py-8 text-center text-xs text-stone-400">
           Belum ada produk aktif yang tampil di menu.
         </div>
       )}
@@ -1103,17 +1213,17 @@ function ProductMonitoringSection() {
 function StatusBadge({ status }: { status: string }) {
   const normalized = status.toLowerCase()
   const styles: Record<string, string> = {
-    pending: 'bg-amber-100 text-amber-800 border-amber-200',
-    confirmed: 'bg-blue-100 text-blue-800 border-blue-200',
-    processing: 'bg-blue-100 text-blue-800 border-blue-200',
-    completed: 'bg-emerald-100 text-emerald-800 border-emerald-200',
-    cancelled: 'bg-red-100 text-red-800 border-red-200',
+    pending: 'bg-amber-50 text-amber-800 border-amber-200',
+    confirmed: 'bg-blue-50 text-blue-800 border-blue-200',
+    processing: 'bg-blue-50 text-blue-800 border-blue-200',
+    completed: 'bg-emerald-50 text-emerald-800 border-emerald-200',
+    cancelled: 'bg-red-50 text-red-800 border-red-200',
   }
 
   return (
     <span
-      className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-extrabold border ${
-        styles[normalized] ?? 'bg-zinc-100 text-zinc-700 border-zinc-200'
+      className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-bold border ${
+        styles[normalized] ?? 'bg-stone-100 text-stone-700 border-stone-200'
       }`}
     >
       {formatStatus(status)}
@@ -1123,25 +1233,25 @@ function StatusBadge({ status }: { status: string }) {
 
 function DashboardSkeleton() {
   return (
-    <div className="mx-auto max-w-7xl space-y-8 p-6">
-      <div className="space-y-3">
-        <div className="h-5 w-32 animate-pulse rounded-full bg-zinc-200" />
-        <div className="h-10 w-72 animate-pulse rounded-2xl bg-zinc-200" />
-        <div className="h-4 w-96 animate-pulse rounded-xl bg-zinc-200" />
+    <div className="mx-auto max-w-7xl space-y-6 sm:space-y-8 p-4 sm:p-6 lg:p-8">
+      <div className="space-y-2">
+        <div className="h-4 w-32 animate-pulse rounded-full bg-stone-200" />
+        <div className="h-8 w-64 animate-pulse rounded-xl bg-stone-200" />
+        <div className="h-4 w-96 animate-pulse rounded-lg bg-stone-200" />
       </div>
 
-      <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {[1, 2, 3, 4].map((n) => (
-          <div key={n} className="h-36 animate-pulse rounded-3xl bg-zinc-100" />
+          <div key={n} className="h-32 animate-pulse rounded-2xl bg-stone-100" />
         ))}
       </div>
 
       <div className="grid gap-6 xl:grid-cols-3">
-        <div className="h-80 animate-pulse rounded-3xl bg-zinc-100 xl:col-span-2" />
-        <div className="h-80 animate-pulse rounded-3xl bg-zinc-100" />
+        <div className="h-72 animate-pulse rounded-2xl bg-stone-100 xl:col-span-2" />
+        <div className="h-72 animate-pulse rounded-2xl bg-stone-100" />
       </div>
 
-      <div className="h-96 animate-pulse rounded-3xl bg-zinc-100" />
+      <div className="h-64 animate-pulse rounded-2xl bg-stone-100" />
     </div>
   )
 }
