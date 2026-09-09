@@ -19,10 +19,10 @@ return new class extends Migration
             ->cascadeOnUpdate()
             ->cascadeOnDelete();
 
-            $table->foreignId('package_id')
-            ->nullable()
-            ->constrained()
-            ->nullOnDelete();
+            // $table->foreignId('package_id')
+            // ->nullable()
+            // ->constrained()
+            // ->nullOnDelete();
 
             $table->string('item_name');
 
