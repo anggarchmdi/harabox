@@ -168,7 +168,7 @@ export default function Navbar() {
               DESKTOP CTA
           ========================== */}
           <Link
-            to="/menu"
+            to="/menu#menu-list"
             className="
               group hidden items-center gap-2
               rounded-full
