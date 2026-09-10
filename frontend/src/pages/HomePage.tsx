@@ -337,115 +337,72 @@ export default function HomePage() {
           className="w-full h-full hidden md:flex object-cover"
         />
 
-        {/* Floating Recommendation Card */}
-        <div className="absolute z-20 w-full px-4 -translate-y-44 md:-translate-y-32 xl:-translate-y-36">
-          <div
+        {/* Floating Quick Order Card */}
+        <div className="absolute z-20 w-full px-4 -translate-y-32 md:-translate-y-28 xl:-translate-y-32">
+        <div
             data-aos="fade-up"
             data-aos-duration="700"
-            className="mx-auto w-full max-w-5xl rounded-2xl bg-white px-6 py-7 shadow-[0_10px_40px_rgba(0,0,0,0.12)] md:px-10 border border-zinc-100"
-          >
+            className="
+            mx-auto w-full max-w-4xl
+            rounded-3xl
+            border border-zinc-100
+            bg-white
+            px-6 py-7
+            shadow-[0_10px_40px_rgba(0,0,0,0.12)]
+            md:px-10 md:py-8
+            "
+        >
+            <div className="flex flex-col items-center justify-between gap-6 md:flex-row">
+
             {/* Heading */}
-            <div className="mb-7 text-center">
-              <h1 className="text-xl font-poppins tracking-tight text-gray-900 md:text-2xl">
-                Bingung mau pesan apa?
-                <span className="ml-1 font-poppins text-gray-500">
-                  Yuk, kami pilihkan menu terbaik!
-                </span>
-              </h1>
+            <div className="text-center md:text-left">
+                <p className="text-xs font-bold uppercase tracking-[0.18em] text-red-500">
+                HaraBox Catering
+                </p>
+
+                <h2 className="mt-1 text-xl font-bold tracking-tight text-zinc-900 md:text-2xl">
+                Siap pesan nasi box?
+                </h2>
+
+                <p className="mt-1.5 max-w-lg text-sm leading-relaxed text-zinc-500">
+                Pilih menu favoritmu, tentukan jumlah pesanan, dan kami bantu prosesnya.
+                </p>
             </div>
 
-            {/* Form */}
-            <form
-              onSubmit={handleRecommendationSubmit}
-              className="flex flex-col gap-5 xl:flex-row xl:items-end xl:gap-4"
+            {/* CTA */}
+            <Link
+                to="/menu#menu-list"
+                className="
+                group flex shrink-0 items-center gap-2
+                rounded-full
+                bg-gradient-to-r from-red-500 to-orange-500
+                px-7 py-3.5
+                text-sm font-semibold text-white
+                shadow-md shadow-red-500/20
+                transition-all duration-300
+                hover:-translate-y-0.5
+                hover:shadow-lg hover:shadow-red-500/25
+                "
             >
-              {/* Tanggal Acara */}
-              <div className="flex-1">
-                <label className="mb-2 block text-xs font-medium text-gray-500">
-                  Tanggal Acara
-                </label>
+                Lihat Menu
+            </Link>
+            </div>
 
-                <div className="flex h-11 items-center gap-3 border-b border-gray-300 px-1 transition-colors focus-within:border-red-500">
-                  <CalendarDays
-                    size={18}
-                    strokeWidth={1.8}
-                    className="text-red-500 shrink-0"
-                  />
+            {/* Quick Info */}
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 border-t border-zinc-100 pt-5 md:justify-start">
+            <span className="text-xs font-medium text-zinc-500">
+                ✓ Minimal 10 porsi
+            </span>
 
-                  <input
-                    type="date"
-                    value={plannerDate}
-                    onChange={(e) => setPlannerDate(e.target.value)}
-                    min={new Date().toISOString().split('T')[0]}
-                    className="w-full bg-transparent text-sm text-gray-700 outline-none cursor-pointer"
-                  />
-                </div>
-              </div>
+            <span className="text-xs font-medium text-zinc-500">
+                ✓ Bisa custom
+            </span>
 
-              {/* Daerah Pengantaran */}
-              <div className="flex-1">
-                <label className="mb-2 block text-xs font-medium text-gray-500">
-                  Daerah Pengantaran
-                </label>
-
-                <div className="flex h-11 items-center gap-3 border-b border-gray-300 px-1 transition-colors focus-within:border-red-500">
-                  <MapPin
-                    size={18}
-                    strokeWidth={1.8}
-                    className="text-red-500 shrink-0"
-                  />
-
-                  <select
-                    value={deliveryArea}
-                    onChange={(e) => setDeliveryArea(e.target.value)}
-                    className="w-full bg-transparent text-sm text-gray-700 outline-none cursor-pointer"
-                  >
-                    <option value="">Pilih Lokasi</option>
-                    <option value="Kota Yogyakarta">Kota Yogyakarta</option>
-                    <option value="Kabupaten Sleman">Sleman</option>
-                    <option value="Kabupaten Bantul">Bantul</option>
-                    <option value="Kabupaten Kulon Progo">Kulon Progo</option>
-                    <option value="Kabupaten Gunung Kidul">Gunung Kidul</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* Jam Pengantaran */}
-              <div className="flex-1">
-                <label className="mb-2 block text-xs font-medium text-gray-500">
-                  Jam Pengantaran
-                </label>
-
-                <div className="flex h-11 items-center gap-3 border-b border-gray-300 px-1 transition-colors focus-within:border-red-500">
-                  <Clock3
-                    size={18}
-                    strokeWidth={1.8}
-                    className="text-red-500 shrink-0"
-                  />
-
-                  <select
-                    value={deliveryTime}
-                    onChange={(e) => setDeliveryTime(e.target.value)}
-                    className="w-full bg-transparent text-sm text-gray-700 outline-none cursor-pointer"
-                  >
-                    <option value="">Pilih Waktu</option>
-                    <option value="Pagi (07:00 - 10:00)">Pagi (07:00 - 10:00)</option>
-                    <option value="Siang (11:00 - 13:00)">Siang (11:00 - 13:00)</option>
-                    <option value="Sore (15:00 - 17:00)">Sore (15:00 - 17:00)</option>
-                    <option value="Malam (18:00 - 20:00)">Malam (18:00 - 20:00)</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* Button */}
-              <button
-                type="submit"
-                className="h-11 shrink-0 rounded-full bg-gradient-to-r from-red-500 to-orange-500 px-8 text-sm font-semibold text-white shadow-md shadow-red-500/20 transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-red-500/25 active:translate-y-0 xl:min-w-[180px] cursor-pointer"
-              >
-                Cek Rekomendasi
-              </button>
-            </form>
-          </div>
+            <span className="text-xs font-medium text-zinc-500">
+                ✓ Pesan via WhatsApp
+            </span>
+            </div>
+        </div>
         </div>
       </section>
 
