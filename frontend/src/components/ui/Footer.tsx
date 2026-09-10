@@ -22,13 +22,6 @@ export default function Footer() {
               Dari acara keluarga, meeting kantor, hingga pesanan
               dalam jumlah besar.
             </p>
-
-            <Link
-              to="/menu"
-              className="mt-7 inline-flex rounded-full bg-white px-6 py-3 text-xs sm:text-sm font-bold text-zinc-950 transition hover:bg-zinc-200"
-            >
-              Pilih Menu Katering
-            </Link>
           </div>
 
           {/* Navigation */}
