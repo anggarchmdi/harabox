@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
+import { useLocation } from 'react-router-dom'
 import AOS from 'aos'
 import {
   ArrowRight,
@@ -87,6 +88,26 @@ export default function MenuPage() {
   const [debouncedSearch, setDebouncedSearch] = useState('')
   const [activeCategory, setActiveCategory] = useState('all')
   const [sortBy, setSortBy] = useState<SortOption>('default')
+
+  const location = useLocation()
+
+useEffect(() => {
+  if (location.hash !== '#menu-list') return
+
+  const scrollToMenu = () => {
+    const element = document.getElementById('menu-list')
+
+    if (!element) return
+
+    element.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+    })
+  }
+  requestAnimationFrame(() => {
+    requestAnimationFrame(scrollToMenu)
+  })
+}, [location.hash])
 
   useEffect(() => {
     AOS.init({
@@ -404,7 +425,7 @@ export default function MenuPage() {
       {/* =====================================================
           MAIN MENU GRID SECTION
       ====================================================== */}
-      <section className="mx-auto max-w-7xl px-6 py-12 lg:px-8 lg:py-16">
+      <section id='menu-list' className="scroll-mt-24 mx-auto max-w-7xl px-6 py-12 lg:px-8 lg:py-16">
         {/* Results Count & Quick Notice */}
         <div
           data-aos="fade-in"
