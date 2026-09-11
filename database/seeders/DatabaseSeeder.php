@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Addon;
+use App\Models\AddonGroup;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\User;
@@ -145,34 +146,111 @@ class DatabaseSeeder extends Seeder
         }
         /*
         |--------------------------------------------------------------------------
-        | Addons
+        | Addon Groups & Addons
         |--------------------------------------------------------------------------
         */
 
-        $addons = [
+        $pilihanNasi = AddonGroup::updateOrCreate(
+            ['name' => 'Pilihan Nasi'],
             [
-                'name' => 'Es Teh',
+                'description' => 'Pilih variasi nasi untuk paket bento Anda.',
+                'is_required' => true,
+                'min_selection' => 1,
+                'max_selection' => 1,
+                'is_active' => true,
+            ]
+        );
+
+        $pilihanLauk = AddonGroup::updateOrCreate(
+            ['name' => 'Pilihan Lauk'],
+            [
+                'description' => 'Pilih variasi olahan lauk utama.',
+                'is_required' => true,
+                'min_selection' => 1,
+                'max_selection' => 1,
+                'is_active' => true,
+            ]
+        );
+
+        $tambahan = AddonGroup::updateOrCreate(
+            ['name' => 'Tambahan'],
+            [
+                'description' => 'Menu pelengkap opsional.',
+                'is_required' => false,
+                'min_selection' => 0,
+                'max_selection' => 5,
+                'is_active' => true,
+            ]
+        );
+
+        $addons = [
+            // Pilihan Nasi
+            [
+                'addon_group_id' => $pilihanNasi->id,
+                'name' => 'Nasi Putih',
+                'slug' => 'addon-nasi-putih',
+                'description' => 'Nasi putih pulen hangat.',
+                'price' => 0,
+            ],
+            [
+                'addon_group_id' => $pilihanNasi->id,
+                'name' => 'Nasi Kuning',
+                'slug' => 'addon-nasi-kuning',
+                'description' => 'Nasi kuning rempah wangi gurih.',
+                'price' => 1000,
+            ],
+            [
+                'addon_group_id' => $pilihanNasi->id,
+                'name' => 'Nasi Uduk',
+                'slug' => 'addon-nasi-uduk',
+                'description' => 'Nasi uduk gurih santan kelapa.',
+                'price' => 2000,
+            ],
+
+            // Pilihan Lauk
+            [
+                'addon_group_id' => $pilihanLauk->id,
+                'name' => 'Ayam Goreng Lengkuas',
+                'slug' => 'addon-ayam-goreng-lengkuas',
+                'description' => 'Ayam goreng gurih bertabur serundeng lengkuas.',
+                'price' => 0,
+            ],
+            [
+                'addon_group_id' => $pilihanLauk->id,
+                'name' => 'Ayam Bakar Madu',
+                'slug' => 'addon-ayam-bakar-madu',
+                'description' => 'Ayam bakar dengan bumbu madu gurih manis.',
+                'price' => 2000,
+            ],
+
+            // Tambahan
+            [
+                'addon_group_id' => $tambahan->id,
+                'name' => 'Es Teh Manis',
                 'slug' => 'es-teh',
-                'description' => 'Es teh manis.',
+                'description' => 'Es teh manis segar.',
                 'price' => 3000,
             ],
             [
+                'addon_group_id' => $tambahan->id,
                 'name' => 'Air Mineral',
                 'slug' => 'addon-air-mineral',
                 'description' => 'Air mineral kemasan.',
                 'price' => 3000,
             ],
             [
-                'name' => 'Buah',
+                'addon_group_id' => $tambahan->id,
+                'name' => 'Potongan Buah Segar',
                 'slug' => 'buah',
-                'description' => 'Potongan buah segar.',
+                'description' => 'Potongan buah segar semangka & melon.',
                 'price' => 5000,
             ],
             [
-                'name' => 'Kerupuk',
+                'addon_group_id' => $tambahan->id,
+                'name' => 'Kerupuk Udang',
                 'slug' => 'addon-kerupuk',
-                'description' => 'Kerupuk tambahan.',
-                'price' => 2000,
+                'description' => 'Kerupuk renyah pelengkap hidangan.',
+                'price' => 1000,
             ],
         ];
 
@@ -184,6 +262,26 @@ class DatabaseSeeder extends Seeder
                     'is_active' => true,
                 ]
             );
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Attach Addon Groups to Bento / Nasi Box Products
+        |--------------------------------------------------------------------------
+        */
+
+        $customizableProducts = ['ayam-bakar', 'ayam-goreng'];
+
+        foreach ($customizableProducts as $slug) {
+            if (isset($productModels[$slug])) {
+                $p = $productModels[$slug];
+                $p->update(['addons_enabled' => true]);
+                $p->addonGroups()->syncWithoutDetaching([
+                    $pilihanNasi->id => ['sort_order' => 1],
+                    $pilihanLauk->id => ['sort_order' => 2],
+                    $tambahan->id => ['sort_order' => 3],
+                ]);
+            }
         }
     }
 }
