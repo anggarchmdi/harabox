@@ -25,6 +25,7 @@ import { getImageUrl } from '../utils/image'
 import type { Product } from '../types/products'
 import PageLoader from '../components/ui/PageLoader'
 import ProductCardSkeleton from '../components/ui/ProductCardSkeleton'
+import TestimonialSlider from '../components/home/TestimonialSlider'
 
 import HeroImg from '../assets/banners.webp'
 import BentoKatsuImg from '../assets/nasibox/bento-katsu-b.webp'
@@ -887,61 +888,8 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="mt-14 grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[
-              {
-                quote:
-                  'Nasi Box Bento Katsunya juara! Kami pesan 85 box untuk seminar kantor, makanan tiba 30 menit sebelum jadwal. Semua peserta memuji rasa ayamnya yang renyah dan kemasannya rapi.',
-                name: 'Dian Safitri',
-                role: 'HR Officer, PT Mandiri Bersama',
-                rating: 5,
-                event: '85 Box Seminar Kantor',
-              },
-              {
-                quote:
-                  'Rames Balado dan Nasi Kuningnya mantap bumbu meresap. Syukuran keluarga besar jadi lancar tanpa saya harus repot masak seharian di dapur. Pelayanan adminnya ramah dan komunikatif!',
-                name: 'Bpk. Hendra Gunawan',
-                role: 'Yogyakarta',
-                rating: 5,
-                event: '50 Box Acara Syukuran',
-              },
-              {
-                quote:
-                  'Fast response banget via WhatsApp! Invoice langsung dikirim rapi, sangat memudahkan LPJ kegiatan kampus kami. Nasi box ayam krisbarnya favorit anak-anak organisasi.',
-                name: 'Rian Kurniawan',
-                role: 'Ketua Panitia Dies Natalis',
-                rating: 5,
-                event: '120 Box Acara Kampus',
-              },
-            ].map((t, idx) => (
-              <div
-                key={idx}
-                data-aos="fade-up"
-                data-aos-delay={idx * 150}
-                className="rounded-3xl border border-zinc-200/80 bg-white p-7 shadow-sm flex flex-col justify-between hover:shadow-xl hover:border-red-200 transition duration-300"
-              >
-                <div>
-                  <div className="flex items-center gap-1 text-amber-400 mb-4">
-                    {Array.from({ length: t.rating }).map((_, r) => (
-                      <Star key={r} size={16} className="fill-amber-400" />
-                    ))}
-                  </div>
-                  <p className="text-xs sm:text-sm text-zinc-600 leading-relaxed italic">
-                    "{t.quote}"
-                  </p>
-                </div>
-
-                <div className="mt-6 pt-4 border-t border-zinc-100 flex items-center justify-between">
-                  <div>
-                    <h4 className="text-sm font-black text-zinc-950">{t.name}</h4>
-                    <p className="text-[11px] text-zinc-400">{t.role}</p>
-                  </div>
-                  <span className="rounded-full bg-zinc-100 px-2.5 py-1 text-[10px] font-bold text-zinc-600">
-                    {t.event}
-                  </span>
-                </div>
-              </div>
-            ))}
+          <div className="mt-12" data-aos="fade-up">
+            <TestimonialSlider />
           </div>
         </div>
       </section>

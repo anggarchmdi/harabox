@@ -14,6 +14,7 @@ import {
   RefreshCw,
   Search,
   ShoppingBag,
+  Star,
   User,
   X,
   XCircle,
@@ -25,6 +26,7 @@ import type { Order, OrderStatus } from '../../types/orders'
 import { ordersService } from '../../services/orders.service'
 import OrderTable, {
   getWhatsAppInvoiceUrl,
+  getWhatsAppTestimonialUrl,
 } from '../../components/admin/orders/OrderTable'
 import OrderStatusBadge from '../../components/admin/orders/OrderStatusBadge'
 
@@ -512,6 +514,19 @@ export default function AdminOrders() {
                 >
                   Tutup
                 </button>
+
+                {selectedOrder.status === 'completed' && (
+                  <a
+                    href={getWhatsAppTestimonialUrl(selectedOrder)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-amber-500 text-white text-xs font-bold shadow-xs hover:bg-amber-600 transition"
+                    title="Kirim link ulasan ke nomor WhatsApp pemesan"
+                  >
+                    <Star size={14} className="fill-white" />
+                    <span>Kirim Link Testimoni (WA)</span>
+                  </a>
+                )}
 
                 <a
                   href={getWhatsAppInvoiceUrl(selectedOrder)}

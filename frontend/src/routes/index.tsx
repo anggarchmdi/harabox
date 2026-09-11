@@ -13,6 +13,7 @@ import AdminCategories from '../pages/admin/AdminCategories'
 import AdminAddons from '../pages/admin/addons/AdminAddons'
 import CreateProduct from '../pages/admin/products/CreateProduct'
 import EditProduct from '../pages/admin/products/EditProducts'
+import AdminTestimonials from '../pages/admin/AdminTestimonials'
 
 // layout
 import AdminLayout from '../layout/AdminLayout'
@@ -26,6 +27,7 @@ import MenuPage from '../pages/MenuPage'
 import TentangKami from '../pages/TentangKami'
 import CaraPesan from '../pages/CaraPesan'
 import ProductDetailPage from '../pages/ProductDetailPage'
+import TestimonialPage from '../pages/TestimonialPage'
 
 export default function AppRoutes() {
   return (
@@ -62,6 +64,9 @@ export default function AppRoutes() {
           {/* addons */}
           <Route path="addons" element={<AdminAddons />} />
 
+          {/* testimonials */}
+          <Route path="testimonials" element={<AdminTestimonials />} />
+
         </Route>
       </Route>
 
@@ -75,6 +80,8 @@ export default function AppRoutes() {
         <Route path="/menu/:slug" element={<ProductDetailPage />} />
         <Route path="/tentang-kami" element={<TentangKami />} />
         <Route path="/cara-pesan" element={<CaraPesan />} />
+        {/* Halaman input testimoni khusus (tersembunyi dari navigasi menu) */}
+        <Route path="/testimoni" element={<TestimonialPage />} />
       </Route>
 
       {/* 404 */}

@@ -11,6 +11,7 @@ import {
   LayoutDashboard,
   LogOut,
   Menu,
+  MessageSquareQuote,
   Package,
   ShieldCheck,
   ShoppingCart,
@@ -53,6 +54,11 @@ const mainMenus: MenuItem[] = [
     label: 'Kategori Menu',
     to: '/admin/categories',
     icon: Tags,
+  },
+  {
+    label: 'Testimoni Pelanggan',
+    to: '/admin/testimonials',
+    icon: MessageSquareQuote,
   },
 ]
 
@@ -108,6 +114,7 @@ export default function AdminLayout() {
     if (path.startsWith('/admin/products')) return 'Katalog Produk Katering'
     if (path.startsWith('/admin/categories')) return 'Kategori Menu'
     if (path.startsWith('/admin/addons')) return 'Kelola Add-on & Kustomisasi'
+    if (path.startsWith('/admin/testimonials')) return 'Manajemen Testimoni & Ulasan'
     return 'Admin Panel'
   }, [location.pathname])
 

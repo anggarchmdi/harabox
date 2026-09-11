@@ -5,6 +5,7 @@ import {
   MapPin,
   MessageCircle,
   Receipt,
+  Star,
   User,
 } from 'lucide-react'
 import { toast } from 'sonner'
@@ -95,6 +96,46 @@ Silakan melakukan pembayaran ke rekening resmi HaraBox:
 *A/N: HaraBox Catering*
 
 Mohon konfirmasi dan kirimkan bukti transfer ke nomor ini agar pesanan Anda dapat segera kami siapkan. Terima kasih!`
+
+  return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`
+}
+
+export function getWhatsAppTestimonialUrl(order: Order): string {
+  const rawPhone = order.customers_phone.replace(/[^0-9]/g, '')
+  const phone = rawPhone.startsWith('0')
+    ? '62' + rawPhone.slice(1)
+    : rawPhone.startsWith('62')
+      ? rawPhone
+      : '62' + rawPhone
+
+  // Hitung jumlah pesanan box produk utama tanpa addons
+  const totalBox =
+    order.items && order.items.length > 0
+      ? order.items.reduce((sum, item) => sum + (Number(item.quantity) || 0), 0)
+      : 0
+
+  const quantityStr = totalBox > 0 ? `${totalBox} Box` : ''
+
+  // URL ulasan tersembunyi
+  const origin = typeof window !== 'undefined' ? window.location.origin : 'https://harabox.id'
+  const params = new URLSearchParams()
+  if (order.customers_name) params.set('name', order.customers_name)
+  if (quantityStr) params.set('qty', quantityStr)
+  if (order.order_code) params.set('order', order.order_code)
+
+  const testimonialLink = `${origin}/testimoni?${params.toString()}`
+
+  const message = `*TERIMA KASIH DARI HARABOX!* ✨
+===============================
+Halo Kak *${order.customers_name}*, terima kasih banyak telah mempercayakan konsumsi acara kepada HaraBox.
+
+Pesanan Anda (*${order.order_code}* ${quantityStr ? `- ${quantityStr}` : ''}) telah selesai kami layani. Kami berharap seluruh sajian dinikmati dengan puas oleh seluruh tamu & keluarga.
+
+Untuk membantu kami menjaga dan terus meningkatkan kualitas cita rasa serta pelayanan katering HaraBox, kami sangat berterima kasih jika Kakak berkenan meluangkan waktu 1 menit untuk mengisi ulasan melalui tautan berikut:
+
+👉 ${testimonialLink}
+
+Terima kasih banyak atas kepercayaannya! Semoga acaranya sukses dan berkesan, kami nantikan pesanan katering berikutnya. 🙏🍗`
 
   return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`
 }
@@ -305,6 +346,19 @@ export default function OrderTable({
                         <span>Invoice WA</span>
                       </a>
 
+                      {order.status === 'completed' && (
+                        <a
+                          href={getWhatsAppTestimonialUrl(order)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 rounded-lg bg-amber-500 px-2.5 py-1 text-xs font-semibold text-white shadow-2xs hover:bg-amber-600 transition"
+                          title="Kirim link testimoni via WhatsApp ke pemesan"
+                        >
+                          <Star size={13} className="fill-white" />
+                          <span>Link Testimoni</span>
+                        </a>
+                      )}
+
                       <button
                         type="button"
                         onClick={() => onView(order)}
@@ -414,6 +468,19 @@ export default function OrderTable({
                     <Receipt size={13} />
                     <span>WA</span>
                   </a>
+
+                  {order.status === 'completed' && (
+                    <a
+                      href={getWhatsAppTestimonialUrl(order)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 rounded-lg bg-amber-500 px-3 py-1.5 text-xs font-semibold text-white shadow-2xs"
+                      title="Kirim link testimoni ke pemesan"
+                    >
+                      <Star size={13} className="fill-white" />
+                      <span>Testimoni</span>
+                    </a>
+                  )}
 
                   <button
                     type="button"

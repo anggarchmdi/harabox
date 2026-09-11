@@ -8,9 +8,11 @@ use App\Http\Controllers\Api\Admin\CategoryController as AdminCategoryController
 use App\Http\Controllers\Api\Admin\DashboardController;
 use App\Http\Controllers\Api\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Api\Admin\ProductController as AdminProductController;
+use App\Http\Controllers\Api\Admin\TestimonialController as AdminTestimonialController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\ProductController;
+use App\Http\Controllers\Api\TestimonialController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
@@ -28,6 +30,10 @@ Route::prefix('v1')->group(function () {
 
         Route::get('/addons', [AddonController::class, 'index']);
         Route::get('/addons/{slug}', [AddonController::class, 'show']);
+
+        // Testimonials (Public)
+        Route::get('/testimonials', [TestimonialController::class, 'index']);
+        Route::post('/testimonials', [TestimonialController::class, 'store']);
     });
 
     // ==========================
@@ -115,6 +121,13 @@ Route::prefix('v1')->group(function () {
                 AdminOrderController::class,
                 'updateStatus',
             ]);
+
+            // Testimonials (Admin)
+            Route::get('/testimonials', [AdminTestimonialController::class, 'index']);
+            Route::post('/testimonials', [AdminTestimonialController::class, 'store']);
+            Route::patch('/testimonials/{testimonial}/toggle', [AdminTestimonialController::class, 'toggle']);
+            Route::put('/testimonials/{testimonial}', [AdminTestimonialController::class, 'update']);
+            Route::delete('/testimonials/{testimonial}', [AdminTestimonialController::class, 'destroy']);
 
         });
 
