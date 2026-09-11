@@ -5,6 +5,16 @@ export type OrderStatus =
   | 'completed'
   | 'cancelled'
 
+export interface CreateOrderItemAddonPayload {
+  addon_id: number
+}
+
+export interface CreateOrderItemPayload {
+  product_id: number
+  quantity: number
+  addons?: CreateOrderItemAddonPayload[]
+}
+
 export interface CreateOrderPayload {
   customers_name: string
   customers_phone: string
@@ -12,19 +22,26 @@ export interface CreateOrderPayload {
   event_time?: string
   delivery_address: string
   notes?: string
-  items: {
-    product_id: number
-    quantity: number
-  }[]
+  items: CreateOrderItemPayload[]
   addons?: {
     addon_id: number
     quantity: number
   }[]
 }
 
+export interface OrderItemAddon {
+  id?: number
+  addon_id?: number | null
+  addon_group_name?: string
+  addon_name?: string
+  price: string
+  quantity: number
+  subtotal: string
+}
+
 export interface OrderItem {
-  id: number
-  order_id: number
+  id?: number
+  order_id?: number
   product_id: number | null
   item_name: string
   price: string
@@ -36,6 +53,7 @@ export interface OrderItem {
     slug: string
     price: string
   } | null
+  addons?: OrderItemAddon[]
 }
 
 export interface OrderAddon {

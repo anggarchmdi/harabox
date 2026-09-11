@@ -46,10 +46,19 @@ export function getWhatsAppInvoiceUrl(order: Order): string {
   const itemsList =
     order.items && order.items.length > 0
       ? order.items
-          .map(
-            (i) =>
-              `• ${i.item_name} x ${i.quantity} porsi (Rp ${Number(i.subtotal).toLocaleString('id-ID')})`,
-          )
+          .map((i) => {
+            const addonsDetail =
+              i.addons && i.addons.length > 0
+                ? '\n' +
+                  i.addons
+                    .map(
+                      (a) =>
+                        `   └ ${a.addon_group_name ? `${a.addon_group_name}: ` : ''}${a.addon_name}`,
+                    )
+                    .join('\n')
+                : ''
+            return `• ${i.item_name} x ${i.quantity} porsi (Rp ${Number(i.subtotal).toLocaleString('id-ID')})${addonsDetail}`
+          })
           .join('\n')
       : `• Paket Katering (Rp ${Number(order.subtotal).toLocaleString('id-ID')})`
 
@@ -197,16 +206,30 @@ export default function OrderTable({
 
                   {/* Menu items */}
                   <td className="px-5 py-4 align-top">
-                    <div className="max-w-xs space-y-1">
+                    <div className="max-w-xs space-y-1.5">
                       {order.items && order.items.length > 0 ? (
                         order.items.map((item) => (
                           <div key={item.id} className="text-xs">
-                            <span className="font-medium text-stone-900">
-                              {item.item_name}
-                            </span>
-                            <span className="ml-1.5 inline-block rounded bg-red-50 px-1.5 py-0.2 text-[10px] font-bold text-red-600">
-                              {item.quantity} porsi
-                            </span>
+                            <div className="flex items-center gap-1.5">
+                              <span className="font-semibold text-stone-900">
+                                {item.item_name}
+                              </span>
+                              <span className="inline-block rounded bg-red-50 px-1.5 py-0.2 text-[10px] font-bold text-red-600">
+                                {item.quantity} porsi
+                              </span>
+                            </div>
+                            {item.addons && item.addons.length > 0 && (
+                              <div className="mt-0.5 space-y-0.5 pl-2 border-l border-red-200">
+                                {item.addons.map((a) => (
+                                  <div key={a.id || a.addon_name} className="text-[11px] text-stone-600">
+                                    <span className="text-red-500 font-bold">+</span> {a.addon_name}{' '}
+                                    <span className="text-stone-400 font-mono">
+                                      (+{formatRupiah(a.price)} × {a.quantity || item.quantity} = +{formatRupiah(a.subtotal || String(Number(a.price) * item.quantity))})
+                                    </span>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
                           </div>
                         ))
                       ) : (
@@ -341,12 +364,26 @@ export default function OrderTable({
               </div>
 
               {/* Items Preview */}
-              <div className="rounded-lg bg-stone-50 p-2.5 text-xs space-y-1">
+              <div className="rounded-lg bg-stone-50 p-2.5 text-xs space-y-1.5">
                 {order.items && order.items.length > 0 ? (
                   order.items.map((item) => (
-                    <div key={item.id} className="flex justify-between">
-                      <span className="font-medium text-stone-800">{item.item_name}</span>
-                      <span className="font-bold text-stone-600">{item.quantity} porsi</span>
+                    <div key={item.id} className="space-y-0.5">
+                      <div className="flex justify-between">
+                        <span className="font-semibold text-stone-800">{item.item_name}</span>
+                        <span className="font-bold text-stone-600">{item.quantity} porsi</span>
+                      </div>
+                      {item.addons && item.addons.length > 0 && (
+                        <div className="pl-2 border-l border-red-200 space-y-0.5">
+                          {item.addons.map((a) => (
+                            <div key={a.id || a.addon_name} className="text-[10px] text-stone-600 flex justify-between">
+                              <span>+ {a.addon_name}</span>
+                              <span className="text-stone-400 font-mono">
+                                +{formatRupiah(a.price)} × {a.quantity || item.quantity} = +{formatRupiah(a.subtotal || String(Number(a.price) * item.quantity))}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   ))
                 ) : (

@@ -447,8 +447,23 @@ export default function AdminOrders() {
                       >
                         <div>
                           <p className="font-semibold text-stone-900">{item.item_name}</p>
-                          <p className="text-stone-400 font-mono text-[11px]">
-                            {formatRupiah(item.price)} x {item.quantity} porsi
+                          {item.addons && item.addons.length > 0 && (
+                            <div className="mt-1 space-y-1">
+                              {item.addons.map((a, idx) => (
+                                <div
+                                  key={idx}
+                                  className="rounded-md bg-stone-50 px-2 py-1 text-[11px] text-stone-700 font-medium border border-stone-200 inline-block mr-1.5"
+                                >
+                                  <span className="font-bold text-stone-900">+ {a.addon_name}</span>{' '}
+                                  <span className="text-stone-500 font-mono">
+                                    (+{formatRupiah(a.price)} × {a.quantity || item.quantity} = +{formatRupiah(a.subtotal || String(Number(a.price) * item.quantity))})
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                          <p className="text-stone-400 font-mono text-[11px] mt-1">
+                            Paket dasar: {formatRupiah(item.price)} x {item.quantity} porsi
                           </p>
                         </div>
                         <p className="font-bold text-stone-950 font-mono text-sm">

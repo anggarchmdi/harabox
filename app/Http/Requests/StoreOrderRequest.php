@@ -53,16 +53,19 @@ class StoreOrderRequest extends FormRequest
             'event_time' => [
                 'nullable',
                 'string',
+                'max:10',
             ],
 
             'delivery_address' => [
                 'required',
                 'string',
+                'max:1000',
             ],
 
             'notes' => [
                 'nullable',
                 'string',
+                'max:1000',
             ],
 
             'items' => [
@@ -81,24 +84,19 @@ class StoreOrderRequest extends FormRequest
                 'required',
                 'integer',
                 'min:1',
+                'max:10000',
             ],
 
-            'addons' => [
+            'items.*.addons' => [
                 'nullable',
                 'array',
             ],
 
-            'addons.*.addon_id' => [
+            'items.*.addons.*.addon_id' => [
                 'required',
                 'integer',
                 'distinct',
                 'exists:addons,id',
-            ],
-
-            'addons.*.quantity' => [
-                'required',
-                'integer',
-                'min:1',
             ],
         ];
     }

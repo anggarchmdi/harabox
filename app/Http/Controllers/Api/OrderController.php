@@ -14,8 +14,7 @@ class OrderController extends Controller
 {
     public function __construct(
         private readonly OrderService $orderService
-    ) {
-    }
+    ) {}
 
     public function store(StoreOrderRequest $request): JsonResponse
     {
@@ -26,8 +25,10 @@ class OrderController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Order created successfully',
-                'data' => $order,
+                'message' => 'Order berhasil',
+                'data' => [
+                    'order_code' => $order->order_code,
+                ],
             ], 201);
 
         } catch (RuntimeException $e) {
@@ -44,7 +45,7 @@ class OrderController extends Controller
     ): JsonResponse {
         $token = $request->query('access_token');
 
-        if (!$token) {
+        if (! $token) {
             return response()->json([
                 'success' => false,
                 'message' => 'Access token is required.',
@@ -55,10 +56,10 @@ class OrderController extends Controller
             'items',
             'addons',
         ])
-        ->where('order_code', $orderCode)
-        ->first();
+            ->where('order_code', $orderCode)
+            ->first();
 
-        if (!$order) {
+        if (! $order) {
             return response()->json([
                 'success' => false,
                 'message' => 'Order not found.',
@@ -66,8 +67,8 @@ class OrderController extends Controller
         }
 
         if (
-            !$order->access_token_hash ||
-            !hash_equals(
+            ! $order->access_token_hash ||
+            ! hash_equals(
                 $order->access_token_hash,
                 hash('sha256', $token)
             )
@@ -91,7 +92,7 @@ class OrderController extends Controller
     ): JsonResponse {
         $token = $request->input('access_token');
 
-        if (!$token) {
+        if (! $token) {
             return response()->json([
                 'success' => false,
                 'message' => 'Access token is required.',
@@ -103,7 +104,7 @@ class OrderController extends Controller
             $orderCode
         )->first();
 
-        if (!$order) {
+        if (! $order) {
             return response()->json([
                 'success' => false,
                 'message' => 'Order not found.',
@@ -111,8 +112,8 @@ class OrderController extends Controller
         }
 
         if (
-            !$order->access_token_hash ||
-            !hash_equals(
+            ! $order->access_token_hash ||
+            ! hash_equals(
                 $order->access_token_hash,
                 hash('sha256', $token)
             )

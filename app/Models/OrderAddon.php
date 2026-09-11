@@ -30,7 +30,8 @@ class OrderAddon extends Model
         return $this->belongsTo(Order::class);
     }
 
-    public function addon() : BelongsTo {
+    public function addon(): BelongsTo
+    {
         return $this->belongsTo(Addon::class);
     }
 }

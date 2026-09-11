@@ -21,7 +21,7 @@ class OrderController extends Controller
         );
 
         $query = Order::query()
-            ->with(['items.product', 'addons.addon'])
+            ->with(['items.product', 'items.addons', 'addons.addon'])
             ->latest();
 
         if ($status = $request->query('status')) {
@@ -52,6 +52,7 @@ class OrderController extends Controller
     {
         $order->load([
             'items.product',
+            'items.addons',
             'addons.addon',
         ]);
 
@@ -76,7 +77,7 @@ class OrderController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Order status updated successfully',
-            'data' => $order->fresh(['items.product', 'addons.addon']),
+            'data' => $order->fresh(['items.product', 'items.addons', 'addons.addon']),
         ]);
     }
 }

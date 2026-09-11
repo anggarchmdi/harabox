@@ -2,6 +2,9 @@
 
 namespace Tests\Feature;
 
+use App\Models\Addon;
+use App\Models\AddonGroup;
+use App\Models\Category;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\User;
@@ -13,25 +16,29 @@ class OrderFlowTest extends TestCase
 {
     use DatabaseTransactions;
 
-    public function test_customer_can_create_catering_order_with_product_id(): void
+    public function test_customer_can_order_product_without_addons(): void
     {
-        $product = Product::query()->where('is_active', true)->first();
+        $category = Category::firstOrCreate(['slug' => 'test-cat'], ['name' => 'Test Cat']);
 
-        if (! $product) {
-            $this->markTestSkipped('No active product found in database.');
-        }
+        $product = Product::create([
+            'category_id' => $category->id,
+            'name' => 'Nasi Box Polos',
+            'slug' => 'nasi-box-polos-'.uniqid(),
+            'price' => 10000,
+            'minimum_order' => 10,
+            'addons_enabled' => false,
+            'is_active' => true,
+        ]);
 
         $payload = [
             'customers_name' => 'Pak Bambang Test',
             'customers_phone' => '081234567890',
             'event_date' => now()->addDays(3)->format('Y-m-d'),
-            'event_time' => '11:30',
             'delivery_address' => 'Gedung Graha Lt. 5, Jl. Sudirman',
-            'notes' => 'Minta sambal dipisah',
             'items' => [
                 [
                     'product_id' => $product->id,
-                    'quantity' => 30,
+                    'quantity' => 10,
                 ],
             ],
         ];
@@ -41,13 +48,192 @@ class OrderFlowTest extends TestCase
         $response->assertStatus(201)
             ->assertJson([
                 'success' => true,
+                'message' => 'Order berhasil',
+            ])
+            ->assertJsonStructure([
+                'data' => [
+                    'order_code',
+                ],
             ]);
 
         $this->assertDatabaseHas('orders', [
             'customers_name' => 'Pak Bambang Test',
-            'customers_phone' => '081234567890',
+            'subtotal' => 100000.00,
+            'delivery_fee' => 10000.00,
+            'total' => 110000.00,
             'status' => 'pending',
         ]);
+    }
+
+    public function test_customer_can_order_product_with_customization_addons(): void
+    {
+        $category = Category::firstOrCreate(['slug' => 'test-cat'], ['name' => 'Test Cat']);
+
+        $groupNasi = AddonGroup::create([
+            'name' => 'Pilihan Nasi',
+            'is_required' => true,
+            'min_selection' => 1,
+            'max_selection' => 1,
+            'is_active' => true,
+        ]);
+
+        $addonNasiKuning = Addon::create([
+            'addon_group_id' => $groupNasi->id,
+            'name' => 'Nasi Kuning Special',
+            'slug' => 'addon-nk-'.uniqid(),
+            'price' => 1000,
+            'is_active' => true,
+        ]);
+
+        $product = Product::create([
+            'category_id' => $category->id,
+            'name' => 'Nasi Box Custom',
+            'slug' => 'nasi-box-custom-'.uniqid(),
+            'price' => 15000,
+            'minimum_order' => 10,
+            'addons_enabled' => true,
+            'is_active' => true,
+        ]);
+
+        $product->addonGroups()->attach($groupNasi->id, ['sort_order' => 1]);
+
+        $payload = [
+            'customers_name' => 'Ibu Rina Test',
+            'customers_phone' => '081234567890',
+            'event_date' => now()->addDays(3)->format('Y-m-d'),
+            'delivery_address' => 'Jl. Kaliurang KM 7',
+            'items' => [
+                [
+                    'product_id' => $product->id,
+                    'quantity' => 20,
+                    'addons' => [
+                        ['addon_id' => $addonNasiKuning->id],
+                    ],
+                ],
+            ],
+        ];
+
+        $response = $this->postJson('/api/v1/orders', $payload);
+
+        // Unit price = 15000 + 1000 = 16000. Subtotal = 16000 * 20 = 320000. Total = 320000 + 10000 = 330000
+        $response->assertStatus(201)
+            ->assertJson([
+                'success' => true,
+                'message' => 'Order berhasil',
+            ])
+            ->assertJsonStructure([
+                'data' => [
+                    'order_code',
+                ],
+            ]);
+
+        $this->assertDatabaseHas('orders', [
+            'customers_name' => 'Ibu Rina Test',
+            'subtotal' => 320000.00,
+            'total' => 330000.00,
+        ]);
+
+        $this->assertDatabaseHas('order_item_addons', [
+            'addon_id' => $addonNasiKuning->id,
+            'addon_name' => 'Nasi Kuning Special',
+            'price' => 1000.00,
+            'quantity' => 20,
+            'subtotal' => 20000.00,
+        ]);
+    }
+
+    public function test_customer_cannot_inject_unauthorized_addons(): void
+    {
+        $category = Category::firstOrCreate(['slug' => 'test-cat'], ['name' => 'Test Cat']);
+
+        $unauthorizedAddon = Addon::create([
+            'name' => 'Es Teh Ilegal',
+            'slug' => 'es-teh-ilegal-'.uniqid(),
+            'price' => 3000,
+            'is_active' => true,
+        ]);
+
+        $productWithoutAddons = Product::create([
+            'category_id' => $category->id,
+            'name' => 'Produk Tanpa Addon',
+            'slug' => 'pta-'.uniqid(),
+            'price' => 10000,
+            'minimum_order' => 10,
+            'addons_enabled' => false,
+            'is_active' => true,
+        ]);
+
+        // Attempting to send addon to product where addons_enabled is false
+        $payload = [
+            'customers_name' => 'Attacker Test',
+            'customers_phone' => '081234567890',
+            'event_date' => now()->addDays(3)->format('Y-m-d'),
+            'delivery_address' => 'Jl. Anonymous',
+            'items' => [
+                [
+                    'product_id' => $productWithoutAddons->id,
+                    'quantity' => 10,
+                    'addons' => [
+                        ['addon_id' => $unauthorizedAddon->id],
+                    ],
+                ],
+            ],
+        ];
+
+        $response = $this->postJson('/api/v1/orders', $payload);
+
+        $response->assertStatus(422)
+            ->assertJson([
+                'success' => false,
+                'message' => 'Produk Tanpa Addon tidak memiliki opsi kustomisasi addon.',
+            ]);
+    }
+
+    public function test_customer_cannot_order_when_required_addon_group_missing(): void
+    {
+        $category = Category::firstOrCreate(['slug' => 'test-cat'], ['name' => 'Test Cat']);
+
+        $groupNasi = AddonGroup::create([
+            'name' => 'Pilihan Nasi',
+            'is_required' => true,
+            'min_selection' => 1,
+            'max_selection' => 1,
+            'is_active' => true,
+        ]);
+
+        $product = Product::create([
+            'category_id' => $category->id,
+            'name' => 'Nasi Box Custom Required',
+            'slug' => 'nasi-box-cr-'.uniqid(),
+            'price' => 15000,
+            'minimum_order' => 10,
+            'addons_enabled' => true,
+            'is_active' => true,
+        ]);
+
+        $product->addonGroups()->attach($groupNasi->id, ['sort_order' => 1]);
+
+        $payload = [
+            'customers_name' => 'Test Customer',
+            'customers_phone' => '081234567890',
+            'event_date' => now()->addDays(3)->format('Y-m-d'),
+            'delivery_address' => 'Jl. Gejayan No. 10',
+            'items' => [
+                [
+                    'product_id' => $product->id,
+                    'quantity' => 10,
+                    'addons' => [],
+                ],
+            ],
+        ];
+
+        $response = $this->postJson('/api/v1/orders', $payload);
+
+        $response->assertStatus(422)
+            ->assertJson([
+                'success' => false,
+                'message' => 'Silakan pilih Pilihan Nasi untuk Nasi Box Custom Required.',
+            ]);
     }
 
     public function test_admin_can_update_order_status(): void

@@ -95,12 +95,12 @@ export const ordersService = {
 
   async create(
     data: CreateOrderPayload,
-  ): Promise<Order> {
+  ): Promise<{ order_code: string }> {
     const response =
       await api.post<{
         success: boolean
         message: string
-        data: Order
+        data: { order_code: string }
       }>('/orders', data)
 
     return response.data.data
