@@ -157,13 +157,13 @@ export default function CreateProduct() {
 
       const validAddons = form.addons_enabled
         ? packageAddons
-            .filter((a) => a.name.trim().length > 0)
-            .map((a) => ({
-              id: a.id,
-              name: a.name.trim(),
-              price: Math.max(0, Number(a.price) || 0),
-              is_active: true,
-            }))
+          .filter((a) => a.name.trim().length > 0)
+          .map((a) => ({
+            id: a.id,
+            name: a.name.trim(),
+            price: Math.max(0, Number(a.price) || 0),
+            is_active: true,
+          }))
         : []
 
       await productService.create({
@@ -543,14 +543,12 @@ export default function CreateProduct() {
                 aria-checked={form.is_active}
                 disabled={loading}
                 onClick={() => setForm((prev) => ({ ...prev, is_active: !prev.is_active }))}
-                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                  form.is_active ? 'bg-emerald-600' : 'bg-stone-300'
-                }`}
+                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${form.is_active ? 'bg-emerald-600' : 'bg-stone-300'
+                  }`}
               >
                 <span
-                  className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out ${
-                    form.is_active ? 'translate-x-5' : 'translate-x-0'
-                  }`}
+                  className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out ${form.is_active ? 'translate-x-5' : 'translate-x-0'
+                    }`}
                 />
               </button>
             </div>
