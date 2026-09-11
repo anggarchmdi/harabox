@@ -60,7 +60,7 @@ class AddonController extends Controller
             ->where('is_active', true)
             ->first();
 
-        if (!$addon) {
+        if (! $addon) {
             return response()->json([
                 'success' => false,
                 'message' => 'Addon not found',

@@ -14,23 +14,23 @@ return new class extends Migration
         Schema::create('order_addons', function (Blueprint $table) {
             $table->id();
 
-        $table->foreignId('order_id')
-            ->constrained()
-            ->cascadeOnUpdate()
-            ->cascadeOnDelete();
+            $table->foreignId('order_id')
+                ->constrained()
+                ->cascadeOnUpdate()
+                ->cascadeOnDelete();
 
-        $table->foreignId('addon_id')
-            ->nullable()
-            ->constrained()
-            ->nullOnDelete();
+            $table->foreignId('addon_id')
+                ->nullable()
+                ->constrained()
+                ->nullOnDelete();
 
-        $table->string('addon_name');
+            $table->string('addon_name');
 
-        // Harga addon saat order dibuat
-        $table->decimal('price', 12, 2);
+            // Harga addon saat order dibuat
+            $table->decimal('price', 12, 2);
 
-        $table->unsignedInteger('quantity');
-        $table->decimal('subtotal', 12, 2);
+            $table->unsignedInteger('quantity');
+            $table->decimal('subtotal', 12, 2);
 
             $table->timestamps();
         });
