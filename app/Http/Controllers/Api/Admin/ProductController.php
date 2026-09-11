@@ -5,13 +5,15 @@ namespace App\Http\Controllers\Api\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
+use App\Models\Addon;
+use App\Models\AddonGroup;
 use App\Models\Product;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Intervention\Image\Laravel\Facades\Image;
 use Intervention\Image\Format;
+use Intervention\Image\Laravel\Facades\Image;
 
 class ProductController extends Controller
 {
@@ -100,9 +102,9 @@ class ProductController extends Controller
 
             $image->scale(width: 1200);
 
-            $filename = Str::uuid() . '.webp';
+            $filename = Str::uuid().'.webp';
 
-            $path = 'products/' . $filename;
+            $path = 'products/'.$filename;
 
             $encoded = $image->encodeUsingFormat(
                 Format::WEBP,
@@ -121,7 +123,20 @@ class ProductController extends Controller
 
         $product = Product::create($data);
 
-        $product->load('category');
+        if (! $product->addons_enabled) {
+            $this->syncProductPackageAddons($product, []);
+        } elseif ($request->has('addons')) {
+            $addonsData = $request->input('addons', []);
+            $this->syncProductPackageAddons($product, $addonsData);
+        } elseif ($request->has('addon_group_ids')) {
+            $syncData = [];
+            foreach ($request->input('addon_group_ids', []) as $index => $groupId) {
+                $syncData[$groupId] = ['sort_order' => $index + 1];
+            }
+            $product->addonGroups()->sync($syncData);
+        }
+
+        $product->load(['category', 'addonGroups.addons']);
 
         return response()->json([
             'success' => true,
@@ -135,7 +150,7 @@ class ProductController extends Controller
      */
     public function show(Product $product): JsonResponse
     {
-        $product->load('category');
+        $product->load(['category', 'addonGroups.addons']);
 
         return response()->json([
             'success' => true,
@@ -170,12 +185,12 @@ class ProductController extends Controller
         if ($request->hasFile('image')) {
             // Simpan path gambar lama
             $oldImage = $product->image;
-           $image = Image::decode(
+            $image = Image::decode(
                 $request->file('image')
             );
             $image->scale(width: 1200);
-            $filename = Str::uuid() . '.webp';
-            $path = 'products/' . $filename;
+            $filename = Str::uuid().'.webp';
+            $path = 'products/'.$filename;
             $encoded = $image->encodeUsingFormat(
                 Format::WEBP,
                 quality: 80
@@ -195,7 +210,20 @@ class ProductController extends Controller
 
         $product->update($data);
 
-        $product->load('category');
+        if (! $product->addons_enabled) {
+            $this->syncProductPackageAddons($product, []);
+        } elseif ($request->has('addons')) {
+            $addonsData = $request->input('addons', []);
+            $this->syncProductPackageAddons($product, $addonsData);
+        } elseif ($request->has('addon_group_ids')) {
+            $syncData = [];
+            foreach ($request->input('addon_group_ids', []) as $index => $groupId) {
+                $syncData[$groupId] = ['sort_order' => $index + 1];
+            }
+            $product->addonGroups()->sync($syncData);
+        }
+
+        $product->load(['category', 'addonGroups.addons']);
 
         return response()->json([
             'success' => true,
@@ -226,5 +254,76 @@ class ProductController extends Controller
             'success' => true,
             'message' => 'Product deleted successfully',
         ]);
+    }
+
+    private function syncProductPackageAddons(Product $product, array $addonsData): void
+    {
+        if (empty($addonsData)) {
+            $addonGroup = $product->addonGroups()->first();
+            if ($addonGroup) {
+                $addonGroup->addons()->delete();
+                $product->addonGroups()->detach($addonGroup->id);
+                $addonGroup->delete();
+            }
+
+            return;
+        }
+
+        $allGroups = $product->addonGroups()->get();
+        $addonGroup = $allGroups->first();
+        $maxSelect = max(15, count($addonsData));
+
+        if (! $addonGroup) {
+            $addonGroup = AddonGroup::create([
+                'name' => 'Pilihan Tambahan '.$product->name,
+                'description' => 'Pilihan kustomisasi untuk paket '.$product->name,
+                'is_required' => false,
+                'min_selection' => 0,
+                'max_selection' => $maxSelect,
+                'is_active' => true,
+            ]);
+            $product->addonGroups()->attach($addonGroup->id, ['sort_order' => 1]);
+        } else {
+            $addonGroup->update([
+                'name' => 'Pilihan Tambahan '.$product->name,
+                'max_selection' => $maxSelect,
+            ]);
+            if ($allGroups->count() > 1) {
+                $otherGroupIds = $allGroups->skip(1)->pluck('id')->all();
+                $product->addonGroups()->detach($otherGroupIds);
+            }
+        }
+
+        $keptIds = [];
+        foreach ($addonsData as $item) {
+            if (empty($item['name'])) {
+                continue;
+            }
+            $addonId = $item['id'] ?? null;
+            $addon = null;
+            if ($addonId) {
+                $addon = Addon::where('addon_group_id', $addonGroup->id)->find($addonId);
+            }
+            if ($addon) {
+                $addon->update([
+                    'name' => trim($item['name']),
+                    'price' => (float) ($item['price'] ?? 0),
+                    'is_active' => $item['is_active'] ?? true,
+                ]);
+            } else {
+                $addon = Addon::create([
+                    'addon_group_id' => $addonGroup->id,
+                    'name' => trim($item['name']),
+                    'slug' => Str::slug($item['name']).'-'.uniqid(),
+                    'price' => (float) ($item['price'] ?? 0),
+                    'is_active' => $item['is_active'] ?? true,
+                ]);
+            }
+            $keptIds[] = $addon->id;
+        }
+
+        Addon::where('addon_group_id', $addonGroup->id)
+            ->whereNotIn('id', $keptIds)
+            ->delete();
     }
 }

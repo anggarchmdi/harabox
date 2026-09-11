@@ -12,11 +12,25 @@ class UpdateProductRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation(): void
+    {
+        if ($this->has('addons') && is_string($this->addons)) {
+            $decoded = json_decode($this->addons, true);
+            if (is_array($decoded)) {
+                $this->merge(['addons' => $decoded]);
+            }
+        }
+    }
+
     public function rules(): array
     {
         $product = $this->route('product');
 
         return [
+            'addons' => [
+                'nullable',
+                'array',
+            ],
             'category_id' => [
                 'sometimes',
                 'integer',
@@ -63,6 +77,21 @@ class UpdateProductRequest extends FormRequest
             'is_active' => [
                 'sometimes',
                 'boolean',
+            ],
+
+            'addons_enabled' => [
+                'sometimes',
+                'boolean',
+            ],
+
+            'addon_group_ids' => [
+                'nullable',
+                'array',
+            ],
+
+            'addon_group_ids.*' => [
+                'integer',
+                'exists:addon_groups,id',
             ],
         ];
     }
