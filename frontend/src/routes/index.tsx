@@ -3,12 +3,14 @@ import { Route, Routes } from 'react-router-dom'
 import LoginPage from '../pages/auth/LoginPage'
 import ProtectedRoute from '../middleware/ProtectedRoute'
 import Notfound from '../pages/Notfound'
+// import LogoSpinnerDemo from '../pages/demo/LogoSpinnerDemo'
 
 // admin
 import AdminDashboard from '../pages/admin/AdminDashboard'
 import AdminOrders from '../pages/admin/AdminOrders'
 import AdminProducts from '../pages/admin/products/AdminProducts'
 import AdminCategories from '../pages/admin/AdminCategories'
+import AdminAddons from '../pages/admin/addons/AdminAddons'
 import CreateProduct from '../pages/admin/products/CreateProduct'
 import EditProduct from '../pages/admin/products/EditProducts'
 
@@ -34,6 +36,9 @@ export default function AppRoutes() {
         <Route path="/hc-admin" element={<LoginPage />} />
       </Route>
 
+      {/* demo loader preview (terpisah & tidak merubah alur produksi) */}
+      {/* <Route path="/demo/loader" element={<LogoSpinnerDemo />} /> */}
+
       {/* admin */}
       <Route element={<ProtectedRoute />}>
         <Route path="/admin" element={<AdminLayout />}>
@@ -53,6 +58,9 @@ export default function AppRoutes() {
 
           {/* categories */}
           <Route path="categories" element={<AdminCategories />} />
+
+          {/* addons */}
+          <Route path="addons" element={<AdminAddons />} />
 
         </Route>
       </Route>
