@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ProductResource;
 use App\Models\Product;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -57,7 +58,7 @@ class ProductController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Products retrieved successfully',
-            'data' => $products->items(),
+            'data' => ProductResource::collection($products->items()),
             'meta' => [
                 'current_page' => $products->currentPage(),
                 'last_page' => $products->lastPage(),
@@ -85,10 +86,22 @@ class ProductController extends Controller
             ], 404);
         }
 
+        if ($product->addons_enabled) {
+            $product->load([
+                'addonGroups' => function ($q) {
+                    $q->where('addon_groups.is_active', true)
+                        ->orderBy('product_addon_groups.sort_order')
+                        ->with(['addons' => function ($aq) {
+                            $aq->where('is_active', true)->orderBy('price');
+                        }]);
+                },
+            ]);
+        }
+
         return response()->json([
             'success' => true,
             'message' => 'Product retrieved successfully',
-            'data' => $product,
+            'data' => new ProductResource($product),
         ]);
     }
 }
