@@ -15,15 +15,10 @@ return new class extends Migration
             $table->id();
 
             $table->foreignId('order_id')
-            ->constrained()
-            ->cascadeOnUpdate()
-            ->cascadeOnDelete();
-
-            // $table->foreignId('package_id')
-            // ->nullable()
-            // ->constrained()
-            // ->nullOnDelete();
-
+                ->constrained()
+                ->cascadeOnUpdate()
+                ->cascadeOnDelete();
+                
             $table->string('item_name');
 
             // harga
