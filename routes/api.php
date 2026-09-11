@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AddonController;
 use App\Http\Controllers\Api\Admin\AddonController as AdminAddonController;
+use App\Http\Controllers\Api\Admin\AddonGroupController as AdminAddonGroupController;
 use App\Http\Controllers\Api\Admin\AuthController;
 use App\Http\Controllers\Api\Admin\CategoryController as AdminCategoryController;
 use App\Http\Controllers\Api\Admin\DashboardController;
@@ -91,6 +92,12 @@ Route::prefix('v1')->group(function () {
             Route::apiResource(
                 'addons',
                 AdminAddonController::class
+            );
+
+            // Addon Groups
+            Route::apiResource(
+                'addon-groups',
+                AdminAddonGroupController::class
             );
 
             // orders
