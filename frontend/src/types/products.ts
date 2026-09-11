@@ -1,3 +1,5 @@
+import type { AddonGroup } from './addon'
+
 export interface ProductCategory {
   id: number
   name: string
@@ -12,9 +14,19 @@ export interface Product {
   description?: string | null
   price: string
   minimum_order: number
+  addons_enabled?: boolean
   image?: string | null
   is_active: boolean
   category?: ProductCategory | null
+  addon_groups?: AddonGroup[]
+  addonGroups?: AddonGroup[]
+}
+
+export interface ProductPackageAddon {
+  id?: number
+  name: string
+  price: number
+  is_active?: boolean
 }
 
 export interface CreateProductRequest {
@@ -23,6 +35,9 @@ export interface CreateProductRequest {
   description?: string
   price: number
   minimum_order: number
+  addons_enabled?: boolean
+  addon_group_ids?: number[]
+  addons?: ProductPackageAddon[]
   image?: File | null
   is_active: boolean
 }
@@ -33,6 +48,9 @@ export interface UpdateProductRequest {
   description?: string
   price?: number
   minimum_order?: number
+  addons_enabled?: boolean
+  addon_group_ids?: number[]
+  addons?: ProductPackageAddon[]
   image?: File | null
   is_active?: boolean
 }
