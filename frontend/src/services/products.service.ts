@@ -177,6 +177,20 @@ export const productService = {
       data.is_active ? '1' : '0',
     )
 
+    if (data.addons_enabled !== undefined) {
+      formData.append('addons_enabled', data.addons_enabled ? '1' : '0')
+    }
+
+    if (data.addon_group_ids && data.addon_group_ids.length > 0) {
+      data.addon_group_ids.forEach((id) => {
+        formData.append('addon_group_ids[]', String(id))
+      })
+    }
+
+    if (data.addons !== undefined) {
+      formData.append('addons', JSON.stringify(data.addons))
+    }
+
     const response =
       await api.post<ProductResponse>(
         '/admin/products',
@@ -225,6 +239,20 @@ export const productService = {
         'minimum_order',
         String(data.minimum_order),
       )
+    }
+
+    if (data.addons_enabled !== undefined) {
+      formData.append('addons_enabled', data.addons_enabled ? '1' : '0')
+    }
+
+    if (data.addon_group_ids !== undefined) {
+      data.addon_group_ids.forEach((gid) => {
+        formData.append('addon_group_ids[]', String(gid))
+      })
+    }
+
+    if (data.addons !== undefined) {
+      formData.append('addons', JSON.stringify(data.addons))
     }
 
     if (data.image) {
