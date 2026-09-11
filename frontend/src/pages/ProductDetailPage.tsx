@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import {
   ArrowLeft,
   Calendar,
+  Check,
   CheckCircle2,
   Clock,
   MapPin,
@@ -11,16 +12,18 @@ import {
   Plus,
   ShieldCheck,
   ShoppingBag,
+  Sparkles,
   User,
   X,
 } from 'lucide-react'
 import { Link, useParams } from 'react-router-dom'
 import { toast } from 'sonner'
-
+import PageLoader from '../components/ui/PageLoader'
 import { productService } from '../services/products.service'
 import { ordersService } from '../services/orders.service'
 import { getImageUrl } from '../utils/image'
 import type { Product } from '../types/products'
+import type { AddonGroup } from '../types/addon'
 
 // Aset lokal untuk smart fallback
 import BentoKatsuImg from '../assets/nasibox/bento-katsu-b.webp'
@@ -85,11 +88,16 @@ export default function ProductDetailPage() {
     enabled: Boolean(slug),
   })
 
-  // Quantity Cart Style (Kelipatan 10, Minimal 10)
+  // Quantity Cart Style (Kelipatan 10 vs Satuan)
+  type PortionMode = 'kelipatan10' | 'satuan'
+  const [portionMode, setPortionMode] = useState<PortionMode>('kelipatan10')
   const [quantity, setQuantity] = useState<number>(10)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [orderSuccessCode, setOrderSuccessCode] = useState<string | null>(null)
+
+  // Addon selection state: { [groupId: number]: number[] (addonIds) }
+  const [selectedAddons, setSelectedAddons] = useState<Record<number, number[]>>({})
 
   // Form input pemesanan
   const [customerName, setCustomerName] = useState('')
@@ -99,22 +107,42 @@ export default function ProductDetailPage() {
   const [deliveryAddress, setDeliveryAddress] = useState('')
   const [notes, setNotes] = useState('')
 
-  // Inisialisasi quantity sesuai minimum order produk
+  const minOrder = product ? Math.max(1, product.minimum_order || 1) : 10
+
+  // Inisialisasi quantity sesuai minimum order produk & default addon selections
   useEffect(() => {
     if (product) {
-      const min = Math.max(10, Math.ceil((product.minimum_order || 10) / 10) * 10)
-      setQuantity(min)
-    }
-  }, [product])
+      const initialQty = minOrder < 10 ? minOrder : 10
+      setQuantity(initialQty)
+      if (minOrder < 10) {
+        setPortionMode('satuan')
+      }
 
-  const minOrder = product ? Math.max(10, Math.ceil((product.minimum_order || 10) / 10) * 10) : 10
+      if (product.addons_enabled && product.addon_groups && product.addon_groups.length > 0) {
+        const initial: Record<number, number[]> = {}
+        for (const group of product.addon_groups) {
+          // Pre-select first item for required single-select group
+          if (group.min_selection === 1 && group.max_selection === 1 && group.addons.length > 0) {
+            initial[group.id] = [group.addons[0].id]
+          } else {
+            initial[group.id] = []
+          }
+        }
+        setSelectedAddons(initial)
+      } else {
+        setSelectedAddons({})
+      }
+    }
+  }, [product, minOrder])
+
+  const step = portionMode === 'kelipatan10' ? 10 : 1
 
   const handleDecrease = () => {
-    setQuantity((prev) => Math.max(minOrder, prev - 10))
+    setQuantity((prev) => Math.max(minOrder, prev - step))
   }
 
   const handleIncrease = () => {
-    setQuantity((prev) => prev + 10)
+    setQuantity((prev) => prev + step)
   }
 
   const handleQuantityInput = (val: string) => {
@@ -123,18 +151,112 @@ export default function ProductDetailPage() {
       setQuantity(minOrder)
       return
     }
-    // Set langsung saat ketik, nanti di blur disesuaikan ke kelipatan 10
     setQuantity(num)
   }
 
   const handleQuantityBlur = () => {
     if (quantity < minOrder) {
       setQuantity(minOrder)
-    } else {
-      // Bulatkan ke kelipatan 10 terdekat
+    } else if (portionMode === 'kelipatan10') {
       const rounded = Math.round(quantity / 10) * 10
-      setQuantity(Math.max(minOrder, rounded))
+      setQuantity(Math.max(minOrder, rounded || 10))
     }
+  }
+
+  const handleSwitchMode = (mode: PortionMode) => {
+    setPortionMode(mode)
+    if (mode === 'kelipatan10') {
+      const rounded = Math.max(minOrder, Math.round(quantity / 10) * 10 || 10)
+      setQuantity(rounded)
+    }
+  }
+
+  // Toggle selection addon
+  const handleToggleAddon = (group: AddonGroup, addonId: number) => {
+    setSelectedAddons((prev) => {
+      const current = prev[group.id] || []
+      const isSelected = current.includes(addonId)
+
+      if (group.max_selection === 1) {
+        // Radio behavior
+        if (isSelected) {
+          // If required, do not allow deselecting
+          if (group.min_selection >= 1) return prev
+          return { ...prev, [group.id]: [] }
+        }
+        return { ...prev, [group.id]: [addonId] }
+      } else {
+        // Checkbox behavior
+        if (isSelected) {
+          return { ...prev, [group.id]: current.filter((id) => id !== addonId) }
+        }
+        if (current.length >= group.max_selection) {
+          toast.error(`Maksimal pilihan untuk "${group.name}" adalah ${group.max_selection}.`)
+          return prev
+        }
+        return { ...prev, [group.id]: [...current, addonId] }
+      }
+    })
+  }
+
+  // Live price calculation
+  const basePrice = Number(product?.price || 0)
+  const baseTotal = basePrice * quantity
+
+  const addonDeltaPerUnit = useMemo(() => {
+    if (!product?.addons_enabled || !product.addon_groups) return 0
+    let delta = 0
+    for (const group of product.addon_groups) {
+      const ids = selectedAddons[group.id] || []
+      for (const a of group.addons) {
+        if (ids.includes(a.id)) {
+          delta += Number(a.price || 0)
+        }
+      }
+    }
+    return delta
+  }, [product, selectedAddons])
+
+  const unitPrice = basePrice + addonDeltaPerUnit
+  const estimatedTotal = unitPrice * quantity
+
+  // Customization names for summary & WhatsApp
+  const selectedAddonSummary = useMemo(() => {
+    if (!product?.addons_enabled || !product.addon_groups) return []
+    const items: { groupName: string; addonName: string; price: number; subtotal: number }[] = []
+    for (const group of product.addon_groups) {
+      const ids = selectedAddons[group.id] || []
+      for (const a of group.addons) {
+        if (ids.includes(a.id)) {
+          const p = Number(a.price || 0)
+          items.push({
+            groupName: group.name,
+            addonName: a.name,
+            price: p,
+            subtotal: p * quantity,
+          })
+        }
+      }
+    }
+    return items
+  }, [product, selectedAddons, quantity])
+
+  // Open modal with pre-validation
+  const handleOpenOrderModal = () => {
+    if (product?.addons_enabled && product.addon_groups) {
+      for (const group of product.addon_groups) {
+        const selected = selectedAddons[group.id] || []
+        if (selected.length < group.min_selection) {
+          toast.error(`Silakan tentukan pilihan "${group.name}" terlebih dahulu.`)
+          return
+        }
+        if (selected.length > group.max_selection) {
+          toast.error(`Pilihan "${group.name}" melebihi batas maksimal (${group.max_selection}).`)
+          return
+        }
+      }
+    }
+    setIsModalOpen(true)
   }
 
   // Handle Order Submit to Backend + WA Redirect
@@ -163,8 +285,34 @@ export default function ProductDetailPage() {
       return
     }
 
+    // Pre-validate addon selection rules
+    if (product.addons_enabled && product.addon_groups) {
+      for (const group of product.addon_groups) {
+        const selected = selectedAddons[group.id] || []
+        if (selected.length < group.min_selection) {
+          toast.error(`Silakan tentukan pilihan "${group.name}" terlebih dahulu.`)
+          return
+        }
+        if (selected.length > group.max_selection) {
+          toast.error(`Pilihan "${group.name}" melebihi batas maksimal (${group.max_selection}).`)
+          return
+        }
+      }
+    }
+
     try {
       setIsSubmitting(true)
+
+      // Flatten selected addons into payload format
+      const addonsPayload: { addon_id: number }[] = []
+      if (product.addons_enabled && product.addon_groups) {
+        for (const group of product.addon_groups) {
+          const ids = selectedAddons[group.id] || []
+          for (const id of ids) {
+            addonsPayload.push({ addon_id: id })
+          }
+        }
+      }
 
       // 1. Simpan order ke backend
       const createdOrder = await ordersService.create({
@@ -178,6 +326,7 @@ export default function ProductDetailPage() {
           {
             product_id: product.id,
             quantity: quantity,
+            addons: addonsPayload.length > 0 ? addonsPayload : undefined,
           },
         ],
       })
@@ -186,17 +335,32 @@ export default function ProductDetailPage() {
       setOrderSuccessCode(orderCode)
       toast.success(`Pesanan ${orderCode} berhasil dicatat! Menghubungkan ke WhatsApp...`)
 
-      // 2. Format pesan WhatsApp
-      const formattedPrice = Number(product.price).toLocaleString('id-ID')
-      const estimatedSubtotal = (Number(product.price) * quantity).toLocaleString('id-ID')
+      // 2. Format customization summary for WhatsApp with transparent calculation
+      const addonLines: string[] = []
+      if (selectedAddonSummary.length > 0) {
+        for (const item of selectedAddonSummary) {
+          if (item.price > 0) {
+            addonLines.push(`  • ${item.addonName}: +Rp ${item.price.toLocaleString('id-ID')} x ${quantity} porsi = +Rp ${(item.price * quantity).toLocaleString('id-ID')}`)
+          } else {
+            addonLines.push(`  • ${item.addonName}: Termasuk Paket (Rp 0)`)
+          }
+        }
+      }
 
-      const waText = `Halo Hara Chicken, saya ingin memesan catering:
+      // 3. Format pesan WhatsApp
+      const formattedUnitPrice = unitPrice.toLocaleString('id-ID')
+      const formattedEstimatedSubtotal = estimatedTotal.toLocaleString('id-ID')
+      const formattedBasePrice = basePrice.toLocaleString('id-ID')
+      const formattedBaseTotal = (basePrice * quantity).toLocaleString('id-ID')
+
+      const waText = `Halo Hara Chicken, saya ingin memesan paket catering:
 
 *Rincian Pesanan:*
 - No. Pesanan: *${orderCode}*
-- Menu: *${product.name}*
+- Menu Paket: *${product.name}*
 - Jumlah: *${quantity} Porsi*
-- Estimasi Harga: *Rp ${estimatedSubtotal}* (@ Rp ${formattedPrice}/porsi)
+- Harga Paket Dasar: *Rp ${formattedBasePrice} x ${quantity} porsi = Rp ${formattedBaseTotal}*
+${addonLines.length > 0 ? `- Pilihan Add-on / Variasi Paket:\n${addonLines.join('\n')}\n` : ''}- Total Estimasi: *Rp ${formattedEstimatedSubtotal}* (@ Rp ${formattedUnitPrice}/porsi)
 - Tanggal Acara: *${eventDate}* ${eventTime ? `(Jam: ${eventTime})` : ''}
 - Alamat Pengantaran: *${deliveryAddress.trim()}*
 ${notes.trim() ? `- Catatan Khusus: *${notes.trim()}*\n` : ''}
@@ -208,11 +372,13 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
 
       const waUrl = `https://wa.me/6289669743193?text=${encodeURIComponent(waText)}`
 
-      // 3. Buka WhatsApp di tab baru
+      // 4. Buka WhatsApp di tab baru
       window.open(waUrl, '_blank')
     } catch (err: unknown) {
       console.error(err)
-      toast.error('Terjadi kesalahan saat memproses pesanan. Silakan coba lagi atau hubungi langsung via WhatsApp.')
+      const errorObj = err as { response?: { data?: { message?: string } }; message?: string }
+      const serverMessage = errorObj?.response?.data?.message || errorObj?.message
+      toast.error(serverMessage || 'Terjadi kesalahan saat memproses pesanan. Silakan coba lagi atau hubungi langsung via WhatsApp.')
     } finally {
       setIsSubmitting(false)
     }
@@ -265,12 +431,16 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
   }
 
   const displayImage = getProductDisplayImage(product)
-  const unitPrice = Number(product.price)
-  const estimatedTotal = unitPrice * quantity
   const todayDateString = new Date().toISOString().split('T')[0]
 
   return (
     <main className="min-h-screen bg-[#fafaf9] pb-24 text-zinc-900 selection:bg-zinc-950 selection:text-white">
+        <PageLoader
+                isLoading={isLoading}
+                text="Menyiapkan Menu Katering Lezat..."
+                subtext="Memuat daftar lengkap paket bento, krisbar, dan nasi box spesial"
+                minDuration={700}
+              />
       <section className="mx-auto max-w-7xl px-6 pb-20 pt-32 lg:px-8 lg:pb-28">
         {/* Breadcrumb Back Link */}
         <Link
@@ -340,41 +510,181 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
               </div>
             </div>
 
-            {/* Price Info Box */}
-            <div className="mt-6 rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
-              <div className="flex items-baseline justify-between">
-                <div>
-                  <p className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">
-                    Harga Satuan
-                  </p>
-                  <div className="mt-1 flex items-baseline gap-1.5">
-                    <span className="text-3xl font-black tracking-tight text-zinc-950">
-                      Rp {unitPrice.toLocaleString('id-ID')}
-                    </span>
-                    <span className="text-xs font-medium text-zinc-400">/ porsi</span>
+            {/* =====================================================
+                ADDON / CUSTOMIZATION GROUPS (1 PAKET MENU)
+            ====================================================== */}
+            {product.addons_enabled && product.addon_groups && product.addon_groups.length > 0 && (
+              <div className="mt-7 space-y-4">
+                <div className="flex items-center gap-2 border-b border-zinc-200/80 pb-2.5">
+                  <Sparkles size={16} className="text-red-600" />
+                  <div>
+                    <h2 className="text-xs font-black uppercase tracking-wider text-zinc-900">
+                      Pilihan Kustomisasi & Add-on Paket
+                    </h2>
+                    <p className="text-[11px] text-zinc-500">
+                      Pilihan variasi nasi, lauk pelengkap, atau extra tambahan per porsi
+                    </p>
                   </div>
                 </div>
 
-                <div className="text-right">
-                  <p className="text-[11px] text-zinc-400">Total Estimasi ({quantity} porsi)</p>
-                  <p className="mt-0.5 text-xl font-black text-zinc-950">
-                    Rp {estimatedTotal.toLocaleString('id-ID')}
-                  </p>
-                </div>
+                {product.addon_groups.map((group) => {
+                  const isSingleSelect = group.max_selection === 1
+                  const isRequired = group.min_selection > 0
+                  const currentSelected = selectedAddons[group.id] || []
+
+                  return (
+                    <div
+                      key={group.id}
+                      className="rounded-2xl border border-zinc-200 bg-white p-4 sm:p-5 shadow-xs transition-all"
+                    >
+                      {/* Group Header */}
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 mb-3.5">
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <h3 className="font-extrabold text-sm text-zinc-950">
+                              {group.name}
+                            </h3>
+                            {isRequired ? (
+                              <span className="rounded-full bg-red-50 border border-red-200/80 px-2 py-0.5 text-[10px] font-bold text-red-700">
+                                Wajib Dipilih
+                              </span>
+                            ) : (
+                              <span className="rounded-full bg-zinc-100 border border-zinc-200 px-2 py-0.5 text-[10px] font-bold text-zinc-600">
+                                Opsional (Maks {group.max_selection})
+                              </span>
+                            )}
+                          </div>
+                          {group.description && (
+                            <p className="text-xs text-zinc-500 mt-0.5">{group.description}</p>
+                          )}
+                        </div>
+
+                        <span className="text-[11px] font-semibold text-zinc-400 self-start sm:self-auto">
+                          {currentSelected.length} / {group.max_selection} dipilih
+                        </span>
+                      </div>
+
+                      {/* Addon Choices Grid */}
+                      <div className="grid gap-2 sm:grid-cols-2">
+                        {group.addons.map((addon) => {
+                          const isSelected = currentSelected.includes(addon.id)
+                          const priceNum = Number(addon.price)
+
+                          return (
+                            <button
+                              key={addon.id}
+                              type="button"
+                              onClick={() => handleToggleAddon(group, addon.id)}
+                              className={`group flex items-start justify-between rounded-xl p-3 text-left transition-all border ${
+                                isSelected
+                                  ? 'border-zinc-950 bg-zinc-50 shadow-xs ring-1 ring-zinc-950'
+                                  : 'border-zinc-200/90 bg-white hover:border-zinc-300 hover:bg-zinc-50/50'
+                              }`}
+                            >
+                              <div className="flex items-start gap-2.5 pr-2">
+                                <div
+                                  className={`mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-${
+                                    isSingleSelect ? 'full' : 'md'
+                                  } border transition ${
+                                    isSelected
+                                      ? 'border-zinc-950 bg-zinc-950 text-white'
+                                      : 'border-zinc-300 bg-white group-hover:border-zinc-400'
+                                  }`}
+                                >
+                                  {isSelected && (
+                                    isSingleSelect ? (
+                                      <div className="h-1.5 w-1.5 rounded-full bg-white" />
+                                    ) : (
+                                      <Check size={10} strokeWidth={3} />
+                                    )
+                                  )}
+                                </div>
+                                <div>
+                                  <p
+                                    className={`text-xs font-bold leading-snug ${
+                                      isSelected ? 'text-zinc-950' : 'text-zinc-800'
+                                    }`}
+                                  >
+                                    {addon.name}
+                                  </p>
+                                  {addon.description && (
+                                    <p className="text-[11px] text-zinc-500 mt-0.5 line-clamp-1">
+                                      {addon.description}
+                                    </p>
+                                  )}
+                                </div>
+                              </div>
+
+                              <span
+                                className={`shrink-0 rounded-lg px-2 py-0.5 text-[10px] font-bold ${
+                                  priceNum === 0
+                                    ? 'bg-emerald-50 text-emerald-700 border border-emerald-200/70'
+                                    : 'bg-zinc-100 text-zinc-800 border border-zinc-200/80'
+                                }`}
+                              >
+                                {priceNum === 0 ? 'Termasuk' : `+Rp ${priceNum.toLocaleString('id-ID')} / porsi`}
+                              </span>
+                            </button>
+                          )
+                        })}
+                      </div>
+                    </div>
+                  )
+                })}
               </div>
-            </div>
+            )}
 
             {/* =====================================================
-                CART-STYLE QUANTITY SELECTOR (KELIPATAN 10)
+                CART-STYLE QUANTITY SELECTOR (SATUAN & KELIPATAN 10)
             ====================================================== */}
             <div className="mt-6 rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              {/* Mode Switcher */}
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-zinc-100 pb-4 mb-4">
                 <div>
                   <label className="text-xs font-bold uppercase tracking-wider text-zinc-800 block">
-                    Jumlah Pesanan (Kelipatan 10 Porsi)
+                    Mode Pemesanan Porsi
                   </label>
                   <p className="text-xs text-zinc-500 mt-0.5">
-                    Minimal order katering adalah <span className="font-bold text-zinc-950">{minOrder} porsi</span>
+                    Minimal order menu ini adalah <span className="font-bold text-zinc-950">{minOrder} porsi</span>
+                  </p>
+                </div>
+
+                <div className="inline-flex items-center rounded-xl bg-zinc-100 p-1 self-start sm:self-auto shadow-inner">
+                  <button
+                    type="button"
+                    onClick={() => handleSwitchMode('kelipatan10')}
+                    className={`rounded-lg px-3 py-1.5 text-xs font-bold transition ${
+                      portionMode === 'kelipatan10'
+                        ? 'bg-white text-zinc-950 shadow-xs'
+                        : 'text-zinc-600 hover:text-zinc-950'
+                    }`}
+                  >
+                    Kelipatan 10
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleSwitchMode('satuan')}
+                    className={`rounded-lg px-3 py-1.5 text-xs font-bold transition ${
+                      portionMode === 'satuan'
+                        ? 'bg-white text-zinc-950 shadow-xs'
+                        : 'text-zinc-600 hover:text-zinc-950'
+                    }`}
+                  >
+                    Satuan (+1)
+                  </button>
+                </div>
+              </div>
+
+              {/* Counter and Stepper */}
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                  <p className="text-xs font-bold text-zinc-900">
+                    {portionMode === 'kelipatan10' ? 'Kelipatan 10 Porsi' : 'Hitungan Satuan Porsi'}
+                  </p>
+                  <p className="text-[11px] text-zinc-500">
+                    {portionMode === 'kelipatan10'
+                      ? 'Cocok untuk pemesanan rombongan & box besar'
+                      : 'Bebas tentukan jumlah porsi sesuai kebutuhan acara'}
                   </p>
                 </div>
 
@@ -384,17 +694,20 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                     type="button"
                     onClick={handleDecrease}
                     disabled={quantity <= minOrder}
-                    className="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-zinc-700 shadow-sm transition hover:bg-zinc-100 hover:text-zinc-950 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40"
-                    aria-label="Kurangi 10 porsi"
+                    className="flex h-10 min-w-10 items-center justify-center gap-0.5 px-2 rounded-xl bg-white text-zinc-700 shadow-sm transition hover:bg-zinc-100 hover:text-zinc-950 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40"
+                    aria-label={`Kurangi ${step} porsi`}
                   >
-                    <Minus size={16} strokeWidth={2.5} />
+                    <Minus size={15} strokeWidth={2.5} />
+                    <span className="text-[11px] font-bold text-zinc-500">
+                      {portionMode === 'kelipatan10' ? '10' : '1'}
+                    </span>
                   </button>
 
                   <div className="flex items-center justify-center px-4">
                     <input
                       type="number"
                       value={quantity}
-                      step={10}
+                      step={step}
                       min={minOrder}
                       onChange={(e) => handleQuantityInput(e.target.value)}
                       onBlur={handleQuantityBlur}
@@ -406,10 +719,13 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                   <button
                     type="button"
                     onClick={handleIncrease}
-                    className="flex h-10 w-10 items-center justify-center rounded-xl bg-zinc-950 text-white shadow-sm transition hover:bg-zinc-800 active:scale-95"
-                    aria-label="Tambah 10 porsi"
+                    className="flex h-10 min-w-10 items-center justify-center gap-0.5 px-2 rounded-xl bg-zinc-950 text-white shadow-sm transition hover:bg-zinc-800 active:scale-95"
+                    aria-label={`Tambah ${step} porsi`}
                   >
-                    <Plus size={16} strokeWidth={2.5} />
+                    <Plus size={15} strokeWidth={2.5} />
+                    <span className="text-[11px] font-bold text-zinc-300">
+                      {portionMode === 'kelipatan10' ? '10' : '1'}
+                    </span>
                   </button>
                 </div>
               </div>
@@ -417,20 +733,110 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
               {/* Quick portion chips */}
               <div className="mt-4 flex flex-wrap items-center gap-2 pt-3 border-t border-zinc-100">
                 <span className="text-[11px] font-semibold text-zinc-400">Pilih Cepat:</span>
-                {[10, 20, 30, 50, 100, 200].map((count) => (
-                  <button
-                    key={count}
-                    type="button"
-                    onClick={() => setQuantity(count)}
-                    className={`rounded-xl px-2.5 py-1 text-xs font-bold transition ${
-                      quantity === count
-                        ? 'bg-zinc-950 text-white shadow-sm'
-                        : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
-                    }`}
-                  >
-                    {count} Porsi
-                  </button>
-                ))}
+                {portionMode === 'kelipatan10' ? (
+                  [10, 20, 30, 50, 100, 200]
+                    .filter((c) => c >= minOrder)
+                    .map((count) => (
+                      <button
+                        key={count}
+                        type="button"
+                        onClick={() => setQuantity(count)}
+                        className={`rounded-xl px-2.5 py-1 text-xs font-bold transition ${
+                          quantity === count
+                            ? 'bg-zinc-950 text-white shadow-sm'
+                            : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
+                        }`}
+                      >
+                        {count} Porsi
+                      </button>
+                    ))
+                ) : (
+                  <>
+                    {[minOrder, minOrder + 2, minOrder + 5, minOrder + 10, minOrder + 15, minOrder + 25]
+                      .filter((v, i, a) => a.indexOf(v) === i)
+                      .map((count) => (
+                        <button
+                          key={count}
+                          type="button"
+                          onClick={() => setQuantity(count)}
+                          className={`rounded-xl px-2.5 py-1 text-xs font-bold transition ${
+                            quantity === count
+                              ? 'bg-zinc-950 text-white shadow-sm'
+                              : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
+                          }`}
+                        >
+                          {count} Porsi
+                        </button>
+                      ))}
+                    <span className="text-zinc-300 mx-1">|</span>
+                    {[+1, +5, +10].map((inc) => (
+                      <button
+                        key={`inc-${inc}`}
+                        type="button"
+                        onClick={() => setQuantity((q) => q + inc)}
+                        className="rounded-xl px-2 py-1 text-xs font-bold bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200/80 transition"
+                      >
+                        +{inc}
+                      </button>
+                    ))}
+                  </>
+                )}
+              </div>
+            </div>
+
+            {/* =====================================================
+                PRICE INFO & SUMMARY BOX (LIVE PREVIEW & TRANSPARENT BREAKDOWN)
+            ====================================================== */}
+            <div className="mt-6 rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm space-y-3.5">
+              <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-2 border-b border-zinc-100 pb-3">
+                <div>
+                  <p className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">
+                    Harga Satuan Paket
+                  </p>
+                  <div className="mt-0.5 flex items-baseline gap-1.5">
+                    <span className="text-2xl sm:text-3xl font-black tracking-tight text-zinc-950">
+                      Rp {unitPrice.toLocaleString('id-ID')}
+                    </span>
+                    <span className="text-xs font-medium text-zinc-400">/ porsi</span>
+                  </div>
+                </div>
+
+                <div className="sm:text-right">
+                  <p className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">
+                    Total Estimasi ({quantity} Porsi)
+                  </p>
+                  <p className="mt-0.5 text-xl sm:text-2xl font-black text-emerald-700">
+                    Rp {estimatedTotal.toLocaleString('id-ID')}
+                  </p>
+                </div>
+              </div>
+
+              {/* Explicit calculation breakdown */}
+              <div className="rounded-xl bg-zinc-50 p-3 space-y-1.5 text-xs">
+                <div className="flex justify-between text-zinc-600">
+                  <span>Paket Dasar ({product.name}):</span>
+                  <span className="font-mono text-zinc-900 font-semibold">
+                    Rp {basePrice.toLocaleString('id-ID')} × {quantity} porsi = Rp {baseTotal.toLocaleString('id-ID')}
+                  </span>
+                </div>
+
+                {selectedAddonSummary.length > 0 && selectedAddonSummary.some((a) => a.price > 0) && (
+                  <div className="space-y-1 pt-1.5 border-t border-zinc-200/60">
+                    <p className="text-[11px] font-bold text-zinc-500 uppercase tracking-wider">
+                      Tambahan Add-on Paket:
+                    </p>
+                    {selectedAddonSummary.map((item, idx) => (
+                      <div key={idx} className="flex justify-between text-zinc-600 pl-2">
+                        <span>• {item.addonName}</span>
+                        <span className="font-mono text-emerald-700 font-semibold">
+                          {item.price > 0
+                            ? `+Rp ${item.price.toLocaleString('id-ID')} × ${quantity} porsi = +Rp ${(item.price * quantity).toLocaleString('id-ID')}`
+                            : 'Termasuk'}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -438,7 +844,7 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
             <div className="mt-6 flex flex-col sm:flex-row gap-3">
               <button
                 type="button"
-                onClick={() => setIsModalOpen(true)}
+                onClick={handleOpenOrderModal}
                 className="inline-flex flex-1 items-center justify-center gap-2.5 rounded-2xl bg-emerald-600 px-7 py-4 text-sm font-bold text-white shadow-lg shadow-emerald-600/25 transition hover:bg-emerald-700 hover:scale-[1.01] active:scale-[0.99]"
               >
                 <MessageCircle size={20} />
@@ -493,15 +899,37 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
 
             {/* Modal Body / Form */}
             <form onSubmit={handleSubmitOrder} className="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
-              {/* Order Summary Box */}
-              <div className="rounded-2xl border border-zinc-200 bg-zinc-50/70 p-3.5 flex items-center justify-between text-xs">
-                <div>
-                  <p className="font-bold text-zinc-900">{product.name}</p>
-                  <p className="text-zinc-500">Jumlah: {quantity} porsi (@ Rp {unitPrice.toLocaleString('id-ID')})</p>
+              {/* Order Summary Box with Explicit Multiplication */}
+              <div className="rounded-2xl border border-zinc-200 bg-zinc-50/70 p-3.5 space-y-2.5 text-xs">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-bold text-zinc-900">{product.name}</p>
+                    <p className="text-zinc-500">Jumlah: {quantity} porsi (@ Rp {unitPrice.toLocaleString('id-ID')})</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-[10px] text-zinc-400">Estimasi Total</p>
+                    <p className="font-black text-sm text-emerald-700">Rp {estimatedTotal.toLocaleString('id-ID')}</p>
+                  </div>
                 </div>
-                <div className="text-right">
-                  <p className="text-[10px] text-zinc-400">Estimasi Subtotal</p>
-                  <p className="font-black text-sm text-zinc-950">Rp {estimatedTotal.toLocaleString('id-ID')}</p>
+
+                {/* Calculation breakdown */}
+                <div className="pt-2 border-t border-zinc-200/60 space-y-1 text-[11px]">
+                  <div className="flex justify-between text-zinc-600">
+                    <span>Paket Dasar:</span>
+                    <span className="font-mono text-zinc-800">
+                      Rp {basePrice.toLocaleString('id-ID')} × {quantity} = Rp {baseTotal.toLocaleString('id-ID')}
+                    </span>
+                  </div>
+                  {selectedAddonSummary.map((item, idx) => (
+                    <div key={idx} className="flex justify-between text-zinc-600 pl-2">
+                      <span>↳ {item.addonName}:</span>
+                      <span className="font-mono text-emerald-700 font-semibold">
+                        {item.price > 0
+                          ? `+Rp ${item.price.toLocaleString('id-ID')} × ${quantity} = +Rp ${(item.price * quantity).toLocaleString('id-ID')}`
+                          : 'Termasuk'}
+                      </span>
+                    </div>
+                  ))}
                 </div>
               </div>
 
