@@ -1055,7 +1055,7 @@ export default function AdminDashboard() {
                   </div>
                   <div className="flex justify-between text-sm font-bold text-stone-950 pt-2 border-t border-stone-200">
                     <span>Total Tagihan</span>
-                    <span className="font-mono">{formatRupiah(selectedOrder.total)}</span>
+                    <span className="font-poppins">{formatRupiah(selectedOrder.total)}</span>
                   </div>
                 </div>
               </div>
