@@ -105,7 +105,7 @@ export default function CaraPesan() {
       {/* Header */}
       <Summary
         eyebrow="PANDUAN PEMESANAN KATERING"
-        title="Pesan Katering Praktis Tanpa Ribet."
+        title="Pesan Katering Praktis Tanpa Ribet"
         description="Mulai dari memilih menu, menentukan jumlah porsi, hingga menerima invoice resmi katering via WhatsApp dalam hitungan menit."
       />
 
@@ -189,7 +189,7 @@ export default function CaraPesan() {
               </div>
 
               <h2 className="text-3xl font-black tracking-tight text-zinc-950 sm:text-4xl lg:text-5xl leading-tight">
-                Harga Ditentukan Tim Kami, Invoice Resmi Langsung di WhatsApp Anda.
+                Harga Ditentukan Tim Kami, Invoice Resmi Langsung di WhatsApp Anda
               </h2>
 
               <p className="text-sm sm:text-base leading-relaxed text-zinc-500">
@@ -295,7 +295,7 @@ export default function CaraPesan() {
               </div>
 
               <h2 className="mt-4 text-3xl font-black tracking-tight text-zinc-950 sm:text-4xl lg:text-5xl leading-tight">
-                Pilih Menu Katering Favorit Anda Sekarang.
+                Pilih Menu Katering Favorit Anda Sekarang
               </h2>
 
               <p className="mt-4 text-sm sm:text-base leading-relaxed text-zinc-500 max-w-2xl">

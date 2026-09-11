@@ -179,7 +179,7 @@ export default function TentangKami() {
       {/* Header */}
       <Summary
         eyebrow="TENTANG HARA CHICKEN"
-        title="Lebih Dari Sekadar Katering Nasi Box."
+        title="Lebih Dari Sekadar Katering Nasi Box"
         description="Menyajikan kelezatan otentik, higienitas terjaga, dan pelayanan yang dapat diandalkan untuk menyempurnakan setiap pertemuan penting Anda."
       />
 
@@ -364,7 +364,7 @@ export default function TentangKami() {
               </div>
 
               <h2 className="mt-4 text-3xl font-black tracking-tight text-zinc-950 sm:text-5xl leading-tight">
-                Dirancang Agar Urusan Konsumsi Menjadi Sangat Mudah.
+                Dirancang Agar Urusan Konsumsi Menjadi Sangat Mudah
               </h2>
 
               <p className="mt-5 text-sm sm:text-base leading-relaxed text-zinc-500">
@@ -428,7 +428,7 @@ export default function TentangKami() {
               </div>
 
               <h2 className="mt-4 text-3xl font-black tracking-tight text-zinc-950 sm:text-4xl lg:text-5xl leading-tight">
-                Rencanakan Konsumsi Acara Anda Bersama Kami.
+                Rencanakan Konsumsi Acara Anda Bersama Kami
               </h2>
 
               <p className="mt-4 text-sm sm:text-base leading-relaxed text-zinc-500 max-w-2xl">
