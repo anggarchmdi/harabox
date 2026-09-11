@@ -1,14 +1,12 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import AOS from 'aos'
 import {
   ArrowRight,
   Award,
   CalendarDays,
-  Check,
   ChevronDown,
-  Clock3,
   Flame,
   MapPin,
   MessageCircle,
@@ -17,7 +15,9 @@ import {
   Star,
   Truck,
   Users,
-  UtensilsCrossed,
+  ShoppingBasket,
+  SlidersHorizontal,
+
 } from 'lucide-react'
 
 import { productService } from '../services/products.service'
@@ -37,6 +37,10 @@ import RamesBaladoImg from '../assets/nasibox/rames-balado-b.webp'
 import RamesPahaImg from '../assets/nasibox/rames-paha-b.webp'
 import EkonomisBaladoImg from '../assets/nasibox/ekonomis-balado-b.webp'
 import BannerMobile from '../assets/bannersss.webp'
+import DapurImg from '../assets/dapur.webp'
+import ProductImg from '../assets/product.webp'
+import PackingImg from '../assets/packing.webp'
+
 // Curated fallback data untuk produk unggulan jika offline/loading
 interface CuratedProduct {
   name: string
@@ -237,13 +241,6 @@ const faqs = [
 ]
 
 export default function HomePage() {
-  const navigate = useNavigate()
-
-  // State form rekomendasi / summary home
-  const [plannerDate, setPlannerDate] = useState('')
-  const [deliveryArea, setDeliveryArea] = useState('')
-  const [deliveryTime, setDeliveryTime] = useState('')
-
   // State untuk kategori filter menu
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
 
@@ -294,11 +291,6 @@ export default function HomePage() {
     }, 100)
     return () => clearTimeout(timer)
   }, [selectedCategory, displayProducts])
-
-  const handleRecommendationSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    navigate('/menu')
-  }
 
   const [pageLoading, setPageLoading] = useState(true)
 
@@ -382,6 +374,7 @@ export default function HomePage() {
                 transition-all duration-300
                 hover:-translate-y-0.5
                 hover:shadow-lg hover:shadow-red-500/25
+                transform hover:scale-95
                 "
             >
                 Lihat Menu
@@ -390,16 +383,19 @@ export default function HomePage() {
 
             {/* Quick Info */}
             <div className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 border-t border-zinc-100 pt-5 md:justify-start">
-            <span className="text-xs font-medium text-zinc-500">
-                ✓ Minimal 10 porsi
+            <span className="text-xs flex gap-2 font-medium text-zinc-500">
+                <ShoppingBasket className="h-3.5 w-3.5 text-red-500" />
+                Minimal 10 porsi
             </span>
 
-            <span className="text-xs font-medium text-zinc-500">
-                ✓ Bisa custom
+            <span className="text-xs flex gap-2 font-medium text-zinc-500">
+                <SlidersHorizontal className="h-3.5 w-3.5 text-blue-500" />
+                Bisa custom
             </span>
 
-            <span className="text-xs font-medium text-zinc-500">
-                ✓ Pesan via WhatsApp
+            <span className="text-xs flex gap-2 font-medium text-zinc-500">
+                <MessageCircle className="h-3.5 w-3.5 text-green-500" />
+                Pesan via WhatsApp
             </span>
             </div>
         </div>
@@ -409,8 +405,8 @@ export default function HomePage() {
       {/* =====================================================
           2. TRUST PILLARS (STRIP 4 KEUNGGULAN)
       ====================================================== */}
-      <section className="pt-80 md:pt-80 xl:pt-44 pb-16 sm:pb-20 max-w-7xl mx-auto px-5 sm:px-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <section className="pt-60 md:pt-80 xl:pt-44 pb-16 sm:pb-20 max-w-7xl mx-auto px-5 sm:px-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 transition transform duration-300">
           {trustPillars.map((pillar, idx) => {
             const Icon = pillar.icon
             return (
@@ -447,7 +443,7 @@ export default function HomePage() {
               <span className="rounded-full bg-red-50 border border-red-200 px-3.5 py-1 text-xs font-black uppercase tracking-wider text-red-700">
                 Pilihan Favorit
               </span>
-              <h2 className="mt-3 text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-zinc-950">
+              <h2 className="mt-3 text-3xl sm:text-4xl lg:text-5xl font-black font-poppins tracking-tight text-zinc-950">
                 Menu Katering <span className="text-red-600">Paling Laris</span>
               </h2>
               <p className="mt-2 text-sm sm:text-base text-zinc-500 max-w-xl">
@@ -567,8 +563,8 @@ export default function HomePage() {
                       </div>
 
                       <Link
-                        to="/menu"
-                        className="inline-flex items-center gap-1.5 rounded-xl bg-zinc-900 px-4 py-2.5 text-xs font-bold text-white transition hover:bg-red-600 active:scale-95 cursor-pointer"
+                        to={`/menu/${item.slug}`}
+                        className="inline-flex duration-300 items-center gap-1.5 rounded-xl bg-zinc-900 px-4 py-2.5 text-xs font-bold text-white transition hover:bg-red-600 active:scale-95 cursor-pointer"
                       >
                         <span>Pesan</span>
                         <ArrowRight size={13} />
@@ -591,14 +587,14 @@ export default function HomePage() {
                 Punya Kebutuhan Menu atau Anggaran Khusus?
               </h4>
               <p className="text-xs sm:text-sm text-zinc-500 mt-1">
-                Kami siap membantu menyesuaikan lauk, snack box, atau buah pelengkap sesuai kebutuhan acara.
+                Kami siap membantu menyesuaikan lauk, snack box, atau buah pelengkap sesuai kebutuhan acara
               </p>
             </div>
             <a
               href={whatsappUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex shrink-0 items-center gap-2 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3.5 text-xs sm:text-sm font-bold shadow-lg shadow-emerald-600/20 transition cursor-pointer"
+              className="inline-flex shrink-0 transform hover:scale-95 duration-300 items-center gap-2 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3.5 text-xs sm:text-sm font-bold shadow-lg shadow-emerald-600/20 transition cursor-pointer"
             >
               <MessageCircle size={17} />
               <span>Konsultasi Menu Gratis</span>
@@ -610,133 +606,166 @@ export default function HomePage() {
       {/* =====================================================
           4. BENTO GRID: KENAPA MEMILIH HARA CHICKEN?
       ====================================================== */}
-      <section className="py-20 sm:py-28 max-w-7xl mx-auto px-5 sm:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
-          {/* Main Story (Col 5) */}
-          <div
-            data-aos="fade-right"
-            className="lg:col-span-5 flex flex-col justify-between rounded-3xl bg-zinc-950 text-white p-8 sm:p-10 relative overflow-hidden"
-          >
-            <div className="relative z-10">
-              <span className="rounded-full bg-red-600/30 border border-red-500/50 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-red-300">
-                Kualitas Terpercaya
-              </span>
-              <h2 className="mt-5 text-3xl sm:text-4xl font-black tracking-tight leading-tight">
-                Acara sudah cukup menguras tenaga.{' '}
-                <span className="text-amber-400">Urusan hidangan lezat, biar kami yang siapkan.</span>
-              </h2>
-              <p className="mt-4 text-sm text-zinc-400 leading-relaxed">
-                Dari acara kantor hingga momen kumpul keluarga, Hara Chicken berkomitmen memberikan
-                layanan katering yang konsisten, rasa yang disukai semua tamu, dan ketenangan bagi penyelenggara.
-              </p>
+      <section className="py-20 sm:py-28">
+  <div className="mx-auto max-w-7xl px-5 sm:px-8">
 
-              <div className="mt-8 space-y-3.5">
-                {[
-                  'Ayam segar pilihan dari peternakan terpercaya',
-                  'Standar higienis tinggi & 100% Halal',
-                  'Invoice otomatis WhatsApp untuk arsip kantor/panitia',
-                  'Dukungan admin ramah & fast response',
-                ].map((item, i) => (
-                  <div key={i} className="flex items-center gap-3">
-                    <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400">
-                      <Check size={12} strokeWidth={3} />
-                    </div>
-                    <span className="text-xs sm:text-sm font-medium text-zinc-300">{item}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
+    {/* Heading */}
+    <div
+      data-aos="fade-up"
+      className="mb-10 max-w-2xl"
+    >
+      <span className="text-xs font-bold uppercase tracking-[0.2em] text-red-600">
+        Tentang Hara Chicken
+      </span>
 
-            <div className="mt-8 pt-6 border-t border-white/10 relative z-10">
-              <Link
-                to="/tentang-kami"
-                className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-amber-400 hover:text-amber-300 transition"
-              >
-                <span>Pelajari Cerita Kami Lebih Dekat</span>
-                <ArrowRight size={14} />
-              </Link>
-            </div>
-          </div>
+      <h2 className="mt-3 text-3xl font-black font-poppins leading-tight tracking-tight text-zinc-950 sm:text-4xl lg:text-5xl">
+        Bukan sekadar nasi box
+        <span className="text-red-600">
+          {" "}Kami bantu acara kamu jadi lebih mudah
+        </span>
+      </h2>
 
-          {/* 3 Bento Feature Tiles (Col 7) */}
-          <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-6">
-            {/* Tile 1 */}
-            <div
-              data-aos="fade-left"
-              data-aos-delay="100"
-              className="rounded-3xl border border-zinc-200/80 bg-white p-7 shadow-sm flex flex-col justify-between hover:border-red-200 transition"
-            >
-              <div>
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-50 text-amber-600 mb-5">
-                  <UtensilsCrossed size={22} />
-                </div>
-                <h3 className="text-lg font-black text-zinc-950">Dapur Profesional & Bersih</h3>
-                <p className="mt-2 text-xs sm:text-sm text-zinc-500 leading-relaxed">
-                  Dimasak tepat sebelum jadwal pengantaran untuk menjaga kehangatan, kegaringan, dan nutrisi makanan.
-                </p>
-              </div>
-              <div className="mt-6 pt-4 border-t border-zinc-100 flex items-center justify-between text-xs font-bold text-zinc-400">
-                <span>Standar Food Grade</span>
-                <span className="text-emerald-600 font-extrabold">● Bersertifikasi</span>
-              </div>
-            </div>
+      <p className="mt-4 max-w-xl text-sm leading-relaxed text-zinc-500 sm:text-base">
+        Dari meeting kantor sampai acara keluarga, kami siapkan
+        hidangan yang praktis, lezat, dan siap menemani momen pentingmu
+      </p>
+    </div>
 
-            {/* Tile 2 */}
-            <div
-              data-aos="fade-left"
-              data-aos-delay="200"
-              className="rounded-3xl border border-zinc-200/80 bg-white p-7 shadow-sm flex flex-col justify-between hover:border-red-200 transition"
-            >
-              <div>
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-red-50 text-red-600 mb-5">
-                  <Truck size={22} />
-                </div>
-                <h3 className="text-lg font-black text-zinc-950">Armada Pengiriman Khusus</h3>
-                <p className="mt-2 text-xs sm:text-sm text-zinc-500 leading-relaxed">
-                  Kurir katering terlatih dengan wadah insulasi pengantaran agar box tidak basah, rusak, atau telat.
-                </p>
-              </div>
-              <div className="mt-6 pt-4 border-t border-zinc-100 flex items-center justify-between text-xs font-bold text-zinc-400">
-                <span>Coverage Seluruh Area</span>
-                <span className="text-red-600 font-extrabold">Yogyakarta & Sekitarnya</span>
-              </div>
-            </div>
+    {/* Gallery */}
+    <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
 
-            {/* Tile 3 (Full Width) */}
-            <div
-              data-aos="fade-up"
-              data-aos-delay="300"
-              className="sm:col-span-2 rounded-3xl border border-zinc-200/80 bg-gradient-to-br from-white to-zinc-50 p-7 shadow-sm hover:border-amber-200 transition"
-            >
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div className="flex items-center gap-4">
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600">
-                    <MessageCircle size={22} />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-black text-zinc-950">Konfirmasi Cepat & Invoice Otomatis</h3>
-                    <p className="text-xs sm:text-sm text-zinc-500">
-                      Format invoice rapi langsung terkirim ke WhatsApp untuk memudahkan pencatatan panitia dan keuangan kantor.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
+      {/* Main Photo */}
+      <div
+        data-aos="fade-right"
+        className="group relative overflow-hidden rounded-[2rem] lg:col-span-7"
+      >
+        <div className="aspect-[4/3] h-full min-h-[420px">
+        <div className="absolute z-10 bg-black/20 w-full h-full"></div>
+          <img
+            src={ProductImg}
+            alt="Hara Chicken catering"
+            className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
+          />
+        </div>
+
+        <div className="absolute z-20 inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-7 sm:p-9">
+          <span className="text-xs font-bold uppercase tracking-widest text-white/70">
+            Hara Chicken
+          </span>
+
+          <h3 className="mt-2 max-w-md text-2xl font-black leading-tight text-white sm:text-3xl">
+            Hidangan siap,
+            acara jadi tenang
+          </h3>
+
+          <p className="mt-2 max-w-sm text-sm leading-relaxed text-white/75">
+            Kami urus makanannya, kamu fokus menikmati acaranya
+          </p>
+        </div>
+      </div>
+
+      {/* Supporting Photos */}
+      <div className="grid gap-4 sm:grid-cols-2 lg:col-span-5 lg:grid-cols-1">
+
+        <div
+          data-aos="fade-left"
+          data-aos-delay="100"
+          className="group relative min-h-[230px] overflow-hidden rounded-[2rem]"
+        >
+          <img
+            src={DapurImg}
+            alt="Dapur Hara Chicken"
+            className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105"
+          />
+
+          <div className="absolute inset-0 bg-gradient-to-t from-black/65 to-transparent" />
+
+          <div className="absolute bottom-0 left-0 p-6">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-white/70">
+              Dapur
+            </span>
+
+            <h3 className="mt-1 text-xl font-poppins text-white">
+              Fresh setiap hari
+            </h3>
           </div>
         </div>
-      </section>
 
+        <div
+          data-aos="fade-left"
+          data-aos-delay="200"
+          className="group relative min-h-[230px] overflow-hidden rounded-[2rem]"
+        >
+          <img
+            src={PackingImg}
+            alt="Hara Chicken catering untuk acara"
+            className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105"
+          />
+
+          <div className="absolute inset-0 bg-gradient-to-t from-black/65 to-transparent" />
+
+          <div className="absolute bottom-0 left-0 p-6">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-white/70">
+              Catering
+            </span>
+
+            <h3 className="mt-1 text-xl font-poppins text-white">
+              Siap untuk berbagai acara
+            </h3>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    {/* Bottom Info */}
+    <div
+      data-aos="fade-up"
+      data-aos-delay="200"
+      className="mt-6 flex flex-col gap-5 border-t border-zinc-200 pt-6 sm:flex-row sm:items-center sm:justify-between"
+    >
+      <div className="flex flex-wrap gap-x-6 gap-y-3 text-xs font-semibold text-zinc-600">
+        <span className="flex items-center gap-2">
+          <span className="h-1.5 w-1.5 rounded-full bg-red-500" />
+          Minimal 10 porsi
+        </span>
+
+        <span className="flex items-center gap-2">
+          <span className="h-1.5 w-1.5 rounded-full bg-red-500" />
+          Bisa custom
+        </span>
+
+        <span className="flex items-center gap-2">
+          <span className="h-1.5 w-1.5 rounded-full bg-red-500" />
+          Area Yogyakarta
+        </span>
+      </div>
+
+      <Link
+        to="/tentang-kami"
+        className="group inline-flex items-center gap-2 text-sm font-bold text-zinc-950 transition hover:text-red-600"
+      >
+        Kenal Hara Chicken
+        <ArrowRight
+          size={16}
+          className="transition-transform group-hover:translate-x-1"
+        />
+      </Link>
+    </div>
+
+  </div>
+</section>
       {/* =====================================================
           5. SOLUSI KATERING APAPUN ACARANYA (OCCASIONS)
       ====================================================== */}
       <section className="py-20 sm:py-28 bg-white border-t border-zinc-200/80">
         <div className="mx-auto max-w-7xl px-5 sm:px-8">
           <div data-aos="fade-up" className="max-w-2xl">
-            <span className="rounded-full bg-amber-50 border border-amber-200 px-3.5 py-1 text-xs font-black uppercase tracking-wider text-amber-800">
+            <span className="rounded-full bg-red-50 border border-red-200 px-3.5 py-1 text-xs font-black uppercase tracking-wider text-red-700">
               Fleksibel & Serbaguna
             </span>
-            <h2 className="mt-3 text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-zinc-950">
-              Solusi Katering untuk <span className="text-amber-500">Setiap Acara</span>
+            <h2 className="mt-3 text-3xl sm:text-4xl lg:text-5xl font-black font-poppins tracking-tight text-zinc-950">
+              Solusi Katering untuk <span className="text-red-500">Setiap Acara</span>
             </h2>
             <p className="mt-2 text-sm sm:text-base text-zinc-500">
               Dari kebutuhan formal perkantoran hingga kehangatan momen keluarga besar.
@@ -847,7 +876,7 @@ export default function HomePage() {
       <section className="py-20 sm:py-28 bg-[#fafaf9]">
         <div className="mx-auto max-w-7xl px-5 sm:px-8">
           <div data-aos="fade-up" className="text-center max-w-2xl mx-auto">
-            <span className="rounded-full bg-amber-50 border border-amber-200 px-3.5 py-1 text-xs font-black uppercase tracking-wider text-amber-800">
+            <span className="rounded-full bg-red-50 border border-red-200 px-3.5 py-1 text-xs font-black uppercase tracking-wider text-red-700">
               Ulasan Nyata
             </span>
             <h2 className="mt-3 text-3xl sm:text-4xl font-black tracking-tight text-zinc-950">
