@@ -107,6 +107,7 @@ export default function AdminLayout() {
     if (path.includes('/admin/products/') && path.includes('/edit')) return 'Edit Menu Katering'
     if (path.startsWith('/admin/products')) return 'Katalog Produk Katering'
     if (path.startsWith('/admin/categories')) return 'Kategori Menu'
+    if (path.startsWith('/admin/addons')) return 'Kelola Add-on & Kustomisasi'
     return 'Admin Panel'
   }, [location.pathname])
 
