@@ -21,6 +21,16 @@ class OrderService
                 ->unique();
 
             $products = Product::query()
+                ->with([
+                    'addonGroups' => function ($q) {
+                        $q->where('addon_groups.is_active', true)
+                            ->with([
+                                'addons' => function ($aq) {
+                                    $aq->where('is_active', true);
+                                },
+                            ]);
+                    },
+                ])
                 ->where('is_active', true)
                 ->whereIn('id', $productIds)
                 ->get()
@@ -32,27 +42,8 @@ class OrderService
                 );
             }
 
-            $addons = collect();
-
-            if (! empty($data['addons'])) {
-                $addonIds = collect($data['addons'])
-                    ->pluck('addon_id')
-                    ->unique();
-
-                $addons = Addon::query()
-                    ->where('is_active', true)
-                    ->whereIn('id', $addonIds)
-                    ->get()
-                    ->keyBy('id');
-
-                if ($addons->count() !== $addonIds->count()) {
-                    throw new RuntimeException(
-                        'One or more addons are unavailable.'
-                    );
-                }
-            }
-
             $subtotal = 0;
+            $itemsCalculated = [];
 
             foreach ($items as $item) {
                 $product = $products->get($item['product_id']);
@@ -63,65 +54,112 @@ class OrderService
                     );
                 }
 
-                $subtotal += $product->price * $item['quantity'];
-            }
+                $selectedAddonIds = collect($item['addons'] ?? [])
+                    ->pluck('addon_id')
+                    ->all();
 
-            foreach ($data['addons'] ?? [] as $addonItem) {
-                $addon = $addons->get($addonItem['addon_id']);
+                $itemAddonsToCreate = [];
+                $addonPricePerUnit = 0;
 
-                $subtotal += $addon->price * $addonItem['quantity'];
+                if ($product->addons_enabled) {
+                    $availableAddons = $product->addonGroups
+                        ->flatMap->addons
+                        ->keyBy('id');
+
+                    // Check that all submitted addons are valid for this product
+                    foreach ($selectedAddonIds as $addonId) {
+                        if (! $availableAddons->has($addonId)) {
+                            throw new RuntimeException(
+                                "One or more addons are not valid for {$product->name}."
+                            );
+                        }
+                    }
+
+                    // Validate each addon group min_selection and max_selection
+                    foreach ($product->addonGroups as $group) {
+                        $groupAddonIds = $group->addons->pluck('id')->all();
+                        $selectedInGroup = array_intersect($selectedAddonIds, $groupAddonIds);
+                        $count = count($selectedInGroup);
+
+                        if ($count < $group->min_selection) {
+                            throw new RuntimeException(
+                                "Silakan pilih {$group->name} untuk {$product->name}."
+                            );
+                        }
+
+                        if ($count > $group->max_selection) {
+                            throw new RuntimeException(
+                                "Pilihan {$group->name} melebihi batas maksimal ({$group->max_selection}) untuk {$product->name}."
+                            );
+                        }
+
+                        foreach ($selectedInGroup as $selId) {
+                            $addonModel = $availableAddons->get($selId);
+                            $addonPricePerUnit += (float) $addonModel->price;
+                            $itemAddonsToCreate[] = [
+                                'addon_id' => $addonModel->id,
+                                'addon_group_name' => $group->name,
+                                'addon_name' => $addonModel->name,
+                                'price' => $addonModel->price,
+                                'quantity' => $item['quantity'],
+                                'subtotal' => $addonModel->price * $item['quantity'],
+                            ];
+                        }
+                    }
+                } else {
+                    if (! empty($selectedAddonIds)) {
+                        throw new RuntimeException(
+                            "{$product->name} tidak memiliki opsi kustomisasi addon."
+                        );
+                    }
+                }
+
+                $itemSubtotal = ($product->price + $addonPricePerUnit) * $item['quantity'];
+                $subtotal += $itemSubtotal;
+
+                $itemsCalculated[] = [
+                    'product' => $product,
+                    'quantity' => $item['quantity'],
+                    'subtotal' => $itemSubtotal,
+                    'addons' => $itemAddonsToCreate,
+                ];
             }
 
             $deliveryFee = 10000;
-
             $total = $subtotal + $deliveryFee;
 
             $order = Order::create([
                 'order_code' => $this->generateOrderCode(),
-
                 'customers_name' => $data['customers_name'],
                 'customers_phone' => $data['customers_phone'],
-
                 'event_date' => $data['event_date'],
                 'event_time' => $data['event_time'] ?? null,
-
                 'delivery_address' => $data['delivery_address'],
                 'notes' => $data['notes'] ?? null,
-
                 'subtotal' => $subtotal,
                 'delivery_fee' => $deliveryFee,
                 'total' => $total,
-
                 'status' => 'pending',
             ]);
 
-            foreach ($items as $item) {
-                $product = $products->get($item['product_id']);
+            foreach ($itemsCalculated as $calcItem) {
+                $product = $calcItem['product'];
 
-                $order->items()->create([
+                $orderItem = $order->items()->create([
                     'product_id' => $product->id,
                     'item_name' => $product->name,
                     'price' => $product->price,
-                    'quantity' => $item['quantity'],
-                    'subtotal' => $product->price * $item['quantity'],
+                    'quantity' => $calcItem['quantity'],
+                    'subtotal' => $calcItem['subtotal'],
                 ]);
-            }
 
-            foreach ($data['addons'] ?? [] as $addonItem) {
-                $addon = $addons->get($addonItem['addon_id']);
-
-                $order->addons()->create([
-                    'addon_id' => $addon->id,
-                    'addon_name' => $addon->name,
-                    'price' => $addon->price,
-                    'quantity' => $addonItem['quantity'],
-                    'subtotal' => $addon->price * $addonItem['quantity'],
-                ]);
+                foreach ($calcItem['addons'] as $addonData) {
+                    $orderItem->addons()->create($addonData);
+                }
             }
 
             $order->load([
-                'items.product',
-                'addons.addon',
+                'items.addons',
             ]);
 
             return $order;
