@@ -25,6 +25,7 @@ interface ProductForm {
   description: string
   price: string
   minimum_order: string
+  lead_time_days: string
   addons_enabled: boolean
   image: File | null
   is_active: boolean
@@ -63,6 +64,7 @@ export default function EditProduct() {
     description: '',
     price: '',
     minimum_order: '10',
+    lead_time_days: '3',
     addons_enabled: false,
     image: null,
     is_active: true,
@@ -118,6 +120,7 @@ export default function EditProduct() {
           description: product.description ?? '',
           price: String(product.price),
           minimum_order: String(product.minimum_order ?? 10),
+          lead_time_days: String(product.lead_time_days ?? 3),
           addons_enabled: Boolean(product.addons_enabled),
           image: null,
           is_active: product.is_active,
@@ -258,6 +261,7 @@ export default function EditProduct() {
         description: form.description.trim(),
         price: Number(form.price),
         minimum_order: Math.max(1, Number(form.minimum_order) || 1),
+        lead_time_days: Math.max(0, Number(form.lead_time_days) || 0),
         addons_enabled: form.addons_enabled,
         addons: validAddons,
         image: form.image,
@@ -268,6 +272,9 @@ export default function EditProduct() {
 
       await queryClient.invalidateQueries({
         queryKey: ['products'],
+      })
+      await queryClient.invalidateQueries({
+        queryKey: ['product'],
       })
 
       await queryClient.refetchQueries({
@@ -391,8 +398,8 @@ export default function EditProduct() {
                 />
               </div>
 
-              {/* Category, Price, Minimum Order in 3 cols */}
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+              {/* Category, Price, Minimum Order, Lead Time */}
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 {/* Category */}
                 <div>
                   <label htmlFor="category_id" className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-stone-600">
@@ -465,6 +472,29 @@ export default function EditProduct() {
                   />
                   <p className="mt-1 text-[11px] text-stone-400">
                     Gunakan 1 untuk satuan, atau 10 untuk paket
+                  </p>
+                </div>
+
+                {/* Lead Time Days */}
+                <div>
+                  <label htmlFor="lead_time_days" className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-stone-600">
+                    Batas Order (H- Hari) <span className="text-red-600">*</span>
+                  </label>
+                  <input
+                    id="lead_time_days"
+                    name="lead_time_days"
+                    type="number"
+                    min="0"
+                    max="60"
+                    step="1"
+                    value={form.lead_time_days}
+                    onChange={handleChange}
+                    disabled={saving}
+                    placeholder="3"
+                    className="w-full rounded-xl border border-stone-200 bg-stone-50/50 px-3.5 py-2.5 sm:py-3 text-sm font-semibold text-stone-900 placeholder:font-normal placeholder:text-stone-400 outline-none transition focus:border-red-600 focus:bg-white focus:ring-1 focus:ring-red-600"
+                  />
+                  <p className="mt-1 text-[11px] text-stone-400">
+                    Minimal H-X hari sebelum acara (0 = bisa hari H)
                   </p>
                 </div>
               </div>

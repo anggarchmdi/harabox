@@ -168,6 +168,13 @@ export const productService = {
       String(data.minimum_order),
     )
 
+    if (data.lead_time_days !== undefined) {
+      formData.append(
+        'lead_time_days',
+        String(data.lead_time_days),
+      )
+    }
+
     if (data.image) {
       formData.append('image', data.image)
     }
@@ -238,6 +245,13 @@ export const productService = {
       formData.append(
         'minimum_order',
         String(data.minimum_order),
+      )
+    }
+
+    if (data.lead_time_days !== undefined) {
+      formData.append(
+        'lead_time_days',
+        String(data.lead_time_days),
       )
     }
 

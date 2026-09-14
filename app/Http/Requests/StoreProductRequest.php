@@ -63,6 +63,13 @@ class StoreProductRequest extends FormRequest
                 'min:1',
             ],
 
+            'lead_time_days' => [
+                'sometimes',
+                'integer',
+                'min:0',
+                'max:60',
+            ],
+
             'image' => [
                 'nullable',
                 'image',

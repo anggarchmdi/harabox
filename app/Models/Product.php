@@ -18,6 +18,7 @@ class Product extends Model
         'description',
         'price',
         'minimum_order',
+        'lead_time_days',
         'addons_enabled',
         'image',
         'is_active',
@@ -26,6 +27,7 @@ class Product extends Model
     protected $casts = [
         'price' => 'decimal:2',
         'minimum_order' => 'integer',
+        'lead_time_days' => 'integer',
         'addons_enabled' => 'boolean',
         'is_active' => 'boolean',
     ];

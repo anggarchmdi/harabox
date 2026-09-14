@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Addon;
 use App\Models\Order;
 use App\Models\Product;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use RuntimeException;
@@ -52,6 +53,16 @@ class OrderService
                     throw new RuntimeException(
                         "Minimum order for {$product->name} is {$product->minimum_order}."
                     );
+                }
+
+                if (($product->lead_time_days ?? 0) > 0) {
+                    $minAllowedDate = now()->startOfDay()->addDays($product->lead_time_days);
+                    $eventDate = Carbon::parse($data['event_date'])->startOfDay();
+                    if ($eventDate->lt($minAllowedDate)) {
+                        throw new RuntimeException(
+                            "Pesanan untuk {$product->name} minimal H-{$product->lead_time_days} sebelum acara (paling cepat tanggal {$minAllowedDate->format('d/m/Y')})."
+                        );
+                    }
                 }
 
                 $selectedAddonIds = collect($item['addons'] ?? [])

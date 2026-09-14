@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Product;
+use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreOrderRequest extends FormRequest
@@ -99,5 +101,35 @@ class StoreOrderRequest extends FormRequest
                 'exists:addons,id',
             ],
         ];
+    }
+
+    public function withValidator($validator): void
+    {
+        $validator->after(function ($validator) {
+            if ($this->filled('event_date') && $this->has('items') && is_array($this->items)) {
+                $productIds = collect($this->items)->pluck('product_id')->filter()->unique();
+                if ($productIds->isNotEmpty()) {
+                    $products = Product::whereIn('id', $productIds)->get(['id', 'name', 'lead_time_days']);
+                    $maxLeadDays = (int) ($products->max('lead_time_days') ?? 0);
+
+                    if ($maxLeadDays > 0) {
+                        try {
+                            $minAllowedDate = now()->startOfDay()->addDays($maxLeadDays);
+                            $eventDate = Carbon::parse($this->event_date)->startOfDay();
+
+                            if ($eventDate->lt($minAllowedDate)) {
+                                $formattedMinDate = $minAllowedDate->format('d/m/Y');
+                                $validator->errors()->add(
+                                    'event_date',
+                                    "Untuk menu yang dipilih, pemesanan minimal dilakukan H-{$maxLeadDays} sebelum acara (paling cepat tanggal {$formattedMinDate})."
+                                );
+                            }
+                        } catch (\Exception $e) {
+                            // Date parsing error will be handled by standard 'date' rule
+                        }
+                    }
+                }
+            }
+        });
     }
 }

@@ -109,9 +109,14 @@ export default function ProductTable({
                     </span>
                   </td>
 
-                  {/* Min Order */}
-                  <td className="px-5 py-4 whitespace-nowrap text-stone-600">
-                    <span className="font-semibold">{product.minimum_order ?? 10}</span> porsi
+                  {/* Min Order & Lead Time */}
+                  <td className="px-5 py-4 whitespace-nowrap text-stone-600 text-xs">
+                    <div>
+                      <span className="font-semibold text-stone-900">{product.minimum_order ?? 10}</span> porsi
+                    </div>
+                    <div className="text-[11px] text-stone-500 font-medium mt-0.5">
+                      {product.lead_time_days && product.lead_time_days > 0 ? `Min. H-${product.lead_time_days}` : 'Bisa Hari H'}
+                    </div>
                   </td>
 
                   {/* Status */}
@@ -212,7 +217,7 @@ export default function ProductTable({
                       {formatRupiah(product.price)}
                     </span>
                     <span className="text-[10px] text-stone-400">
-                      Min. {product.minimum_order ?? 10} porsi
+                      Min. {product.minimum_order ?? 10} porsi • {product.lead_time_days && product.lead_time_days > 0 ? `H-${product.lead_time_days}` : 'Hari H'}
                     </span>
                   </div>
                 </div>

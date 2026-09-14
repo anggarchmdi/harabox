@@ -17,6 +17,7 @@ class ProductResource extends JsonResource
             'description' => $this->description,
             'price' => (string) $this->price,
             'minimum_order' => (int) $this->minimum_order,
+            'lead_time_days' => (int) ($this->lead_time_days ?? 3),
             'addons_enabled' => (bool) $this->addons_enabled,
             'image' => $this->image,
             'is_active' => (bool) $this->is_active,

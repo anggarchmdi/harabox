@@ -301,4 +301,75 @@ class OrderFlowTest extends TestCase
                 ],
             ]);
     }
+
+    public function test_customer_cannot_order_with_event_date_violating_product_lead_time(): void
+    {
+        $category = Category::firstOrCreate(['slug' => 'test-cat'], ['name' => 'Test Cat']);
+
+        $product = Product::create([
+            'category_id' => $category->id,
+            'name' => 'Tumpeng Spesial',
+            'slug' => 'tumpeng-spesial-'.uniqid(),
+            'price' => 50000,
+            'minimum_order' => 1,
+            'lead_time_days' => 5, // H-5
+            'addons_enabled' => false,
+            'is_active' => true,
+        ]);
+
+        $payload = [
+            'customers_name' => 'Bu Rina Test',
+            'customers_phone' => '081299998888',
+            'event_date' => now()->addDays(2)->format('Y-m-d'), // Ordering for H-2 when H-5 is required
+            'delivery_address' => 'Jl. Mawar No. 10',
+            'items' => [
+                [
+                    'product_id' => $product->id,
+                    'quantity' => 1,
+                ],
+            ],
+        ];
+
+        $response = $this->postJson('/api/v1/orders', $payload);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['event_date']);
+    }
+
+    public function test_customer_can_order_when_event_date_satisfies_product_lead_time(): void
+    {
+        $category = Category::firstOrCreate(['slug' => 'test-cat'], ['name' => 'Test Cat']);
+
+        $product = Product::create([
+            'category_id' => $category->id,
+            'name' => 'Tumpeng Sukses',
+            'slug' => 'tumpeng-sukses-'.uniqid(),
+            'price' => 50000,
+            'minimum_order' => 1,
+            'lead_time_days' => 5, // H-5
+            'addons_enabled' => false,
+            'is_active' => true,
+        ]);
+
+        $payload = [
+            'customers_name' => 'Pak Haris Test',
+            'customers_phone' => '081277776666',
+            'event_date' => now()->addDays(5)->format('Y-m-d'), // Exactly H-5
+            'delivery_address' => 'Jl. Melati No. 20',
+            'items' => [
+                [
+                    'product_id' => $product->id,
+                    'quantity' => 1,
+                ],
+            ],
+        ];
+
+        $response = $this->postJson('/api/v1/orders', $payload);
+
+        $response->assertStatus(201)
+            ->assertJson([
+                'success' => true,
+                'message' => 'Order berhasil',
+            ]);
+    }
 }

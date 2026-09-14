@@ -14,6 +14,7 @@ export interface Product {
   description?: string | null
   price: string
   minimum_order: number
+  lead_time_days?: number
   addons_enabled?: boolean
   image?: string | null
   is_active: boolean
@@ -35,6 +36,7 @@ export interface CreateProductRequest {
   description?: string
   price: number
   minimum_order: number
+  lead_time_days?: number
   addons_enabled?: boolean
   addon_group_ids?: number[]
   addons?: ProductPackageAddon[]
@@ -48,6 +50,7 @@ export interface UpdateProductRequest {
   description?: string
   price?: number
   minimum_order?: number
+  lead_time_days?: number
   addons_enabled?: boolean
   addon_group_ids?: number[]
   addons?: ProductPackageAddon[]
