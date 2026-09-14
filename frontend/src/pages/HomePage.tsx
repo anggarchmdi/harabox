@@ -654,7 +654,7 @@ export default function HomePage() {
             Hara Chicken
           </span>
 
-          <h3 className="mt-2 max-w-md text-2xl font-black leading-tight text-white sm:text-3xl">
+          <h3 className="mt-2 max-w-md text-2xl leading-tight text-white sm:text-3xl">
             Hidangan siap,
             acara jadi tenang
           </h3>
