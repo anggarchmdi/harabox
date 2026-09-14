@@ -230,7 +230,7 @@ export default function AdminCategories() {
   }
 
   return (
-    <div className="mx-auto max-w-7xl space-y-6">
+    <div className="mx-auto max-w-7xl space-y-6 p-8">
       {/* Page Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
@@ -245,7 +245,7 @@ export default function AdminCategories() {
         <button
           type="button"
           onClick={openCreateModal}
-          className="inline-flex items-center justify-center gap-2 rounded-xl bg-red-600 px-5 py-2.5 sm:py-3 text-xs sm:text-sm font-semibold text-white shadow-xs transition hover:bg-red-700 active:scale-95"
+          className="inline-flex items-center justify-center gap-2 rounded-xl bg-red-600 hover:cursor-pointer transform hover:scale-95 duration-300 px-5 py-2.5 sm:py-3 text-xs sm:text-sm font-semibold text-white shadow-xs transition hover:bg-red-700 active:scale-95"
         >
           <Plus size={18} />
           <span>Tambah Kategori</span>
