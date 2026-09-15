@@ -23,7 +23,7 @@ class StoreCategoryRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
-        if (!$this->filled('slug') && $this->filled('name')) {
+        if (! $this->filled('slug') && $this->filled('name')) {
             $this->merge([
                 'slug' => Str::slug($this->name),
             ]);

@@ -13,6 +13,7 @@ import { toast } from 'sonner'
 import type { Order, OrderStatus } from '../../../types/orders'
 import { ordersService } from '../../../services/orders.service'
 import OrderStatusBadge from './OrderStatusBadge'
+import PaymentStatusBadge from './PaymentStatusBadge'
 
 interface OrderTableProps {
   orders: Order[]
@@ -72,6 +73,13 @@ export function getWhatsAppInvoiceUrl(order: Order): string {
       cancelled: 'Dibatalkan',
     }[order.status] || order.status
 
+  const paymentLabel =
+    order.payment_status === 'paid'
+      ? `Lunas (${order.payment_method || 'Terverifikasi'})`
+      : order.payment_status === 'dp'
+        ? `DP Masuk Rp ${Number(order.paid_amount).toLocaleString('id-ID')} (Sisa: Rp ${Math.max(0, Number(order.total) - Number(order.paid_amount)).toLocaleString('id-ID')})`
+        : 'Belum Bayar'
+
   const message = `*INVOICE PESANAN HARABOX*
 ===============================
 Halo Kak *${order.customers_name}*, terima kasih telah memesan katering di HaraBox!
@@ -90,6 +98,7 @@ Ongkos Kirim: Rp ${Number(order.delivery_fee).toLocaleString('id-ID')}
 *TOTAL TAGIHAN: Rp ${Number(order.total).toLocaleString('id-ID')}*
 -------------------------------
 *Status Pesanan:* ${statusLabel}
+*Status Pembayaran:* ${paymentLabel}
 ${order.notes ? `*Catatan Khusus:* ${order.notes}\n` : ''}
 Silakan melakukan pembayaran ke rekening resmi HaraBox:
 *Bank BCA: 1234567890*
@@ -298,14 +307,18 @@ export default function OrderTable({
                     </div>
                   </td>
 
-                  {/* Total */}
+                  {/* Total Tagihan & Status Pembayaran */}
                   <td className="px-5 py-4 align-top whitespace-nowrap">
                     <p className="font-bold text-xs sm:text-sm text-stone-900 font-mono">
                       {formatRupiah(order.total)}
                     </p>
-                    <p className="text-[10px] text-stone-400">
-                      Subtotal: {formatRupiah(order.subtotal)}
-                    </p>
+                    <div className="mt-1">
+                      <PaymentStatusBadge
+                        status={order.payment_status}
+                        paidAmount={order.paid_amount}
+                        paymentMethod={order.payment_method}
+                      />
+                    </div>
                   </td>
 
                   {/* Status & Quick Status Changer (No Emojis!) */}
@@ -452,10 +465,18 @@ export default function OrderTable({
 
               <div className="flex items-center justify-between pt-1 border-t border-stone-100 text-xs">
                 <div>
-                  <span className="text-[10px] text-stone-400">Total Tagihan:</span>
+                  <span className="text-[10px] text-stone-400">Total & Pembayaran:</span>
                   <p className="font-bold text-stone-950 font-mono text-sm">
                     {formatRupiah(order.total)}
                   </p>
+                  <div className="mt-1">
+                    <PaymentStatusBadge
+                      status={order.payment_status}
+                      paidAmount={order.paid_amount}
+                      paymentMethod={order.payment_method}
+                      compact
+                    />
+                  </div>
                 </div>
 
                 <div className="flex items-center gap-2">

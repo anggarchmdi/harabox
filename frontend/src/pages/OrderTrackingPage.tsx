@@ -24,6 +24,8 @@ import {
   Truck,
   FileText,
   BadgeCheck,
+  CheckCircle2,
+  Coins,
 } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -31,6 +33,7 @@ import type { Order, OrderStatus } from '../types/orders'
 import { ordersService } from '../services/orders.service'
 import { getImageUrl } from '../utils/image'
 import PageLoader from '../components/ui/PageLoader'
+import PaymentStatusBadge from '../components/admin/orders/PaymentStatusBadge'
 
 // Fallback images
 import BentoKatsuImg from '../assets/nasibox/bento-katsu-b.webp'
@@ -444,8 +447,14 @@ export default function OrderTrackingPage() {
                     </h2>
                   </div>
 
-                  {/* Dynamic Status Badge */}
+                  {/* Dynamic Status & Payment Badges */}
                   <div className="flex flex-wrap items-center gap-2.5 sm:justify-end">
+                    <PaymentStatusBadge
+                      status={order.payment_status}
+                      paidAmount={order.paid_amount}
+                      paymentMethod={order.payment_method}
+                    />
+
                     <div
                       className={`inline-flex items-center gap-2 rounded-full border ${currentTheme.badgeBorder} ${currentTheme.badgeBg} ${currentTheme.badgeText} px-4 py-2 text-xs font-bold shadow-2xs`}
                     >
@@ -833,6 +842,83 @@ export default function OrderTrackingPage() {
                     <div className="flex justify-between items-center border-t border-stone-200 pt-3 text-base sm:text-lg font-black text-stone-900">
                       <span>Total Pembayaran</span>
                       <span className="text-red-600 font-black">{formatRupiah(order.total)}</span>
+                    </div>
+
+                    {/* Payment Status & Breakdown Card */}
+                    <div className="mt-4 pt-3 border-t border-dashed border-stone-200">
+                      {order.payment_status === 'paid' ? (
+                        <div className="rounded-2xl bg-emerald-50/90 border border-emerald-200/90 p-4 flex items-start gap-3.5 shadow-2xs">
+                          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-600 text-white shadow-xs">
+                            <CheckCircle2 size={20} />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex flex-wrap items-center justify-between gap-1.5">
+                              <span className="text-xs font-black uppercase tracking-wider text-emerald-900">
+                                Pembayaran Lunas
+                              </span>
+                              <span className="text-xs font-mono font-black text-emerald-800 bg-white/80 px-2 py-0.5 rounded-md border border-emerald-200">
+                                {formatRupiah(order.paid_amount || order.total)}
+                              </span>
+                            </div>
+                            <p className="mt-1 text-xs text-emerald-800/90 leading-relaxed">
+                              Pembayaran katering Anda telah terverifikasi lunas
+                              {order.payment_method ? ` melalui ${order.payment_method}` : ''}.
+                              Pesanan siap diproduksi dan dikirim sesuai jadwal!
+                            </p>
+                          </div>
+                        </div>
+                      ) : order.payment_status === 'dp' ? (
+                        <div className="rounded-2xl bg-amber-50/90 border border-amber-300/80 p-4 space-y-3 shadow-2xs">
+                          <div className="flex items-start gap-3.5">
+                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-500 text-white shadow-xs">
+                              <Coins size={20} />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex flex-wrap items-center justify-between gap-1.5">
+                                <span className="text-xs font-black uppercase tracking-wider text-amber-950">
+                                  DP / Uang Muka Masuk
+                                </span>
+                                <span className="text-xs font-mono font-bold text-amber-800 bg-white/80 px-2 py-0.5 rounded-md border border-amber-200">
+                                  {formatRupiah(order.paid_amount || 0)}
+                                </span>
+                              </div>
+                              <p className="mt-1 text-xs text-amber-800/90">
+                                DP telah tercatat di sistem kami
+                                {order.payment_method ? ` via ${order.payment_method}` : ''}.
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="rounded-xl bg-white/90 border border-amber-200/90 p-3 flex justify-between items-center text-xs">
+                            <span className="font-bold text-stone-700">Sisa Tagihan Pelunasan:</span>
+                            <span className="font-mono font-black text-sm text-red-600">
+                              {formatRupiah(Math.max(0, Number(order.total) - Number(order.paid_amount || 0)))}
+                            </span>
+                          </div>
+                          <p className="text-[11px] text-amber-800/80 leading-snug">
+                            * Sisa pembayaran dapat dilunasi saat serah terima pesanan atau sesuai kesepakatan dengan admin.
+                          </p>
+                        </div>
+                      ) : (
+                        <div className="rounded-2xl bg-stone-50 border border-stone-200 p-4 flex items-start gap-3.5 shadow-2xs">
+                          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-stone-400 text-white shadow-xs">
+                            <Clock4 size={20} />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex flex-wrap items-center justify-between gap-1.5">
+                              <span className="text-xs font-bold uppercase tracking-wider text-stone-700">
+                                Status Pembayaran
+                              </span>
+                              <span className="text-[11px] font-bold text-amber-800 bg-amber-100/80 border border-amber-200 rounded-md px-2 py-0.5">
+                                Menunggu Konfirmasi / DP
+                              </span>
+                            </div>
+                            <p className="mt-1 text-xs text-stone-600 leading-relaxed">
+                              Sistem belum mencatat pelunasan atau DP untuk pesanan ini. Silakan kirimkan bukti transfer ke WhatsApp admin agar pesanan Anda dapat segera masuk antrean dapur.
+                            </p>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
 

@@ -122,6 +122,11 @@ Route::prefix('v1')->group(function () {
                 'updateStatus',
             ]);
 
+            Route::patch('/orders/{order}/payment', [
+                AdminOrderController::class,
+                'updatePayment',
+            ]);
+
             // Testimonials (Admin)
             Route::get('/testimonials', [AdminTestimonialController::class, 'index']);
             Route::post('/testimonials', [AdminTestimonialController::class, 'store']);

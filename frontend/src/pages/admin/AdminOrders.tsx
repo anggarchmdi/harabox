@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   Calendar,
   CheckCircle2,
@@ -6,6 +6,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Clock,
+  Coins,
   LayoutGrid,
   MapPin,
   MessageCircle,
@@ -18,17 +19,19 @@ import {
   User,
   X,
   XCircle,
+  Check,
 } from 'lucide-react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
-import type { Order, OrderStatus } from '../../types/orders'
+import type { Order, OrderStatus, PaymentStatus } from '../../types/orders'
 import { ordersService } from '../../services/orders.service'
 import OrderTable, {
   getWhatsAppInvoiceUrl,
   getWhatsAppTestimonialUrl,
 } from '../../components/admin/orders/OrderTable'
 import OrderStatusBadge from '../../components/admin/orders/OrderStatusBadge'
+import PaymentStatusBadge from '../../components/admin/orders/PaymentStatusBadge'
 import PageLoader from '../../components/ui/PageLoader'
 
 function formatDate(date: string) {
@@ -49,8 +52,33 @@ export default function AdminOrders() {
   const [page, setPage] = useState(1)
   const [search, setSearch] = useState('')
   const [selectedStatus, setSelectedStatus] = useState<OrderStatus | ''>('')
+  const [selectedPaymentStatus, setSelectedPaymentStatus] = useState<PaymentStatus | ''>('')
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
   const [updatingStatus, setUpdatingStatus] = useState(false)
+  const [updatingPayment, setUpdatingPayment] = useState(false)
+
+  const [paymentForm, setPaymentForm] = useState<{
+    payment_status: PaymentStatus
+    paid_amount: string
+    payment_method: string
+    payment_note: string
+  }>({
+    payment_status: 'unpaid',
+    paid_amount: '0',
+    payment_method: 'Transfer BCA',
+    payment_note: '',
+  })
+
+  useEffect(() => {
+    if (selectedOrder) {
+      setPaymentForm({
+        payment_status: selectedOrder.payment_status || 'unpaid',
+        paid_amount: String(selectedOrder.paid_amount || '0'),
+        payment_method: selectedOrder.payment_method || 'Transfer BCA',
+        payment_note: selectedOrder.payment_note || '',
+      })
+    }
+  }, [selectedOrder])
 
   const {
     data,
@@ -59,12 +87,13 @@ export default function AdminOrders() {
     refetch,
     isFetching,
   } = useQuery({
-    queryKey: ['admin-orders', page, selectedStatus, search],
+    queryKey: ['admin-orders', page, selectedStatus, selectedPaymentStatus, search],
     queryFn: () =>
       ordersService.getAll({
         page,
         per_page: 15,
         status: selectedStatus || undefined,
+        payment_status: selectedPaymentStatus || undefined,
         search: search.trim() || undefined,
       }),
   })
@@ -91,6 +120,52 @@ export default function AdminOrders() {
       toast.error('Gagal memperbarui status order.')
     } finally {
       setUpdatingStatus(false)
+    }
+  }
+
+  const handleUpdatePayment = async (overrideStatus?: PaymentStatus, overrideAmount?: number) => {
+    if (!selectedOrder) return
+
+    const statusToSet = overrideStatus || paymentForm.payment_status
+    let amountToSet =
+      overrideAmount !== undefined
+        ? overrideAmount
+        : Number(paymentForm.paid_amount) || 0
+
+    if (statusToSet === 'paid' && amountToSet <= 0) {
+      amountToSet = Number(selectedOrder.total)
+    }
+
+    try {
+      setUpdatingPayment(true)
+      const updated = await ordersService.updatePayment(selectedOrder.id, {
+        payment_status: statusToSet,
+        paid_amount: amountToSet,
+        payment_method: paymentForm.payment_method.trim() || undefined,
+        payment_note: paymentForm.payment_note.trim() || undefined,
+      })
+      setSelectedOrder(updated)
+      setPaymentForm({
+        payment_status: updated.payment_status,
+        paid_amount: String(updated.paid_amount || '0'),
+        payment_method: updated.payment_method || 'Transfer BCA',
+        payment_note: updated.payment_note || '',
+      })
+      toast.success(
+        `Status pembayaran berhasil diperbarui ke "${
+          updated.payment_status === 'paid'
+            ? 'Lunas'
+            : updated.payment_status === 'dp'
+              ? 'DP Masuk'
+              : 'Belum Bayar'
+        }".`,
+      )
+      queryClient.invalidateQueries({ queryKey: ['admin-orders'] })
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] })
+    } catch {
+      toast.error('Gagal memperbarui status pembayaran.')
+    } finally {
+      setUpdatingPayment(false)
     }
   }
 
@@ -244,6 +319,35 @@ export default function AdminOrders() {
             )}
           </div>
         </div>
+
+        {/* Secondary Filter: Payment Status */}
+        <div className="flex flex-wrap items-center gap-1.5 pt-2.5 border-t border-stone-100 text-xs">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-stone-400 mr-1 flex items-center gap-1">
+            <Coins size={12} /> Status Bayar:
+          </span>
+          {[
+            { label: 'Semua Status Bayar', value: '' },
+            { label: 'Belum Bayar', value: 'unpaid' },
+            { label: 'DP Masuk', value: 'dp' },
+            { label: 'Lunas', value: 'paid' },
+          ].map((item) => (
+            <button
+              key={item.value}
+              type="button"
+              onClick={() => {
+                setSelectedPaymentStatus(item.value as PaymentStatus | '')
+                setPage(1)
+              }}
+              className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition ${
+                selectedPaymentStatus === item.value
+                  ? 'bg-emerald-700 text-white shadow-2xs'
+                  : 'bg-stone-50 text-stone-600 hover:bg-stone-100 border border-stone-200/80'
+              }`}
+            >
+              {item.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Orders Table & Mobile Cards */}
@@ -392,6 +496,162 @@ export default function AdminOrders() {
                         {st.label}
                       </button>
                     ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Financial & Payment Tracking Card */}
+              <div className="rounded-2xl border border-stone-200 bg-white p-4.5 shadow-2xs space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-stone-100 pb-3">
+                  <div className="flex items-center gap-2">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600">
+                      <Coins size={16} />
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-bold uppercase tracking-wider text-stone-900">
+                        Catatan Keuangan & Pembayaran
+                      </h4>
+                      <p className="text-[11px] text-stone-400">Status verifikasi transfer dari pelanggan via WA</p>
+                    </div>
+                  </div>
+
+                  <PaymentStatusBadge
+                    status={selectedOrder.payment_status}
+                    paidAmount={selectedOrder.paid_amount}
+                    paymentMethod={selectedOrder.payment_method}
+                  />
+                </div>
+
+                {/* Quick Action Buttons */}
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    disabled={updatingPayment}
+                    onClick={() => handleUpdatePayment('paid', Number(selectedOrder.total))}
+                    className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 px-3.5 py-1.5 text-xs font-bold text-white shadow-2xs hover:bg-emerald-700 active:scale-95 transition disabled:opacity-50"
+                  >
+                    <CheckCircle2 size={13} />
+                    <span>Tandai Lunas ({formatRupiah(selectedOrder.total)})</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    disabled={updatingPayment}
+                    onClick={() => handleUpdatePayment('dp', Math.round(Number(selectedOrder.total) * 0.5))}
+                    className="inline-flex items-center gap-1.5 rounded-xl bg-amber-500 px-3.5 py-1.5 text-xs font-bold text-white shadow-2xs hover:bg-amber-600 active:scale-95 transition disabled:opacity-50"
+                  >
+                    <Coins size={13} />
+                    <span>Catat DP 50% ({formatRupiah(Math.round(Number(selectedOrder.total) * 0.5))})</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    disabled={updatingPayment}
+                    onClick={() => handleUpdatePayment('unpaid', 0)}
+                    className="inline-flex items-center gap-1.5 rounded-xl border border-stone-200 bg-stone-50 px-3 py-1.5 text-xs font-semibold text-stone-700 hover:bg-stone-100 active:scale-95 transition disabled:opacity-50"
+                  >
+                    <Clock size={13} />
+                    <span>Reset Belum Bayar</span>
+                  </button>
+                </div>
+
+                {/* Detailed Payment Form */}
+                <div className="grid gap-3 sm:grid-cols-3 pt-1 text-xs">
+                  {/* Status Dropdown */}
+                  <div>
+                    <label className="block text-[11px] font-bold uppercase tracking-wider text-stone-500 mb-1">
+                      Status Bayar
+                    </label>
+                    <select
+                      value={paymentForm.payment_status}
+                      onChange={(e) => {
+                        const newStatus = e.target.value as PaymentStatus
+                        setPaymentForm((prev) => ({
+                          ...prev,
+                          payment_status: newStatus,
+                          paid_amount:
+                            newStatus === 'paid'
+                              ? String(selectedOrder.total)
+                              : newStatus === 'unpaid'
+                                ? '0'
+                                : prev.paid_amount,
+                        }))
+                      }}
+                      className="w-full rounded-xl border border-stone-200 bg-stone-50/80 px-3 py-2 text-xs font-semibold text-stone-900 outline-none focus:border-red-600 focus:bg-white focus:ring-1 focus:ring-red-600"
+                    >
+                      <option value="unpaid">Belum Bayar</option>
+                      <option value="dp">DP Masuk</option>
+                      <option value="paid">Lunas Penuh</option>
+                    </select>
+                  </div>
+
+                  {/* Nominal Terbayar */}
+                  <div>
+                    <label className="block text-[11px] font-bold uppercase tracking-wider text-stone-500 mb-1">
+                      Nominal Terbayar (Rp)
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      step="1000"
+                      value={paymentForm.paid_amount}
+                      onChange={(e) => setPaymentForm((prev) => ({ ...prev, paid_amount: e.target.value }))}
+                      className="w-full rounded-xl border border-stone-200 bg-stone-50/80 px-3 py-2 font-mono text-xs font-bold text-stone-900 outline-none focus:border-red-600 focus:bg-white focus:ring-1 focus:ring-red-600"
+                    />
+                  </div>
+
+                  {/* Metode Pembayaran */}
+                  <div>
+                    <label className="block text-[11px] font-bold uppercase tracking-wider text-stone-500 mb-1">
+                      Metode Transfer
+                    </label>
+                    <select
+                      value={paymentForm.payment_method}
+                      onChange={(e) => setPaymentForm((prev) => ({ ...prev, payment_method: e.target.value }))}
+                      className="w-full rounded-xl border border-stone-200 bg-stone-50/80 px-3 py-2 text-xs font-semibold text-stone-900 outline-none focus:border-red-600 focus:bg-white focus:ring-1 focus:ring-red-600"
+                    >
+                      <option value="Transfer BCA">Transfer BCA</option>
+                      <option value="Transfer Mandiri">Transfer Mandiri</option>
+                      <option value="Transfer BRI">Transfer BRI</option>
+                      <option value="QRIS">QRIS</option>
+                      <option value="Tunai / COD">Tunai / COD</option>
+                      <option value="Lainnya">Lainnya</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Sisa Tagihan & Notes */}
+                <div className="grid gap-3 sm:grid-cols-3 pt-1 text-xs items-end">
+                  <div className="sm:col-span-2">
+                    <label className="block text-[11px] font-bold uppercase tracking-wider text-stone-500 mb-1">
+                      Catatan Pembayaran / Pengirim
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Contoh: DP 50% via BCA a.n. Ibu Siti"
+                      value={paymentForm.payment_note}
+                      onChange={(e) => setPaymentForm((prev) => ({ ...prev, payment_note: e.target.value }))}
+                      className="w-full rounded-xl border border-stone-200 bg-stone-50/80 px-3 py-2 text-xs font-medium text-stone-900 outline-none focus:border-red-600 focus:bg-white focus:ring-1 focus:ring-red-600"
+                    />
+                  </div>
+
+                  <div className="flex gap-2 items-center">
+                    <div className="flex-1 rounded-xl bg-stone-100 p-2 text-center">
+                      <span className="text-[10px] text-stone-400 block">Sisa Tagihan</span>
+                      <span className="font-mono font-bold text-xs text-stone-800">
+                        {formatRupiah(Math.max(0, Number(selectedOrder.total) - Number(paymentForm.paid_amount || 0)))}
+                      </span>
+                    </div>
+
+                    <button
+                      type="button"
+                      disabled={updatingPayment}
+                      onClick={() => handleUpdatePayment()}
+                      className="inline-flex items-center justify-center gap-1 rounded-xl bg-stone-900 px-4 py-2 text-xs font-bold text-white shadow-2xs hover:bg-red-600 transition active:scale-95 disabled:opacity-50 h-[38px]"
+                    >
+                      {updatingPayment ? <RefreshCw size={13} className="animate-spin" /> : <Check size={13} />}
+                      <span>Simpan</span>
+                    </button>
                   </div>
                 </div>
               </div>

@@ -6,6 +6,8 @@ import type {
   OrderDetailResponse,
   UpdateOrderStatusResponse,
   OrderStatus,
+  PaymentStatus,
+  UpdateOrderPaymentPayload,
   CreateOrderPayload,
 } from '../types/orders'
 
@@ -14,6 +16,7 @@ export interface OrderFilters {
   per_page?: number
   search?: string
   status?: OrderStatus | ''
+  payment_status?: PaymentStatus | ''
   date_from?: string
   date_to?: string
 }
@@ -44,6 +47,10 @@ export const ordersService = {
 
     if (filters.status) {
       params.set('status', filters.status)
+    }
+
+    if (filters.payment_status) {
+      params.set('payment_status', filters.payment_status)
     }
 
     if (filters.date_from) {
@@ -89,6 +96,19 @@ export const ordersService = {
           status,
         },
       )
+
+    return response.data.data
+  },
+
+  async updatePayment(
+    id: number,
+    payload: UpdateOrderPaymentPayload,
+  ): Promise<Order> {
+    const response = await api.patch<{
+      success: boolean
+      message: string
+      data: Order
+    }>(`/admin/orders/${id}/payment`, payload)
 
     return response.data.data
   },

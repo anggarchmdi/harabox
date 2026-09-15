@@ -71,6 +71,15 @@ export interface OrderAddon {
   } | null
 }
 
+export type PaymentStatus = 'unpaid' | 'dp' | 'paid'
+
+export interface UpdateOrderPaymentPayload {
+  payment_status: PaymentStatus
+  paid_amount?: number
+  payment_method?: string
+  payment_note?: string
+}
+
 export interface Order {
   id: number
   order_code: string
@@ -89,6 +98,11 @@ export interface Order {
   total: string
 
   status: OrderStatus
+  payment_status: PaymentStatus
+  paid_amount: string | number
+  payment_method: string | null
+  payment_note: string | null
+  paid_at: string | null
 
   created_at: string
   updated_at: string

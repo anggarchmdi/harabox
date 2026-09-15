@@ -566,4 +566,104 @@ class OrderFlowTest extends TestCase
                 'success' => false,
             ]);
     }
+
+    public function test_admin_can_update_order_payment_to_dp_and_paid(): void
+    {
+        $admin = User::factory()->create();
+        Sanctum::actingAs($admin);
+
+        $order = Order::create([
+            'order_code' => 'HB-20260915-PAYTEST',
+            'customers_name' => 'Bambang Pay Test',
+            'customers_phone' => '081234567890',
+            'event_date' => now()->addDays(3)->format('Y-m-d'),
+            'delivery_address' => 'Jl. Kaliurang KM 5',
+            'subtotal' => 200000,
+            'delivery_fee' => 10000,
+            'total' => 210000,
+            'status' => 'pending',
+            'payment_status' => 'unpaid',
+            'paid_amount' => 0,
+        ]);
+
+        // 1. Update to DP
+        $dpRes = $this->patchJson("/api/v1/admin/orders/{$order->id}/payment", [
+            'payment_status' => 'dp',
+            'paid_amount' => 100000,
+            'payment_method' => 'Transfer BCA',
+            'payment_note' => 'DP via BCA a.n. Bambang',
+        ]);
+
+        $dpRes->assertStatus(200)
+            ->assertJson([
+                'success' => true,
+                'data' => [
+                    'payment_status' => 'dp',
+                    'payment_method' => 'Transfer BCA',
+                ],
+            ]);
+
+        $order->refresh();
+        $this->assertEquals('dp', $order->payment_status);
+        $this->assertEquals(100000.00, (float) $order->paid_amount);
+        $this->assertNotNull($order->paid_at);
+
+        // 2. Update to Paid (Lunas)
+        $paidRes = $this->patchJson("/api/v1/admin/orders/{$order->id}/payment", [
+            'payment_status' => 'paid',
+            'payment_method' => 'Transfer BCA',
+        ]);
+
+        $paidRes->assertStatus(200)
+            ->assertJson([
+                'success' => true,
+                'data' => [
+                    'payment_status' => 'paid',
+                ],
+            ]);
+
+        $order->refresh();
+        $this->assertEquals('paid', $order->payment_status);
+        $this->assertEquals(210000.00, (float) $order->paid_amount);
+    }
+
+    public function test_admin_can_filter_orders_by_payment_status(): void
+    {
+        $admin = User::factory()->create();
+        Sanctum::actingAs($admin);
+
+        Order::create([
+            'order_code' => 'HB-20260915-UNPAID',
+            'customers_name' => 'User Unpaid',
+            'customers_phone' => '081234567891',
+            'event_date' => now()->addDays(3)->format('Y-m-d'),
+            'delivery_address' => 'Jl. Solo',
+            'subtotal' => 100000,
+            'delivery_fee' => 10000,
+            'total' => 110000,
+            'status' => 'pending',
+            'payment_status' => 'unpaid',
+            'paid_amount' => 0,
+        ]);
+
+        Order::create([
+            'order_code' => 'HB-20260915-PAID',
+            'customers_name' => 'User Paid',
+            'customers_phone' => '081234567892',
+            'event_date' => now()->addDays(3)->format('Y-m-d'),
+            'delivery_address' => 'Jl. Magelang',
+            'subtotal' => 100000,
+            'delivery_fee' => 10000,
+            'total' => 110000,
+            'status' => 'confirmed',
+            'payment_status' => 'paid',
+            'paid_amount' => 110000,
+        ]);
+
+        $res = $this->getJson('/api/v1/admin/orders?payment_status=paid');
+        $res->assertStatus(200);
+        $data = $res->json('data.data');
+
+        $this->assertTrue(collect($data)->every(fn ($item) => $item['payment_status'] === 'paid'));
+    }
 }

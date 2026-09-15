@@ -29,8 +29,8 @@ class AuthController extends Controller
         )->first();
 
         if (
-            !$user ||
-            !Hash::check(
+            ! $user ||
+            ! Hash::check(
                 $credentials['password'],
                 $user->password
             )

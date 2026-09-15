@@ -22,6 +22,11 @@ class Order extends Model
         'delivery_fee',
         'total',
         'status',
+        'payment_status',
+        'paid_amount',
+        'payment_method',
+        'payment_note',
+        'paid_at',
     ];
 
     protected $casts = [
@@ -29,6 +34,8 @@ class Order extends Model
         'subtotal' => 'decimal:2',
         'delivery_fee' => 'decimal:2',
         'total' => 'decimal:2',
+        'paid_amount' => 'decimal:2',
+        'paid_at' => 'datetime',
     ];
 
     public function items(): HasMany

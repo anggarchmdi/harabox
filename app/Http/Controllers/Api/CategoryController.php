@@ -78,7 +78,7 @@ class CategoryController extends Controller
             ->where('slug', $slug)
             ->first();
 
-        if (!$category) {
+        if (! $category) {
             return response()->json([
                 'success' => false,
                 'message' => 'Category not found',
