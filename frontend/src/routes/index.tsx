@@ -29,6 +29,7 @@ import CaraPesan from '../pages/CaraPesan'
 import ProductDetailPage from '../pages/ProductDetailPage'
 import TestimonialPage from '../pages/TestimonialPage'
 import CartPage from '../pages/CartPage'
+import OrderTrackingPage from '../pages/OrderTrackingPage'
 
 export default function AppRoutes() {
   return (
@@ -82,6 +83,8 @@ export default function AppRoutes() {
         <Route path="/tentang-kami" element={<TentangKami />} />
         <Route path="/cara-pesan" element={<CaraPesan />} />
         <Route path="/cart" element={<CartPage />} />
+        <Route path="/cek-pesanan" element={<OrderTrackingPage />} />
+        <Route path="/cek-pesanan/:orderCode" element={<OrderTrackingPage />} />
         {/* Halaman input testimoni khusus (tersembunyi dari navigasi menu) */}
         <Route path="/testimoni" element={<TestimonialPage />} />
       </Route>
