@@ -37,6 +37,7 @@ export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false)
 
   const isHome = location.pathname === '/'
+  const isCartPage = location.pathname === '/cart'
   const solidNavbar = !isHome || scrolled
 
   useEffect(() => {
@@ -177,49 +178,49 @@ export default function Navbar() {
                 group relative flex h-11 w-11 items-center justify-center rounded-full
                 border transition-all duration-300
                 ${
-                  location.pathname === '/cart'
-                    ? 'border-zinc-950 bg-zinc-950 text-white shadow-sm'
+                  isCartPage
+                    ? 'border-zinc-950 bg-zinc-950 text-white shadow-md'
                     : solidNavbar
-                      ? 'border-gray-200 bg-gray-50 text-gray-800 hover:border-zinc-950 hover:bg-white hover:text-zinc-950'
-                      : 'border-white/60 bg-white/90 text-gray-800 shadow-sm hover:border-zinc-950 hover:bg-white hover:text-zinc-950'
+                      ? 'border-zinc-300/90 bg-white text-zinc-900 shadow-xs hover:border-zinc-950 hover:bg-zinc-950 hover:text-white hover:shadow-md'
+                      : 'border-white/80 bg-white text-zinc-900 shadow-md hover:border-zinc-950 hover:bg-zinc-950 hover:text-white'
                 }
               `}
               aria-label={`Buka Keranjang (${totalCartItems} menu)`}
             >
-              <ShoppingCart size={19} className="transition-transform group-hover:scale-110" />
-              {totalCartItems > 0 && (
-                <span className="absolute -top-1 -right-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-600 px-1 text-[11px] font-black text-white shadow-sm ring-2 ring-white">
-                  {totalCartItems}
-                </span>
-              )}
+              <ShoppingCart size={20} strokeWidth={2.2} className="transition-transform group-hover:scale-110" />
+              <span className="absolute -top-1.5 -right-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-600 px-1 text-[11px] font-black text-white shadow-md ring-2 ring-white">
+                {totalCartItems}
+              </span>
             </Link>
 
-            <Link
-              to="/menu#menu-list"
-              className="
-                group flex items-center gap-2
-                rounded-full
-                bg-red-500
-                px-5 py-2.5
-                text-sm font-semibold text-white
-                shadow-sm shadow-red-500/20
-                transition-all duration-300
-                hover:-translate-y-0.5
-                hover:bg-red-600
-                hover:shadow-lg hover:shadow-red-500/20
-              "
-            >
-              Pesan Sekarang
-
-              <ArrowUpRight
-                size={16}
+            {!isCartPage && (
+              <Link
+                to="/menu#menu-list"
                 className="
-                  transition-transform duration-300
-                  group-hover:translate-x-0.5
-                  group-hover:-translate-y-0.5
+                  group flex items-center gap-2
+                  rounded-full
+                  bg-red-500
+                  px-5 py-2.5
+                  text-sm font-semibold text-white
+                  shadow-sm shadow-red-500/20
+                  transition-all duration-300
+                  hover:-translate-y-0.5
+                  hover:bg-red-600
+                  hover:shadow-lg hover:shadow-red-500/20
                 "
-              />
-            </Link>
+              >
+                Pesan Sekarang
+
+                <ArrowUpRight
+                  size={16}
+                  className="
+                    transition-transform duration-300
+                    group-hover:translate-x-0.5
+                    group-hover:-translate-y-0.5
+                  "
+                />
+              </Link>
+            )}
           </div>
 
           {/* =========================
@@ -233,24 +234,22 @@ export default function Navbar() {
                 relative z-50
                 flex h-11 w-11
                 items-center justify-center
-                rounded-full
+                rounded-full border
                 transition-all duration-300
                 ${
-                  location.pathname === '/cart'
-                    ? 'bg-zinc-950 text-white'
+                  isCartPage
+                    ? 'border-zinc-950 bg-zinc-950 text-white shadow-md'
                     : solidNavbar
-                      ? 'bg-gray-100 text-gray-900 hover:bg-gray-200'
-                      : 'bg-white text-gray-900 shadow-sm'
+                      ? 'border-zinc-300/90 bg-white text-zinc-900 shadow-xs hover:bg-zinc-100'
+                      : 'border-white/80 bg-white text-zinc-900 shadow-md'
                 }
               `}
               aria-label={`Buka Keranjang (${totalCartItems} menu)`}
             >
-              <ShoppingCart size={20} />
-              {totalCartItems > 0 && (
-                <span className="absolute -top-1 -right-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-600 px-1 text-[11px] font-black text-white shadow-sm ring-2 ring-white">
-                  {totalCartItems}
-                </span>
-              )}
+              <ShoppingCart size={20} strokeWidth={2.2} />
+              <span className="absolute -top-1.5 -right-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-600 px-1 text-[11px] font-black text-white shadow-md ring-2 ring-white">
+                {totalCartItems}
+              </span>
             </Link>
 
             <button
@@ -439,11 +438,9 @@ export default function Navbar() {
                       Keranjang
                     </span>
                   </div>
-                  {totalCartItems > 0 && (
-                    <span className="flex h-6 min-w-6 items-center justify-center rounded-full bg-red-600 px-2 text-xs font-black text-white shadow-sm">
-                      {totalCartItems} menu
-                    </span>
-                  )}
+                  <span className="flex h-6 min-w-6 items-center justify-center rounded-full bg-red-600 px-2 text-xs font-black text-white shadow-sm">
+                    {totalCartItems} menu
+                  </span>
                 </div>
               )}
             </NavLink>
@@ -452,59 +449,61 @@ export default function Navbar() {
           {/* =========================
               MOBILE CTA
           ========================== */}
-          <div
-            className={`
-              mt-auto pt-10
-              transition-all duration-500
-              ${
-                mobileOpen
-                ? 'translate-y-0 opacity-100'
-                : 'translate-y-5 opacity-0'
-              }
-            `}
-            style={{
-              transitionDelay: mobileOpen ? '380ms' : '0ms',
-            }}
-          >
-            <Link
-              to="/order"
-              onClick={() => setMobileOpen(false)}
-              className="
-                group flex w-full
-                items-center justify-between
-                rounded-2xl
-                bg-red-500
-                px-5 py-4
-                text-white
-                shadow-lg shadow-red-500/20
-                transition-all duration-300
-                hover:bg-red-600
-              "
+          {!isCartPage && (
+            <div
+              className={`
+                mt-auto pt-10
+                transition-all duration-500
+                ${
+                  mobileOpen
+                  ? 'translate-y-0 opacity-100'
+                  : 'translate-y-5 opacity-0'
+                }
+              `}
+              style={{
+                transitionDelay: mobileOpen ? '380ms' : '0ms',
+              }}
             >
-              <div>
-                <p className="text-xs font-medium text-red-100">
-                  Siap pesan?
-                </p>
-
-                <p className="mt-0.5 text-base font-semibold">
-                  Pesan Sekarang
-                </p>
-              </div>
-
-              <span
+              <Link
+                to="/menu#menu-list"
+                onClick={() => setMobileOpen(false)}
                 className="
-                  flex h-10 w-10
-                  items-center justify-center
-                  rounded-full
-                  bg-white/15
-                  transition-transform duration-300
-                  group-hover:translate-x-1
+                  group flex w-full
+                  items-center justify-between
+                  rounded-2xl
+                  bg-red-500
+                  px-5 py-4
+                  text-white
+                  shadow-lg shadow-red-500/20
+                  transition-all duration-300
+                  hover:bg-red-600
                 "
               >
-                <ArrowUpRight size={18} />
-              </span>
-            </Link>
-          </div>
+                <div>
+                  <p className="text-xs font-medium text-red-100">
+                    Siap pesan?
+                  </p>
+
+                  <p className="mt-0.5 text-base font-semibold">
+                    Pesan Sekarang
+                  </p>
+                </div>
+
+                <span
+                  className="
+                    flex h-10 w-10
+                    items-center justify-center
+                    rounded-full
+                    bg-white/15
+                    transition-transform duration-300
+                    group-hover:translate-x-1
+                  "
+                >
+                  <ArrowUpRight size={18} />
+                </span>
+              </Link>
+            </div>
+          )}
 
           {/* Bottom branding */}
           <div
