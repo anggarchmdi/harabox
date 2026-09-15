@@ -1,4 +1,13 @@
+import { useLocation } from 'react-router-dom'
+
 function ButtonCTA() {
+  const location = useLocation()
+
+  // Sembunyikan floating button di halaman keranjang agar tidak menutupi bar checkout mobile
+  if (location.pathname === '/cart') {
+    return null
+  }
+
   const whatsappNumber = '6289669743193'
 
   const message = encodeURIComponent(
