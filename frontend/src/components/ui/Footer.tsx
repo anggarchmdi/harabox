@@ -66,6 +66,15 @@ export default function Footer() {
                   Cara Pesan
                 </Link>
               </li>
+
+              <li>
+                <Link
+                  to="/cek-pesanan"
+                  className="text-sm text-gray-400 transition hover:text-white"
+                >
+                  Lacak Pesanan
+                </Link>
+              </li>
             </ul>
           </div>
 

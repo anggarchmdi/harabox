@@ -469,4 +469,101 @@ class OrderFlowTest extends TestCase
         $this->assertEquals(1, $firstItem->addons()->count());
         $this->assertEquals('Sambal Matah Extra', $firstItem->addons()->first()->addon_name);
     }
+
+    public function test_customer_can_track_order_by_order_code(): void
+    {
+        $category = Category::firstOrCreate(['slug' => 'test-cat'], ['name' => 'Test Cat']);
+
+        $product = Product::create([
+            'category_id' => $category->id,
+            'name' => 'Paket Tracking Test',
+            'slug' => 'paket-tracking-test-'.uniqid(),
+            'price' => 25000,
+            'minimum_order' => 10,
+            'addons_enabled' => false,
+            'is_active' => true,
+        ]);
+
+        $payload = [
+            'customers_name' => 'Ibu Siti Aminah',
+            'customers_phone' => '081298765432',
+            'event_date' => now()->addDays(4)->format('Y-m-d'),
+            'delivery_address' => 'Jl. Mawar Indah No. 12, Jakarta',
+            'items' => [
+                [
+                    'product_id' => $product->id,
+                    'quantity' => 10,
+                ],
+            ],
+        ];
+
+        $createRes = $this->postJson('/api/v1/orders', $payload);
+        $createRes->assertStatus(201);
+        $orderCode = $createRes->json('data.order_code');
+
+        // Track without phone (phone is masked)
+        $trackRes = $this->getJson("/api/v1/orders/{$orderCode}");
+        $trackRes->assertStatus(200)
+            ->assertJson([
+                'success' => true,
+                'data' => [
+                    'order_code' => $orderCode,
+                    'customers_name' => 'Ibu Siti Aminah',
+                    'status' => 'pending',
+                ],
+            ])
+            ->assertJsonPath('data.customers_phone', '0812****432');
+
+        $this->assertCount(1, $trackRes->json('data.items'));
+        $this->assertEquals('Paket Tracking Test', $trackRes->json('data.items.0.item_name'));
+    }
+
+    public function test_customer_can_track_order_with_phone_verification(): void
+    {
+        $category = Category::firstOrCreate(['slug' => 'test-cat'], ['name' => 'Test Cat']);
+
+        $product = Product::create([
+            'category_id' => $category->id,
+            'name' => 'Paket Phone Verify',
+            'slug' => 'paket-phone-verify-'.uniqid(),
+            'price' => 30000,
+            'minimum_order' => 10,
+            'addons_enabled' => false,
+            'is_active' => true,
+        ]);
+
+        $payload = [
+            'customers_name' => 'Bapak Hendra',
+            'customers_phone' => '085712345678',
+            'event_date' => now()->addDays(5)->format('Y-m-d'),
+            'delivery_address' => 'Komplek Permata Hijau Blok C',
+            'items' => [
+                [
+                    'product_id' => $product->id,
+                    'quantity' => 10,
+                ],
+            ],
+        ];
+
+        $createRes = $this->postJson('/api/v1/orders', $payload);
+        $orderCode = $createRes->json('data.order_code');
+
+        // Valid phone matching returns unmasked phone
+        $trackRes = $this->getJson("/api/v1/orders/{$orderCode}?phone=085712345678");
+        $trackRes->assertStatus(200)
+            ->assertJsonPath('data.customers_phone', '085712345678');
+
+        // Invalid phone returns 422
+        $invalidRes = $this->getJson("/api/v1/orders/{$orderCode}?phone=089999999999");
+        $invalidRes->assertStatus(422);
+    }
+
+    public function test_tracking_nonexistent_order_returns_404(): void
+    {
+        $res = $this->getJson('/api/v1/orders/HB-20260915-NONEXISTENT');
+        $res->assertStatus(404)
+            ->assertJson([
+                'success' => false,
+            ]);
+    }
 }

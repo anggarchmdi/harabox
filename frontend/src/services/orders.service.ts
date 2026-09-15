@@ -105,4 +105,23 @@ export const ordersService = {
 
     return response.data.data
   },
+
+  async trackOrder(
+    orderCode: string,
+    phone?: string,
+  ): Promise<Order> {
+    const params = new URLSearchParams()
+    if (phone?.trim()) {
+      params.set('phone', phone.trim())
+    }
+
+    const query = params.toString() ? `?${params.toString()}` : ''
+    const response = await api.get<{
+      success: boolean
+      message: string
+      data: Order
+    }>(`/orders/${encodeURIComponent(orderCode.trim())}${query}`)
+
+    return response.data.data
+  },
 }

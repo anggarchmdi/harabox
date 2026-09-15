@@ -43,18 +43,10 @@ class OrderController extends Controller
         Request $request,
         string $orderCode
     ): JsonResponse {
-        $token = $request->query('access_token');
-
-        if (! $token) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Access token is required.',
-            ], 401);
-        }
-
         $order = Order::with([
-            'items',
-            'addons',
+            'items.product',
+            'items.addons',
+            'addons.addon',
         ])
             ->where('order_code', $orderCode)
             ->first();
@@ -62,21 +54,36 @@ class OrderController extends Controller
         if (! $order) {
             return response()->json([
                 'success' => false,
-                'message' => 'Order not found.',
+                'message' => 'Pesanan dengan kode tersebut tidak ditemukan.',
             ], 404);
         }
 
-        if (
-            ! $order->access_token_hash ||
-            ! hash_equals(
-                $order->access_token_hash,
-                hash('sha256', $token)
-            )
-        ) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Invalid access token.',
-            ], 401);
+        // Optional phone verification check
+        $phoneInput = $request->query('phone');
+        $phoneVerified = false;
+
+        if ($phoneInput) {
+            $cleanInput = preg_replace('/[^0-9]/', '', (string) $phoneInput);
+            $cleanOrderPhone = preg_replace('/[^0-9]/', '', (string) $order->customers_phone);
+
+            if (
+                $cleanInput === $cleanOrderPhone ||
+                (strlen($cleanInput) >= 4 && str_ends_with($cleanOrderPhone, $cleanInput))
+            ) {
+                $phoneVerified = true;
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Nomor telepon tidak cocok dengan data pemesan.',
+                ], 422);
+            }
+        }
+
+        // Mask phone for privacy if not verified
+        if (! $phoneVerified && strlen($order->customers_phone) >= 7) {
+            $prefix = substr($order->customers_phone, 0, 4);
+            $suffix = substr($order->customers_phone, -3);
+            $order->customers_phone = $prefix.'****'.$suffix;
         }
 
         return response()->json([

@@ -494,8 +494,9 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
 
       const waUrl = `https://wa.me/6289669743193?text=${encodeURIComponent(waText)}`
 
-      // 4. Buka WhatsApp di tab baru
+// 4. Buka WhatsApp di tab baru & redirect ke live order tracking
       window.open(waUrl, '_blank')
+      navigate(`/cek-pesanan?code=${orderCode}`)
     } catch (err: unknown) {
       console.error(err)
       const errorObj = err as { response?: { data?: { message?: string } }; message?: string }

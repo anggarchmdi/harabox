@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import {
   ArrowLeft,
   Calendar,
@@ -67,6 +67,7 @@ function formatMinDateLabel(dateStr: string): string {
 }
 
 export default function CartPage() {
+  const navigate = useNavigate()
   const [pageLoading, setPageLoading] = useState(true)
 
   useEffect(() => {
@@ -250,6 +251,7 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
 
       setIsModalOpen(false)
       window.open(waUrl, '_blank')
+      navigate(`/cek-pesanan?code=${orderCode}`)
     } catch (err: unknown) {
       console.error(err)
       const errorObj = err as { response?: { data?: { message?: string } }; message?: string }
