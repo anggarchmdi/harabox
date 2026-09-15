@@ -19,6 +19,7 @@ import { productService } from '../../../services/products.service'
 import { categoryService } from '../../../services/category.services'
 import type { Product } from '../../../types/products'
 import ProductTable from '../../../components/admin/products/ProductTable'
+import PageLoader from '../../../components/ui/PageLoader'
 
 export default function Products() {
   const navigate = useNavigate()
@@ -122,6 +123,12 @@ export default function Products() {
 
   return (
     <div className="min-h-screen space-y-6 sm:space-y-8 p-4 sm:p-6 lg:p-8 pb-24 text-stone-900">
+      <PageLoader
+        isLoading={isLoading}
+        text="Menyiapkan Katalog Produk..."
+        subtext="Memuat daftar menu nasi box, bento, dan krisbar"
+        minDuration={400}
+      />
       {/* Header */}
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <div>

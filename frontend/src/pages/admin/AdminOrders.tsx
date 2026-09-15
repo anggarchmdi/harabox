@@ -29,6 +29,7 @@ import OrderTable, {
   getWhatsAppTestimonialUrl,
 } from '../../components/admin/orders/OrderTable'
 import OrderStatusBadge from '../../components/admin/orders/OrderStatusBadge'
+import PageLoader from '../../components/ui/PageLoader'
 
 function formatDate(date: string) {
   return new Intl.DateTimeFormat('id-ID', {
@@ -95,6 +96,12 @@ export default function AdminOrders() {
 
   return (
     <div className="min-h-screen space-y-6 sm:space-y-8 p-4 sm:p-6 lg:p-8 pb-24 text-stone-900">
+      <PageLoader
+        isLoading={isLoading}
+        text="Memuat Pesanan Katering Masuk..."
+        subtext="Sinkronisasi status dan rincian pesanan pelanggan"
+        minDuration={400}
+      />
       {/* Header */}
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <div>

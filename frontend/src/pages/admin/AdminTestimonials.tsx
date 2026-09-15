@@ -15,6 +15,7 @@ import {
 import { toast } from 'sonner'
 import { testimonialService, type TestimonialFilters } from '../../services/testimonial.service'
 import type { Testimonial } from '../../types/testimonial'
+import PageLoader from '../../components/ui/PageLoader'
 
 export default function AdminTestimonials() {
   const queryClient = useQueryClient()
@@ -140,6 +141,12 @@ export default function AdminTestimonials() {
 
   return (
     <div className="space-y-6 p-8">
+      <PageLoader
+        isLoading={isLoading}
+        text="Memuat Testimoni Pelanggan..."
+        subtext="Menyiapkan ulasan dan rating kepuasan pelanggan"
+        minDuration={400}
+      />
       {/* Header Halaman */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>

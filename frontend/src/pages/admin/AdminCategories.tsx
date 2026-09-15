@@ -20,6 +20,7 @@ import { AxiosError } from 'axios'
 
 import type { Category, CategoryForm } from '../../types/category'
 import { categoryService } from '../../services/category.services'
+import PageLoader from '../../components/ui/PageLoader'
 
 const initialForm: CategoryForm = {
   name: '',
@@ -231,6 +232,12 @@ export default function AdminCategories() {
 
   return (
     <div className="mx-auto max-w-7xl space-y-6 p-8">
+      <PageLoader
+        isLoading={isLoading}
+        text="Memuat Kategori Menu..."
+        subtext="Menyiapkan kelompok kategori paket katering"
+        minDuration={400}
+      />
       {/* Page Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>

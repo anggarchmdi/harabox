@@ -18,6 +18,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { productService } from '../../../services/products.service'
 import { categoryService } from '../../../services/category.services'
 import { getImageUrl } from '../../../utils/image'
+import { PageLoader } from '../../../components/ui/PageLoader'
 
 interface ProductForm {
   category_id: string
@@ -297,26 +298,30 @@ export default function EditProduct() {
 
   const existingImageUrl = getImageUrl(currentImage)
 
-  if (loading) {
-    return (
-      <div className="mx-auto max-w-5xl space-y-6">
-        <div className="flex items-center gap-3">
-          <div className="h-10 w-10 animate-pulse rounded-xl bg-stone-200" />
-          <div className="space-y-2">
-            <div className="h-4 w-24 animate-pulse rounded bg-stone-200" />
-            <div className="h-6 w-48 animate-pulse rounded bg-stone-200" />
+  return (
+    <>
+      <PageLoader
+        isLoading={loading}
+        text="Memuat Data Produk..."
+        subtext="Menyiapkan formulir edit menu katering"
+        minDuration={400}
+      />
+      {loading ? (
+        <div className="mx-auto max-w-5xl space-y-6">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 animate-pulse rounded-xl bg-stone-200" />
+            <div className="space-y-2">
+              <div className="h-4 w-24 animate-pulse rounded bg-stone-200" />
+              <div className="h-6 w-48 animate-pulse rounded bg-stone-200" />
+            </div>
+          </div>
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+            <div className="h-96 animate-pulse rounded-2xl bg-stone-200 lg:col-span-2" />
+            <div className="h-96 animate-pulse rounded-2xl bg-stone-200" />
           </div>
         </div>
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-          <div className="h-96 animate-pulse rounded-2xl bg-stone-200 lg:col-span-2" />
-          <div className="h-96 animate-pulse rounded-2xl bg-stone-200" />
-        </div>
-      </div>
-    )
-  }
-
-  return (
-    <div className="mx-auto max-w-5xl space-y-6">
+      ) : (
+        <div className="mx-auto max-w-5xl space-y-6">
       {/* Top Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
@@ -819,5 +824,7 @@ export default function EditProduct() {
         </div>
       </form>
     </div>
+  )}
+  </>
   )
 }

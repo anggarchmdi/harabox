@@ -17,6 +17,7 @@ import {
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { productService } from '../../../services/products.service'
 import { categoryService } from '../../../services/category.services'
+import { PageLoader } from '../../../components/ui/PageLoader'
 
 interface PackageAddonItem {
   id?: number
@@ -209,6 +210,12 @@ export default function CreateProduct() {
 
   return (
     <div className="mx-auto max-w-5xl space-y-6">
+      <PageLoader
+        isLoading={categoriesLoading}
+        text="Menyiapkan Formulir Menu..."
+        subtext="Memuat opsi kategori paket katering"
+        minDuration={400}
+      />
       {/* Top Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">

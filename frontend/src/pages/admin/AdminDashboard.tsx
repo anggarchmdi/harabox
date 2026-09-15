@@ -33,6 +33,7 @@ import { getImageUrl } from '../../utils/image'
 import type { DashboardRecentOrder } from '../../types/dashboard'
 import type { OrderStatus } from '../../types/orders'
 import type { Product } from '../../types/products'
+import PageLoader from '../../components/ui/PageLoader'
 
 // Aset lokal untuk smart fallback produk
 import BentoKatsuImg from '../../assets/nasibox/bento-katsu-b.webp'
@@ -231,11 +232,7 @@ export default function AdminDashboard() {
     return data?.last_seven_days.reduce((acc, item) => acc + item.revenue, 0) ?? 0
   }, [data])
 
-  if (isLoading) {
-    return <DashboardSkeleton />
-  }
-
-  if (isError || !data) {
+  if (isError || (!data && !isLoading)) {
     return (
       <div className="mx-auto max-w-7xl p-6">
         <div className="rounded-3xl border border-red-200 bg-white p-12 text-center shadow-xs">
@@ -259,10 +256,31 @@ export default function AdminDashboard() {
     )
   }
 
+  if (!data) {
+    return (
+      <>
+        <PageLoader
+          isLoading={isLoading}
+          text="Menyiapkan Dashboard Monitoring..."
+          subtext="Memuat analitik penjualan, omset, dan antrean pesanan"
+          minDuration={400}
+        />
+        <DashboardSkeleton />
+      </>
+    )
+  }
+
   const queueTotal = (summary?.pending_orders ?? 0) + (summary?.processing_orders ?? 0)
 
   return (
-    <div className="mx-auto max-w-7xl space-y-6 sm:space-y-8 p-4 sm:p-6 lg:p-8 pb-24 text-stone-900">
+    <>
+      <PageLoader
+        isLoading={isLoading}
+        text="Menyiapkan Dashboard Monitoring..."
+        subtext="Memuat analitik penjualan, omset, dan antrean pesanan"
+        minDuration={400}
+      />
+      <div className="mx-auto max-w-7xl space-y-6 sm:space-y-8 p-4 sm:p-6 lg:p-8 pb-24 text-stone-900">
       {/* =====================================================
           HEADER & REAL-TIME CONTROLS
       ====================================================== */}
@@ -1090,7 +1108,8 @@ export default function AdminDashboard() {
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </>
   )
 }
 

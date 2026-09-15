@@ -14,7 +14,7 @@ export interface PageLoaderProps {
   onFinished?: () => void
 }
 
-export default function PageLoader({
+export function PageLoader({
   isLoading,
   text = 'Memuat Halaman...',
   subtext,
@@ -76,3 +76,5 @@ export default function PageLoader({
     </div>
   )
 }
+
+export default PageLoader

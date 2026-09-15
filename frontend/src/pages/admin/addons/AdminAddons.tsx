@@ -13,6 +13,7 @@ import {
 import { addonGroupService } from '../../../services/addonGroup.service'
 import { addonService } from '../../../services/adddon.service'
 import type { AddonGroup, Addon } from '../../../types/addon'
+import PageLoader from '../../../components/ui/PageLoader'
 
 export default function AdminAddons() {
   const queryClient = useQueryClient()
@@ -206,6 +207,12 @@ export default function AdminAddons() {
 
   return (
     <div className="space-y-6">
+      <PageLoader
+        isLoading={isLoading}
+        text="Memuat Data Add-on & Pelengkap..."
+        subtext="Menyiapkan opsi sambal, lauk ekstra, dan minuman"
+        minDuration={400}
+      />
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
