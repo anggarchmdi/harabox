@@ -372,4 +372,101 @@ class OrderFlowTest extends TestCase
                 'message' => 'Order berhasil',
             ]);
     }
+
+    public function test_customer_can_create_single_order_with_multiple_items_and_addons_from_cart(): void
+    {
+        $category = Category::firstOrCreate(['slug' => 'test-catering-cat'], ['name' => 'Catering Cat']);
+
+        $group = AddonGroup::create([
+            'name' => 'Pilihan Sambal',
+            'is_required' => false,
+            'min_selection' => 0,
+            'max_selection' => 1,
+            'is_active' => true,
+        ]);
+
+        $addon = Addon::create([
+            'addon_group_id' => $group->id,
+            'name' => 'Sambal Matah Extra',
+            'slug' => 'sambal-matah-'.uniqid(),
+            'price' => 2000,
+            'is_active' => true,
+        ]);
+
+        $productA = Product::create([
+            'category_id' => $category->id,
+            'name' => 'Paket Ayam Bakar A',
+            'slug' => 'paket-ayam-bakar-a-'.uniqid(),
+            'price' => 15000,
+            'minimum_order' => 10,
+            'addons_enabled' => true,
+            'is_active' => true,
+        ]);
+        $productA->addonGroups()->attach($group->id, ['sort_order' => 1]);
+
+        $productB = Product::create([
+            'category_id' => $category->id,
+            'name' => 'Paket Krisbar B',
+            'slug' => 'paket-krisbar-b-'.uniqid(),
+            'price' => 20000,
+            'minimum_order' => 10,
+            'addons_enabled' => false,
+            'is_active' => true,
+        ]);
+
+        $payload = [
+            'customers_name' => 'Siti Cart Tester',
+            'customers_phone' => '081234567899',
+            'event_date' => now()->addDays(4)->format('Y-m-d'),
+            'event_time' => '12:00',
+            'delivery_address' => 'Kampus UGM, Sekip Blok L-1',
+            'notes' => 'Tolong pisahkan box untuk ruang VIP',
+            'items' => [
+                [
+                    'product_id' => $productA->id,
+                    'quantity' => 30,
+                    'addons' => [
+                        ['addon_id' => $addon->id],
+                    ],
+                ],
+                [
+                    'product_id' => $productA->id,
+                    'quantity' => 20,
+                ],
+                [
+                    'product_id' => $productB->id,
+                    'quantity' => 25,
+                ],
+            ],
+        ];
+
+        $response = $this->postJson('/api/v1/orders', $payload);
+
+        $response->assertStatus(201)
+            ->assertJson([
+                'success' => true,
+                'message' => 'Order berhasil',
+            ]);
+
+        $orderCode = $response->json('data.order_code');
+
+        $order = Order::where('order_code', $orderCode)->firstOrFail();
+
+        // 1 Order has 3 OrderItems
+        $this->assertEquals(3, $order->items()->count());
+
+        // Item 1: (15000 + 2000) * 30 = 510000
+        // Item 2: 15000 * 20 = 300000
+        // Item 3: 20000 * 25 = 500000
+        // Subtotal = 1310000, Delivery Fee = 10000, Total = 1320000
+        $this->assertEquals(1310000.00, (float) $order->subtotal);
+        $this->assertEquals(10000.00, (float) $order->delivery_fee);
+        $this->assertEquals(1320000.00, (float) $order->total);
+
+        // Check addons on first item
+        $firstItem = $order->items()->where('product_id', $productA->id)->where('quantity', 30)->first();
+        $this->assertNotNull($firstItem);
+        $this->assertEquals(1, $firstItem->addons()->count());
+        $this->assertEquals('Sambal Matah Extra', $firstItem->addons()->first()->addon_name);
+    }
 }

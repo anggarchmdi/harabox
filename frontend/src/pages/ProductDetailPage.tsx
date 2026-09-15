@@ -15,16 +15,18 @@ import {
   Plus,
   ShieldCheck,
   ShoppingBag,
+  ShoppingCart,
   Sparkles,
   User,
   X,
 } from 'lucide-react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'sonner'
 import PageLoader from '../components/ui/PageLoader'
 import { productService } from '../services/products.service'
 import { ordersService } from '../services/orders.service'
 import { getImageUrl } from '../utils/image'
+import { useCartStore, type CartItemAddon } from '../stores/cart.store'
 import type { Product } from '../types/products'
 import type { AddonGroup } from '../types/addon'
 
@@ -98,6 +100,8 @@ export default function ProductDetailPage() {
   const { slug } = useParams<{
     slug: string
   }>()
+  const navigate = useNavigate()
+  const addItem = useCartStore((state) => state.addItem)
 
   const {
     data: product,
@@ -302,6 +306,70 @@ export default function ProductDetailPage() {
       }
     }
     setIsModalOpen(true)
+  }
+
+  // Handle Add To Cart (Tanpa Direct Checkout)
+  const handleAddToCart = () => {
+    if (!product) return
+
+    if (quantity < minOrder) {
+      toast.error(`Minimal order menu ini adalah ${minOrder} porsi.`)
+      return
+    }
+
+    // Pre-validate addon selection rules
+    if (product.addons_enabled && product.addon_groups) {
+      for (const group of product.addon_groups) {
+        const selected = selectedAddons[group.id] || []
+        if (selected.length < group.min_selection) {
+          toast.error(`Silakan tentukan pilihan "${group.name}" terlebih dahulu.`)
+          return
+        }
+        if (selected.length > group.max_selection) {
+          toast.error(`Pilihan "${group.name}" melebihi batas maksimal (${group.max_selection}).`)
+          return
+        }
+      }
+    }
+
+    const addonsForCart: CartItemAddon[] = []
+    if (product.addons_enabled && product.addon_groups) {
+      for (const group of product.addon_groups) {
+        const ids = selectedAddons[group.id] || []
+        for (const id of ids) {
+          const addon = group.addons.find((a) => a.id === id)
+          if (addon) {
+            addonsForCart.push({
+              addon_id: addon.id,
+              addon_name: addon.name,
+              addon_group_name: group.name,
+              price: Number(addon.price) || 0,
+            })
+          }
+        }
+      }
+    }
+
+    addItem({
+      product_id: product.id,
+      product_name: product.name,
+      product_slug: product.slug,
+      product_image: product.image,
+      base_price: Number(product.price) || 0,
+      quantity,
+      minimum_order: minOrder,
+      lead_time_days: leadTimeDays,
+      step,
+      portion_mode: portionMode,
+      addons: addonsForCart,
+    })
+
+    toast.success(`${product.name} (${quantity} porsi) berhasil masuk keranjang!`, {
+      action: {
+        label: 'Lihat Keranjang',
+        onClick: () => navigate('/cart'),
+      },
+    })
   }
 
   // Handle Order Submit to Backend + WA Redirect
@@ -550,40 +618,31 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
             <div className="order-4 space-y-4">
               {/* Notice Lead Time (Batas Pemesanan) */}
               {leadTimeDays > 0 && (
-                <div className="rounded-2xl border border-amber-200/90 bg-amber-50/80 p-4 sm:p-5 text-amber-950 shadow-xs">
-                  <div className="flex items-start gap-3">
-                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-amber-200/70 text-amber-800">
-                      <Clock size={18} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex flex-wrap items-center justify-between gap-1">
-                        <h4 className="text-xs font-black uppercase tracking-wider text-amber-900">
-                          Batas Waktu Pemesanan (H-{leadTimeDays})
-                        </h4>
-                        <span className="rounded-full bg-amber-200/80 px-2 py-0.5 text-[10px] font-bold text-amber-900">
-                          Paling Cepat {formatMinDateLabel(minDateString)}
+                <div className="rounded-xl border border-amber-200/80 bg-amber-50/70 p-3 sm:p-3.5 text-amber-950 shadow-2xs">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <Clock size={16} className="text-amber-700 shrink-0" />
+                      <div className="text-xs leading-snug">
+                        <span className="font-extrabold uppercase tracking-wider text-amber-900 text-[11px] mr-1.5">
+                          Batas Waktu Pemesanan:
+                        </span>
+                        <span className="text-amber-800">
+                          Pesanan reguler minimal <strong>H-{leadTimeDays}</strong> sebelum acara.
                         </span>
                       </div>
-                      <p className="mt-1.5 text-xs leading-relaxed text-amber-800">
-                        Menu ini memerlukan persiapan dapur katering minimal <strong>{leadTimeDays} hari sebelumnya</strong> agar rasa meresap optimal dan pengemasan rapi siap saji.
-                      </p>
-                      <div className="mt-3 pt-2.5 border-t border-amber-200/70 flex flex-wrap items-center justify-between gap-2">
-                        <span className="text-[11px] font-medium text-amber-800">
-                          Perlu pesanan mendadak hari ini / besok?
-                        </span>
-                        <a
-                          href={`https://wa.me/6289669743193?text=${encodeURIComponent(
-                            `Halo Admin Hara Chicken, saya ingin menanyakan ketersediaan slot mendadak untuk menu "${product.name}". Apakah ada slot dapur darurat yang tersedia?`
-                          )}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 text-xs font-bold text-red-600 hover:text-red-700 transition"
-                        >
-                          Cek Slot Darurat WA
-                          <ArrowRight size={13} />
-                        </a>
-                      </div>
                     </div>
+
+                    <a
+                      href={`https://wa.me/6289669743193?text=${encodeURIComponent(
+                        `Halo Admin Hara Chicken, saya ingin menanyakan ketersediaan slot mendadak untuk menu "${product.name}". Apakah ada slot dapur darurat yang tersedia?`
+                      )}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-xs font-bold text-red-600 hover:text-red-700 transition shrink-0 pl-6 sm:pl-0"
+                    >
+                      <span>Cek Slot Darurat WA</span>
+                      <ArrowRight size={13} />
+                    </a>
                   </div>
                 </div>
               )}
@@ -733,8 +792,8 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                                 type="button"
                                 onClick={() => handleToggleAddon(group, addon.id)}
                                 className={`group flex items-start justify-between rounded-xl p-3 text-left transition-all border ${isSelected
-                                    ? 'border-zinc-950 bg-zinc-50 shadow-xs ring-1 ring-zinc-950'
-                                    : 'border-zinc-200/90 bg-white hover:border-zinc-300 hover:bg-zinc-50/50'
+                                  ? 'border-zinc-950 bg-zinc-50 shadow-xs ring-1 ring-zinc-950'
+                                  : 'border-zinc-200/90 bg-white hover:border-zinc-300 hover:bg-zinc-50/50'
                                   }`}
                               >
                                 <div className="flex items-start gap-2.5 pr-2">
@@ -770,8 +829,8 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
 
                                 <span
                                   className={`shrink-0 rounded-lg px-2 py-0.5 text-[10px] font-bold ${priceNum === 0
-                                      ? 'bg-emerald-50 text-emerald-700 border border-emerald-200/70'
-                                      : 'bg-zinc-100 text-zinc-800 border border-zinc-200/80'
+                                    ? 'bg-emerald-50 text-emerald-700 border border-emerald-200/70'
+                                    : 'bg-zinc-100 text-zinc-800 border border-zinc-200/80'
                                     }`}
                                 >
                                   {priceNum === 0 ? 'Termasuk' : `+Rp ${priceNum.toLocaleString('id-ID')} / porsi`}
@@ -789,25 +848,26 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
               {/* =====================================================
                   CART-STYLE QUANTITY SELECTOR (SATUAN & KELIPATAN 10)
               ====================================================== */}
-              <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
-                {/* Mode Switcher */}
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-zinc-100 pb-4 mb-4">
+              <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm space-y-4">
+                {/* Mode Switcher & Header */}
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-zinc-100 pb-4">
                   <div>
-                    <label className="text-xs font-bold uppercase tracking-wider text-zinc-800 block">
-                      Mode Pemesanan Porsi
+                    <label className="text-xs font-black uppercase tracking-wider text-zinc-900 flex items-center gap-1.5">
+                      <ShoppingBag size={15} className="text-zinc-700" />
+                      Jumlah Pesanan Porsi
                     </label>
                     <p className="text-xs text-zinc-500 mt-0.5">
-                      Minimal order menu ini adalah <span className="font-bold text-zinc-950">{minOrder} porsi</span>
+                      Minimal order menu ini: <span className="font-bold text-zinc-950">{minOrder} porsi</span>
                     </p>
                   </div>
 
-                  <div className="inline-flex items-center rounded-xl bg-zinc-100 p-1 self-start sm:self-auto shadow-inner">
+                  <div className="inline-flex items-center rounded-xl bg-zinc-100/90 p-1 border border-zinc-200/80 self-start sm:self-auto shadow-inner">
                     <button
                       type="button"
                       onClick={() => handleSwitchMode('kelipatan10')}
-                      className={`rounded-lg px-3 py-1.5 text-xs font-bold transition ${portionMode === 'kelipatan10'
-                          ? 'bg-white text-zinc-950 shadow-xs'
-                          : 'text-zinc-600 hover:text-zinc-950'
+                      className={`rounded-lg px-3.5 py-1.5 text-xs transition-all duration-200 ${portionMode === 'kelipatan10'
+                        ? 'bg-zinc-950 text-white font-extrabold shadow-sm'
+                        : 'text-zinc-500 hover:text-zinc-900 font-semibold'
                         }`}
                     >
                       Kelipatan 10
@@ -815,9 +875,9 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                     <button
                       type="button"
                       onClick={() => handleSwitchMode('satuan')}
-                      className={`rounded-lg px-3 py-1.5 text-xs font-bold transition ${portionMode === 'satuan'
-                          ? 'bg-white text-zinc-950 shadow-xs'
-                          : 'text-zinc-600 hover:text-zinc-950'
+                      className={`rounded-lg px-3.5 py-1.5 text-xs transition-all duration-200 ${portionMode === 'satuan'
+                        ? 'bg-zinc-950 text-white font-extrabold shadow-sm'
+                        : 'text-zinc-500 hover:text-zinc-900 font-semibold'
                         }`}
                     >
                       Satuan (+1)
@@ -827,33 +887,35 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
 
                 {/* Counter and Stepper */}
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                  <div>
-                    <p className="text-xs font-bold text-zinc-900">
-                      {portionMode === 'kelipatan10' ? 'Kelipatan 10 Porsi' : 'Hitungan Satuan Porsi'}
-                    </p>
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="inline-flex items-center rounded-md bg-zinc-100 px-2 py-0.5 text-[11px] font-bold text-zinc-800 border border-zinc-200/70">
+                        {portionMode === 'kelipatan10' ? '⚡ Step ±10 Porsi' : '🎯 Step ±1 Porsi'}
+                      </span>
+                      <p className="text-xs font-bold text-zinc-900">
+                        {portionMode === 'kelipatan10' ? 'Mode Kelipatan 10' : 'Mode Satuan Bebas'}
+                      </p>
+                    </div>
                     <p className="text-[11px] text-zinc-500">
                       {portionMode === 'kelipatan10'
-                        ? 'Cocok untuk pemesanan rombongan & box besar'
-                        : 'Bebas tentukan jumlah porsi sesuai kebutuhan acara'}
+                        ? 'Klik +/- untuk kelipatan 10 porsi (10, 20, 30...)'
+                        : 'Klik +/- untuk atur porsi spesifik (misal 12, 15, 27 porsi)'}
                     </p>
                   </div>
 
                   {/* Counter buttons */}
-                  <div className="inline-flex items-center rounded-2xl border border-zinc-200 bg-zinc-50 p-1 shadow-inner self-start sm:self-auto">
+                  <div className="inline-flex items-center rounded-2xl border border-zinc-200 bg-zinc-50/90 p-1.5 shadow-inner self-start sm:self-auto">
                     <button
                       type="button"
                       onClick={handleDecrease}
                       disabled={quantity <= minOrder}
-                      className="flex h-10 min-w-10 items-center justify-center gap-0.5 px-2 rounded-xl bg-white text-zinc-700 shadow-sm transition hover:bg-zinc-100 hover:text-zinc-950 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40"
+                      className="flex h-11 w-11 items-center justify-center rounded-xl bg-white text-zinc-700 border border-zinc-200/80 shadow-xs transition hover:bg-zinc-100 hover:text-zinc-950 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40"
                       aria-label={`Kurangi ${step} porsi`}
                     >
-                      <Minus size={15} strokeWidth={2.5} />
-                      <span className="text-[11px] font-bold text-zinc-500">
-                        {portionMode === 'kelipatan10' ? '10' : '1'}
-                      </span>
+                      <Minus size={16} strokeWidth={2.5} />
                     </button>
 
-                    <div className="flex items-center justify-center px-4">
+                    <div className="flex items-center justify-center px-3 min-w-[90px]">
                       <input
                         type="number"
                         value={quantity}
@@ -861,7 +923,7 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                         min={minOrder}
                         onChange={(e) => handleQuantityInput(e.target.value)}
                         onBlur={handleQuantityBlur}
-                        className="w-16 text-center font-black text-base text-zinc-950 bg-transparent outline-none"
+                        className="w-16 text-center font-black text-xl text-zinc-950 bg-transparent outline-none"
                       />
                       <span className="text-xs font-bold text-zinc-500">porsi</span>
                     </div>
@@ -869,13 +931,10 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                     <button
                       type="button"
                       onClick={handleIncrease}
-                      className="flex h-10 min-w-10 items-center justify-center gap-0.5 px-2 rounded-xl bg-zinc-950 text-white shadow-sm transition hover:bg-zinc-800 active:scale-95"
+                      className="flex h-11 w-11 items-center justify-center rounded-xl bg-zinc-950 text-white shadow-sm transition hover:bg-zinc-800 active:scale-95"
                       aria-label={`Tambah ${step} porsi`}
                     >
-                      <Plus size={15} strokeWidth={2.5} />
-                      <span className="text-[11px] font-bold text-zinc-300">
-                        {portionMode === 'kelipatan10' ? '10' : '1'}
-                      </span>
+                      <Plus size={16} strokeWidth={2.5} />
                     </button>
                   </div>
                 </div>
@@ -892,8 +951,8 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                           type="button"
                           onClick={() => setQuantity(count)}
                           className={`rounded-xl px-2.5 py-1 text-xs font-bold transition ${quantity === count
-                              ? 'bg-zinc-950 text-white shadow-sm'
-                              : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
+                            ? 'bg-zinc-950 text-white shadow-sm'
+                            : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
                             }`}
                         >
                           {count} Porsi
@@ -909,8 +968,8 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                             type="button"
                             onClick={() => setQuantity(count)}
                             className={`rounded-xl px-2.5 py-1 text-xs font-bold transition ${quantity === count
-                                ? 'bg-zinc-950 text-white shadow-sm'
-                                : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
+                              ? 'bg-zinc-950 text-white shadow-sm'
+                              : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
                               }`}
                           >
                             {count} Porsi
@@ -990,22 +1049,36 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
               </div>
 
               {/* Order Action Buttons */}
-              <div className="flex flex-col sm:flex-row gap-3">
-                <button
-                  type="button"
-                  onClick={handleOpenOrderModal}
-                  className="inline-flex flex-1 items-center justify-center gap-2.5 rounded-2xl bg-emerald-600 px-7 py-4 text-sm font-bold text-white shadow-lg shadow-emerald-600/25 transition hover:bg-emerald-700 hover:scale-[1.01] active:scale-[0.99]"
-                >
-                  <MessageCircle size={20} />
-                  Pesan {quantity} Porsi via WhatsApp
-                </button>
+              <div className="space-y-2.5">
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <button
+                    type="button"
+                    onClick={handleAddToCart}
+                    className="inline-flex items-center justify-center gap-2.5 rounded-2xl border-2 border-zinc-950 bg-white px-6 py-4 text-sm font-bold text-zinc-950 shadow-xs transition hover:bg-zinc-100 active:scale-[0.99]"
+                  >
+                    <ShoppingCart size={19} />
+                    <span>Tambahkan ke Keranjang</span>
+                  </button>
 
-                <Link
-                  to="/cara-pesan"
-                  className="inline-flex items-center justify-center gap-2 rounded-2xl border border-zinc-200 bg-white px-6 py-4 text-xs sm:text-sm font-bold text-zinc-800 transition hover:border-zinc-900 hover:bg-zinc-900 hover:text-white shadow-2xs"
-                >
-                  Cara Pesan
-                </Link>
+                  <button
+                    type="button"
+                    onClick={handleOpenOrderModal}
+                    className="inline-flex flex-1 items-center justify-center gap-2.5 rounded-2xl bg-emerald-600 px-7 py-4 text-sm font-bold text-white shadow-lg shadow-emerald-600/25 transition hover:bg-emerald-700 hover:scale-[1.01] active:scale-[0.99]"
+                  >
+                    <MessageCircle size={20} />
+                    <span>Pesan Sekarang (Direct WA)</span>
+                  </button>
+                </div>
+
+                <div className="flex flex-wrap items-center justify-between gap-2 px-1 text-[11px] text-zinc-400">
+                  <Link
+                    to="/cara-pesan"
+                    className="font-medium text-zinc-500 hover:text-zinc-950 transition underline underline-offset-2"
+                  >
+                    Panduan Cara Pesan
+                  </Link>
+                  <span>Pilih keranjang untuk pesan beberapa menu sekaligus</span>
+                </div>
               </div>
 
               <p className="text-xs leading-relaxed text-zinc-400">
@@ -1135,8 +1208,8 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                       value={eventDate}
                       onChange={handleEventDateChange}
                       className={`w-full h-11 rounded-xl border pl-10 pr-3 text-xs sm:text-sm font-medium outline-none transition ${isDateInvalid
-                          ? 'border-red-500 bg-red-50 text-red-900 ring-2 ring-red-500/20'
-                          : 'border-zinc-200 bg-zinc-50/60 focus:border-zinc-950 focus:bg-white focus:ring-2 focus:ring-zinc-950/10'
+                        ? 'border-red-500 bg-red-50 text-red-900 ring-2 ring-red-500/20'
+                        : 'border-zinc-200 bg-zinc-50/60 focus:border-zinc-950 focus:bg-white focus:ring-2 focus:ring-zinc-950/10'
                         }`}
                     />
                   </div>
@@ -1246,8 +1319,8 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                   type="submit"
                   disabled={isSubmitting || isDateInvalid || !eventDate}
                   className={`inline-flex items-center gap-2 px-6 py-3 rounded-xl text-xs font-bold transition ${isSubmitting || isDateInvalid || !eventDate
-                      ? 'bg-zinc-200 text-zinc-400 cursor-not-allowed shadow-none'
-                      : 'bg-emerald-600 text-white shadow-md shadow-emerald-600/20 hover:bg-emerald-700 active:scale-[0.99]'
+                    ? 'bg-zinc-200 text-zinc-400 cursor-not-allowed shadow-none'
+                    : 'bg-emerald-600 text-white shadow-md shadow-emerald-600/20 hover:bg-emerald-700 active:scale-[0.99]'
                     }`}
                 >
                   {isSubmitting ? (
