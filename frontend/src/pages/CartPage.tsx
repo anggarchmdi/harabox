@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import {
   ArrowLeft,
@@ -20,6 +20,7 @@ import { toast } from 'sonner'
 import { useCartStore } from '../stores/cart.store'
 import { ordersService } from '../services/orders.service'
 import { getImageUrl } from '../utils/image'
+import PageLoader from '../components/ui/PageLoader'
 
 // Fallback images
 import BentoKatsuImg from '../assets/nasibox/bento-katsu-b.webp'
@@ -66,6 +67,15 @@ function formatMinDateLabel(dateStr: string): string {
 }
 
 export default function CartPage() {
+  const [pageLoading, setPageLoading] = useState(true)
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setPageLoading(false)
+    }, 650)
+    return () => clearTimeout(timer)
+  }, [])
+
   const {
     items,
     removeItem,
@@ -253,35 +263,44 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
   }
 
   return (
-    <main className="min-h-screen bg-[#fafaf9] pb-24 text-zinc-900 selection:bg-zinc-950 selection:text-white">
-      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-20 pt-28 sm:pt-32 lg:pb-28">
-        {/* Breadcrumb Back Link */}
-        <div className="mb-6 flex items-center justify-between">
+    <main className="min-h-screen bg-[#fafaf9] pb-32 sm:pb-36 lg:pb-28 text-zinc-900 selection:bg-zinc-950 selection:text-white">
+      {/* Branded Initial Page Loader */}
+      <PageLoader
+        isLoading={pageLoading}
+        text="Menyiapkan Keranjang Pesanan..."
+        subtext="Memeriksa daftar paket menu katering dan rincian pesanan Anda"
+        minDuration={650}
+      />
+      <section className="mx-auto max-w-7xl px-3.5 sm:px-6 lg:px-8 pt-24 sm:pt-28 lg:pt-32">
+        {/* Navigation & Header Bar */}
+        <div className="mb-5 sm:mb-6 flex flex-wrap items-center justify-between gap-3">
           <Link
             to="/menu"
-            className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-zinc-500 transition hover:text-zinc-950"
+            className="inline-flex items-center gap-2 rounded-xl bg-white px-3 py-2 text-xs sm:text-sm font-bold text-zinc-600 border border-zinc-200/80 shadow-2xs transition hover:text-zinc-950 hover:border-zinc-300"
           >
-            <ArrowLeft size={16} />
-            Lanjut Pilih Menu Lain
+            <ArrowLeft size={15} />
+            <span>Lanjut Pilih Menu Lain</span>
           </Link>
 
-          <span className="text-xs font-semibold text-zinc-400">
-            {items.length} Menu di Keranjang
-          </span>
+          {items.length > 0 && (
+            <span className="inline-flex items-center rounded-full bg-zinc-100 px-3 py-1 text-xs font-bold text-zinc-600 border border-zinc-200/60">
+              {items.length} Menu di Keranjang
+            </span>
+          )}
         </div>
 
         {/* Page Title */}
-        <div className="mb-8">
+        <div className="mb-6 sm:mb-8">
           <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-zinc-950 text-white shadow-md">
-              <ShoppingCart size={22} />
+            <div className="flex h-11 w-11 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-2xl bg-zinc-950 text-white shadow-md">
+              <ShoppingCart size={20} className="sm:h-[22px] sm:w-[22px]" />
             </div>
             <div>
-              <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-zinc-950">
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-black tracking-tight text-zinc-950">
                 Keranjang Pesanan
               </h1>
               <p className="text-xs sm:text-sm text-zinc-500 mt-0.5">
-                Pilih menu yang ingin Anda pesan dan konfirmasi langsung ke WhatsApp Admin
+                Pilih menu katering Anda dan pesan langsung ke WhatsApp Admin
               </p>
             </div>
           </div>
@@ -289,11 +308,11 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
 
         {/* Empty State */}
         {items.length === 0 ? (
-          <div className="rounded-3xl border border-zinc-200 bg-white p-8 sm:p-16 text-center shadow-sm">
-            <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-3xl bg-amber-50 text-amber-600 border border-amber-200/80 mb-5">
-              <ShoppingBag size={36} />
+          <div className="rounded-3xl border border-zinc-200 bg-white p-6 sm:p-12 lg:p-16 text-center shadow-xs">
+            <div className="mx-auto flex h-16 w-16 sm:h-20 sm:w-20 items-center justify-center rounded-2xl sm:rounded-3xl bg-amber-50 text-amber-600 border border-amber-200/80 mb-4 sm:mb-5">
+              <ShoppingBag size={32} className="sm:h-9 sm:w-9" />
             </div>
-            <h2 className="text-xl sm:text-2xl font-black text-zinc-950 mb-2">
+            <h2 className="text-lg sm:text-2xl font-black text-zinc-950 mb-2">
               Keranjang Masih Kosong
             </h2>
             <p className="text-xs sm:text-sm text-zinc-500 max-w-md mx-auto mb-6 leading-relaxed">
@@ -301,7 +320,7 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
             </p>
             <Link
               to="/menu"
-              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-zinc-950 px-7 py-3.5 text-xs sm:text-sm font-bold text-white shadow-md transition hover:bg-zinc-800 active:scale-95"
+              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-zinc-950 px-6 sm:px-7 py-3 sm:py-3.5 text-xs sm:text-sm font-bold text-white shadow-md transition hover:bg-zinc-800 active:scale-95"
             >
               <ShoppingCart size={16} />
               Jelajahi Menu Katering
@@ -309,20 +328,23 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
           </div>
         ) : (
           /* Cart Content Layout (2 Columns on Desktop) */
-          <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.2fr)_minmax(360px,0.8fr)] gap-8 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.25fr)_minmax(360px,0.75fr)] gap-6 lg:gap-8 items-start">
             {/* LEFT COLUMN: Cart Items List */}
-            <div className="space-y-4">
+            <div className="space-y-3.5 sm:space-y-4">
               {/* Select All & Bulk Actions Bar */}
-              <div className="flex items-center justify-between rounded-2xl border border-zinc-200 bg-white px-5 py-4 shadow-xs">
-                <label className="flex items-center gap-3 cursor-pointer select-none">
+              <div className="flex items-center justify-between rounded-2xl border border-zinc-200/80 bg-white px-3.5 py-3 sm:px-5 sm:py-3.5 shadow-2xs">
+                <label className="flex items-center gap-2.5 sm:gap-3 cursor-pointer select-none">
                   <input
                     type="checkbox"
                     checked={isAllSelected}
                     onChange={(e) => selectAll(e.target.checked)}
-                    className="h-5 w-5 rounded-md border-zinc-300 text-zinc-950 focus:ring-zinc-950 accent-zinc-950 cursor-pointer"
+                    className="h-4.5 w-4.5 sm:h-5 sm:w-5 rounded-md border-zinc-300 text-zinc-950 accent-zinc-950 cursor-pointer"
                   />
                   <span className="text-xs sm:text-sm font-bold text-zinc-900">
-                    Pilih Semua ({selectedDistinctCount}/{items.length} Menu)
+                    Pilih Semua{' '}
+                    <span className="text-zinc-500 font-semibold text-[11px] sm:text-xs">
+                      ({selectedDistinctCount}/{items.length} Menu)
+                    </span>
                   </span>
                 </label>
 
@@ -330,16 +352,17 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                   <button
                     type="button"
                     onClick={removeSelected}
-                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-red-600 hover:text-red-700 transition"
+                    className="inline-flex items-center gap-1 sm:gap-1.5 rounded-xl bg-red-50 px-2.5 py-1 text-xs font-semibold text-red-600 hover:bg-red-100 hover:text-red-700 transition"
                   >
-                    <Trash2 size={14} />
-                    <span>Hapus Terpilih</span>
+                    <Trash2 size={13} />
+                    <span className="hidden xs:inline">Hapus Terpilih</span>
+                    <span className="xs:hidden">Hapus</span>
                   </button>
                 )}
               </div>
 
               {/* Items List */}
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 {items.map((item) => {
                   const displayImg =
                     getImageUrl(item.product_image) ||
@@ -348,139 +371,148 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                   return (
                     <div
                       key={item.id}
-                      className={`relative rounded-3xl border p-4 sm:p-5 transition-all shadow-xs ${
+                      className={`relative rounded-2xl sm:rounded-3xl border p-3.5 sm:p-5 transition-all shadow-xs ${
                         item.selected
-                          ? 'border-zinc-300 bg-white ring-1 ring-zinc-950/5'
-                          : 'border-zinc-200 bg-zinc-50/60 opacity-80'
+                          ? 'border-zinc-300/90 bg-white ring-1 ring-zinc-950/5'
+                          : 'border-zinc-200 bg-zinc-50/50 opacity-75 hover:opacity-100'
                       }`}
                     >
+                      {/* Top Row: Checkbox + Image + Details + Delete */}
                       <div className="flex items-start gap-3 sm:gap-4">
                         {/* Checkbox */}
-                        <div className="pt-1">
+                        <div className="pt-1 shrink-0">
                           <input
                             type="checkbox"
                             checked={item.selected}
                             onChange={() => toggleSelect(item.id)}
-                            className="h-5 w-5 rounded-md border-zinc-300 text-zinc-950 focus:ring-zinc-950 accent-zinc-950 cursor-pointer"
+                            className="h-4.5 w-4.5 sm:h-5 sm:w-5 rounded-md border-zinc-300 text-zinc-950 accent-zinc-950 cursor-pointer"
                           />
                         </div>
 
                         {/* Product Image Thumbnail */}
-                        <div className="h-20 w-20 sm:h-24 sm:w-24 shrink-0 overflow-hidden rounded-2xl border border-zinc-200 bg-zinc-100">
+                        <div className="h-18 w-18 sm:h-22 sm:w-22 shrink-0 overflow-hidden rounded-xl sm:rounded-2xl border border-zinc-200/80 bg-zinc-100 relative">
                           <img
                             src={displayImg}
                             alt={item.product_name}
                             className="h-full w-full object-cover"
+                            loading="lazy"
                           />
                         </div>
 
-                        {/* Product & Customization Details */}
+                        {/* Product Info & Delete button */}
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-start justify-between gap-2">
-                            <div>
+                          <div className="flex items-start justify-between gap-1.5">
+                            <div className="min-w-0 pr-1">
                               <Link
                                 to={`/menu/${item.product_slug}`}
-                                className="text-sm sm:text-base font-black text-zinc-950 hover:text-red-600 transition line-clamp-1"
+                                className="text-xs sm:text-base font-black text-zinc-950 hover:text-red-600 transition line-clamp-2 leading-snug"
                               >
                                 {item.product_name}
                               </Link>
-                              <p className="text-[11px] font-semibold text-zinc-400 mt-0.5">
-                                Min. {item.minimum_order} Porsi •{' '}
-                                {item.portion_mode === 'kelipatan10' ? 'Kelipatan 10' : 'Satuan Bebas'}
-                              </p>
+
+                              <div className="mt-1 flex flex-wrap items-center gap-1 sm:gap-1.5">
+                                <span className="inline-flex items-center rounded-md bg-zinc-100 px-1.5 py-0.5 text-[10px] sm:text-[11px] font-semibold text-zinc-600">
+                                  Min. {item.minimum_order} Porsi
+                                </span>
+                                <span className="inline-flex items-center rounded-md bg-amber-50 px-1.5 py-0.5 text-[10px] sm:text-[11px] font-semibold text-amber-800 border border-amber-200/60">
+                                  {item.portion_mode === 'kelipatan10' ? 'Kelipatan 10' : 'Bebas Satuan'}
+                                </span>
+                              </div>
                             </div>
 
-                            {/* Delete single item */}
+                            {/* Delete single item button */}
                             <button
                               type="button"
                               onClick={() => removeItem(item.id)}
-                              className="rounded-lg p-1.5 text-zinc-400 hover:bg-red-50 hover:text-red-600 transition"
+                              className="shrink-0 -mr-1 -mt-1 rounded-lg p-1.5 text-zinc-400 hover:bg-red-50 hover:text-red-600 transition"
                               title="Hapus menu dari keranjang"
                             >
-                              <Trash2 size={16} />
+                              <Trash2 size={15} />
                             </button>
                           </div>
 
-                          {/* Selected Addons Badges */}
-                          {item.addons && item.addons.length > 0 ? (
-                            <div className="mt-2.5 flex flex-wrap gap-1.5">
-                              {item.addons.map((a, aIdx) => (
-                                <span
-                                  key={aIdx}
-                                  className="inline-flex items-center gap-1 rounded-lg bg-zinc-100 px-2 py-0.5 text-[11px] font-medium text-zinc-700 border border-zinc-200/70"
-                                >
-                                  <span className="font-bold text-zinc-900">{a.addon_group_name}:</span>
-                                  <span>{a.addon_name}</span>
-                                  {a.price > 0 && (
-                                    <span className="text-emerald-700 font-semibold">
-                                      (+Rp {a.price.toLocaleString('id-ID')})
-                                    </span>
-                                  )}
-                                </span>
-                              ))}
-                            </div>
-                          ) : (
-                            <p className="mt-1 text-[11px] text-zinc-400 italic">
-                              Paket Standar (Tanpa Add-on)
-                            </p>
-                          )}
-
-                          {/* Price per unit & Stepper row */}
-                          <div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-3 border-t border-zinc-100">
-                            <div>
-                              <p className="text-[11px] text-zinc-400 font-semibold">Harga Satuan</p>
-                              <p className="text-xs font-bold text-zinc-800">
-                                Rp {item.unit_price.toLocaleString('id-ID')}
-                                <span className="font-normal text-zinc-400 text-[10px]"> / porsi</span>
-                              </p>
-                            </div>
-
-                            {/* Stepper Controls */}
-                            <div className="flex items-center justify-between sm:justify-end gap-3">
-                              <div className="inline-flex items-center rounded-xl border border-zinc-200 bg-zinc-50 p-1 shadow-inner">
-                                <button
-                                  type="button"
-                                  onClick={() => stepQuantity(item.id, 'decrease')}
-                                  disabled={item.quantity <= item.minimum_order}
-                                  className="flex h-8 w-8 items-center justify-center rounded-lg bg-white text-zinc-700 shadow-xs transition hover:bg-zinc-100 hover:text-zinc-950 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40"
-                                  title={`Kurangi porsi (minimal ${item.minimum_order})`}
-                                >
-                                  <Minus size={13} strokeWidth={2.5} />
-                                </button>
-
-                                <div className="px-2.5">
-                                  <input
-                                    type="number"
-                                    value={item.quantity}
-                                    step={item.step}
-                                    min={item.minimum_order}
-                                    onChange={(e) =>
-                                      updateQuantity(item.id, parseInt(e.target.value, 10) || item.minimum_order)
-                                    }
-                                    className="w-12 text-center text-xs font-black text-zinc-950 bg-transparent outline-none"
-                                  />
-                                  <span className="text-[10px] font-bold text-zinc-400">porsi</span>
-                                </div>
-
-                                <button
-                                  type="button"
-                                  onClick={() => stepQuantity(item.id, 'increase')}
-                                  className="flex h-8 w-8 items-center justify-center rounded-lg bg-zinc-950 text-white shadow-xs transition hover:bg-zinc-800 active:scale-95"
-                                  title="Tambah porsi"
-                                >
-                                  <Plus size={13} strokeWidth={2.5} />
-                                </button>
-                              </div>
-
-                              {/* Item Subtotal */}
-                              <div className="text-right min-w-[100px]">
-                                <p className="text-[10px] text-zinc-400 font-semibold">Subtotal</p>
-                                <p className="text-sm font-black text-zinc-950">
-                                  Rp {item.subtotal.toLocaleString('id-ID')}
-                                </p>
-                              </div>
-                            </div>
+                          {/* Price per unit */}
+                          <div className="mt-1.5 flex items-baseline gap-1">
+                            <span className="text-[11px] font-semibold text-zinc-400">Harga:</span>
+                            <span className="text-xs sm:text-sm font-bold text-zinc-800">
+                              Rp {item.unit_price.toLocaleString('id-ID')}
+                            </span>
+                            <span className="text-[10px] text-zinc-400">/ porsi</span>
                           </div>
+                        </div>
+                      </div>
+
+                      {/* Middle Section: Selected Addons Badges (Indented cleanly) */}
+                      {item.addons && item.addons.length > 0 ? (
+                        <div className="mt-3 rounded-xl bg-zinc-50/90 border border-zinc-200/60 p-2 sm:p-2.5 sm:ml-9">
+                          <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 mb-1.5">
+                            Kustomisasi / Add-on Terpilih:
+                          </p>
+                          <div className="flex flex-wrap gap-1.5">
+                            {item.addons.map((a, aIdx) => (
+                              <span
+                                key={aIdx}
+                                className="inline-flex items-center gap-1 rounded-lg bg-white px-2 py-0.5 text-[10px] sm:text-[11px] font-medium text-zinc-700 border border-zinc-200/80 shadow-2xs"
+                              >
+                                <span className="font-bold text-zinc-900">{a.addon_group_name}:</span>
+                                <span>{a.addon_name}</span>
+                                {a.price > 0 && (
+                                  <span className="text-emerald-700 font-semibold">
+                                    (+Rp {a.price.toLocaleString('id-ID')})
+                                  </span>
+                                )}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      ) : null}
+
+                      {/* Bottom Section: Stepper & Subtotal */}
+                      <div className="mt-3 pt-3 border-t border-zinc-100 flex items-center justify-between gap-2 sm:ml-9">
+                        {/* Subtotal */}
+                        <div>
+                          <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+                            Subtotal ({item.quantity} Porsi)
+                          </p>
+                          <p className="text-sm sm:text-base font-black text-zinc-950">
+                            Rp {item.subtotal.toLocaleString('id-ID')}
+                          </p>
+                        </div>
+
+                        {/* Stepper Counter */}
+                        <div className="inline-flex items-center rounded-xl border border-zinc-200 bg-zinc-50 p-0.5 sm:p-1 shadow-inner">
+                          <button
+                            type="button"
+                            onClick={() => stepQuantity(item.id, 'decrease')}
+                            disabled={item.quantity <= item.minimum_order}
+                            className="flex h-7.5 w-7.5 sm:h-8 sm:w-8 items-center justify-center rounded-lg bg-white text-zinc-700 shadow-xs transition hover:bg-zinc-100 hover:text-zinc-950 active:scale-95 disabled:cursor-not-allowed disabled:opacity-35"
+                            title={`Kurangi porsi (minimal ${item.minimum_order})`}
+                          >
+                            <Minus size={12} strokeWidth={2.5} />
+                          </button>
+
+                          <div className="px-2 sm:px-2.5 flex items-baseline gap-0.5">
+                            <input
+                              type="number"
+                              value={item.quantity}
+                              step={item.step}
+                              min={item.minimum_order}
+                              onChange={(e) =>
+                                updateQuantity(item.id, parseInt(e.target.value, 10) || item.minimum_order)
+                              }
+                              className="w-10 sm:w-12 text-center text-xs sm:text-sm font-black text-zinc-950 bg-transparent outline-none"
+                            />
+                            <span className="text-[10px] font-bold text-zinc-400">porsi</span>
+                          </div>
+
+                          <button
+                            type="button"
+                            onClick={() => stepQuantity(item.id, 'increase')}
+                            className="flex h-7.5 w-7.5 sm:h-8 sm:w-8 items-center justify-center rounded-lg bg-zinc-950 text-white shadow-xs transition hover:bg-zinc-800 active:scale-95"
+                            title="Tambah porsi"
+                          >
+                            <Plus size={12} strokeWidth={2.5} />
+                          </button>
                         </div>
                       </div>
                     </div>
@@ -489,9 +521,9 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
               </div>
             </div>
 
-            {/* RIGHT COLUMN: Sticky Order Summary & Checkout Action */}
+            {/* RIGHT COLUMN: Order Summary Card (Sticky on desktop, bottom details on mobile) */}
             <div className="lg:sticky lg:top-28 space-y-4">
-              <div className="rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm space-y-4">
+              <div className="rounded-3xl border border-zinc-200 bg-white p-5 sm:p-6 shadow-sm space-y-4">
                 <h3 className="text-sm font-black uppercase tracking-wider text-zinc-900 border-b border-zinc-100 pb-3 flex items-center justify-between">
                   <span>Ringkasan Pesanan</span>
                   <span className="rounded-full bg-zinc-100 px-2.5 py-0.5 text-xs font-bold text-zinc-700">
@@ -553,12 +585,12 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                   </div>
                 </div>
 
-                {/* Checkout CTA */}
+                {/* Checkout CTA (Desktop Only, mobile uses sticky bottom bar) */}
                 <button
                   type="button"
                   onClick={handleOpenCheckout}
                   disabled={selectedDistinctCount === 0}
-                  className="w-full inline-flex items-center justify-center gap-2.5 rounded-2xl bg-emerald-600 px-6 py-4 text-sm font-bold text-white shadow-lg shadow-emerald-600/25 transition hover:bg-emerald-700 hover:scale-[1.01] active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none"
+                  className="hidden lg:inline-flex w-full items-center justify-center gap-2.5 rounded-2xl bg-emerald-600 px-6 py-4 text-sm font-bold text-white shadow-lg shadow-emerald-600/25 transition hover:bg-emerald-700 hover:scale-[1.01] active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none"
                 >
                   <MessageCircle size={20} />
                   <span>
@@ -568,7 +600,7 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                   </span>
                 </button>
 
-                <p className="text-center text-[11px] text-zinc-400">
+                <p className="hidden lg:block text-center text-[11px] text-zinc-400">
                   Pesanan akan dibuat menjadi 1 nomor invoice dan diteruskan ke WhatsApp Admin.
                 </p>
               </div>
@@ -578,44 +610,95 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
       </section>
 
       {/* =====================================================
-          MULTI-ITEM CART CHECKOUT MODAL
+          MOBILE STICKY BOTTOM CHECKOUT BAR (App-like UX)
       ====================================================== */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm animate-fade-in">
-          <div className="relative w-full max-w-lg overflow-hidden rounded-3xl bg-white shadow-2xl">
-            {/* Modal Header */}
-            <div className="flex items-center justify-between border-b border-zinc-100 px-6 py-5 bg-[#fafaf9]">
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-zinc-100 text-zinc-900">
-                  <ShoppingCart size={20} />
-                </div>
-                <div>
-                  <h3 className="font-black text-zinc-950 text-base">
-                    Konfirmasi Pesanan Keranjang
-                  </h3>
-                  <p className="text-xs text-zinc-500">
-                    {selectedDistinctCount} Menu Terpilih • {selectedTotalPortions} Porsi
-                  </p>
-                </div>
-              </div>
+      {items.length > 0 && (
+        <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-zinc-200/90 px-4 py-3 shadow-[0_-8px_25px_rgba(0,0,0,0.08)]">
+          <div className="mx-auto max-w-lg flex items-center justify-between gap-3">
+            {/* Left: Checkbox "Semua" + Total price */}
+            <div className="flex items-center gap-2.5 min-w-0">
+              <label className="flex items-center gap-1.5 cursor-pointer select-none shrink-0">
+                <input
+                  type="checkbox"
+                  checked={isAllSelected}
+                  onChange={(e) => selectAll(e.target.checked)}
+                  className="h-4.5 w-4.5 rounded-md border-zinc-300 text-zinc-950 accent-zinc-950 cursor-pointer"
+                />
+                <span className="text-xs font-bold text-zinc-800">Semua</span>
+              </label>
 
-              <button
-                type="button"
-                onClick={() => setIsModalOpen(false)}
-                className="rounded-full p-2 text-zinc-400 hover:bg-zinc-200 hover:text-zinc-700 transition"
-              >
-                <X size={18} />
-              </button>
+              <div className="border-l border-zinc-200 pl-2.5 min-w-0">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 leading-tight truncate">
+                  Total ({selectedTotalPortions} Porsi)
+                </p>
+                <p className="text-base font-black text-emerald-700 truncate leading-tight mt-0.5">
+                  Rp {grandTotal.toLocaleString('id-ID')}
+                </p>
+              </div>
             </div>
 
-            {/* Modal Form */}
-            <form onSubmit={handleSubmitOrder} className="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
+            {/* Right: Checkout Button */}
+            <button
+              type="button"
+              onClick={handleOpenCheckout}
+              disabled={selectedDistinctCount === 0}
+              className="shrink-0 inline-flex items-center justify-center gap-2 rounded-2xl bg-emerald-600 px-4.5 py-3 text-xs sm:text-sm font-bold text-white shadow-md shadow-emerald-600/20 transition hover:bg-emerald-700 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              <MessageCircle size={16} />
+              <span>
+                {selectedDistinctCount > 0
+                  ? `Pesan (${selectedDistinctCount})`
+                  : 'Pilih Menu'}
+              </span>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* =====================================================
+          MULTI-ITEM CART CHECKOUT MODAL (Bottom-sheet on mobile)
+      ====================================================== */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 p-0 sm:p-4 backdrop-blur-sm animate-fade-in">
+          <div className="relative w-full max-w-lg overflow-hidden rounded-t-[2rem] sm:rounded-3xl bg-white shadow-2xl flex flex-col max-h-[92vh] sm:max-h-[85vh]">
+            {/* Modal Header */}
+            <div className="border-b border-zinc-100 px-5 sm:px-6 py-4 bg-[#fafaf9] shrink-0">
+              {/* Mobile grab handle */}
+              <div className="w-10 h-1 bg-zinc-300 rounded-full mx-auto mb-3 sm:hidden" />
+
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-zinc-100 text-zinc-900">
+                    <ShoppingCart size={18} />
+                  </div>
+                  <div>
+                    <h3 className="font-black text-zinc-950 text-sm sm:text-base">
+                      Konfirmasi Pesanan Keranjang
+                    </h3>
+                    <p className="text-xs text-zinc-500">
+                      {selectedDistinctCount} Menu Terpilih • {selectedTotalPortions} Porsi
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setIsModalOpen(false)}
+                  className="rounded-full p-2 text-zinc-400 hover:bg-zinc-200 hover:text-zinc-700 transition"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+            </div>
+
+            {/* Modal Scrollable Body */}
+            <form onSubmit={handleSubmitOrder} className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-4">
               {/* Order Summary Box */}
               <div className="rounded-2xl border border-zinc-200 bg-zinc-50/70 p-3.5 space-y-2 text-xs">
                 <p className="font-bold text-zinc-900 uppercase tracking-wider text-[11px]">
                   Daftar Menu yang Dipesan:
                 </p>
-                <div className="space-y-1.5 max-h-36 overflow-y-auto pr-1">
+                <div className="space-y-1.5 max-h-32 overflow-y-auto pr-1">
                   {selectedItems.map((item, idx) => (
                     <div key={idx} className="flex justify-between items-baseline text-zinc-700">
                       <span className="truncate pr-2">
@@ -751,19 +834,19 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                 />
               </div>
 
-              {/* Modal Footer */}
-              <div className="pt-2 flex items-center justify-end gap-3 border-t border-zinc-100">
+              {/* Modal Sticky Footer Actions inside Form */}
+              <div className="pt-3 flex items-center justify-end gap-2.5 border-t border-zinc-100">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-5 py-3 rounded-xl text-xs font-bold text-zinc-600 hover:bg-zinc-100 transition"
+                  className="px-4 py-2.5 rounded-xl text-xs font-bold text-zinc-600 hover:bg-zinc-100 transition"
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting || isDateInvalid || !eventDate}
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-xs font-bold transition bg-emerald-600 text-white shadow-md shadow-emerald-600/20 hover:bg-emerald-700 active:scale-[0.99] disabled:bg-zinc-200 disabled:text-zinc-400 disabled:cursor-not-allowed disabled:shadow-none"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition bg-emerald-600 text-white shadow-md shadow-emerald-600/20 hover:bg-emerald-700 active:scale-[0.99] disabled:bg-zinc-200 disabled:text-zinc-400 disabled:cursor-not-allowed disabled:shadow-none"
                 >
                   {isSubmitting ? (
                     <span>Memproses...</span>
