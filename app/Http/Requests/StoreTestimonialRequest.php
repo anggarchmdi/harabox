@@ -23,10 +23,10 @@ class StoreTestimonialRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:100'],
+            'name' => ['required_without:order_code', 'nullable', 'string', 'max:100'],
             'institution' => ['nullable', 'string', 'max:150'],
             'rating' => ['required', 'integer', 'min:1', 'max:5'],
-            'order_quantity' => ['required', 'string', 'max:100'],
+            'order_quantity' => ['required_without:order_code', 'nullable', 'string', 'max:100'],
             'message' => ['required', 'string', 'min:5', 'max:1000'],
             'order_code' => ['nullable', 'string', 'max:50'],
             'is_displayed' => ['nullable', 'boolean'],

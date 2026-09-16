@@ -26,6 +26,8 @@ import {
   BadgeCheck,
   CheckCircle2,
   Coins,
+  MessageSquareQuote,
+  Star,
 } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -224,6 +226,18 @@ const TIMELINE_STEPS = [
     badgeText: 'text-emerald-800',
     badgeBg: 'bg-emerald-100',
   },
+  {
+    key: 'review',
+    stepNum: '05',
+    title: 'Ulasan & Rating',
+    subtitle: 'Bagikan cerita rasa Anda',
+    icon: Star,
+    colorGradient: 'from-amber-400 via-amber-500 to-orange-500',
+    glowShadow: 'shadow-amber-500/30',
+    ringColor: 'ring-amber-400',
+    badgeText: 'text-amber-800',
+    badgeBg: 'bg-amber-100',
+  },
 ]
 
 export default function OrderTrackingPage() {
@@ -294,14 +308,20 @@ export default function OrderTrackingPage() {
   const progressPercentage = isCancelled
     ? 0
     : currentStep === 0
-      ? 15
+      ? 12
       : currentStep === 1
-        ? 45
+        ? 35
         : currentStep === 2
-          ? 75
-          : 100
+          ? 65
+          : 90
 
   const totalPortions = order?.items?.reduce((sum, i) => sum + (Number(i.quantity) || 0), 0) || 0
+
+  const testimonialBaseUrl = order
+    ? `/testimoni?name=${encodeURIComponent(order.customers_name)}&order=${encodeURIComponent(
+        order.order_code,
+      )}&qty=${encodeURIComponent(`${totalPortions} Box`)}`
+    : '/testimoni'
 
   const waAskAdminUrl = order
     ? `https://wa.me/6289669743193?text=${encodeURIComponent(
@@ -528,38 +548,57 @@ export default function OrderTrackingPage() {
                       />
                     </div>
 
-                    {/* Steps Grid */}
-                    <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 relative">
+                    {/* Steps Grid (5 Steps: Masuk, Dikonfirmasi, Diproses, Selesai, Ulasan) */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-3.5 relative">
                       {TIMELINE_STEPS.map((step, idx) => {
                         const Icon = step.icon
-                        const isDone = currentStep >= idx
-                        const isCurrent = currentStep === idx
+                        const isReviewStep = step.key === 'review'
+                        const isOrderCompleted = order?.status === 'completed'
+
+                        // For review step: active if order completed
+                        const isDone = isReviewStep ? false : currentStep > idx
+                        const isCurrent = isReviewStep ? isOrderCompleted : currentStep === idx
+
+                        const StepContainer = isReviewStep && isOrderCompleted ? Link : 'div'
+                        const linkProps = isReviewStep && isOrderCompleted
+                          ? { to: `${testimonialBaseUrl}&rating=5`, title: 'Klik untuk beri ulasan & rating' }
+                          : {}
 
                         return (
-                          <div
+                          <StepContainer
                             key={step.key}
-                            className={`flex sm:flex-col items-start gap-3.5 rounded-2xl p-3.5 transition-all ${
-                              isCurrent
+                            {...(linkProps as any)}
+                            className={`flex sm:flex-col items-start gap-3 rounded-2xl p-3.5 transition-all ${
+                              isReviewStep && isOrderCompleted
+                                ? 'border-2 border-amber-400/80 bg-gradient-to-br from-amber-500/10 via-amber-500/5 to-transparent shadow-sm scale-[1.02] hover:border-amber-500 hover:shadow-md cursor-pointer ring-2 ring-amber-400/20'
+                                : isCurrent
                                 ? `${currentTheme.cardBgGradient} border-2 ${currentTheme.cardBorderColor} bg-white shadow-sm scale-[1.02]`
                                 : isDone
-                                  ? 'bg-stone-50/80 border border-stone-200/70'
-                                  : 'bg-stone-50/40 border border-transparent opacity-60'
+                                ? 'bg-stone-50/80 border border-stone-200/70'
+                                : 'bg-stone-50/40 border border-transparent opacity-60'
                             }`}
                           >
                             {/* Step Icon Badge */}
                             <div
                               className={`relative flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl text-xs font-bold transition-all shadow-xs ${
-                                isCurrent
+                                isReviewStep && isOrderCompleted
+                                  ? 'bg-gradient-to-br from-amber-400 via-amber-500 to-orange-500 text-white ring-4 ring-amber-400 shadow-amber-500/30'
+                                  : isCurrent
                                   ? `bg-gradient-to-br ${step.colorGradient} text-white ring-4 ${step.ringColor} ${step.glowShadow}`
                                   : isDone
-                                    ? `bg-gradient-to-br ${step.colorGradient} text-white`
-                                    : 'bg-stone-200 text-stone-400'
+                                  ? `bg-gradient-to-br ${step.colorGradient} text-white`
+                                  : 'bg-stone-200 text-stone-400'
                               }`}
                             >
-                              <Icon size={19} />
-                              {isDone && !isCurrent && (
+                              <Icon size={19} className={isReviewStep && isOrderCompleted ? 'fill-white' : ''} />
+                              {isDone && (
                                 <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-emerald-600 text-white shadow-xs">
                                   <Check size={10} strokeWidth={3} />
+                                </span>
+                              )}
+                              {isReviewStep && isOrderCompleted && (
+                                <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-amber-500 text-white shadow-xs animate-pulse">
+                                  <Sparkles size={10} />
                                 </span>
                               )}
                             </div>
@@ -570,29 +609,96 @@ export default function OrderTrackingPage() {
                                 <span className="text-[10px] font-bold uppercase tracking-wider text-stone-400">
                                   Langkah {step.stepNum}
                                 </span>
-                                {isCurrent && (
+                                {isReviewStep && isOrderCompleted ? (
+                                  <span className="inline-flex items-center rounded-md px-1.5 py-0.2 text-[9px] font-black uppercase tracking-wider bg-amber-100 text-amber-900 animate-pulse">
+                                    Siap Diulas
+                                  </span>
+                                ) : isCurrent ? (
                                   <span
                                     className={`inline-flex items-center rounded-md px-1.5 py-0.2 text-[9px] font-black uppercase tracking-wider ${step.badgeBg} ${step.badgeText}`}
                                   >
                                     Aktif
                                   </span>
-                                )}
+                                ) : null}
                               </div>
                               <h4
                                 className={`text-xs sm:text-sm font-bold mt-0.5 ${
-                                  isCurrent ? 'text-stone-950 font-black' : isDone ? 'text-stone-800' : 'text-stone-400'
+                                  isReviewStep && isOrderCompleted
+                                    ? 'text-amber-900 font-black'
+                                    : isCurrent
+                                    ? 'text-stone-950 font-black'
+                                    : isDone
+                                    ? 'text-stone-800'
+                                    : 'text-stone-400'
                                 }`}
                               >
                                 {step.title}
                               </h4>
                               <p className="text-[11px] text-stone-500 leading-snug mt-0.5">
-                                {step.subtitle}
+                                {isReviewStep && !isOrderCompleted ? 'Setelah hidangan tiba' : step.subtitle}
                               </p>
                             </div>
-                          </div>
+                          </StepContainer>
                         )
                       })}
                     </div>
+
+                    {/* Review Callout Box when Order is Completed */}
+                    {order?.status === 'completed' && (
+                      <div className="mt-7 rounded-3xl border border-amber-300/80 bg-gradient-to-br from-amber-50/90 via-orange-50/40 to-amber-50/80 p-5 sm:p-7 shadow-xs">
+                        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-5">
+                          <div className="flex items-start gap-3.5 sm:gap-4">
+                            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-500 to-orange-500 text-white shadow-md shadow-orange-500/20">
+                              <Star size={24} className="fill-white" />
+                            </div>
+                            <div>
+                              <div className="flex items-center gap-2">
+                                <span className="inline-flex items-center gap-1 rounded-full bg-amber-100/90 border border-amber-200 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-amber-800">
+                                  <Sparkles size={11} /> Ulasan Katering
+                                </span>
+                                <span className="text-xs font-semibold text-stone-500">
+                                  • {order.order_code}
+                                </span>
+                              </div>
+                              <h3 className="text-base sm:text-lg font-black text-stone-900 mt-1">
+                                Pesanan Telah Tiba! Bagaimana Rasa Hidangan Kami?
+                              </h3>
+                              <p className="text-xs sm:text-sm text-stone-600 mt-1 leading-relaxed max-w-xl">
+                                Penilaian rasa bento box, ayam bakar krispi, porsi, dan ketepatan waktu pengantaran Anda sangat berarti bagi seluruh tim dapur Hara Chicken.
+                              </p>
+
+                              {/* Quick 5-Star Select */}
+                              <div className="mt-3 flex items-center gap-2 flex-wrap">
+                                <span className="text-xs font-bold text-stone-700">Pilih Rating Cepat:</span>
+                                <div className="flex items-center gap-1">
+                                  {[1, 2, 3, 4, 5].map((starVal) => (
+                                    <Link
+                                      key={starVal}
+                                      to={`${testimonialBaseUrl}&rating=${starVal}`}
+                                      className="group p-1 text-amber-400 hover:scale-125 transition-transform"
+                                      title={`Beri ${starVal} Bintang`}
+                                    >
+                                      <Star size={22} className="fill-amber-400 text-amber-400 group-hover:drop-shadow-sm" />
+                                    </Link>
+                                  ))}
+                                </div>
+                                <span className="text-[11px] font-semibold text-amber-700 bg-amber-100/60 px-2 py-0.5 rounded-md">
+                                  Klik bintang untuk mulai
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+
+                          <Link
+                            to={`${testimonialBaseUrl}&rating=5`}
+                            className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-stone-950 hover:bg-stone-800 text-white font-black text-xs sm:text-sm shadow-sm transition active:scale-95 shrink-0"
+                          >
+                            <MessageSquareQuote size={17} />
+                            <span>Tulis Ulasan & Testimoni</span>
+                          </Link>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 ) : (
                   <div className="mt-6 rounded-2xl border border-rose-200 bg-rose-50/80 p-4 sm:p-5 flex items-start gap-3.5 text-rose-900">

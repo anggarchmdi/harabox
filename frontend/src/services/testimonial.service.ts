@@ -4,6 +4,7 @@ import type {
   CreateTestimonialPayload,
   TestimonialSummary,
   TestimonialPaginationData,
+  CheckOrderTestimonialResponse,
 } from '../types/testimonial'
 
 export interface TestimonialFilters {
@@ -26,6 +27,17 @@ export const testimonialService = {
     }>('/testimonials')
 
     return response.data.data
+  },
+
+  /**
+   * Cek apakah pesanan tertentu sudah pernah diberi ulasan dan ambil data produk pesanan
+   */
+  async checkByOrder(orderCode: string): Promise<CheckOrderTestimonialResponse> {
+    const response = await api.get<CheckOrderTestimonialResponse>(
+      `/testimonials/check/${encodeURIComponent(orderCode)}`,
+    )
+
+    return response.data
   },
 
   /**

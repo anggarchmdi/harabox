@@ -5,6 +5,7 @@ namespace App\Models;
 use Database\Factories\TestimonialFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Testimonial extends Model
 {
@@ -32,5 +33,13 @@ class Testimonial extends Model
     public function scopeDisplayed($query)
     {
         return $query->where('is_displayed', true);
+    }
+
+    /**
+     * Relationship to Order.
+     */
+    public function order(): BelongsTo
+    {
+        return $this->belongsTo(Order::class, 'order_code', 'order_code');
     }
 }

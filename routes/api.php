@@ -34,6 +34,7 @@ Route::prefix('v1')->group(function () {
 
         // Testimonials (Public)
         Route::get('/testimonials', [TestimonialController::class, 'index']);
+        Route::get('/testimonials/check/{orderCode}', [TestimonialController::class, 'checkByOrder']);
         Route::post('/testimonials', [TestimonialController::class, 'store']);
     });
 
