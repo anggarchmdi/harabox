@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\Admin\CategoryController as AdminCategoryController
 use App\Http\Controllers\Api\Admin\DashboardController;
 use App\Http\Controllers\Api\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Api\Admin\ProductController as AdminProductController;
+use App\Http\Controllers\Api\Admin\SettingController as AdminSettingController;
 use App\Http\Controllers\Api\Admin\TestimonialController as AdminTestimonialController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\OrderController;
@@ -52,6 +53,11 @@ Route::prefix('v1')->group(function () {
         'confirm',
     ])->middleware('throttle:confirm-order');
 
+    Route::get('/capacity-check', [
+        OrderController::class,
+        'checkCapacity',
+    ])->middleware('throttle:public-api');
+
     // ==========================
     // ADMIN
     // ==========================
@@ -80,6 +86,28 @@ Route::prefix('v1')->group(function () {
             Route::get('/dashboard', [
                 DashboardController::class,
                 'index',
+            ]);
+
+            // Kitchen Capacity & Settings
+            Route::get('/settings/capacity', [
+                AdminSettingController::class,
+                'getCapacitySettings',
+            ]);
+            Route::put('/settings/capacity', [
+                AdminSettingController::class,
+                'updateCapacitySettings',
+            ]);
+            Route::post('/settings/capacity/overrides', [
+                AdminSettingController::class,
+                'storeOverride',
+            ]);
+            Route::delete('/settings/capacity/overrides/{date}', [
+                AdminSettingController::class,
+                'deleteOverride',
+            ]);
+            Route::get('/capacity/overview', [
+                AdminSettingController::class,
+                'getCapacityOverview',
             ]);
 
             // Product CRUD

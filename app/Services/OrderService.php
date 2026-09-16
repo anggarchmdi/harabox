@@ -12,10 +12,29 @@ use RuntimeException;
 
 class OrderService
 {
+    public function __construct(
+        protected KitchenCapacityService $capacityService
+    ) {}
+
     public function createOrder(array $data): Order
     {
         return DB::transaction(function () use ($data) {
             $items = collect($data['items']);
+
+            // Validate kitchen capacity for event_date
+            if ($this->capacityService->isDateClosed($data['event_date'])) {
+                throw new RuntimeException('Dapur libur dan tidak menerima pesanan pada tanggal tersebut.');
+            }
+
+            $totalPortions = (int) $items->sum('quantity');
+            $remaining = $this->capacityService->getRemainingCapacity($data['event_date']);
+
+            if ($totalPortions > $remaining) {
+                if ($remaining <= 0) {
+                    throw new RuntimeException('Kapasitas dapur untuk tanggal tersebut sudah penuh.');
+                }
+                throw new RuntimeException("Kapasitas dapur untuk tanggal tersebut tersisa {$remaining} box (pesanan Anda: {$totalPortions} box).");
+            }
 
             $productIds = $items
                 ->pluck('product_id')

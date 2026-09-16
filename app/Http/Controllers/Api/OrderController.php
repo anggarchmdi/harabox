@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreOrderRequest;
 use App\Models\Order;
+use App\Services\KitchenCapacityService;
 use App\Services\OrderService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -149,6 +150,25 @@ class OrderController extends Controller
                 'order_code' => $order->order_code,
                 'status' => $order->status,
             ],
+        ]);
+    }
+
+    /**
+     * Check kitchen capacity for a given event date.
+     */
+    public function checkCapacity(
+        Request $request,
+        KitchenCapacityService $capacityService
+    ): JsonResponse {
+        $request->validate([
+            'date' => ['required', 'date_format:Y-m-d'],
+        ]);
+
+        $summary = $capacityService->getCapacitySummary($request->query('date'));
+
+        return response()->json([
+            'success' => true,
+            'data' => $summary,
         ]);
     }
 }

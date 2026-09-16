@@ -6,11 +6,16 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\UpdateOrderPaymentRequest;
 use App\Http\Requests\UpdateOrderStatusRequest;
 use App\Models\Order;
+use App\Services\KitchenCapacityService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class OrderController extends Controller
 {
+    public function __construct(
+        protected KitchenCapacityService $capacityService
+    ) {}
+
     /**
      * Display a listing of orders.
      */
@@ -75,8 +80,33 @@ class OrderController extends Controller
         UpdateOrderStatusRequest $request,
         Order $order
     ): JsonResponse {
+        $newStatus = $request->validated('status');
+        $isAlreadyCounted = in_array($order->status, ['processing', 'completed']);
+        $willBeCounted = in_array($newStatus, ['processing', 'completed']);
+
+        // If transitioning from non-counted (e.g. pending/confirmed/cancelled) to counted (processing/completed)
+        if (! $isAlreadyCounted && $willBeCounted) {
+            $orderPortions = (int) $order->items()->sum('quantity');
+            $remaining = $this->capacityService->getRemainingCapacity($order->event_date);
+
+            if ($orderPortions > $remaining && ! $request->boolean('force')) {
+                return response()->json([
+                    'success' => false,
+                    'requires_confirmation' => true,
+                    'message' => "Kapasitas dapur untuk tanggal {$order->event_date->format('d/m/Y')} tidak mencukupi (sisa slot: {$remaining} box, pesanan ini: {$orderPortions} box). Tetap lanjutkan?",
+                    'data' => [
+                        'event_date' => $order->event_date->format('Y-m-d'),
+                        'order_portions' => $orderPortions,
+                        'remaining_capacity' => $remaining,
+                        'max_capacity' => $this->capacityService->getMaxCapacity($order->event_date),
+                        'booked_portions' => $this->capacityService->getBookedPortions($order->event_date),
+                    ],
+                ], 422);
+            }
+        }
+
         $order->update([
-            'status' => $request->validated('status'),
+            'status' => $newStatus,
         ]);
 
         return response()->json([

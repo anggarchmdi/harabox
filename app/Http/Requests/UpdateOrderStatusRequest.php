@@ -40,6 +40,7 @@ class UpdateOrderStatusRequest extends FormRequest
                     'cancelled',
                 ]),
             ],
+            'force' => ['nullable', 'boolean'],
         ];
     }
 }
