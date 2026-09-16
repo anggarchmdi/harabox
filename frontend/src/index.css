@@ -67,4 +67,27 @@ body {
   animation: shimmer-slide 1.6s ease-in-out infinite;
 }
 
+/* ==========================================================================
+   MARQUEE / INFINITE CONTINUOUS SLIDER
+   ========================================================================== */
+@keyframes marquee-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee-infinite {
+  display: flex;
+  width: max-content;
+  animation: marquee-scroll 45s linear infinite;
+  will-change: transform;
+}
+
+.animate-marquee-infinite:hover {
+  animation-play-state: paused;
+}
+
 
