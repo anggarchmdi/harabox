@@ -88,12 +88,14 @@ export const ordersService = {
   async updateStatus(
     id: number,
     status: OrderStatus,
+    force?: boolean,
   ): Promise<Order> {
     const response =
       await api.patch<UpdateOrderStatusResponse>(
         `/admin/orders/${id}/status`,
         {
           status,
+          force,
         },
       )
 

@@ -159,18 +159,29 @@ export default function OrderTable({
   const handleQuickStatusChange = async (
     order: Order,
     newStatus: OrderStatus,
+    force?: boolean,
   ) => {
-    if (order.status === newStatus) return
+    if (order.status === newStatus && !force) return
 
     try {
       setUpdatingId(order.id)
-      await ordersService.updateStatus(order.id, newStatus)
+      await ordersService.updateStatus(order.id, newStatus, force)
       toast.success(
         `Status order ${order.order_code} berhasil diubah ke "${newStatus}".`,
       )
       onStatusUpdated?.()
-    } catch {
-      toast.error('Gagal memperbarui status order.')
+    } catch (err: any) {
+      if (err.response?.data?.requires_confirmation) {
+        const confirmForce = window.confirm(
+          `${err.response.data.message}\n\nApakah Anda ingin tetap memproses pesanan ini melebihi kuota dapur?`
+        )
+        if (confirmForce) {
+          await handleQuickStatusChange(order, newStatus, true)
+          return
+        }
+      } else {
+        toast.error(err.response?.data?.message || 'Gagal memperbarui status order.')
+      }
     } finally {
       setUpdatingId(null)
     }

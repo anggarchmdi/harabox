@@ -101,7 +101,7 @@ export default function AdminOrders() {
   const orders = data?.orders ?? []
   const pagination = data?.pagination
 
-  const handleUpdateStatus = async (status: OrderStatus) => {
+  const handleUpdateStatus = async (status: OrderStatus, force?: boolean) => {
     if (!selectedOrder) return
 
     try {
@@ -109,6 +109,7 @@ export default function AdminOrders() {
       const updated = await ordersService.updateStatus(
         selectedOrder.id,
         status,
+        force,
       )
       setSelectedOrder(updated)
       toast.success(
@@ -116,8 +117,20 @@ export default function AdminOrders() {
       )
       queryClient.invalidateQueries({ queryKey: ['admin-orders'] })
       queryClient.invalidateQueries({ queryKey: ['dashboard'] })
-    } catch {
-      toast.error('Gagal memperbarui status order.')
+      queryClient.invalidateQueries({ queryKey: ['admin-today-capacity'] })
+      queryClient.invalidateQueries({ queryKey: ['admin-capacity-overview'] })
+    } catch (err: any) {
+      if (err.response?.data?.requires_confirmation) {
+        const confirmForce = window.confirm(
+          `${err.response.data.message}\n\nApakah Anda ingin tetap memproses pesanan ini melebihi kuota dapur?`
+        )
+        if (confirmForce) {
+          await handleUpdateStatus(status, true)
+          return
+        }
+      } else {
+        toast.error(err.response?.data?.message || 'Gagal memperbarui status order.')
+      }
     } finally {
       setUpdatingStatus(false)
     }

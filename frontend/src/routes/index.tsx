@@ -14,6 +14,7 @@ import AdminAddons from '../pages/admin/addons/AdminAddons'
 import CreateProduct from '../pages/admin/products/CreateProduct'
 import EditProduct from '../pages/admin/products/EditProducts'
 import AdminTestimonials from '../pages/admin/AdminTestimonials'
+import AdminSettings from '../pages/admin/AdminSettings'
 
 // layout
 import AdminLayout from '../layout/AdminLayout'
@@ -68,6 +69,9 @@ export default function AppRoutes() {
 
           {/* testimonials */}
           <Route path="testimonials" element={<AdminTestimonials />} />
+
+          {/* settings & capacity */}
+          <Route path="settings" element={<AdminSettings />} />
 
         </Route>
       </Route>

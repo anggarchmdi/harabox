@@ -15,6 +15,7 @@ import {
   Package,
   ShieldCheck,
   ShoppingCart,
+  SlidersHorizontal,
   Tags,
   X,
 } from 'lucide-react'
@@ -59,6 +60,11 @@ const mainMenus: MenuItem[] = [
     label: 'Testimoni Pelanggan',
     to: '/admin/testimonials',
     icon: MessageSquareQuote,
+  },
+  {
+    label: 'Kapasitas & Pengaturan',
+    to: '/admin/settings',
+    icon: SlidersHorizontal,
   },
 ]
 

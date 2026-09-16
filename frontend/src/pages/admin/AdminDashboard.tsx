@@ -19,8 +19,10 @@ import {
   RefreshCw,
   Search,
   ShoppingCart,
+  SlidersHorizontal,
   TrendingUp,
   User,
+  UtensilsCrossed,
   X,
   XCircle,
 } from 'lucide-react'
@@ -29,6 +31,7 @@ import { toast } from 'sonner'
 import { dashboardService } from '../../services/dashboard.service'
 import { productService } from '../../services/products.service'
 import { ordersService } from '../../services/orders.service'
+import { settingsService } from '../../services/settings.service'
 import { getImageUrl } from '../../utils/image'
 import type { DashboardRecentOrder } from '../../types/dashboard'
 import type { OrderStatus } from '../../types/orders'
@@ -174,13 +177,20 @@ export default function AdminDashboard() {
     refetchInterval: 30_000,
   })
 
+  const todayStr = useMemo(() => new Date().toISOString().split('T')[0], [])
+  const { data: todayCapacity } = useQuery({
+    queryKey: ['admin-today-capacity', todayStr],
+    queryFn: () => settingsService.checkCapacity(todayStr),
+    refetchInterval: 30_000,
+  })
+
   const summary = data?.summary
 
   // Quick inline status updater
-  const handleStatusChange = async (id: number, status: OrderStatus) => {
+  const handleStatusChange = async (id: number, status: OrderStatus, force?: boolean) => {
     try {
       setIsUpdatingStatus(true)
-      await ordersService.updateStatus(id, status)
+      await ordersService.updateStatus(id, status, force)
       toast.success(`Status pesanan berhasil diubah menjadi "${status}".`)
 
       // Update selected order in modal if open
@@ -194,9 +204,20 @@ export default function AdminDashboard() {
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ['dashboard'] }),
         queryClient.invalidateQueries({ queryKey: ['admin-orders'] }),
+        queryClient.invalidateQueries({ queryKey: ['admin-today-capacity'] }),
       ])
-    } catch {
-      toast.error('Gagal memperbarui status pesanan.')
+    } catch (err: any) {
+      if (err.response?.data?.requires_confirmation) {
+        const confirmForce = window.confirm(
+          `${err.response.data.message}\n\nApakah Anda ingin tetap memproses pesanan ini (melebihi kuota dapur)?`
+        )
+        if (confirmForce) {
+          await handleStatusChange(id, status, true)
+          return
+        }
+      } else {
+        toast.error(err.response?.data?.message || 'Gagal memperbarui status pesanan.')
+      }
     } finally {
       setIsUpdatingStatus(false)
     }
@@ -330,6 +351,90 @@ export default function AdminDashboard() {
           </Link>
         </div>
       </div>
+
+      {/* =====================================================
+          KITCHEN CAPACITY TODAY WIDGET
+      ====================================================== */}
+      {todayCapacity && (
+        <div className="rounded-2xl border border-orange-200/80 bg-gradient-to-r from-orange-50/90 via-white to-amber-50/60 p-5 sm:p-6 shadow-2xs">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="flex items-start sm:items-center gap-3.5">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-orange-600 text-white shadow-sm">
+                <UtensilsCrossed size={20} />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="font-extrabold text-stone-900 text-base sm:text-lg">
+                    Kapasitas Dapur Hari Ini
+                  </h3>
+                  <span
+                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
+                      todayCapacity.is_closed
+                        ? 'bg-zinc-200 text-zinc-700'
+                        : todayCapacity.is_full
+                        ? 'bg-red-100 text-red-800'
+                        : todayCapacity.percentage_booked >= 80
+                        ? 'bg-amber-100 text-amber-900'
+                        : 'bg-emerald-100 text-emerald-800'
+                    }`}
+                  >
+                    {todayCapacity.is_closed
+                      ? 'Dapur Libur'
+                      : todayCapacity.is_full
+                      ? 'Kapasitas Penuh (100%)'
+                      : `${todayCapacity.remaining_portions} Box Tersisa`}
+                  </span>
+                </div>
+                <p className="text-xs text-stone-500 mt-1">
+                  Pesanan ter-ACC (Diproses/Selesai):{' '}
+                  <strong className="text-stone-800 font-bold">
+                    {todayCapacity.booked_portions}
+                  </strong>{' '}
+                  dari maksimal{' '}
+                  <strong className="text-stone-800 font-bold">
+                    {todayCapacity.max_capacity} Box
+                  </strong>
+                  {todayCapacity.has_override && todayCapacity.override_note && (
+                    <span className="text-orange-700 font-medium">
+                      {' '}
+                      • {todayCapacity.override_note}
+                    </span>
+                  )}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-4 self-stretch sm:self-auto justify-between sm:justify-end">
+              <div className="w-36 sm:w-44">
+                <div className="flex justify-between text-[11px] font-bold text-stone-600 mb-1">
+                  <span>Terpakai</span>
+                  <span>{todayCapacity.percentage_booked}%</span>
+                </div>
+                <div className="w-full h-2 rounded-full bg-stone-200/80 overflow-hidden">
+                  <div
+                    className={`h-full transition-all duration-500 ${
+                      todayCapacity.is_full
+                        ? 'bg-red-500'
+                        : todayCapacity.percentage_booked >= 80
+                        ? 'bg-amber-500'
+                        : 'bg-orange-500'
+                    }`}
+                    style={{ width: `${todayCapacity.percentage_booked}%` }}
+                  />
+                </div>
+              </div>
+
+              <Link
+                to="/admin/settings"
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-stone-300 hover:border-stone-400 bg-white hover:bg-stone-50 text-xs font-bold text-stone-800 shadow-2xs transition active:scale-98"
+              >
+                <SlidersHorizontal size={14} />
+                <span>Atur Kuota</span>
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* =====================================================
           TOP KPI METRIC CARDS

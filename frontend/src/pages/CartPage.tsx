@@ -17,8 +17,10 @@ import {
   AlertCircle,
 } from 'lucide-react'
 import { toast } from 'sonner'
+import { useQuery } from '@tanstack/react-query'
 import { useCartStore } from '../stores/cart.store'
 import { ordersService } from '../services/orders.service'
+import { settingsService } from '../services/settings.service'
 import { getImageUrl } from '../utils/image'
 import PageLoader from '../components/ui/PageLoader'
 
@@ -128,6 +130,19 @@ export default function CartPage() {
     return eventDate < minDateString
   }, [eventDate, minDateString])
 
+  // Realtime Kitchen Capacity check for selected event date
+  const { data: dateCapacity } = useQuery({
+    queryKey: ['capacity-check', eventDate],
+    queryFn: () => settingsService.checkCapacity(eventDate),
+    enabled: Boolean(eventDate && !isDateInvalid),
+  })
+
+  const isDateClosed = Boolean(dateCapacity?.is_closed)
+  const isDateFull = Boolean(dateCapacity && !dateCapacity.is_closed && dateCapacity.remaining_portions <= 0)
+  const isExceedingCapacity = Boolean(
+    dateCapacity && !dateCapacity.is_closed && selectedTotalPortions > dateCapacity.remaining_portions
+  )
+
   const handleOpenCheckout = () => {
     if (selectedDistinctCount === 0) {
       toast.error('Silakan pilih minimal 1 menu di keranjang untuk dipesan.')
@@ -166,6 +181,23 @@ export default function CartPage() {
     if (isDateInvalid) {
       toast.error(
         `Untuk menu yang dipilih, pemesanan minimal H-${selectedMaxLeadDays} sebelum acara (paling cepat tanggal ${formatMinDateLabel(minDateString)}).`
+      )
+      return
+    }
+
+    if (isDateClosed) {
+      toast.error('Dapur libur pada tanggal tersebut. Silakan pilih tanggal lain.')
+      return
+    }
+
+    if (isDateFull) {
+      toast.error('Kapasitas dapur untuk tanggal tersebut sudah penuh (maksimal tercapai).')
+      return
+    }
+
+    if (isExceedingCapacity) {
+      toast.error(
+        `Kapasitas dapur tanggal tersebut tersisa ${dateCapacity?.remaining_portions} box (pesanan Anda: ${selectedTotalPortions} box).`
       )
       return
     }
@@ -750,6 +782,44 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                       </span>
                     </div>
                   )}
+
+                  {!isDateInvalid && eventDate && (
+                    <>
+                      {isDateClosed ? (
+                        <div className="mt-2 flex items-start gap-1.5 rounded-xl border border-red-200 bg-red-50 p-2 text-[11px] text-red-800">
+                          <AlertCircle size={14} className="shrink-0 text-red-600 mt-0.5" />
+                          <span>
+                            Dapur libur / tutup pesanan pada tanggal ini.
+                            {dateCapacity?.override_note ? ` (${dateCapacity.override_note})` : ''} Silakan pilih tanggal lain.
+                          </span>
+                        </div>
+                      ) : isDateFull ? (
+                        <div className="mt-2 flex items-start gap-1.5 rounded-xl border border-red-200 bg-red-50 p-2 text-[11px] text-red-800">
+                          <AlertCircle size={14} className="shrink-0 text-red-600 mt-0.5" />
+                          <span>
+                            Kapasitas dapur untuk tanggal ini sudah penuh ({dateCapacity?.max_capacity} box). Silakan pilih tanggal lain.
+                          </span>
+                        </div>
+                      ) : isExceedingCapacity ? (
+                        <div className="mt-2 flex items-start gap-1.5 rounded-xl border border-amber-200 bg-amber-50 p-2 text-[11px] text-amber-900">
+                          <AlertCircle size={14} className="shrink-0 text-amber-600 mt-0.5" />
+                          <span>
+                            Sisa kuota dapur tanggal ini hanya <strong>{dateCapacity?.remaining_portions} box</strong> (pesanan Anda: <strong>{selectedTotalPortions} box</strong>).
+                          </span>
+                        </div>
+                      ) : dateCapacity ? (
+                        <div className="mt-2 flex items-center justify-between rounded-xl border border-emerald-200 bg-emerald-50/70 px-2.5 py-1.5 text-[11px] text-emerald-900">
+                          <span className="flex items-center gap-1.5 font-medium">
+                            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                            <span>Kapasitas Dapur Tersedia</span>
+                          </span>
+                          <span className="font-bold text-emerald-800">
+                            Sisa {dateCapacity.remaining_portions} Box
+                          </span>
+                        </div>
+                      ) : null}
+                    </>
+                  )}
                 </div>
 
                 <div>
@@ -816,8 +886,8 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                     rows={2}
                     value={deliveryAddress}
                     onChange={(e) => setDeliveryAddress(e.target.value)}
-                    placeholder="Nama jalan, nomor rumah/gedung, kelurahan, patokan lokasi..."
-                    className="w-full rounded-xl border border-zinc-200 bg-zinc-50/60 pl-10 pr-3 py-2.5 text-xs sm:text-sm font-medium outline-none focus:border-zinc-950 focus:bg-white focus:ring-2 focus:ring-zinc-950/10 transition"
+                    placeholder="Contoh: Gedung Graha Lt. 5, Jl. Sudirman No. 10..."
+                    className="w-full rounded-xl border border-zinc-200 bg-zinc-50/60 pl-10 pr-3.5 py-2.5 text-xs sm:text-sm font-medium outline-none focus:border-zinc-950 focus:bg-white focus:ring-2 focus:ring-zinc-950/10 transition"
                   />
                 </div>
               </div>
@@ -825,7 +895,7 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
               {/* Special Notes */}
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-zinc-700 mb-1.5">
-                  Catatan Khusus (Opsional)
+                  Catatan Tambahan (Opsional)
                 </label>
                 <textarea
                   rows={2}
@@ -847,7 +917,14 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                 </button>
                 <button
                   type="submit"
-                  disabled={isSubmitting || isDateInvalid || !eventDate}
+                  disabled={
+                    isSubmitting ||
+                    isDateInvalid ||
+                    !eventDate ||
+                    isDateClosed ||
+                    isDateFull ||
+                    isExceedingCapacity
+                  }
                   className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition bg-emerald-600 text-white shadow-md shadow-emerald-600/20 hover:bg-emerald-700 active:scale-[0.99] disabled:bg-zinc-200 disabled:text-zinc-400 disabled:cursor-not-allowed disabled:shadow-none"
                 >
                   {isSubmitting ? (
