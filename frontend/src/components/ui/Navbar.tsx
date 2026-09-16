@@ -27,6 +27,10 @@ const navItems = [
     label: 'Cara Pesan',
     to: '/cara-pesan',
   },
+  {
+    label: 'Lacak Pesanan',
+    to: '/cek-pesanan',
+  },
 ]
 
 export default function Navbar() {
