@@ -170,6 +170,15 @@ export default function TentangKami() {
     return () => clearTimeout(timer)
   }, [])
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      AOS.refreshHard()
+      AOS.refresh()
+      window.dispatchEvent(new Event('scroll'))
+    }, 120)
+    return () => clearTimeout(timer)
+  }, [theme])
+
   return (
     <main
       className={`min-h-screen transition-colors duration-300 ${

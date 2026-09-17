@@ -291,10 +291,12 @@ export default function HomePage() {
 
   useEffect(() => {
     const timer = setTimeout(() => {
+      AOS.refreshHard()
       AOS.refresh()
-    }, 100)
+      window.dispatchEvent(new Event('scroll'))
+    }, 120)
     return () => clearTimeout(timer)
-  }, [selectedCategory, displayProducts])
+  }, [selectedCategory, displayProducts, theme])
 
   const [pageLoading, setPageLoading] = useState(true)
 

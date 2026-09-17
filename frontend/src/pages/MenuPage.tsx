@@ -197,11 +197,13 @@ export default function MenuPage() {
 
   useEffect(() => {
     const timer = setTimeout(() => {
+      AOS.refreshHard()
       AOS.refresh()
+      window.dispatchEvent(new Event('scroll'))
     }, 120)
 
     return () => clearTimeout(timer)
-  }, [filteredProducts, isLoading])
+  }, [filteredProducts, isLoading, theme])
 
   const hasFilter = Boolean(debouncedSearch) || activeCategory !== 'all' || sortBy !== 'default'
 

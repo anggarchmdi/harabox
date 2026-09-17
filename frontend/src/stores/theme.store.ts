@@ -1,12 +1,16 @@
 import { create } from 'zustand'
+import AOS from 'aos'
 
 export type Theme = 'dark' | 'light'
 
 interface ThemeState {
   theme: Theme
+  isSwitching: boolean
+  targetTheme: Theme | null
   toggleTheme: () => void
   setTheme: (theme: Theme) => void
   hydrateTheme: () => void
+  finishSwitching: () => void
 }
 
 const STORAGE_KEY = 'pawon_hara_theme'
@@ -32,8 +36,22 @@ function applyThemeToDom(theme: Theme) {
   }
 }
 
+function refreshAOS() {
+  if (typeof window === 'undefined') return
+  try {
+    AOS.refreshHard()
+    AOS.refresh()
+    window.dispatchEvent(new Event('scroll'))
+    window.dispatchEvent(new Event('resize'))
+  } catch {
+    window.dispatchEvent(new Event('scroll'))
+  }
+}
+
 export const useThemeStore = create<ThemeState>((set, get) => ({
   theme: 'dark',
+  isSwitching: false,
+  targetTheme: null,
 
   hydrateTheme: () => {
     if (typeof window === 'undefined') return
@@ -42,15 +60,34 @@ export const useThemeStore = create<ThemeState>((set, get) => ({
 
     applyThemeToDom(initialTheme)
     set({ theme: initialTheme })
+    setTimeout(refreshAOS, 200)
   },
 
   toggleTheme: () => {
-    const nextTheme: Theme = get().theme === 'dark' ? 'light' : 'dark'
-    if (typeof window !== 'undefined') {
-      localStorage.setItem(STORAGE_KEY, nextTheme)
-    }
-    applyThemeToDom(nextTheme)
-    set({ theme: nextTheme })
+    if (get().isSwitching) return
+    const currentTheme = get().theme
+    const nextTheme: Theme = currentTheme === 'dark' ? 'light' : 'dark'
+
+    // 1. Show switching loader with the upcoming target theme
+    set({ isSwitching: true, targetTheme: nextTheme })
+
+    // 2. Switch theme in DOM and persist under the loader
+    setTimeout(() => {
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(STORAGE_KEY, nextTheme)
+      }
+      applyThemeToDom(nextTheme)
+      set({ theme: nextTheme })
+      refreshAOS()
+    }, 180)
+
+    // 3. Keep loader up smoothly, then end switching so loader fades out
+    setTimeout(() => {
+      set({ isSwitching: false, targetTheme: null })
+      refreshAOS()
+      // Safety refresh after fade-out transition completes
+      setTimeout(refreshAOS, 350)
+    }, 650)
   },
 
   setTheme: (theme: Theme) => {
@@ -59,5 +96,11 @@ export const useThemeStore = create<ThemeState>((set, get) => ({
     }
     applyThemeToDom(theme)
     set({ theme })
+    setTimeout(refreshAOS, 100)
+  },
+
+  finishSwitching: () => {
+    set({ isSwitching: false, targetTheme: null })
+    refreshAOS()
   },
 }))
