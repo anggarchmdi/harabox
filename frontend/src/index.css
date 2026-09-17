@@ -2,27 +2,69 @@
 
 @import "tailwindcss";
 
+@font-face {
+  font-family: 'Dhaksinarga';
+  src: url('/fonts/Dhaksinarga.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Dhaksinarga Thuk';
+  src: url('/fonts/Dhaksinargathuk.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* ==========================================================================
    KONFIGURASI FONT & TIPOGRAFI
-   Anda dapat mengubah font default di bawah ini jika ingin mengganti tipografi:
-   - --font-sans    : Font utama aplikasi & teks interface (Default: Plus Jakarta Sans)
-   - --font-display : Font untuk judul / heading berkelas
-   - --font-poppins : Font sekunder modern
-   - --font-brand   : Font logo / aksen branding katering
+   - --font-dhaksinarga: Font khas aksara Jawa Hanacaraka untuk judul & logo
+   - --font-sans       : Font utama aplikasi & teks interface
    ========================================================================== */
 @theme {
   --font-sans: "Plus Jakarta Sans", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-display: "Plus Jakarta Sans", sans-serif;
-  --font-brand: "Lobster Two", cursive;
+  --font-display: "Dhaksinarga", "Plus Jakarta Sans", sans-serif;
+  --font-dhaksinarga: "Dhaksinarga", "Plus Jakarta Sans", sans-serif;
+  --font-dhaksinarga-thuk: "Dhaksinarga Thuk", "Dhaksinarga", sans-serif;
+  --font-brand: "Dhaksinarga", cursive;
   --font-poppins: "Poppins", sans-serif;
+
+  /* Pawon Hara Palette Tokens (60% Coklat, 30% Kuning, 10% Putih) */
+  --color-pawon-espresso: #60241E;
+  --color-pawon-maroon: #95271D;
+  --color-pawon-terracotta: #B34A44;
+  --color-pawon-orange: #E77B49;
+  --color-pawon-gold: #F59E0B;
+  --color-pawon-gold-light: #FEF3C7;
+  --color-pawon-cream: #FDFBF7;
+}
+
+.font-dhaksinarga {
+  font-family: 'Dhaksinarga', 'Plus Jakarta Sans', sans-serif;
+  letter-spacing: 0.02em;
+}
+
+.font-dhaksinarga-thuk {
+  font-family: 'Dhaksinarga Thuk', 'Dhaksinarga', sans-serif;
+  letter-spacing: 0.02em;
+}
+
+::selection {
+  background-color: #95271D;
+  color: #FFFFFF;
 }
 
 html {
   scroll-behavior: smooth;
+  background-color: #1C0B09;
 }
 
 body {
   overflow-x: hidden;
+  background-color: #1C0B09;
+  color: #FDFBF7;
 }
 
 /* ==========================================================================
