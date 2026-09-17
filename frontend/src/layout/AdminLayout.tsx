@@ -24,7 +24,6 @@ import { authService } from '../services/auth.service'
 import { useAuthStore } from '../stores/auth.store'
 import { dashboardService } from '../services/dashboard.service'
 import LogoProfile from '../assets/hachi.webp'
-import LogoImg from '../assets/Logo.webp'
 
 interface MenuItem {
   label: string
@@ -172,20 +171,30 @@ export default function AdminLayout() {
           {isCollapsed ? (
             <Link
               to="/admin"
-              className="group relative flex h-11 w-11 items-center justify-center rounded-2xl bg-gray-200 text-white shadow-xs transition hover:scale-105"
-              title="HaraBox Admin"
+              className="group relative flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#60241E] via-[#95271D] to-[#E77B49] text-amber-300 shadow-md ring-2 ring-[#F59E0B]/30 transition hover:scale-105"
+              title="Pawon Hara Admin"
             >
-              <img src={LogoProfile} alt="logo" className='w-8' />
+              <span className="font-dhaksinarga text-base font-bold tracking-wider">PH</span>
 
               {/* Tooltip */}
               <div className="pointer-events-none absolute left-full ml-3 hidden group-hover:flex items-center rounded-xl bg-stone-900 px-3 py-1.5 text-xs font-semibold text-white shadow-xl z-50 whitespace-nowrap">
-                HaraBox Admin
+                Pawon Hara Admin
               </div>
             </Link>
           ) : (
             <>
               <Link to="/admin" className="flex items-center gap-3">
-                <img src={LogoImg} alt="HaraBox" className="h-8 w-auto object-contain drop-shadow-xs" />
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#60241E] via-[#95271D] to-[#E77B49] text-amber-300 shadow-md ring-2 ring-[#F59E0B]/30">
+                  <span className="font-dhaksinarga text-base font-bold tracking-wider">PH</span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="font-dhaksinarga tracking-wide text-xl font-bold text-stone-900 leading-none">
+                    Pawon Hara
+                  </span>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-amber-700 mt-0.5">
+                    Admin Panel
+                  </span>
+                </div>
               </Link>
               <div className="flex items-center gap-1.5">
                 <span className="rounded-full bg-stone-100 border border-stone-200/80 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-stone-600">
@@ -407,7 +416,19 @@ export default function AdminLayout() {
           {/* Drawer Content */}
           <aside className="fixed inset-y-0 left-0 w-72 flex-col bg-white border-r border-stone-200 shadow-2xl flex z-10">
             <div className="flex h-20 items-center justify-between border-b border-stone-100 px-6">
-              <img src={LogoImg} alt="HaraBox" className="h-8 w-auto object-contain" />
+              <div className="flex items-center gap-3">
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#60241E] via-[#95271D] to-[#E77B49] text-amber-300 shadow-md ring-2 ring-[#F59E0B]/30">
+                  <span className="font-dhaksinarga text-base font-bold tracking-wider">PH</span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="font-dhaksinarga tracking-wide text-xl font-bold text-stone-900 leading-none">
+                    Pawon Hara
+                  </span>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-amber-700 mt-0.5">
+                    Admin Panel
+                  </span>
+                </div>
+              </div>
               <button
                 type="button"
                 onClick={() => setMobileSidebarOpen(false)}
@@ -515,7 +536,7 @@ export default function AdminLayout() {
             </button>
             <div>
               <div className="flex items-center gap-1.5 text-[11px] font-medium text-stone-400">
-                <span>HaraBox</span>
+                <span>Pawon Hara</span>
                 <span>/</span>
                 <span className="text-stone-600">Admin Control</span>
               </div>

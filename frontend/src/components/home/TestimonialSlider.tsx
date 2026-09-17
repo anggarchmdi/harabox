@@ -78,15 +78,11 @@ export default function TestimonialSlider() {
       {/* Slider Header Status */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
-          <span className="flex h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse" />
+             <BadgeCheck size={14} />
           <span className="text-xs font-bold text-zinc-500">
             {list.length} Ulasan Pelanggan Terverifikasi
           </span>
         </div>
-
-        <span className="text-[11px] font-semibold text-zinc-400 hidden sm:inline-flex items-center gap-1">
-          <span>Bergulir Otomatis • Arahkan kursor untuk menjeda</span>
-        </span>
       </div>
 
       {/* Marquee Track Container */}
@@ -95,69 +91,69 @@ export default function TestimonialSlider() {
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="rounded-3xl border border-zinc-200/80 bg-white p-7 shadow-xs animate-pulse h-60 flex flex-col justify-between"
+              className="rounded-3xl border border-[#60241E]/80 bg-[#2D120F] p-7 shadow-lg animate-pulse h-60 flex flex-col justify-between"
             >
               <div className="space-y-3">
-                <div className="h-4 w-24 bg-zinc-200 rounded-md" />
-                <div className="h-3 w-full bg-zinc-100 rounded-md" />
-                <div className="h-3 w-4/5 bg-zinc-100 rounded-md" />
+                <div className="h-4 w-24 bg-[#3B1814] rounded-md" />
+                <div className="h-3 w-full bg-[#3B1814]/70 rounded-md" />
+                <div className="h-3 w-4/5 bg-[#3B1814]/70 rounded-md" />
               </div>
-              <div className="h-8 bg-zinc-100 rounded-xl" />
+              <div className="h-8 bg-[#3B1814] rounded-xl" />
             </div>
           ))}
         </div>
       ) : (
         <div className="relative overflow-hidden py-2 -mx-4 px-4 sm:mx-0 sm:px-0">
           {/* Subtle gradient fades on edges */}
-          <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-10 sm:w-20 bg-gradient-to-r from-[#fafaf9] to-transparent z-10" />
-          <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-10 sm:w-20 bg-gradient-to-l from-[#fafaf9] to-transparent z-10" />
+          <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-10 sm:w-20 bg-gradient-to-r from-[#1C0B09] to-transparent z-10" />
+          <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-10 sm:w-20 bg-gradient-to-l from-[#1C0B09] to-transparent z-10" />
 
           {/* Continuous Auto-Scrolling Track */}
           <div className="animate-marquee-infinite flex gap-6 hover:[animation-play-state:paused]">
             {marqueeList.map((t, idx) => (
               <div
                 key={`${t.id || 'testi'}-${idx}`}
-                className="w-[85vw] sm:w-[360px] md:w-[380px] shrink-0 rounded-3xl border border-zinc-200/80 bg-white p-6 sm:p-7 shadow-xs flex flex-col justify-between hover:shadow-xl hover:border-orange-200 transition-all duration-300 relative group"
+                className="w-[85vw] sm:w-[360px] md:w-[380px] shrink-0 rounded-3xl border border-[#60241E]/80 bg-[#2D120F] p-6 sm:p-7 shadow-xl flex flex-col justify-between hover:shadow-2xl hover:border-[#F59E0B]/60 transition-all duration-300 relative group"
               >
                 <div>
                   {/* Header: Rating & Porsi Total */}
                   <div className="flex items-center justify-between mb-3.5">
-                    <div className="flex items-center gap-1 text-amber-400">
+                    <div className="flex items-center gap-1 text-[#F59E0B]">
                       {Array.from({ length: t.rating }).map((_, r) => (
-                        <Star key={r} size={16} className="fill-amber-400 text-amber-400" />
+                        <Star key={r} size={16} className="fill-[#F59E0B] text-[#F59E0B]" />
                       ))}
                     </div>
 
-                    <span className="inline-flex items-center gap-1 rounded-full bg-orange-50 border border-orange-200/80 px-2.5 py-1 text-[11px] font-black text-orange-900 tracking-tight">
-                      <Package size={12} className="text-orange-600" />
+                    <span className="inline-flex items-center gap-1 rounded-full bg-[#60241E] border border-[#F59E0B]/40 px-2.5 py-1 text-[11px] font-black text-amber-300 tracking-tight">
+                      <Package size={12} className="text-[#F59E0B]" />
                       <span>{t.order_quantity}</span>
                     </span>
                   </div>
 
                   {/* Keterangan Pesanan: Pesan Menu Apa & Berapa Pcs */}
-                  <div className="mb-4 rounded-2xl bg-orange-50/70 border border-orange-100/90 p-3 flex items-start gap-2.5">
-                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-orange-500 text-white shadow-2xs mt-0.5">
+                  <div className="mb-4 rounded-2xl bg-[#3A1713] border border-[#60241E]/80 p-3 flex items-start gap-2.5">
+                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#60241E] via-[#95271D] to-[#E77B49] text-amber-300 shadow-2xs mt-0.5 ring-1 ring-[#F59E0B]/30">
                       <UtensilsCrossed size={14} />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <span className="text-[10px] font-black uppercase tracking-wider text-orange-800 block">
+                      <span className="text-[10px] font-black uppercase tracking-wider text-[#F59E0B] block">
                         Menu Yang Dipesan:
                       </span>
                       {t.ordered_items && t.ordered_items.length > 0 ? (
                         <div className="mt-1 space-y-1">
                           {t.ordered_items.map((item, i) => (
-                            <div key={i} className="flex items-center justify-between gap-2 text-xs font-black text-stone-900">
+                            <div key={i} className="flex items-center justify-between gap-2 text-xs font-black text-white">
                               <span className="truncate">{item.name}</span>
-                              <span className="inline-flex items-center rounded-md bg-white border border-orange-200 px-1.5 py-0.5 text-[11px] font-black text-orange-700 shrink-0">
+                              <span className="inline-flex items-center rounded-md bg-[#60241E] border border-[#F59E0B]/40 px-1.5 py-0.5 text-[11px] font-black text-amber-300 shrink-0">
                                 {item.quantity} Pcs
                               </span>
                             </div>
                           ))}
                         </div>
                       ) : (
-                        <div className="mt-0.5 flex items-center justify-between gap-2 text-xs font-black text-stone-900">
-                          <span className="truncate">Paket Nasi Katering HaraBox</span>
-                          <span className="inline-flex items-center rounded-md bg-white border border-orange-200 px-1.5 py-0.5 text-[11px] font-black text-orange-700 shrink-0">
+                        <div className="mt-0.5 flex items-center justify-between gap-2 text-xs font-black text-white">
+                          <span className="truncate">Paket Katering Pawon Hara</span>
+                          <span className="inline-flex items-center rounded-md bg-[#60241E] border border-[#F59E0B]/40 px-1.5 py-0.5 text-[11px] font-black text-amber-300 shrink-0">
                             {t.order_quantity}
                           </span>
                         </div>
@@ -166,26 +162,26 @@ export default function TestimonialSlider() {
                   </div>
 
                   {/* Ulasan Pesanan */}
-                  <p className="text-xs sm:text-sm text-zinc-600 leading-relaxed italic line-clamp-4">
+                  <p className="text-xs sm:text-sm text-amber-100/85 leading-relaxed italic line-clamp-4">
                     "{t.message}"
                   </p>
                 </div>
 
                 {/* Footer: Nama & Instansi */}
-                <div className="mt-6 pt-4 border-t border-zinc-100 flex items-center justify-between">
+                <div className="mt-6 pt-4 border-t border-[#60241E]/70 flex items-center justify-between">
                   <div>
                     <div className="flex items-center gap-1.5">
-                      <h4 className="text-sm font-black text-zinc-950">{t.name}</h4>
-                      <span className="text-emerald-600" title="Terverifikasi Pemesan">
+                      <h4 className="text-sm font-black text-white">{t.name}</h4>
+                      {/* <span className="text-emerald-400" title="Terverifikasi Pemesan">
                         <BadgeCheck size={14} />
-                      </span>
+                      </span> */}
                     </div>
-                    <p className="text-[11px] text-zinc-400 font-medium mt-0.5">
-                      {t.institution || 'Pelanggan Setia HaraBox'}
+                    <p className="text-[11px] text-amber-200/60 font-medium mt-0.5">
+                      {t.institution || 'Pelanggan Setia Pawon Hara'}
                     </p>
                   </div>
 
-                  <div className="h-8 w-8 rounded-full bg-red-50 text-red-600 flex items-center justify-center">
+                  <div className="h-8 w-8 rounded-full bg-[#60241E] text-[#F59E0B] flex items-center justify-center border border-[#F59E0B]/30">
                     <MessageSquareQuote size={15} />
                   </div>
                 </div>

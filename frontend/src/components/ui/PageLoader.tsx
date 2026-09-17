@@ -59,15 +59,14 @@ export function PageLoader({
 
   return (
     <div
-      className={`fixed inset-0 z-[9999] flex items-center justify-center bg-white/95 backdrop-blur-md transition-opacity duration-400 ease-out ${
-        isFadingOut ? 'opacity-0 pointer-events-none' : 'opacity-100'
-      }`}
+      className={`fixed inset-0 z-[9999] flex items-center justify-center bg-[#1C0B09]/95 backdrop-blur-md transition-opacity duration-400 ease-out ${isFadingOut ? 'opacity-0 pointer-events-none' : 'opacity-100'
+        }`}
       aria-live="polite"
       aria-busy="true"
     >
       <LogoSpinner
-        size="sm"
-        theme="light"
+        size="md"
+        theme="dark"
         logoVariant="mascot"
         text={text}
         subtext={subtext}

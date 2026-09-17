@@ -11,7 +11,7 @@ function ButtonCTA() {
   const whatsappNumber = '6289669743193'
 
   const message = encodeURIComponent(
-    'Halo Hara Chicken, saya ingin pesan nasi box.'
+    'Halo Pawon Hara, saya ingin pesan nasi box.'
   )
 
   return (

@@ -5,7 +5,7 @@ import ButtonCTA from '../components/ui/ButtonCTA'
 
 export default function MenuLayout() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-[#1C0B09] text-stone-100 selection:bg-[#F59E0B] selection:text-[#1C0B09]">
       <Navbar />
 
       <main>

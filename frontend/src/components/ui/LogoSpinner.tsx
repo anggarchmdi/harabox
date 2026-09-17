@@ -1,5 +1,3 @@
-import LogoImg from '../../assets/HARALOAD.png'
-
 export interface LogoSpinnerProps {
   /** Size preset of the spinner */
   size?: 'sm' | 'md' | 'lg' | 'xl'
@@ -23,12 +21,12 @@ export interface LogoSpinnerProps {
   className?: string
 }
 
+import PawonHaraImg from '../../assets/PawonHara.webp'
+
 export default function LogoSpinner({
   size = 'lg',
   text = 'Memproses...',
   subtext,
-  theme = 'light',
-  logoVariant = 'mascot',
   showRipples = true,
   showGlow = true,
   showProgressBar = true,
@@ -75,12 +73,10 @@ export default function LogoSpinner({
     },
   }[size]
 
-  // Theme color tokens
-  const isDark = theme === 'dark'
-  const textColor = isDark ? 'text-white' : 'text-zinc-950'
-  const subtextColor = isDark ? 'text-zinc-400' : 'text-zinc-500'
-  const coreBg = isDark ? 'bg-zinc-900/90 border-zinc-800' : 'bg-white border-zinc-100/90'
-  const trackBg = isDark ? 'bg-zinc-800/80' : 'bg-zinc-200/80'
+  // Theme color tokens (Pawon Hara Luxury Palette)
+  const textColor = 'text-white'
+  const subtextColor = 'text-amber-100/80'
+  const trackBg = 'bg-[#2D120F] border border-[#60241E]'
 
   const content = (
     <div className={`flex flex-col items-center justify-center text-center select-none ${className}`}>
@@ -89,78 +85,58 @@ export default function LogoSpinner({
         {/* 1. Ambient Glow Orbs */}
         {showGlow && (
           <>
-            <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-red-600/30 via-orange-500/25 to-amber-400/30 blur-xl animate-pulse-subtle pointer-events-none" />
-            <div className="absolute -inset-2 rounded-full bg-amber-500/10 blur-2xl pointer-events-none" />
+            <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-[#60241E]/50 via-[#E77B49]/30 to-[#F59E0B]/30 blur-xl animate-pulse-subtle pointer-events-none" />
+            <div className="absolute -inset-2 rounded-full bg-[#F59E0B]/15 blur-2xl pointer-events-none" />
           </>
         )}
 
         {/* 2. Concentric Radar Pulse Ring */}
         {showRipples && (
-          <div className="absolute inset-2 rounded-full bg-red-500/10 animate-ping duration-1000 pointer-events-none" />
+          <div className="absolute inset-2 rounded-full bg-[#F59E0B]/15 animate-ping duration-1000 pointer-events-none" />
         )}
 
         {/* 3. Outer Orbit Track (Subtle background groove) */}
         <div
-          className={`absolute inset-0 rounded-full ${sizeConfig.borderWidth} ${isDark ? 'border-zinc-800/70' : 'border-zinc-200/70'
-            }`}
+          className={`absolute inset-0 rounded-full ${sizeConfig.borderWidth} border-[#60241E]/80`}
         />
 
         {/* 4. Outer Rotating Gradient Arc (Clockwise) */}
         <div
-          className={`absolute inset-0 rounded-full ${sizeConfig.borderWidth} border-transparent border-t-red-600 border-r-amber-500 animate-spin`}
+          className={`absolute inset-0 rounded-full ${sizeConfig.borderWidth} border-transparent border-t-[#F59E0B] border-r-[#E77B49] animate-spin`}
           style={{ animationDuration: '2.4s' }}
         />
 
         {/* Outer Glow Trail */}
         <div
-          className={`absolute inset-0 rounded-full ${sizeConfig.borderWidth} border-transparent border-t-red-500/70 border-r-amber-400/70 blur-[2.5px] animate-spin`}
+          className={`absolute inset-0 rounded-full ${sizeConfig.borderWidth} border-transparent border-t-[#F59E0B]/70 border-r-[#E77B49]/70 blur-[2.5px] animate-spin`}
           style={{ animationDuration: '2.4s' }}
         />
 
         {/* 5. Inner Counter-Rotating Gradient Arc (Counter-Clockwise) */}
         <div
-          className={`absolute inset-2 rounded-full ${sizeConfig.borderWidth} border-transparent border-b-orange-500 border-l-red-500 animate-spin-reverse`}
+          className={`absolute inset-2 rounded-full ${sizeConfig.borderWidth} border-transparent border-b-[#F59E0B] border-l-[#95271D] animate-spin-reverse`}
           style={{ animationDuration: '1.8s' }}
         />
 
-        {/* 6. Center Logo Core (Pure logo without white background) */}
-        {logoVariant === 'mascot' ? (
-          <div
-            className={`relative z-10 flex items-center justify-center ${sizeConfig.core} animate-pulse-subtle`}
-          >
-            <img
-              src={LogoImg}
-              alt="Hara Chicken Mascot"
-              className="w-full h-full object-contain drop-shadow-md select-none"
-            />
-          </div>
-        ) : (
-          // Full Logo Pill Core
-          <div
-            className={`relative z-10 flex items-center justify-center rounded-2xl ${sizeConfig.fullWidth} ${coreBg} px-3 py-1.5 shadow-xl shadow-red-600/15 border animate-pulse-subtle overflow-hidden`}
-          >
-            <img
-              src={LogoImg}
-              alt="Hara Chicken Logo"
-              className="w-full h-full object-contain"
-            />
-          </div>
-        )}
+        {/* 6. Center Logo Core (Pawon Hara Monogram Badge) */}
+        <div className={`relative z-10 flex items-center justify-center ${sizeConfig.core} animate-pulse-subtle`}>
+          <img src={PawonHaraImg} className='w-28' alt="" />
+        </div>
       </div>
 
       {/* Text Label & Progress Status */}
       {(text || subtext) && (
         <div className="mt-6 flex flex-col items-center max-w-xs px-4 animate-fade-in">
           {/* Brand Eyebrow */}
-          <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.25em] text-red-600 font-poppins">
-            <span className="h-1.5 w-1.5 rounded-full bg-red-600 animate-pulse" />
-            <span>HARA CHICKEN</span>
+          <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.25em] text-[#F59E0B]">
+            <span className="h-1.5 w-1.5 rounded-full bg-[#F59E0B] animate-pulse" />
+            <span className="font-dhaksinarga tracking-widest text-xs">PAWON HARA</span>
           </div>
 
           {/* Primary Status Text */}
           {text && (
             <h4
-              className={`mt-1.5 font-poppins font-black tracking-tight ${sizeConfig.fontSize} ${textColor}`}
+              className={`mt-2 font-dhaksinarga tracking-wide ${sizeConfig.fontSize} ${textColor}`}
             >
               {text}
             </h4>
@@ -178,7 +154,7 @@ export default function LogoSpinner({
             <div
               className={`mt-3.5 h-1.5 w-40 rounded-full ${trackBg} overflow-hidden relative shadow-inner`}
             >
-              <div className="absolute inset-y-0 w-1/2 bg-gradient-to-r from-transparent via-red-600 to-transparent rounded-full animate-shimmer" />
+              <div className="absolute inset-y-0 w-1/2 bg-gradient-to-r from-transparent via-[#F59E0B] to-transparent rounded-full animate-shimmer" />
             </div>
           )}
         </div>
@@ -189,14 +165,11 @@ export default function LogoSpinner({
   if (fullScreen) {
     return (
       <div
-        className={`fixed inset-0 z-50 flex items-center justify-center transition-all duration-300 ${isDark
-          ? 'bg-zinc-950/85 backdrop-blur-md'
-          : 'bg-white/85 backdrop-blur-md'
-          }`}
+        className="fixed inset-0 z-50 flex items-center justify-center transition-all duration-300 bg-[#1C0B09]/95 backdrop-blur-md"
       >
         {/* Cinematic Backdrop Ambient Rings */}
-        <div className="pointer-events-none absolute -top-24 left-1/2 h-96 w-96 -translate-x-1/2 rounded-full bg-red-500/10 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-24 left-1/2 h-96 w-96 -translate-x-1/2 rounded-full bg-amber-500/10 blur-3xl" />
+        <div className="pointer-events-none absolute -top-24 left-1/2 h-96 w-96 -translate-x-1/2 rounded-full bg-[#60241E]/30 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-24 left-1/2 h-96 w-96 -translate-x-1/2 rounded-full bg-[#F59E0B]/15 blur-3xl" />
 
         <div className="relative z-10">{content}</div>
       </div>

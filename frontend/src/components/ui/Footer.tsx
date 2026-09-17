@@ -1,128 +1,133 @@
 import { Link } from 'react-router-dom'
-import LogoImg from '../../assets/Logo.webp'
+import { MapPin, Mail, MessageCircle } from 'lucide-react'
+import PawonHaraImg from '../../assets/PawonHara.webp'
 
 export default function Footer() {
   return (
-    <footer className="bg-[#171717] text-white">
+    <footer className="bg-[#200B09] text-white border-t border-[#60241E]/50">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         {/* Main footer */}
-        <div className="grid gap-12 py-16 md:grid-cols-2 lg:grid-cols-4 lg:gap-8">
+        <div className="grid gap-12 py-16 md:grid-cols-2 lg:grid-cols-12 lg:gap-8">
           {/* Brand */}
-          <div className="lg:col-span-2">
-            <Link to="/" className="inline-block">
-              <img
-                src={LogoImg}
-                alt="Hara Chicken"
-                className="w-40"
-              />
+          <div className="lg:col-span-5 space-y-5">
+            <Link to="/" className="inline-flex items-center gap-3 group">
+              <div className="">
+                <img src={PawonHaraImg} className='w-16' alt="" />
+              </div>
+              <div className="flex flex-col">
+                <div className="flex items-center gap-1.5">
+                  <span className="font-dhaksinarga tracking-wide text-2xl sm:text-3xl text-white leading-none">
+                    Pawon Hara
+                  </span>
+                </div>
+                <span className="text-[11px] italic font-bold uppercase tracking-widest text-[#E77B49] mt-0.5">
+                  Dari Pawon Ke Meja Anda
+                </span>
+              </div>
             </Link>
 
-            <p className="mt-6 max-w-md text-sm leading-7 text-gray-400">
-              Nasi box praktis dan lezat untuk berbagai kebutuhan.
-              Dari acara keluarga, meeting kantor, hingga pesanan
-              dalam jumlah besar.
+            <p className="max-w-md text-sm leading-relaxed text-stone-300">
+              Sajian nasi box dan bento lezat kaya bumbu meresap untuk berbagai kebutuhan acara.
+              Mulai dari syukuran keluarga, meeting kantor, gathering komunitas, hingga pesanan katering skala besar.
             </p>
+
+            {/* <div className="flex items-center gap-3 pt-2">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-[#60241E]/60 border border-[#B34A44]/40 px-3 py-1 text-xs font-semibold text-amber-200">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                Dapur Higienis & Halal
+              </span>
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-[#60241E]/60 border border-[#B34A44]/40 px-3 py-1 text-xs font-semibold text-amber-200">
+                <span className="h-1.5 w-1.5 rounded-full bg-[#F59E0B]" />
+                Tepat Waktu
+              </span>
+            </div> */}
           </div>
 
           {/* Navigation */}
-          <div>
-            <h3 className="text-sm font-semibold">
-              Navigasi
+          <div className="lg:col-span-3">
+            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-[#F59E0B]">
+              Navigasi Cepat
             </h3>
 
             <ul className="mt-5 space-y-3">
-              <li>
-                <Link
-                  to="/"
-                  className="text-sm text-gray-400 transition hover:text-white"
-                >
-                  Home
-                </Link>
-              </li>
-
-              <li>
-                <Link
-                  to="/menu"
-                  className="text-sm text-gray-400 transition hover:text-white"
-                >
-                  Menu
-                </Link>
-              </li>
-
-              <li>
-                <Link
-                  to="/tentang-kami"
-                  className="text-sm text-gray-400 transition hover:text-white"
-                >
-                  Tentang Kami
-                </Link>
-              </li>
-
-              <li>
-                <Link
-                  to="/cara-pesan"
-                  className="text-sm text-gray-400 transition hover:text-white"
-                >
-                  Cara Pesan
-                </Link>
-              </li>
-
-              <li>
-                <Link
-                  to="/cek-pesanan"
-                  className="text-sm text-gray-400 transition hover:text-white"
-                >
-                  Lacak Pesanan
-                </Link>
-              </li>
+              {[
+                { to: '/', label: 'Beranda' },
+                { to: '/menu', label: 'Pilihan Menu Katering' },
+                { to: '/tentang-kami', label: 'Tentang Pawon Hara' },
+                { to: '/cara-pesan', label: 'Panduan Cara Pesan' },
+                { to: '/cek-pesanan', label: 'Lacak Status Pesanan' },
+                { to: '/testimoni', label: 'Suara & Testimoni Pelanggan' },
+              ].map((item) => (
+                <li key={item.to}>
+                  <Link
+                    to={item.to}
+                    className="text-sm text-stone-300 transition hover:text-[#F59E0B] hover:translate-x-1 inline-block duration-200"
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
           {/* Contact */}
-          <div>
-            <h3 className="text-sm font-semibold">
-              Hubungi Kami
+          <div className="lg:col-span-4">
+            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-[#F59E0B]">
+              Hubungi Pawon Hara
             </h3>
 
-            <div className="mt-5 space-y-4 text-sm text-gray-400">
-              <p>
-                Yogyakarta
-              </p>
+            <div className="mt-5 space-y-3.5 text-sm text-stone-300">
+              <div className="flex items-start gap-3">
+                <MapPin size={17} className="text-[#E77B49] shrink-0 mt-0.5" />
+                <span>Yogyakarta & Sekitarnya (Melayani Pengiriman ke Seluruh DIY)</span>
+              </div>
 
               <a
-                href="tel:+6281234567890"
-                className="block transition hover:text-white"
+                href="https://wa.me/6289669743193"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 transition hover:text-[#F59E0B]"
               >
-                +62 812-3456-7890
+                <MessageCircle size={17} className="text-[#E77B49] shrink-0" />
+                <span>+62 896-6974-3193 (WhatsApp Admin)</span>
               </a>
 
               <a
-                href="mailto:hello@harachicken.com"
-                className="block transition hover:text-white"
+                href="mailto:halo@pawonhara.com"
+                className="flex items-center gap-3 transition hover:text-[#F59E0B]"
               >
-                hello@harachicken.com
+                <Mail size={17} className="text-[#E77B49] shrink-0" />
+                <span>halo@pawonhara.com</span>
+              </a>
+            </div>
+
+            <div className="mt-6 pt-5 border-t border-[#60241E]/60">
+              <a
+                href="https://wa.me/6289669743193"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-[#F59E0B] to-[#E77B49] hover:from-[#D97706] hover:to-[#B34A44] px-5 py-3 text-xs font-black text-[#200B09] shadow-md transition duration-300 hover:shadow-lg"
+              >
+                <MessageCircle size={15} />
+                <span>Konsultasi Menu WhatsApp</span>
               </a>
             </div>
           </div>
         </div>
 
         {/* Bottom */}
-        <div className="flex flex-col gap-4 border-t border-white/10 py-7 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-xs text-gray-500">
-            © 2026 Hara Chicken. All rights reserved.
+        <div className="flex flex-col gap-4 border-t border-[#60241E]/60 py-7 sm:flex-row sm:items-center sm:justify-between text-xs text-stone-400">
+          <p>
+            © {new Date().getFullYear()} Pawon Hara. Seluruh hak cipta dilindungi.
           </p>
 
-          <div className="flex gap-5">
+          <div className="flex items-center gap-6">
+            <span className="text-stone-500">Catering & Bento Box Yogyakarta</span>
             <a
-              href="#"
-              className="text-xs text-gray-500 transition hover:text-white"
-            >
-              Instagram
-            </a>
-
-            <a
-              href="#"
-              className="text-xs text-gray-500 transition hover:text-white"
+              href="https://wa.me/6289669743193"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-stone-400 transition hover:text-[#F59E0B]"
             >
               WhatsApp
             </a>

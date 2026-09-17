@@ -213,21 +213,21 @@ useEffect(() => {
 
   if (isError) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-white px-6">
-        <div className="text-center max-w-md rounded-3xl bg-white p-8 border border-zinc-200/80 shadow-xl">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-zinc-100 text-zinc-900">
+      <main className="flex min-h-screen items-center justify-center bg-[#1C0B09] px-6 text-white">
+        <div className="text-center max-w-md rounded-3xl bg-[#2D120F] p-8 border border-[#60241E] shadow-xl">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#3B1814] text-[#F59E0B]">
             <ShoppingBag size={24} />
           </div>
-          <h1 className="mt-4 text-2xl font-black text-zinc-950">
+          <h1 className="mt-4 text-2xl font-dhaksinarga tracking-wide text-white">
             Menu Belum Dapat Dimuat
           </h1>
-          <p className="mt-2 text-sm text-zinc-500">
-            Terjadi masalah saat menghubungkan ke database menu catering.
+          <p className="mt-2 text-sm text-amber-100/70">
+            Terjadi masalah saat menghubungkan ke database menu katering.
           </p>
           <button
             type="button"
             onClick={() => window.location.reload()}
-            className="mt-6 inline-flex items-center gap-2 rounded-2xl bg-zinc-950 px-6 py-3 text-xs font-bold text-white transition hover:bg-zinc-800"
+            className="mt-6 inline-flex items-center gap-2 rounded-2xl bg-[#F59E0B] px-6 py-3 text-xs font-black text-[#1C0B09] transition hover:bg-amber-400"
           >
             Muat Ulang Halaman
           </button>
@@ -237,22 +237,22 @@ useEffect(() => {
   }
 
   return (
-    <main className="min-h-screen bg-[#fafaf9] text-zinc-900 selection:bg-zinc-950 selection:text-white">
+    <main className="min-h-screen bg-[#1C0B09] text-stone-100 selection:bg-[#F59E0B] selection:text-[#1C0B09]">
       {/* Branded Page Loader with clean LogoSpinner */}
       <PageLoader
         isLoading={isLoading}
-        text="Menyiapkan Menu Katering Lezat..."
+        text="Menyiapkan Menu Pawon Hara..."
         subtext="Memuat daftar lengkap paket bento, krisbar, dan nasi box spesial"
         minDuration={700}
       />
 
       {/* =====================================================
-          LUXURY WHITE HERO SECTION
+          LUXURY CHOCOLATE & GOLD HERO SECTION
       ====================================================== */}
-      <section className="relative overflow-hidden border-b border-zinc-200/70 bg-gradient-to-b from-white via-white to-[#fafaf9] pt-24 pb-6 sm:pt-36 sm:pb-16 lg:pt-40 lg:pb-20">
+      <section className="relative overflow-hidden border-b border-[#60241E]/80 bg-gradient-to-b from-[#1C0B09] via-[#240E0C] to-[#1C0B09] pt-24 pb-6 sm:pt-36 sm:pb-16 lg:pt-40 lg:pb-20">
         {/* Subtle ambient light patterns */}
-        <div className="pointer-events-none absolute -top-40 left-1/2 h-[550px] w-[800px] -translate-x-1/2 rounded-full bg-gradient-to-b from-zinc-100/80 to-transparent blur-3xl" />
-        <div className="pointer-events-none absolute -left-20 top-20 h-72 w-72 rounded-full bg-amber-50/50 blur-3xl" />
+        <div className="pointer-events-none absolute -top-40 left-1/2 h-[550px] w-[800px] -translate-x-1/2 rounded-full bg-gradient-to-b from-[#60241E]/40 to-transparent blur-3xl" />
+        <div className="pointer-events-none absolute -left-20 top-20 h-72 w-72 rounded-full bg-[#F59E0B]/10 blur-3xl" />
 
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col items-center text-center">
@@ -260,21 +260,21 @@ useEffect(() => {
             <div
               data-aos="fade-down"
               data-aos-duration="600"
-              className="inline-flex items-center gap-1.5 sm:gap-2 rounded-full border shadow-yellow-500 border-zinc-200/90 bg-white/90 px-3 sm:px-4 py-1 sm:py-1.5 text-[10px] sm:text-[11px] font-extrabold uppercase tracking-[0.2em] sm:tracking-[0.25em] text-zinc-700 shadow-sm backdrop-blur transition-all duration-300"
+              className="inline-flex items-center gap-1.5 sm:gap-2 rounded-full border border-[#F59E0B]/40 bg-[#60241E] px-3 sm:px-4 py-1 sm:py-1.5 text-[10px] sm:text-[11px] font-extrabold uppercase tracking-[0.2em] sm:tracking-[0.25em] text-amber-300 shadow-sm backdrop-blur transition-all duration-300"
             >
-              <Sparkles size={12} className="text-amber-500 sm:h-[13px] sm:w-[13px]" />
-              Hara Chicken Gourmet Catering
+              <Sparkles size={12} className="text-[#F59E0B] sm:h-[13px] sm:w-[13px]" />
+              Pawon Hara Gourmet Catering
             </div>
 
-            {/* Main Headline in Timeless High-Contrast Charcoal */}
+            {/* Main Headline in Dhaksinarga */}
             <h1
               data-aos="fade-up"
               data-aos-delay="100"
               data-aos-duration="700"
-              className="mt-3 sm:mt-6 max-w-4xl text-2xl font-black tracking-tight text-zinc-950 sm:text-5xl lg:text-7xl leading-tight sm:leading-[1.08]"
+              className="mt-3 sm:mt-6 max-w-4xl text-3xl font-dhaksinarga tracking-wide text-white sm:text-5xl lg:text-7xl leading-tight sm:leading-[1.08]"
             >
               Pilihan Menu Katering Istimewa
-              <span className="block text-zinc-400 font-serif italic font-normal text-xl sm:text-4xl lg:text-6xl mt-0.5 sm:mt-1">
+              <span className="block text-[#F59E0B] font-dhaksinarga text-2xl sm:text-4xl lg:text-6xl mt-1">
                 untuk setiap momen berharga.
               </span>
             </h1>
@@ -284,7 +284,7 @@ useEffect(() => {
               data-aos="fade-up"
               data-aos-delay="200"
               data-aos-duration="700"
-              className="mt-2.5 sm:mt-6 max-w-2xl text-xs sm:text-base lg:text-lg leading-relaxed text-zinc-500 line-clamp-2 sm:line-clamp-none"
+              className="mt-2.5 sm:mt-6 max-w-2xl text-xs sm:text-base lg:text-lg leading-relaxed text-amber-100/75 line-clamp-2 sm:line-clamp-none"
             >
               Sajian katering nasi box premium dengan cita rasa gurih meresap, higienis,
               dan dikemas eksklusif siap santap untuk melengkapi rapat kantor, syukuran, hingga gathering berskala besar.
@@ -295,22 +295,22 @@ useEffect(() => {
               data-aos="fade-up"
               data-aos-delay="300"
               data-aos-duration="700"
-              className="mt-4 sm:mt-8 flex flex-wrap items-center justify-center gap-2 sm:gap-3 text-[11px] sm:text-xs font-semibold text-zinc-700"
+              className="mt-4 sm:mt-8 flex flex-wrap items-center justify-center gap-2 sm:gap-3 text-[11px] sm:text-xs font-semibold text-amber-100/90"
             >
-              <div className="flex items-center gap-1.5 rounded-xl sm:rounded-2xl border border-zinc-200/90 bg-white px-2.5 sm:px-4 py-1.5 sm:py-2 shadow-2xs transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md hover:border-zinc-300 cursor-default">
-                <Star size={13} className="fill-amber-400 text-amber-400 sm:h-3.5 sm:w-3.5" />
+              <div className="flex items-center gap-1.5 rounded-xl sm:rounded-2xl border border-[#60241E]/80 bg-[#2D120F] px-2.5 sm:px-4 py-1.5 sm:py-2 shadow-lg transition-all duration-300 hover:-translate-y-0.5 hover:border-[#F59E0B]/40 cursor-default">
+                <Star size={13} className="fill-[#F59E0B] text-[#F59E0B] sm:h-3.5 sm:w-3.5" />
                 <span>4.9 / 5 Rating</span>
               </div>
-              <div className="flex items-center gap-1.5 rounded-xl sm:rounded-2xl border border-zinc-200/90 bg-white px-2.5 sm:px-4 py-1.5 sm:py-2 shadow-2xs transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md hover:border-zinc-300 cursor-default">
-                <ShieldCheck size={14} className="text-emerald-600 sm:h-[15px] sm:w-[15px]" />
+              <div className="flex items-center gap-1.5 rounded-xl sm:rounded-2xl border border-[#60241E]/80 bg-[#2D120F] px-2.5 sm:px-4 py-1.5 sm:py-2 shadow-lg transition-all duration-300 hover:-translate-y-0.5 hover:border-[#F59E0B]/40 cursor-default">
+                <ShieldCheck size={14} className="text-emerald-400 sm:h-[15px] sm:w-[15px]" />
                 <span>100% Halal</span>
               </div>
-              <div className="flex items-center gap-1.5 rounded-xl sm:rounded-2xl border border-zinc-200/90 bg-white px-2.5 sm:px-4 py-1.5 sm:py-2 shadow-2xs transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md hover:border-zinc-300 cursor-default">
-                <Clock size={13} className="text-zinc-500 sm:h-3.5 sm:w-3.5" />
+              <div className="flex items-center gap-1.5 rounded-xl sm:rounded-2xl border border-[#60241E]/80 bg-[#2D120F] px-2.5 sm:px-4 py-1.5 sm:py-2 shadow-lg transition-all duration-300 hover:-translate-y-0.5 hover:border-[#F59E0B]/40 cursor-default">
+                <Clock size={13} className="text-[#F59E0B] sm:h-3.5 sm:w-3.5" />
                 <span>Tepat Waktu & Rapi</span>
               </div>
-              <div className="hidden sm:flex items-center gap-2 rounded-2xl border border-zinc-200/90 bg-white px-4 py-2 shadow-2xs transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md hover:border-zinc-300 cursor-default">
-                <ShoppingBag size={14} className="text-zinc-500" />
+              <div className="hidden sm:flex items-center gap-2 rounded-2xl border border-[#60241E]/80 bg-[#2D120F] px-4 py-2 shadow-lg transition-all duration-300 hover:-translate-y-0.5 hover:border-[#F59E0B]/40 cursor-default">
+                <ShoppingBag size={14} className="text-[#F59E0B]" />
                 <span>{products?.length ?? 0} Pilihan Menu Aktif</span>
               </div>
             </div>
@@ -323,7 +323,7 @@ useEffect(() => {
       ====================================================== */}
       <section className="sticky top-16 sm:top-20 z-30 -mt-3 sm:-mt-6 mx-auto max-w-7xl px-3.5 sm:px-6 lg:px-8">
         <div
-          className="rounded-2xl sm:rounded-[2rem] border border-zinc-200/90 bg-white/95 p-2.5 sm:p-4 shadow-[0_8px_30px_rgba(0,0,0,0.04)] backdrop-blur-md"
+          className="rounded-2xl sm:rounded-[2rem] border border-[#60241E] bg-[#2D120F]/95 p-2.5 sm:p-4 shadow-2xl backdrop-blur-md"
         >
           {/* Top Row: Search Input + Compact Sort Button + Reset */}
           <div className="flex items-center gap-2">
@@ -331,14 +331,14 @@ useEffect(() => {
             <div className="relative flex-1 min-w-0">
               <Search
                 size={16}
-                className="pointer-events-none absolute left-3 sm:left-3.5 top-1/2 -translate-y-1/2 text-zinc-400"
+                className="pointer-events-none absolute left-3 sm:left-3.5 top-1/2 -translate-y-1/2 text-amber-200/50"
               />
               <input
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Cari menu katering..."
-                className="h-11 sm:h-12 w-full rounded-xl sm:rounded-2xl border border-zinc-200/90 bg-zinc-50/70 pl-9 sm:pl-10 pr-8 sm:pr-9 text-xs sm:text-sm font-medium text-zinc-900 outline-none transition placeholder:text-zinc-400 focus:border-zinc-950 focus:bg-white focus:ring-2 focus:ring-zinc-950/10"
+                className="h-11 sm:h-12 w-full rounded-xl sm:rounded-2xl border border-[#60241E] bg-[#1C0B09] pl-9 sm:pl-10 pr-8 sm:pr-9 text-xs sm:text-sm font-medium text-white outline-none transition placeholder:text-amber-200/40 focus:border-[#F59E0B] focus:ring-2 focus:ring-[#F59E0B]/20"
               />
               {search && (
                 <button
@@ -347,7 +347,7 @@ useEffect(() => {
                     setSearch('')
                     setDebouncedSearch('')
                   }}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 flex h-5 w-5 items-center justify-center rounded-full text-zinc-400 hover:bg-zinc-200 hover:text-zinc-700"
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 flex h-5 w-5 items-center justify-center rounded-full text-amber-200/50 hover:bg-[#3B1814] hover:text-white"
                   aria-label="Bersihkan pencarian"
                 >
                   <X size={13} />
@@ -360,13 +360,13 @@ useEffect(() => {
               <div
                 className={`flex h-11 sm:h-12 items-center gap-1.5 rounded-xl sm:rounded-2xl border px-3 sm:px-4 text-xs font-bold transition shadow-2xs cursor-pointer ${
                   sortBy !== 'default'
-                    ? 'border-zinc-950 bg-zinc-950 text-white shadow-xs'
-                    : 'border-zinc-200/90 bg-zinc-50/80 text-zinc-700 hover:bg-zinc-100 hover:border-zinc-300'
+                    ? 'border-[#F59E0B] bg-[#F59E0B] text-[#1C0B09] shadow-md'
+                    : 'border-[#60241E] bg-[#1C0B09] text-amber-100/80 hover:bg-[#361613] hover:border-[#F59E0B]/40'
                 }`}
               >
                 <ArrowUpDown
                   size={14}
-                  className={sortBy !== 'default' ? 'text-white' : 'text-zinc-500'}
+                  className={sortBy !== 'default' ? 'text-[#1C0B09]' : 'text-amber-300'}
                 />
                 <span className="hidden sm:inline">
                   {sortBy === 'default'
@@ -392,7 +392,7 @@ useEffect(() => {
                 </span>
                 <ChevronDown
                   size={13}
-                  className={`transition ${sortBy !== 'default' ? 'text-white' : 'text-zinc-400'}`}
+                  className={`transition ${sortBy !== 'default' ? 'text-[#1C0B09]' : 'text-amber-300'}`}
                 />
               </div>
 
@@ -403,11 +403,11 @@ useEffect(() => {
                 aria-label="Urutkan daftar menu"
                 className="absolute inset-0 h-full w-full opacity-0 cursor-pointer text-xs"
               >
-                <option value="default">Urutan: Rekomendasi</option>
-                <option value="price-asc">Harga: Termurah ke Tertinggi</option>
-                <option value="price-desc">Harga: Tertinggi ke Termurah</option>
-                <option value="min-order">Porsi Minimal Terkecil</option>
-                <option value="name-asc">Nama Menu: A - Z</option>
+                <option value="default" className="bg-[#1C0B09] text-white">Urutan: Rekomendasi</option>
+                <option value="price-asc" className="bg-[#1C0B09] text-white">Harga: Termurah ke Tertinggi</option>
+                <option value="price-desc" className="bg-[#1C0B09] text-white">Harga: Tertinggi ke Termurah</option>
+                <option value="min-order" className="bg-[#1C0B09] text-white">Porsi Minimal Terkecil</option>
+                <option value="name-asc" className="bg-[#1C0B09] text-white">Nama Menu: A - Z</option>
               </select>
             </div>
 
@@ -416,7 +416,7 @@ useEffect(() => {
               <button
                 type="button"
                 onClick={clearFilters}
-                className="h-11 sm:h-12 shrink-0 rounded-xl sm:rounded-2xl border border-red-200/70 bg-red-50/90 px-2.5 sm:px-3 text-xs font-bold text-red-600 hover:bg-red-100 transition shadow-2xs"
+                className="h-11 sm:h-12 shrink-0 rounded-xl sm:rounded-2xl border border-[#B34A44] bg-[#60241E]/80 px-2.5 sm:px-3 text-xs font-bold text-amber-200 hover:bg-[#60241E] transition shadow-2xs"
                 title="Reset semua filter"
               >
                 Reset
@@ -425,21 +425,21 @@ useEffect(() => {
           </div>
 
           {/* Bottom Row: Horizontal Scrollable Compact Category Chips */}
-          <div className="mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-zinc-100 w-full overflow-hidden">
+          <div className="mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-[#60241E]/60 w-full overflow-hidden">
             <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto scrollbar-none py-0.5 touch-pan-x">
               <button
                 type="button"
                 onClick={() => setActiveCategory('all')}
                 className={`shrink-0 inline-flex items-center h-9 sm:h-10 px-3 sm:px-4 rounded-xl text-xs sm:text-[13px] font-bold transition-all duration-200 whitespace-nowrap ${
                   activeCategory === 'all'
-                    ? 'bg-zinc-950 text-white shadow-2xs'
-                    : 'bg-zinc-100/80 text-zinc-600 hover:bg-zinc-200/80 hover:text-zinc-950 border border-zinc-200/60'
+                    ? 'bg-gradient-to-r from-[#F59E0B] to-[#E77B49] text-[#1C0B09] shadow-md shadow-[#F59E0B]/20 font-black'
+                    : 'bg-[#1C0B09] text-amber-100/70 hover:bg-[#381612] hover:text-white border border-[#60241E]'
                 }`}
               >
                 <span>Semua Menu</span>
                 <span
                   className={`ml-1.5 text-[10px] ${
-                    activeCategory === 'all' ? 'text-zinc-300 font-bold' : 'text-zinc-400 font-medium'
+                    activeCategory === 'all' ? 'text-[#1C0B09] font-black' : 'text-amber-200/50 font-medium'
                   }`}
                 >
                   ({products?.length ?? 0})
@@ -455,14 +455,14 @@ useEffect(() => {
                     onClick={() => setActiveCategory(category.slug)}
                     className={`shrink-0 inline-flex items-center h-9 sm:h-10 px-3 sm:px-4 rounded-xl text-xs sm:text-[13px] font-bold transition-all duration-200 whitespace-nowrap ${
                       isActive
-                        ? 'bg-zinc-950 text-white shadow-2xs'
-                        : 'bg-zinc-100/80 text-zinc-600 hover:bg-zinc-200/80 hover:text-zinc-950 border border-zinc-200/60'
+                        ? 'bg-gradient-to-r from-[#F59E0B] to-[#E77B49] text-[#1C0B09] shadow-md shadow-[#F59E0B]/20 font-black'
+                        : 'bg-[#1C0B09] text-amber-100/70 hover:bg-[#381612] hover:text-white border border-[#60241E]'
                     }`}
                   >
                     <span>{category.name}</span>
                     <span
                       className={`ml-1.5 text-[10px] ${
-                        isActive ? 'text-zinc-300 font-bold' : 'text-zinc-400 font-medium'
+                        isActive ? 'text-[#1C0B09] font-black' : 'text-amber-200/50 font-medium'
                       }`}
                     >
                       ({category.count})
@@ -483,23 +483,23 @@ useEffect(() => {
         <div
           data-aos="fade-in"
           data-aos-duration="500"
-          className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5 sm:gap-2 pb-2.5 sm:pb-4 border-b border-zinc-200/60"
+          className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5 sm:gap-2 pb-2.5 sm:pb-4 border-b border-[#60241E]/60 text-amber-100/70"
         >
-          <p className="text-xs font-bold uppercase tracking-wider text-zinc-500">
+          <p className="text-xs font-bold uppercase tracking-wider">
             {isLoading ? (
               <span>Memuat menu pilihan katering...</span>
             ) : (
               <>
-                Menampilkan <span className="text-zinc-950 font-black">{filteredProducts.length}</span> menu pilihan
+                Menampilkan <span className="text-white font-black">{filteredProducts.length}</span> menu pilihan
                 {activeCategory !== 'all' && (
-                  <span> dalam kategori <span className="text-zinc-950 font-bold capitalize">"{activeCategory.replace(/-/g, ' ')}"</span></span>
+                  <span> dalam kategori <span className="text-[#F59E0B] font-bold capitalize">"{activeCategory.replace(/-/g, ' ')}"</span></span>
                 )}
               </>
             )}
           </p>
 
-          <div className="flex items-center gap-2 text-[11px] sm:text-xs text-zinc-500">
-            <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+          <div className="flex items-center gap-2 text-[11px] sm:text-xs">
+            <span className="flex h-2 w-2 rounded-full bg-[#F59E0B] animate-pulse" />
             <span>Sistem kelipatan 10 porsi • Pesan via WhatsApp</span>
           </div>
         </div>
@@ -513,22 +513,22 @@ useEffect(() => {
           <div
             data-aos="zoom-in"
             data-aos-duration="500"
-            className="my-10 sm:my-16 rounded-[2rem] sm:rounded-[2.5rem] border border-dashed border-zinc-300 bg-white p-8 sm:p-12 text-center shadow-xs"
+            className="my-10 sm:my-16 rounded-[2rem] sm:rounded-[2.5rem] border border-dashed border-[#60241E] bg-[#2D120F] p-8 sm:p-12 text-center shadow-xl"
           >
-            <div className="mx-auto flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-2xl bg-zinc-100 text-zinc-500">
+            <div className="mx-auto flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-2xl bg-[#3B1814] text-[#F59E0B]">
               <Search size={22} />
             </div>
-            <h3 className="mt-3 text-lg sm:text-xl font-bold text-zinc-900">
+            <h3 className="mt-3 text-lg sm:text-xl font-dhaksinarga tracking-wide text-white">
               Menu Tidak Ditemukan
             </h3>
-            <p className="mt-1.5 text-xs sm:text-sm text-zinc-500 max-w-md mx-auto">
+            <p className="mt-1.5 text-xs sm:text-sm text-amber-100/70 max-w-md mx-auto">
               Tidak ada menu katering yang cocok dengan kata kunci{' '}
-              <span className="font-bold text-zinc-900">"{search}"</span>. Coba gunakan kata kunci lain atau reset filter.
+              <span className="font-bold text-[#F59E0B]">"{search}"</span>. Coba gunakan kata kunci lain atau reset filter.
             </p>
             <button
               type="button"
               onClick={clearFilters}
-              className="mt-5 inline-flex items-center gap-2 rounded-2xl bg-zinc-950 px-5 sm:px-6 py-2.5 sm:py-3 text-xs font-bold text-white transition hover:bg-zinc-800"
+              className="mt-5 inline-flex items-center gap-2 rounded-2xl bg-[#F59E0B] px-5 sm:px-6 py-2.5 sm:py-3 text-xs font-black text-[#1C0B09] transition hover:bg-amber-400"
             >
               Tampilkan Semua Menu
             </button>
@@ -549,10 +549,10 @@ useEffect(() => {
                   data-aos="fade-up"
                   data-aos-delay={cardDelay}
                   data-aos-duration="600"
-                  className="group relative flex flex-col overflow-hidden rounded-[2rem] border border-zinc-200/80 bg-white shadow-[0_4px_24px_rgba(0,0,0,0.03)] transition-all duration-500 hover:-translate-y-2 hover:border-red-200 hover:shadow-[0_22px_45px_rgba(220,38,38,0.08),0_10px_20px_rgba(0,0,0,0.03)]"
+                  className="group relative flex flex-col overflow-hidden rounded-[2rem] border border-[#60241E]/80 bg-[#2D120F] shadow-lg transition-all duration-500 hover:-translate-y-2 hover:border-[#F59E0B]/50 hover:shadow-2xl hover:shadow-black/60"
                 >
                   {/* Image Container with Luxury Floating Badges */}
-                  <div className="relative aspect-[4/3] overflow-hidden bg-zinc-100">
+                  <div className="relative aspect-[4/3] overflow-hidden bg-[#1A0A08]">
                     <img
                       src={displayImage}
                       alt={item.name}
@@ -561,34 +561,34 @@ useEffect(() => {
                     />
 
                     {/* Gradient Soft Shadow for Legibility */}
-                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-black/25" />
+                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#1C0B09]/80 via-black/20 to-transparent" />
 
                     {/* Top Left: Minimum Order Badge */}
-                    <div className="absolute left-3.5 top-3.5 flex items-center gap-1.5 rounded-full border border-white/70 bg-white/95 px-3 py-1.5 text-[11px] font-black text-zinc-900 shadow-md backdrop-blur-md transition-transform duration-300 group-hover:scale-105">
-                      <ShoppingBag size={13} className="text-red-600" />
+                    <div className="absolute left-3.5 top-3.5 flex items-center gap-1.5 rounded-full border border-[#F59E0B]/40 bg-[#1C0B09]/90 px-3 py-1.5 text-[11px] font-black text-amber-300 shadow-md backdrop-blur-md transition-transform duration-300 group-hover:scale-105">
+                      <ShoppingBag size={13} className="text-[#F59E0B]" />
                       <span>Min. {minOrder} Porsi</span>
                     </div>
 
                     {/* Top Right: Best Seller Spotlight on item 1 */}
                     {isFirstFeatured ? (
-                      <div className="absolute right-3.5 top-3.5 flex items-center gap-1 rounded-full bg-gradient-to-r from-red-600 via-red-500 to-amber-500 text-white px-3 py-1 text-[10px] font-black uppercase tracking-wider backdrop-blur-md shadow-md transition-transform duration-300 group-hover:scale-105">
-                        <Flame size={12} className="fill-white" />
+                      <div className="absolute right-3.5 top-3.5 flex items-center gap-1 rounded-full bg-gradient-to-r from-[#F59E0B] via-amber-400 to-[#E77B49] text-[#1C0B09] px-3 py-1 text-[10px] font-black uppercase tracking-wider backdrop-blur-md shadow-md transition-transform duration-300 group-hover:scale-105">
+                        <Flame size={12} className="fill-[#1C0B09]" />
                         <span>Best Seller</span>
                       </div>
                     ) : (
-                      <div className="absolute right-3.5 top-3.5 flex items-center gap-1 rounded-full bg-zinc-950/85 backdrop-blur-md border border-white/20 px-2.5 py-1 text-[11px] font-black text-amber-400 shadow-md transition-transform duration-300 group-hover:scale-105">
-                        <Star size={12} className="fill-amber-400" />
+                      <div className="absolute right-3.5 top-3.5 flex items-center gap-1 rounded-full bg-[#1C0B09]/90 backdrop-blur-md border border-[#60241E] px-2.5 py-1 text-[11px] font-black text-[#F59E0B] shadow-md transition-transform duration-300 group-hover:scale-105">
+                        <Star size={12} className="fill-[#F59E0B]" />
                         <span>4.9</span>
                       </div>
                     )}
 
                     {/* Bottom overlay preview: kelipatan 10 */}
                     <div className="absolute bottom-3 left-3.5 right-3.5 flex items-center justify-between text-[11px] text-white/95 font-semibold drop-shadow">
-                      <span className="flex items-center gap-1.5 bg-black/40 backdrop-blur-md px-2.5 py-0.5 rounded-full border border-white/20">
-                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                      <span className="flex items-center gap-1.5 bg-[#1C0B09]/80 backdrop-blur-md px-2.5 py-0.5 rounded-full border border-[#60241E]/70 text-amber-200">
+                        <span className="h-1.5 w-1.5 rounded-full bg-[#F59E0B] animate-pulse" />
                         Kelipatan 10 Porsi
                       </span>
-                      <span className="text-[10px] font-bold text-white/85 bg-black/40 backdrop-blur-md px-2 py-0.5 rounded-full border border-white/20">
+                      <span className="text-[10px] font-bold text-amber-300 bg-[#1C0B09]/80 backdrop-blur-md px-2 py-0.5 rounded-full border border-[#60241E]/70">
                         Siap Santap
                       </span>
                     </div>
@@ -599,49 +599,49 @@ useEffect(() => {
                     {/* Category Eyebrow & Halal Badge */}
                     <div className="flex items-center justify-between gap-2 mb-2.5">
                       {item.category ? (
-                        <span className="inline-flex items-center rounded-lg bg-red-50 border border-red-200/70 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-red-700">
+                        <span className="inline-flex items-center rounded-lg bg-[#3B1814] border border-[#60241E] px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-amber-300">
                           {item.category.name}
                         </span>
                       ) : (
-                        <span className="inline-flex items-center rounded-lg bg-zinc-100 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-zinc-600">
+                        <span className="inline-flex items-center rounded-lg bg-[#3B1814] border border-[#60241E] px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-amber-300">
                           Paket Nasi Box
                         </span>
                       )}
 
-                      <span className="flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200/60 px-2 py-0.5 rounded-md">
-                        <ShieldCheck size={11} className="text-emerald-600" />
+                      <span className="flex items-center gap-1 text-[10px] font-bold text-emerald-400 bg-[#1C0B09] border border-[#60241E] px-2 py-0.5 rounded-md">
+                        <ShieldCheck size={11} className="text-emerald-400" />
                         100% Halal
                       </span>
                     </div>
 
-                    {/* Product Name */}
-                    <h3 className="text-lg sm:text-xl font-black text-zinc-950 tracking-tight leading-snug group-hover:text-red-600 transition-colors line-clamp-1">
+                    {/* Product Name in Dhaksinarga */}
+                    <h3 className="text-lg sm:text-xl font-dhaksinarga tracking-wide text-white leading-snug group-hover:text-[#F59E0B] transition-colors line-clamp-1">
                       <Link to={`/menu/${item.slug}`}>
                         {item.name}
                       </Link>
                     </h3>
 
                     {/* Description */}
-                    <p className="mt-2 text-xs sm:text-sm leading-relaxed text-zinc-500 line-clamp-2">
+                    <p className="mt-2 text-xs sm:text-sm leading-relaxed text-amber-100/70 line-clamp-2">
                       {item.description ||
                         'Paket catering spesial dengan rasa gurih meresap, higienis, dan dikemas rapi siap saji.'}
                     </p>
 
                     {/* Price and Action Section */}
-                    <div className="mt-auto pt-5 border-t border-zinc-100 flex items-center justify-between gap-3">
-                      {/* Price Block with Wow Typography */}
+                    <div className="mt-auto pt-5 border-t border-[#60241E]/60 flex items-center justify-between gap-3">
+                      {/* Price Block */}
                       <div className="flex flex-col">
-                        <span className="text-[10px] font-extrabold uppercase tracking-widest text-zinc-400">
+                        <span className="text-[10px] font-extrabold uppercase tracking-widest text-amber-200/50">
                           Mulai Dari
                         </span>
                         <div className="flex items-baseline gap-1 mt-0.5">
-                          <span className="text-xs sm:text-sm font-extrabold text-red-600 font-poppins">
+                          <span className="text-xs sm:text-sm font-extrabold text-[#F59E0B] font-poppins">
                             Rp
                           </span>
-                          <span className="text-2xl sm:text-[28px] font-black tracking-tight text-zinc-950 font-poppins group-hover:text-red-600 transition-colors">
+                          <span className="text-2xl sm:text-[28px] font-black tracking-tight text-white font-poppins group-hover:text-[#F59E0B] transition-colors">
                             {unitPrice.toLocaleString('id-ID')}
                           </span>
-                          <span className="text-[11px] font-semibold text-zinc-400">
+                          <span className="text-[11px] font-semibold text-amber-200/50">
                             /box
                           </span>
                         </div>
@@ -650,7 +650,7 @@ useEffect(() => {
                       {/* Interactive CTA Button */}
                       <Link
                         to={`/menu/${item.slug}`}
-                        className="group/btn relative inline-flex shrink-0 items-center gap-1.5 rounded-2xl bg-zinc-950 px-4 sm:px-5 py-3 text-xs font-black text-white shadow-md shadow-zinc-950/15 transition-all duration-300 hover:bg-gradient-to-r hover:from-red-600 hover:to-orange-500 hover:shadow-lg hover:shadow-red-500/25 hover:scale-[1.02] active:scale-[0.98]"
+                        className="group/btn relative inline-flex shrink-0 items-center gap-1.5 rounded-2xl bg-gradient-to-r from-[#F59E0B] to-[#E77B49] hover:from-amber-400 hover:to-amber-500 px-4 sm:px-5 py-3 text-xs font-black text-[#1C0B09] shadow-md shadow-[#F59E0B]/20 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
                       >
                         <span>Pesan</span>
                         <ArrowRight size={14} className="transition-transform duration-300 group-hover/btn:translate-x-1" />
@@ -665,42 +665,42 @@ useEffect(() => {
       </section>
 
       {/* =====================================================
-          LUXURY WHITE CONSULTATION BANNER (BOTTOM)
+          LUXURY CHOCOLATE CONSULTATION BANNER (BOTTOM)
       ====================================================== */}
       <section className="mx-auto max-w-7xl px-6 pb-24 lg:px-8">
         <div
           data-aos="fade-up"
           data-aos-duration="700"
           data-aos-offset="60"
-          className="relative overflow-hidden rounded-[2.5rem] border border-zinc-200/90 bg-gradient-to-br from-white via-white to-zinc-50 p-8 sm:p-12 lg:p-16 shadow-[0_16px_40px_rgba(0,0,0,0.03)]"
+          className="relative overflow-hidden rounded-[2.5rem] border-2 border-[#B34A44]/40 bg-gradient-to-br from-[#2D120F] via-[#381612] to-[#451B17] p-8 sm:p-12 lg:p-16 shadow-2xl"
         >
           <div className="grid gap-8 lg:grid-cols-[1.4fr_0.8fr] lg:items-center">
             <div data-aos="fade-right" data-aos-delay="100" data-aos-duration="650">
-              <div className="inline-flex items-center gap-2 rounded-full border border-zinc-200 bg-white px-3.5 py-1 text-[11px] font-bold uppercase tracking-wider text-zinc-600 shadow-sm">
-                <CheckCircle2 size={13} className="text-emerald-600" />
+              <div className="inline-flex items-center gap-2 rounded-full border border-[#F59E0B]/40 bg-[#60241E] px-3.5 py-1 text-[11px] font-bold uppercase tracking-wider text-amber-300 shadow-sm">
+                <CheckCircle2 size={13} className="text-[#F59E0B]" />
                 Konsultasi & Penawaran Katering Resmi
               </div>
 
-              <h2 className="mt-4 text-3xl font-black tracking-tight text-zinc-950 sm:text-4xl lg:text-5xl leading-tight">
+              <h2 className="mt-4 text-3xl font-dhaksinarga tracking-wide text-white sm:text-4xl lg:text-5xl leading-tight">
                 Punya Kebutuhan Khusus atau Ratusan Porsi?
               </h2>
 
-              <p className="mt-4 text-sm sm:text-base leading-relaxed text-zinc-500 max-w-2xl">
-                Tim Hara Chicken siap membantu penyesuaian menu, penjadwalan waktu pengantaran ke lokasi acara Anda,
+              <p className="mt-4 text-sm sm:text-base leading-relaxed text-amber-100/75 max-w-2xl">
+                Tim Pawon Hara siap membantu penyesuaian menu, penjadwalan waktu pengantaran ke lokasi acara Anda,
                 serta menerbitkan invoice resmi untuk pembayaran transfer perusahaan ataupun pribadi.
               </p>
 
-              <div className="mt-6 flex flex-wrap gap-4 text-xs font-semibold text-zinc-700">
+              <div className="mt-6 flex flex-wrap gap-4 text-xs font-semibold text-amber-100/90">
                 <div className="flex items-center gap-1.5">
-                  <CheckCircle2 size={14} className="text-emerald-600" />
+                  <CheckCircle2 size={14} className="text-[#F59E0B]" />
                   Bisa Uji Cicip (Sample Menu)
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <CheckCircle2 size={14} className="text-emerald-600" />
+                  <CheckCircle2 size={14} className="text-[#F59E0B]" />
                   Invoice & Kuitansi Lengkap
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <CheckCircle2 size={14} className="text-emerald-600" />
+                  <CheckCircle2 size={14} className="text-[#F59E0B]" />
                   Kapasitas hingga 2.000+ porsi/hari
                 </div>
               </div>
@@ -713,10 +713,10 @@ useEffect(() => {
               className="flex flex-col gap-3 lg:items-end"
             >
               <a
-                href="https://wa.me/6289669743193?text=Halo%20Hara%20Chicken,%20saya%20ingin%20konsultasi%20pesanan%20katering%20nasi%20box%20untuk%20acara%20saya."
+                href="https://wa.me/6289669743193?text=Halo%20Pawon%20Hara,%20saya%20ingin%20konsultasi%20pesanan%20katering%20nasi%20box%20untuk%20acara%20saya."
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2.5 rounded-2xl bg-emerald-600 px-8 py-4 text-sm font-bold text-white shadow-lg shadow-emerald-600/20 transition-all hover:bg-emerald-700 hover:scale-[1.01] active:scale-[0.99]"
+                className="inline-flex items-center justify-center gap-2.5 rounded-2xl bg-gradient-to-r from-[#F59E0B] via-amber-400 to-[#E77B49] px-8 py-4 text-sm font-black text-[#1C0B09] shadow-xl shadow-[#F59E0B]/25 transition-all hover:scale-[1.02] active:scale-[0.98]"
               >
                 <MessageCircle size={18} />
                 Konsultasi via WhatsApp (Admin)
@@ -724,7 +724,7 @@ useEffect(() => {
 
               <Link
                 to="/cara-pesan"
-                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-zinc-200 bg-white px-6 py-3.5 text-xs font-bold text-zinc-800 transition hover:bg-zinc-50"
+                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[#E77B49]/50 bg-[#1C0B09] px-6 py-3.5 text-xs font-bold text-white transition hover:bg-[#250D0A]"
               >
                 Pelajari Cara Pemesanan
               </Link>
