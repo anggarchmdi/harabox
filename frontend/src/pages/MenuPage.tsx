@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { useLocation } from 'react-router-dom'
+import { useLocation, Link } from 'react-router-dom'
 import AOS from 'aos'
 import {
   ArrowRight,
@@ -17,13 +17,13 @@ import {
   Star,
   X,
 } from 'lucide-react'
-import { Link } from 'react-router-dom'
 
 import { productService } from '../services/products.service'
 import { getImageUrl } from '../utils/image'
 import type { Product } from '../types/products'
 import PageLoader from '../components/ui/PageLoader'
 import ProductCardSkeleton from '../components/ui/ProductCardSkeleton'
+import { useThemeStore } from '../stores/theme.store'
 
 // Aset lokal untuk smart fallback beresolusi tinggi & menggugah selera
 import BentoKatsuImg from '../assets/nasibox/bento-katsu-b.webp'
@@ -76,6 +76,9 @@ function getProductDisplayImage(item: Product): string {
 type SortOption = 'default' | 'price-asc' | 'price-desc' | 'min-order' | 'name-asc'
 
 export default function MenuPage() {
+  const theme = useThemeStore((state) => state.theme)
+  const isDark = theme === 'dark'
+
   const {
     data: products,
     isLoading,
@@ -92,23 +95,22 @@ export default function MenuPage() {
 
   const location = useLocation()
 
-useEffect(() => {
-  if (location.hash !== '#menu-list') return
+  useEffect(() => {
+    if (location.hash !== '#menu-list') return
 
-  const scrollToMenu = () => {
-    const element = document.getElementById('menu-list')
+    const scrollToMenu = () => {
+      const element = document.getElementById('menu-list')
+      if (!element) return
 
-    if (!element) return
-
-    element.scrollIntoView({
-      behavior: 'smooth',
-      block: 'start',
+      element.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      })
+    }
+    requestAnimationFrame(() => {
+      requestAnimationFrame(scrollToMenu)
     })
-  }
-  requestAnimationFrame(() => {
-    requestAnimationFrame(scrollToMenu)
-  })
-}, [location.hash])
+  }, [location.hash])
 
   useEffect(() => {
     AOS.init({
@@ -194,7 +196,6 @@ useEffect(() => {
   }, [products, debouncedSearch, activeCategory, sortBy])
 
   useEffect(() => {
-    // Refresh AOS trigger positions after products render or filter changes
     const timer = setTimeout(() => {
       AOS.refresh()
     }, 120)
@@ -213,21 +214,39 @@ useEffect(() => {
 
   if (isError) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-[#1C0B09] px-6 text-white">
-        <div className="text-center max-w-md rounded-3xl bg-[#2D120F] p-8 border border-[#60241E] shadow-xl">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#3B1814] text-[#F59E0B]">
+      <main
+        className={`flex min-h-screen items-center justify-center px-6 transition-colors duration-300 ${
+          isDark ? 'bg-[#1C0B09] text-white' : 'bg-[#FBF7F2] text-[#2B120E]'
+        }`}
+      >
+        <div
+          className={`text-center max-w-md rounded-3xl p-8 border shadow-xl ${
+            isDark
+              ? 'bg-[#2D120F] border-[#60241E]'
+              : 'bg-white border-[#E6DACD]'
+          }`}
+        >
+          <div
+            className={`mx-auto flex h-14 w-14 items-center justify-center rounded-2xl ${
+              isDark ? 'bg-[#3B1814] text-[#F59E0B]' : 'bg-[#FAF0E4] text-[#D97706]'
+            }`}
+          >
             <ShoppingBag size={24} />
           </div>
-          <h1 className="mt-4 text-2xl font-dhaksinarga tracking-wide text-white">
+          <h1
+            className={`mt-4 text-2xl font-dhaksinarga tracking-wide ${
+              isDark ? 'text-white' : 'text-[#2B120E]'
+            }`}
+          >
             Menu Belum Dapat Dimuat
           </h1>
-          <p className="mt-2 text-sm text-amber-100/70">
+          <p className={`mt-2 text-sm ${isDark ? 'text-amber-100/70' : 'text-[#6B423A]'}`}>
             Terjadi masalah saat menghubungkan ke database menu katering.
           </p>
           <button
             type="button"
             onClick={() => window.location.reload()}
-            className="mt-6 inline-flex items-center gap-2 rounded-2xl bg-[#F59E0B] px-6 py-3 text-xs font-black text-[#1C0B09] transition hover:bg-amber-400"
+            className="mt-6 inline-flex items-center gap-2 rounded-2xl bg-[#F59E0B] px-6 py-3 text-xs font-black text-[#1C0B09] transition hover:bg-amber-400 cursor-pointer"
           >
             Muat Ulang Halaman
           </button>
@@ -237,7 +256,13 @@ useEffect(() => {
   }
 
   return (
-    <main className="min-h-screen bg-[#1C0B09] text-stone-100 selection:bg-[#F59E0B] selection:text-[#1C0B09]">
+    <main
+      className={`min-h-screen transition-colors duration-300 ${
+        isDark
+          ? 'bg-[#1C0B09] text-stone-100 selection:bg-[#F59E0B] selection:text-[#1C0B09]'
+          : 'bg-[#FBF7F2] text-[#2B120E] selection:bg-[#F59E0B] selection:text-[#2B120E]'
+      }`}
+    >
       {/* Branded Page Loader with clean LogoSpinner */}
       <PageLoader
         isLoading={isLoading}
@@ -249,9 +274,21 @@ useEffect(() => {
       {/* =====================================================
           LUXURY CHOCOLATE & GOLD HERO SECTION
       ====================================================== */}
-      <section className="relative overflow-hidden border-b border-[#60241E]/80 bg-gradient-to-b from-[#1C0B09] via-[#240E0C] to-[#1C0B09] pt-24 pb-6 sm:pt-36 sm:pb-16 lg:pt-40 lg:pb-20">
+      <section
+        className={`relative overflow-hidden border-b pt-24 pb-6 sm:pt-36 sm:pb-16 lg:pt-40 lg:pb-20 transition-colors duration-300 ${
+          isDark
+            ? 'border-[#60241E]/80 bg-gradient-to-b from-[#1C0B09] via-[#240E0C] to-[#1C0B09]'
+            : 'border-[#E6DACD] bg-gradient-to-b from-[#FAF4ED] via-[#F5EDE4] to-[#FBF7F2]'
+        }`}
+      >
         {/* Subtle ambient light patterns */}
-        <div className="pointer-events-none absolute -top-40 left-1/2 h-[550px] w-[800px] -translate-x-1/2 rounded-full bg-gradient-to-b from-[#60241E]/40 to-transparent blur-3xl" />
+        <div
+          className={`pointer-events-none absolute -top-40 left-1/2 h-[550px] w-[800px] -translate-x-1/2 rounded-full blur-3xl ${
+            isDark
+              ? 'bg-gradient-to-b from-[#60241E]/40 to-transparent'
+              : 'bg-gradient-to-b from-[#E77B49]/15 to-transparent'
+          }`}
+        />
         <div className="pointer-events-none absolute -left-20 top-20 h-72 w-72 rounded-full bg-[#F59E0B]/10 blur-3xl" />
 
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -260,9 +297,13 @@ useEffect(() => {
             <div
               data-aos="fade-down"
               data-aos-duration="600"
-              className="inline-flex items-center gap-1.5 sm:gap-2 rounded-full border border-[#F59E0B]/40 bg-[#60241E] px-3 sm:px-4 py-1 sm:py-1.5 text-[10px] sm:text-[11px] font-extrabold uppercase tracking-[0.2em] sm:tracking-[0.25em] text-amber-300 shadow-sm backdrop-blur transition-all duration-300"
+              className={`inline-flex items-center gap-1.5 sm:gap-2 rounded-full border px-3 sm:px-4 py-1 sm:py-1.5 text-[10px] sm:text-[11px] font-extrabold uppercase tracking-[0.2em] sm:tracking-[0.25em] shadow-sm backdrop-blur transition-all duration-300 ${
+                isDark
+                  ? 'border-[#F59E0B]/40 bg-[#60241E] text-amber-300'
+                  : 'border-[#D97706]/40 bg-[#FAF0E4] text-[#8C4320]'
+              }`}
             >
-              <Sparkles size={12} className="text-[#F59E0B] sm:h-[13px] sm:w-[13px]" />
+              <Sparkles size={12} className={isDark ? 'text-[#F59E0B]' : 'text-[#D97706]'} />
               Pawon Hara Gourmet Catering
             </div>
 
@@ -271,7 +312,9 @@ useEffect(() => {
               data-aos="fade-up"
               data-aos-delay="100"
               data-aos-duration="700"
-              className="mt-3 sm:mt-6 max-w-4xl text-3xl font-dhaksinarga tracking-wide text-white sm:text-5xl lg:text-7xl leading-tight sm:leading-[1.08]"
+              className={`mt-3 sm:mt-6 max-w-4xl text-3xl font-dhaksinarga tracking-wide sm:text-5xl lg:text-7xl leading-tight sm:leading-[1.08] ${
+                isDark ? 'text-white' : 'text-[#2B120E]'
+              }`}
             >
               Pilihan Menu Katering Istimewa
               <span className="block text-[#F59E0B] font-dhaksinarga text-2xl sm:text-4xl lg:text-6xl mt-1">
@@ -284,7 +327,9 @@ useEffect(() => {
               data-aos="fade-up"
               data-aos-delay="200"
               data-aos-duration="700"
-              className="mt-2.5 sm:mt-6 max-w-2xl text-xs sm:text-base lg:text-lg leading-relaxed text-amber-100/75 line-clamp-2 sm:line-clamp-none"
+              className={`mt-2.5 sm:mt-6 max-w-2xl text-xs sm:text-base lg:text-lg leading-relaxed line-clamp-2 sm:line-clamp-none ${
+                isDark ? 'text-amber-100/75' : 'text-[#6B423A]'
+              }`}
             >
               Sajian katering nasi box premium dengan cita rasa gurih meresap, higienis,
               dan dikemas eksklusif siap santap untuk melengkapi rapat kantor, syukuran, hingga gathering berskala besar.
@@ -295,22 +340,48 @@ useEffect(() => {
               data-aos="fade-up"
               data-aos-delay="300"
               data-aos-duration="700"
-              className="mt-4 sm:mt-8 flex flex-wrap items-center justify-center gap-2 sm:gap-3 text-[11px] sm:text-xs font-semibold text-amber-100/90"
+              className={`mt-4 sm:mt-8 flex flex-wrap items-center justify-center gap-2 sm:gap-3 text-[11px] sm:text-xs font-semibold ${
+                isDark ? 'text-amber-100/90' : 'text-[#5C3831]'
+              }`}
             >
-              <div className="flex items-center gap-1.5 rounded-xl sm:rounded-2xl border border-[#60241E]/80 bg-[#2D120F] px-2.5 sm:px-4 py-1.5 sm:py-2 shadow-lg transition-all duration-300 hover:-translate-y-0.5 hover:border-[#F59E0B]/40 cursor-default">
+              <div
+                className={`flex items-center gap-1.5 rounded-xl sm:rounded-2xl border px-2.5 sm:px-4 py-1.5 sm:py-2 transition-all duration-300 hover:-translate-y-0.5 cursor-default ${
+                  isDark
+                    ? 'border-[#60241E]/80 bg-[#2D120F] shadow-lg hover:border-[#F59E0B]/40'
+                    : 'border-[#E6DACD] bg-white shadow-sm hover:border-[#D97706]/40'
+                }`}
+              >
                 <Star size={13} className="fill-[#F59E0B] text-[#F59E0B] sm:h-3.5 sm:w-3.5" />
                 <span>4.9 / 5 Rating</span>
               </div>
-              <div className="flex items-center gap-1.5 rounded-xl sm:rounded-2xl border border-[#60241E]/80 bg-[#2D120F] px-2.5 sm:px-4 py-1.5 sm:py-2 shadow-lg transition-all duration-300 hover:-translate-y-0.5 hover:border-[#F59E0B]/40 cursor-default">
-                <ShieldCheck size={14} className="text-emerald-400 sm:h-[15px] sm:w-[15px]" />
+              <div
+                className={`flex items-center gap-1.5 rounded-xl sm:rounded-2xl border px-2.5 sm:px-4 py-1.5 sm:py-2 transition-all duration-300 hover:-translate-y-0.5 cursor-default ${
+                  isDark
+                    ? 'border-[#60241E]/80 bg-[#2D120F] shadow-lg hover:border-[#F59E0B]/40'
+                    : 'border-[#E6DACD] bg-white shadow-sm hover:border-[#D97706]/40'
+                }`}
+              >
+                <ShieldCheck size={14} className="text-emerald-500 sm:h-[15px] sm:w-[15px]" />
                 <span>100% Halal</span>
               </div>
-              <div className="flex items-center gap-1.5 rounded-xl sm:rounded-2xl border border-[#60241E]/80 bg-[#2D120F] px-2.5 sm:px-4 py-1.5 sm:py-2 shadow-lg transition-all duration-300 hover:-translate-y-0.5 hover:border-[#F59E0B]/40 cursor-default">
-                <Clock size={13} className="text-[#F59E0B] sm:h-3.5 sm:w-3.5" />
+              <div
+                className={`flex items-center gap-1.5 rounded-xl sm:rounded-2xl border px-2.5 sm:px-4 py-1.5 sm:py-2 transition-all duration-300 hover:-translate-y-0.5 cursor-default ${
+                  isDark
+                    ? 'border-[#60241E]/80 bg-[#2D120F] shadow-lg hover:border-[#F59E0B]/40'
+                    : 'border-[#E6DACD] bg-white shadow-sm hover:border-[#D97706]/40'
+                }`}
+              >
+                <Clock size={13} className={isDark ? 'text-[#F59E0B]' : 'text-[#D97706]'} />
                 <span>Tepat Waktu & Rapi</span>
               </div>
-              <div className="hidden sm:flex items-center gap-2 rounded-2xl border border-[#60241E]/80 bg-[#2D120F] px-4 py-2 shadow-lg transition-all duration-300 hover:-translate-y-0.5 hover:border-[#F59E0B]/40 cursor-default">
-                <ShoppingBag size={14} className="text-[#F59E0B]" />
+              <div
+                className={`hidden sm:flex items-center gap-2 rounded-2xl border px-4 py-2 transition-all duration-300 hover:-translate-y-0.5 cursor-default ${
+                  isDark
+                    ? 'border-[#60241E]/80 bg-[#2D120F] shadow-lg hover:border-[#F59E0B]/40'
+                    : 'border-[#E6DACD] bg-white shadow-sm hover:border-[#D97706]/40'
+                }`}
+              >
+                <ShoppingBag size={14} className={isDark ? 'text-[#F59E0B]' : 'text-[#D97706]'} />
                 <span>{products?.length ?? 0} Pilihan Menu Aktif</span>
               </div>
             </div>
@@ -323,7 +394,11 @@ useEffect(() => {
       ====================================================== */}
       <section className="sticky top-16 sm:top-20 z-30 -mt-3 sm:-mt-6 mx-auto max-w-7xl px-3.5 sm:px-6 lg:px-8">
         <div
-          className="rounded-2xl sm:rounded-[2rem] border border-[#60241E] bg-[#2D120F]/95 p-2.5 sm:p-4 shadow-2xl backdrop-blur-md"
+          className={`rounded-2xl sm:rounded-[2rem] border p-2.5 sm:p-4 shadow-xl backdrop-blur-md transition-colors duration-300 ${
+            isDark
+              ? 'border-[#60241E] bg-[#2D120F]/95'
+              : 'border-[#E6DACD] bg-white/95 shadow-[#2B120E]/5'
+          }`}
         >
           {/* Top Row: Search Input + Compact Sort Button + Reset */}
           <div className="flex items-center gap-2">
@@ -331,14 +406,20 @@ useEffect(() => {
             <div className="relative flex-1 min-w-0">
               <Search
                 size={16}
-                className="pointer-events-none absolute left-3 sm:left-3.5 top-1/2 -translate-y-1/2 text-amber-200/50"
+                className={`pointer-events-none absolute left-3 sm:left-3.5 top-1/2 -translate-y-1/2 ${
+                  isDark ? 'text-amber-200/50' : 'text-[#8C6B62]'
+                }`}
               />
               <input
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Cari menu katering..."
-                className="h-11 sm:h-12 w-full rounded-xl sm:rounded-2xl border border-[#60241E] bg-[#1C0B09] pl-9 sm:pl-10 pr-8 sm:pr-9 text-xs sm:text-sm font-medium text-white outline-none transition placeholder:text-amber-200/40 focus:border-[#F59E0B] focus:ring-2 focus:ring-[#F59E0B]/20"
+                className={`h-11 sm:h-12 w-full rounded-xl sm:rounded-2xl border pl-9 sm:pl-10 pr-8 sm:pr-9 text-xs sm:text-sm font-medium outline-none transition ${
+                  isDark
+                    ? 'border-[#60241E] bg-[#1C0B09] text-white placeholder:text-amber-200/40 focus:border-[#F59E0B] focus:ring-2 focus:ring-[#F59E0B]/20'
+                    : 'border-[#E6DACD] bg-[#FAF5EE] text-[#2B120E] placeholder:text-[#8C6B62]/60 focus:border-[#D97706] focus:ring-2 focus:ring-[#D97706]/20'
+                }`}
               />
               {search && (
                 <button
@@ -347,7 +428,11 @@ useEffect(() => {
                     setSearch('')
                     setDebouncedSearch('')
                   }}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 flex h-5 w-5 items-center justify-center rounded-full text-amber-200/50 hover:bg-[#3B1814] hover:text-white"
+                  className={`absolute right-2.5 top-1/2 -translate-y-1/2 flex h-5 w-5 items-center justify-center rounded-full ${
+                    isDark
+                      ? 'text-amber-200/50 hover:bg-[#3B1814] hover:text-white'
+                      : 'text-[#8C6B62] hover:bg-[#FAF0E4] hover:text-[#2B120E]'
+                  }`}
                   aria-label="Bersihkan pencarian"
                 >
                   <X size={13} />
@@ -355,18 +440,20 @@ useEffect(() => {
               )}
             </div>
 
-            {/* Sort Button (Compact, aligned with search bar) */}
+            {/* Sort Button */}
             <div className="relative shrink-0">
               <div
                 className={`flex h-11 sm:h-12 items-center gap-1.5 rounded-xl sm:rounded-2xl border px-3 sm:px-4 text-xs font-bold transition shadow-2xs cursor-pointer ${
                   sortBy !== 'default'
                     ? 'border-[#F59E0B] bg-[#F59E0B] text-[#1C0B09] shadow-md'
-                    : 'border-[#60241E] bg-[#1C0B09] text-amber-100/80 hover:bg-[#361613] hover:border-[#F59E0B]/40'
+                    : isDark
+                      ? 'border-[#60241E] bg-[#1C0B09] text-amber-100/80 hover:bg-[#361613] hover:border-[#F59E0B]/40'
+                      : 'border-[#E6DACD] bg-[#FAF5EE] text-[#5C3831] hover:bg-white hover:border-[#D97706]/40'
                 }`}
               >
                 <ArrowUpDown
                   size={14}
-                  className={sortBy !== 'default' ? 'text-[#1C0B09]' : 'text-amber-300'}
+                  className={sortBy !== 'default' ? 'text-[#1C0B09]' : isDark ? 'text-amber-300' : 'text-[#D97706]'}
                 />
                 <span className="hidden sm:inline">
                   {sortBy === 'default'
@@ -392,7 +479,7 @@ useEffect(() => {
                 </span>
                 <ChevronDown
                   size={13}
-                  className={`transition ${sortBy !== 'default' ? 'text-[#1C0B09]' : 'text-amber-300'}`}
+                  className={`transition ${sortBy !== 'default' ? 'text-[#1C0B09]' : isDark ? 'text-amber-300' : 'text-[#D97706]'}`}
                 />
               </div>
 
@@ -403,20 +490,24 @@ useEffect(() => {
                 aria-label="Urutkan daftar menu"
                 className="absolute inset-0 h-full w-full opacity-0 cursor-pointer text-xs"
               >
-                <option value="default" className="bg-[#1C0B09] text-white">Urutan: Rekomendasi</option>
-                <option value="price-asc" className="bg-[#1C0B09] text-white">Harga: Termurah ke Tertinggi</option>
-                <option value="price-desc" className="bg-[#1C0B09] text-white">Harga: Tertinggi ke Termurah</option>
-                <option value="min-order" className="bg-[#1C0B09] text-white">Porsi Minimal Terkecil</option>
-                <option value="name-asc" className="bg-[#1C0B09] text-white">Nama Menu: A - Z</option>
+                <option value="default" className={isDark ? 'bg-[#1C0B09] text-white' : 'bg-white text-[#2B120E]'}>Urutan: Rekomendasi</option>
+                <option value="price-asc" className={isDark ? 'bg-[#1C0B09] text-white' : 'bg-white text-[#2B120E]'}>Harga: Termurah ke Tertinggi</option>
+                <option value="price-desc" className={isDark ? 'bg-[#1C0B09] text-white' : 'bg-white text-[#2B120E]'}>Harga: Tertinggi ke Termurah</option>
+                <option value="min-order" className={isDark ? 'bg-[#1C0B09] text-white' : 'bg-white text-[#2B120E]'}>Porsi Minimal Terkecil</option>
+                <option value="name-asc" className={isDark ? 'bg-[#1C0B09] text-white' : 'bg-white text-[#2B120E]'}>Nama Menu: A - Z</option>
               </select>
             </div>
 
-            {/* Reset Filters (Only when filter active) */}
+            {/* Reset Filters */}
             {hasFilter && (
               <button
                 type="button"
                 onClick={clearFilters}
-                className="h-11 sm:h-12 shrink-0 rounded-xl sm:rounded-2xl border border-[#B34A44] bg-[#60241E]/80 px-2.5 sm:px-3 text-xs font-bold text-amber-200 hover:bg-[#60241E] transition shadow-2xs"
+                className={`h-11 sm:h-12 shrink-0 rounded-xl sm:rounded-2xl border px-2.5 sm:px-3 text-xs font-bold transition shadow-2xs cursor-pointer ${
+                  isDark
+                    ? 'border-[#B34A44] bg-[#60241E]/80 text-amber-200 hover:bg-[#60241E]'
+                    : 'border-[#E6DACD] bg-[#FAF0E4] text-[#8C4320] hover:bg-[#F3E7D9]'
+                }`}
                 title="Reset semua filter"
               >
                 Reset
@@ -424,22 +515,32 @@ useEffect(() => {
             )}
           </div>
 
-          {/* Bottom Row: Horizontal Scrollable Compact Category Chips */}
-          <div className="mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-[#60241E]/60 w-full overflow-hidden">
+          {/* Bottom Row: Horizontal Scrollable Category Chips */}
+          <div
+            className={`mt-2 sm:mt-3 pt-2 sm:pt-3 border-t w-full overflow-hidden ${
+              isDark ? 'border-[#60241E]/60' : 'border-[#EFE5D8]'
+            }`}
+          >
             <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto scrollbar-none py-0.5 touch-pan-x">
               <button
                 type="button"
                 onClick={() => setActiveCategory('all')}
-                className={`shrink-0 inline-flex items-center h-9 sm:h-10 px-3 sm:px-4 rounded-xl text-xs sm:text-[13px] font-bold transition-all duration-200 whitespace-nowrap ${
+                className={`shrink-0 inline-flex items-center h-9 sm:h-10 px-3 sm:px-4 rounded-xl text-xs sm:text-[13px] font-bold transition-all duration-200 whitespace-nowrap cursor-pointer ${
                   activeCategory === 'all'
                     ? 'bg-gradient-to-r from-[#F59E0B] to-[#E77B49] text-[#1C0B09] shadow-md shadow-[#F59E0B]/20 font-black'
-                    : 'bg-[#1C0B09] text-amber-100/70 hover:bg-[#381612] hover:text-white border border-[#60241E]'
+                    : isDark
+                      ? 'bg-[#1C0B09] text-amber-100/70 hover:bg-[#381612] hover:text-white border border-[#60241E]'
+                      : 'bg-[#FAF5EE] text-[#5C3831] hover:bg-white hover:text-[#2B120E] border border-[#E6DACD]'
                 }`}
               >
                 <span>Semua Menu</span>
                 <span
                   className={`ml-1.5 text-[10px] ${
-                    activeCategory === 'all' ? 'text-[#1C0B09] font-black' : 'text-amber-200/50 font-medium'
+                    activeCategory === 'all'
+                      ? 'text-[#1C0B09] font-black'
+                      : isDark
+                        ? 'text-amber-200/50 font-medium'
+                        : 'text-[#8C6B62] font-medium'
                   }`}
                 >
                   ({products?.length ?? 0})
@@ -453,16 +554,22 @@ useEffect(() => {
                     key={category.id}
                     type="button"
                     onClick={() => setActiveCategory(category.slug)}
-                    className={`shrink-0 inline-flex items-center h-9 sm:h-10 px-3 sm:px-4 rounded-xl text-xs sm:text-[13px] font-bold transition-all duration-200 whitespace-nowrap ${
+                    className={`shrink-0 inline-flex items-center h-9 sm:h-10 px-3 sm:px-4 rounded-xl text-xs sm:text-[13px] font-bold transition-all duration-200 whitespace-nowrap cursor-pointer ${
                       isActive
                         ? 'bg-gradient-to-r from-[#F59E0B] to-[#E77B49] text-[#1C0B09] shadow-md shadow-[#F59E0B]/20 font-black'
-                        : 'bg-[#1C0B09] text-amber-100/70 hover:bg-[#381612] hover:text-white border border-[#60241E]'
+                        : isDark
+                          ? 'bg-[#1C0B09] text-amber-100/70 hover:bg-[#381612] hover:text-white border border-[#60241E]'
+                          : 'bg-[#FAF5EE] text-[#5C3831] hover:bg-white hover:text-[#2B120E] border border-[#E6DACD]'
                     }`}
                   >
                     <span>{category.name}</span>
                     <span
                       className={`ml-1.5 text-[10px] ${
-                        isActive ? 'text-[#1C0B09] font-black' : 'text-amber-200/50 font-medium'
+                        isActive
+                          ? 'text-[#1C0B09] font-black'
+                          : isDark
+                            ? 'text-amber-200/50 font-medium'
+                            : 'text-[#8C6B62] font-medium'
                       }`}
                     >
                       ({category.count})
@@ -478,19 +585,21 @@ useEffect(() => {
       {/* =====================================================
           MAIN MENU GRID SECTION
       ====================================================== */}
-      <section id='menu-list' className="scroll-mt-24 mx-auto max-w-7xl px-3.5 sm:px-6 lg:px-8 pt-3 sm:pt-6 pb-12 sm:pb-16 lg:pb-20">
+      <section id="menu-list" className="scroll-mt-24 mx-auto max-w-7xl px-3.5 sm:px-6 lg:px-8 pt-3 sm:pt-6 pb-12 sm:pb-16 lg:pb-20">
         {/* Results Count & Quick Notice */}
         <div
           data-aos="fade-in"
           data-aos-duration="500"
-          className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5 sm:gap-2 pb-2.5 sm:pb-4 border-b border-[#60241E]/60 text-amber-100/70"
+          className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5 sm:gap-2 pb-2.5 sm:pb-4 border-b ${
+            isDark ? 'border-[#60241E]/60 text-amber-100/70' : 'border-[#EFE5D8] text-[#6B423A]'
+          }`}
         >
           <p className="text-xs font-bold uppercase tracking-wider">
             {isLoading ? (
               <span>Memuat menu pilihan katering...</span>
             ) : (
               <>
-                Menampilkan <span className="text-white font-black">{filteredProducts.length}</span> menu pilihan
+                Menampilkan <span className={isDark ? 'text-white font-black' : 'text-[#2B120E] font-black'}>{filteredProducts.length}</span> menu pilihan
                 {activeCategory !== 'all' && (
                   <span> dalam kategori <span className="text-[#F59E0B] font-bold capitalize">"{activeCategory.replace(/-/g, ' ')}"</span></span>
                 )}
@@ -513,22 +622,34 @@ useEffect(() => {
           <div
             data-aos="zoom-in"
             data-aos-duration="500"
-            className="my-10 sm:my-16 rounded-[2rem] sm:rounded-[2.5rem] border border-dashed border-[#60241E] bg-[#2D120F] p-8 sm:p-12 text-center shadow-xl"
+            className={`my-10 sm:my-16 rounded-[2rem] sm:rounded-[2.5rem] border border-dashed p-8 sm:p-12 text-center shadow-xl ${
+              isDark
+                ? 'border-[#60241E] bg-[#2D120F]'
+                : 'border-[#E6DACD] bg-white shadow-[#2B120E]/5'
+            }`}
           >
-            <div className="mx-auto flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-2xl bg-[#3B1814] text-[#F59E0B]">
+            <div
+              className={`mx-auto flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-2xl ${
+                isDark ? 'bg-[#3B1814] text-[#F59E0B]' : 'bg-[#FAF0E4] text-[#D97706]'
+              }`}
+            >
               <Search size={22} />
             </div>
-            <h3 className="mt-3 text-lg sm:text-xl font-dhaksinarga tracking-wide text-white">
+            <h3
+              className={`mt-3 text-lg sm:text-xl font-dhaksinarga tracking-wide ${
+                isDark ? 'text-white' : 'text-[#2B120E]'
+              }`}
+            >
               Menu Tidak Ditemukan
             </h3>
-            <p className="mt-1.5 text-xs sm:text-sm text-amber-100/70 max-w-md mx-auto">
+            <p className={`mt-1.5 text-xs sm:text-sm max-w-md mx-auto ${isDark ? 'text-amber-100/70' : 'text-[#6B423A]'}`}>
               Tidak ada menu katering yang cocok dengan kata kunci{' '}
               <span className="font-bold text-[#F59E0B]">"{search}"</span>. Coba gunakan kata kunci lain atau reset filter.
             </p>
             <button
               type="button"
               onClick={clearFilters}
-              className="mt-5 inline-flex items-center gap-2 rounded-2xl bg-[#F59E0B] px-5 sm:px-6 py-2.5 sm:py-3 text-xs font-black text-[#1C0B09] transition hover:bg-amber-400"
+              className="mt-5 inline-flex items-center gap-2 rounded-2xl bg-[#F59E0B] px-5 sm:px-6 py-2.5 sm:py-3 text-xs font-black text-[#1C0B09] transition hover:bg-amber-400 cursor-pointer"
             >
               Tampilkan Semua Menu
             </button>
@@ -549,9 +670,13 @@ useEffect(() => {
                   data-aos="fade-up"
                   data-aos-delay={cardDelay}
                   data-aos-duration="600"
-                  className="group relative flex flex-col overflow-hidden rounded-[2rem] border border-[#60241E]/80 bg-[#2D120F] shadow-lg transition-all duration-500 hover:-translate-y-2 hover:border-[#F59E0B]/50 hover:shadow-2xl hover:shadow-black/60"
+                  className={`group relative flex flex-col overflow-hidden rounded-[2rem] border shadow-lg transition-all duration-500 hover:-translate-y-2 ${
+                    isDark
+                      ? 'border-[#60241E]/80 bg-[#2D120F] hover:border-[#F59E0B]/50 hover:shadow-2xl hover:shadow-black/60'
+                      : 'border-[#E6DACD] bg-white hover:border-[#D97706]/50 shadow-[#2B120E]/5 hover:shadow-xl'
+                  }`}
                 >
-                  {/* Image Container with Luxury Floating Badges */}
+                  {/* Image Container with Floating Badges */}
                   <div className="relative aspect-[4/3] overflow-hidden bg-[#1A0A08]">
                     <img
                       src={displayImage}
@@ -560,7 +685,7 @@ useEffect(() => {
                       className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-108"
                     />
 
-                    {/* Gradient Soft Shadow for Legibility */}
+                    {/* Gradient Soft Shadow */}
                     <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#1C0B09]/80 via-black/20 to-transparent" />
 
                     {/* Top Left: Minimum Order Badge */}
@@ -599,49 +724,93 @@ useEffect(() => {
                     {/* Category Eyebrow & Halal Badge */}
                     <div className="flex items-center justify-between gap-2 mb-2.5">
                       {item.category ? (
-                        <span className="inline-flex items-center rounded-lg bg-[#3B1814] border border-[#60241E] px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-amber-300">
+                        <span
+                          className={`inline-flex items-center rounded-lg px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider ${
+                            isDark
+                              ? 'bg-[#3B1814] border border-[#60241E] text-amber-300'
+                              : 'bg-[#FAF0E4] border border-[#E6DACD] text-[#8C4320]'
+                          }`}
+                        >
                           {item.category.name}
                         </span>
                       ) : (
-                        <span className="inline-flex items-center rounded-lg bg-[#3B1814] border border-[#60241E] px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-amber-300">
+                        <span
+                          className={`inline-flex items-center rounded-lg px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
+                            isDark
+                              ? 'bg-[#3B1814] border border-[#60241E] text-amber-300'
+                              : 'bg-[#FAF0E4] border border-[#E6DACD] text-[#8C4320]'
+                          }`}
+                        >
                           Paket Nasi Box
                         </span>
                       )}
 
-                      <span className="flex items-center gap-1 text-[10px] font-bold text-emerald-400 bg-[#1C0B09] border border-[#60241E] px-2 py-0.5 rounded-md">
-                        <ShieldCheck size={11} className="text-emerald-400" />
+                      <span
+                        className={`flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-md ${
+                          isDark
+                            ? 'text-emerald-400 bg-[#1C0B09] border border-[#60241E]'
+                            : 'text-emerald-700 bg-emerald-50 border border-emerald-200'
+                        }`}
+                      >
+                        <ShieldCheck size={11} className={isDark ? 'text-emerald-400' : 'text-emerald-600'} />
                         100% Halal
                       </span>
                     </div>
 
                     {/* Product Name in Dhaksinarga */}
-                    <h3 className="text-lg sm:text-xl font-dhaksinarga tracking-wide text-white leading-snug group-hover:text-[#F59E0B] transition-colors line-clamp-1">
+                    <h3
+                      className={`text-lg sm:text-xl font-dhaksinarga tracking-wide leading-snug transition-colors line-clamp-1 ${
+                        isDark ? 'text-white group-hover:text-[#F59E0B]' : 'text-[#2B120E] group-hover:text-[#D97706]'
+                      }`}
+                    >
                       <Link to={`/menu/${item.slug}`}>
                         {item.name}
                       </Link>
                     </h3>
 
                     {/* Description */}
-                    <p className="mt-2 text-xs sm:text-sm leading-relaxed text-amber-100/70 line-clamp-2">
+                    <p
+                      className={`mt-2 text-xs sm:text-sm leading-relaxed line-clamp-2 ${
+                        isDark ? 'text-amber-100/70' : 'text-[#6B423A]'
+                      }`}
+                    >
                       {item.description ||
                         'Paket catering spesial dengan rasa gurih meresap, higienis, dan dikemas rapi siap saji.'}
                     </p>
 
                     {/* Price and Action Section */}
-                    <div className="mt-auto pt-5 border-t border-[#60241E]/60 flex items-center justify-between gap-3">
+                    <div
+                      className={`mt-auto pt-5 border-t flex items-center justify-between gap-3 ${
+                        isDark ? 'border-[#60241E]/60' : 'border-[#EFE5D8]'
+                      }`}
+                    >
                       {/* Price Block */}
                       <div className="flex flex-col">
-                        <span className="text-[10px] font-extrabold uppercase tracking-widest text-amber-200/50">
+                        <span
+                          className={`text-[10px] font-extrabold uppercase tracking-widest ${
+                            isDark ? 'text-amber-200/50' : 'text-[#8C6B62]'
+                          }`}
+                        >
                           Mulai Dari
                         </span>
                         <div className="flex items-baseline gap-1 mt-0.5">
                           <span className="text-xs sm:text-sm font-extrabold text-[#F59E0B] font-poppins">
                             Rp
                           </span>
-                          <span className="text-2xl sm:text-[28px] font-black tracking-tight text-white font-poppins group-hover:text-[#F59E0B] transition-colors">
+                          <span
+                            className={`text-2xl sm:text-[28px] font-black tracking-tight font-poppins transition-colors ${
+                              isDark
+                                ? 'text-white group-hover:text-[#F59E0B]'
+                                : 'text-[#2B120E] group-hover:text-[#D97706]'
+                            }`}
+                          >
                             {unitPrice.toLocaleString('id-ID')}
                           </span>
-                          <span className="text-[11px] font-semibold text-amber-200/50">
+                          <span
+                            className={`text-[11px] font-semibold ${
+                              isDark ? 'text-amber-200/50' : 'text-[#8C6B62]'
+                            }`}
+                          >
                             /box
                           </span>
                         </div>
@@ -672,35 +841,57 @@ useEffect(() => {
           data-aos="fade-up"
           data-aos-duration="700"
           data-aos-offset="60"
-          className="relative overflow-hidden rounded-[2.5rem] border-2 border-[#B34A44]/40 bg-gradient-to-br from-[#2D120F] via-[#381612] to-[#451B17] p-8 sm:p-12 lg:p-16 shadow-2xl"
+          className={`relative overflow-hidden rounded-[2.5rem] p-8 sm:p-12 lg:p-16 shadow-2xl transition-colors duration-300 ${
+            isDark
+              ? 'border-2 border-[#B34A44]/40 bg-gradient-to-br from-[#2D120F] via-[#381612] to-[#451B17] text-white'
+              : 'border-2 border-[#E77B49]/40 bg-gradient-to-br from-[#FAF3EA] via-[#F4E9DC] to-[#EFE1D1] text-[#2B120E]'
+          }`}
         >
           <div className="grid gap-8 lg:grid-cols-[1.4fr_0.8fr] lg:items-center">
             <div data-aos="fade-right" data-aos-delay="100" data-aos-duration="650">
-              <div className="inline-flex items-center gap-2 rounded-full border border-[#F59E0B]/40 bg-[#60241E] px-3.5 py-1 text-[11px] font-bold uppercase tracking-wider text-amber-300 shadow-sm">
-                <CheckCircle2 size={13} className="text-[#F59E0B]" />
+              <div
+                className={`inline-flex items-center gap-2 rounded-full px-3.5 py-1 text-[11px] font-bold uppercase tracking-wider shadow-sm ${
+                  isDark
+                    ? 'border border-[#F59E0B]/40 bg-[#60241E] text-amber-300'
+                    : 'border border-[#D97706]/40 bg-[#FAF0E4] text-[#8C4320]'
+                }`}
+              >
+                <CheckCircle2 size={13} className={isDark ? 'text-[#F59E0B]' : 'text-[#D97706]'} />
                 Konsultasi & Penawaran Katering Resmi
               </div>
 
-              <h2 className="mt-4 text-3xl font-dhaksinarga tracking-wide text-white sm:text-4xl lg:text-5xl leading-tight">
+              <h2
+                className={`mt-4 text-3xl font-dhaksinarga tracking-wide sm:text-4xl lg:text-5xl leading-tight ${
+                  isDark ? 'text-white' : 'text-[#2B120E]'
+                }`}
+              >
                 Punya Kebutuhan Khusus atau Ratusan Porsi?
               </h2>
 
-              <p className="mt-4 text-sm sm:text-base leading-relaxed text-amber-100/75 max-w-2xl">
+              <p
+                className={`mt-4 text-sm sm:text-base leading-relaxed max-w-2xl ${
+                  isDark ? 'text-amber-100/75' : 'text-[#5C3831]'
+                }`}
+              >
                 Tim Pawon Hara siap membantu penyesuaian menu, penjadwalan waktu pengantaran ke lokasi acara Anda,
                 serta menerbitkan invoice resmi untuk pembayaran transfer perusahaan ataupun pribadi.
               </p>
 
-              <div className="mt-6 flex flex-wrap gap-4 text-xs font-semibold text-amber-100/90">
+              <div
+                className={`mt-6 flex flex-wrap gap-4 text-xs font-semibold ${
+                  isDark ? 'text-amber-100/90' : 'text-[#5C3831]'
+                }`}
+              >
                 <div className="flex items-center gap-1.5">
-                  <CheckCircle2 size={14} className="text-[#F59E0B]" />
+                  <CheckCircle2 size={14} className={isDark ? 'text-[#F59E0B]' : 'text-[#D97706]'} />
                   Bisa Uji Cicip (Sample Menu)
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <CheckCircle2 size={14} className="text-[#F59E0B]" />
+                  <CheckCircle2 size={14} className={isDark ? 'text-[#F59E0B]' : 'text-[#D97706]'} />
                   Invoice & Kuitansi Lengkap
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <CheckCircle2 size={14} className="text-[#F59E0B]" />
+                  <CheckCircle2 size={14} className={isDark ? 'text-[#F59E0B]' : 'text-[#D97706]'} />
                   Kapasitas hingga 2.000+ porsi/hari
                 </div>
               </div>
@@ -724,7 +915,11 @@ useEffect(() => {
 
               <Link
                 to="/cara-pesan"
-                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[#E77B49]/50 bg-[#1C0B09] px-6 py-3.5 text-xs font-bold text-white transition hover:bg-[#250D0A]"
+                className={`inline-flex items-center justify-center gap-2 rounded-2xl border px-6 py-3.5 text-xs font-bold transition ${
+                  isDark
+                    ? 'border-[#E77B49]/50 bg-[#1C0B09] text-white hover:bg-[#250D0A]'
+                    : 'border-[#E6DACD] bg-white text-[#2B120E] hover:bg-[#FAF4ED]'
+                }`}
               >
                 Pelajari Cara Pemesanan
               </Link>

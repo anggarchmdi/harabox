@@ -17,7 +17,6 @@ import {
   Users,
   ShoppingBasket,
   SlidersHorizontal,
-
 } from 'lucide-react'
 
 import { productService } from '../services/products.service'
@@ -26,6 +25,7 @@ import type { Product } from '../types/products'
 import PageLoader from '../components/ui/PageLoader'
 import ProductCardSkeleton from '../components/ui/ProductCardSkeleton'
 import TestimonialSlider from '../components/home/TestimonialSlider'
+import { useThemeStore } from '../stores/theme.store'
 
 import HeroImg from '../assets/bannerss.webp'
 import BentoKatsuImg from '../assets/nasibox/bento-katsu-b.webp'
@@ -242,6 +242,9 @@ const faqs = [
 ]
 
 export default function HomePage() {
+  const theme = useThemeStore((state) => state.theme)
+  const isDark = theme === 'dark'
+
   // State untuk kategori filter menu
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
 
@@ -307,7 +310,13 @@ export default function HomePage() {
     encodeURIComponent('Halo Pawon Hara, saya ingin konsultasi pemesanan katering nasi box untuk acara saya.')
 
   return (
-    <div className="overflow-hidden bg-[#1C0B09] text-stone-100 selection:bg-[#F59E0B] selection:text-[#1C0B09]">
+    <div
+      className={`overflow-hidden transition-colors duration-300 ${
+        isDark
+          ? 'bg-[#1C0B09] text-stone-100 selection:bg-[#F59E0B] selection:text-[#1C0B09]'
+          : 'bg-[#FBF7F2] text-[#2B120E] selection:bg-[#F59E0B] selection:text-[#2B120E]'
+      }`}
+    >
       {/* Branded Initial Page Loader */}
       <PageLoader
         isLoading={pageLoading}
@@ -319,11 +328,21 @@ export default function HomePage() {
       {/* =====================================================
           1. HERO BANNER & FLOATING RECOMMENDATION CARD (SUMMARY HOME)
       ====================================================== */}
-      <section className="w-full h-[400px] xl:h-[600px] bg-[#1C0B09] relative">
+      <section
+        className={`w-full h-[400px] xl:h-[600px] relative transition-colors duration-300 ${
+          isDark ? 'bg-[#1C0B09]' : 'bg-[#FBF7F2]'
+        }`}
+      >
         <div className="flex justify-center items-center w-full h-full md:hidden bg-linear-to-l">
           <img src={BannerMobile} className="w-full h-full object-cover object-bottom" alt="Pawon Hara Mobile Banner" />
         </div>
-        <div className="w-full absolute hidden md:flex z-10 h-[600px] bg-gradient-to-t from-[#1C0B09] via-transparent to-black/40" />
+        <div
+          className={`w-full absolute hidden md:flex z-10 h-[600px] bg-gradient-to-t ${
+            isDark
+              ? 'from-[#1C0B09] via-transparent to-black/40'
+              : 'from-black via-transparent to-black/30'
+          }`}
+        />
         <img
           src={HeroImg}
           alt="Pawon Hara Catering"
@@ -335,29 +354,45 @@ export default function HomePage() {
           <div
             data-aos="fade-up"
             data-aos-duration="700"
-            className="
+            className={`
               mx-auto w-full max-w-4xl
               rounded-3xl
-              border-2 border-[#60241E]
-              bg-[#2D120F]
               px-6 py-7
-              shadow-[0_16px_50px_rgba(0,0,0,0.5)]
+              transition-colors duration-300
               md:px-10 md:py-8
-            "
+              ${
+                isDark
+                  ? 'border-2 border-[#60241E] bg-[#2D120F] shadow-[0_16px_50px_rgba(0,0,0,0.5)]'
+                  : 'border-2 border-[#E6DACD] bg-white shadow-[0_16px_40px_rgba(96,36,30,0.08)]'
+              }
+            `}
           >
             <div className="flex flex-col items-center justify-between gap-6 md:flex-row">
               {/* Heading */}
               <div className="text-center md:text-left">
-                <div className="inline-flex items-center gap-2 rounded-full bg-[#60241E] border border-[#F59E0B]/40 px-3 py-1 text-xs font-black uppercase tracking-[0.18em] text-amber-300 shadow-2xs">
-                  {/* <span className="h-2 w-2 rounded-full bg-[#F59E0B] animate-ping" /> */}
+                <div
+                  className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-black uppercase tracking-[0.18em] shadow-2xs ${
+                    isDark
+                      ? 'bg-[#60241E] border border-[#F59E0B]/40 text-amber-300'
+                      : 'bg-[#FAF0E4] border border-[#D97706]/40 text-[#8C4320]'
+                  }`}
+                >
                   <span>Pawon Hara Catering</span>
                 </div>
 
-                <h2 className="mt-2 font-dhaksinarga tracking-wide text-2xl text-white md:text-3xl">
+                <h2
+                  className={`mt-2 font-dhaksinarga tracking-wide text-2xl md:text-3xl ${
+                    isDark ? 'text-white' : 'text-[#2B120E]'
+                  }`}
+                >
                   Siap pesan nasi box & bento lezat?
                 </h2>
 
-                <p className="mt-1.5 max-w-lg text-sm leading-relaxed text-amber-100/75">
+                <p
+                  className={`mt-1.5 max-w-lg text-sm leading-relaxed ${
+                    isDark ? 'text-amber-100/75' : 'text-[#6B423A]'
+                  }`}
+                >
                   Pilih menu favorit khas Pawon Hara, tentukan jumlah porsi, dan kami antar hangat tepat waktu sebelum acara.
                 </p>
               </div>
@@ -385,19 +420,35 @@ export default function HomePage() {
             </div>
 
             {/* Quick Info */}
-            <div className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 border-t border-[#60241E]/80 pt-5 md:justify-start">
-              <span className="text-xs flex items-center gap-2 font-bold text-amber-100/80">
+            <div
+              className={`mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 border-t pt-5 md:justify-start ${
+                isDark ? 'border-[#60241E]/80' : 'border-[#EFE5D8]'
+              }`}
+            >
+              <span
+                className={`text-xs flex items-center gap-2 font-bold ${
+                  isDark ? 'text-amber-100/80' : 'text-[#5C3831]'
+                }`}
+              >
                 <ShoppingBasket className="h-4 w-4 text-[#F59E0B]" />
                 <span>Minimal 10 porsi</span>
               </span>
 
-              <span className="text-xs flex items-center gap-2 font-bold text-amber-100/80">
+              <span
+                className={`text-xs flex items-center gap-2 font-bold ${
+                  isDark ? 'text-amber-100/80' : 'text-[#5C3831]'
+                }`}
+              >
                 <SlidersHorizontal className="h-4 w-4 text-[#F59E0B]" />
                 <span>Bisa custom menu</span>
               </span>
 
-              <span className="text-xs flex items-center gap-2 font-bold text-amber-100/80">
-                <MessageCircle className="h-4 w-4 text-emerald-400" />
+              <span
+                className={`text-xs flex items-center gap-2 font-bold ${
+                  isDark ? 'text-amber-100/80' : 'text-[#5C3831]'
+                }`}
+              >
+                <MessageCircle className="h-4 w-4 text-emerald-500" />
                 <span>Pesan mudah via WhatsApp</span>
               </span>
             </div>
@@ -417,13 +468,31 @@ export default function HomePage() {
                 key={idx}
                 data-aos="fade-up"
                 data-aos-delay={idx * 100}
-                className="group relative rounded-3xl border border-[#60241E]/80 bg-[#2D120F] p-6 shadow-lg shadow-black/30 transition duration-300 hover:-translate-y-1.5 hover:border-[#F59E0B]/50 hover:bg-[#361613]"
+                className={`group relative rounded-3xl p-6 transition duration-300 hover:-translate-y-1.5 ${
+                  isDark
+                    ? 'border border-[#60241E]/80 bg-[#2D120F] shadow-lg shadow-black/30 hover:border-[#F59E0B]/50 hover:bg-[#361613]'
+                    : 'border border-[#E6DACD] bg-white shadow-md shadow-[#2B120E]/5 hover:border-[#D97706]/50 hover:bg-[#FCF9F5] hover:shadow-xl'
+                }`}
               >
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-[#60241E] to-[#95271D] text-[#F59E0B] transition-colors duration-300 group-hover:bg-[#F59E0B] group-hover:text-[#1C0B09] shadow-2xs ring-1 ring-[#F59E0B]/30">
+                <div
+                  className={`flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-[#60241E] to-[#95271D] text-[#F59E0B] transition-colors duration-300 group-hover:bg-[#F59E0B] group-hover:text-[#1C0B09] shadow-2xs ring-1 ${
+                    isDark ? 'ring-[#F59E0B]/30' : 'ring-[#D97706]/20'
+                  }`}
+                >
                   <Icon size={22} />
                 </div>
-                <h3 className="mt-4 text-base font-black text-white group-hover:text-[#F59E0B] transition-colors">{pillar.title}</h3>
-                <p className="mt-1.5 text-xs sm:text-sm text-amber-100/70 leading-relaxed">
+                <h3
+                  className={`mt-4 text-base font-black transition-colors ${
+                    isDark ? 'text-white group-hover:text-[#F59E0B]' : 'text-[#2B120E] group-hover:text-[#D97706]'
+                  }`}
+                >
+                  {pillar.title}
+                </h3>
+                <p
+                  className={`mt-1.5 text-xs sm:text-sm leading-relaxed ${
+                    isDark ? 'text-amber-100/70' : 'text-[#6B423A]'
+                  }`}
+                >
                   {pillar.description}
                 </p>
               </div>
@@ -435,7 +504,12 @@ export default function HomePage() {
       {/* =====================================================
           3. FEATURED MENU SHOWCASE
       ====================================================== */}
-      <section id="menu" className="py-16 sm:py-24 bg-[#240E0C] border-y border-[#60241E]/60">
+      <section
+        id="menu"
+        className={`py-16 sm:py-24 border-y transition-colors duration-300 ${
+          isDark ? 'bg-[#240E0C] border-[#60241E]/60' : 'bg-[#F5EDE4] border-[#E6DACD]'
+        }`}
+      >
         <div className="mx-auto max-w-7xl px-5 sm:px-8">
           {/* Section Header */}
           <div
@@ -443,20 +517,36 @@ export default function HomePage() {
             className="flex flex-col md:flex-row md:items-end justify-between gap-6"
           >
             <div>
-              <span className="rounded-full bg-[#60241E] border border-[#F59E0B]/40 px-3.5 py-1 text-xs font-black uppercase tracking-wider text-amber-300">
+              <span
+                className={`rounded-full px-3.5 py-1 text-xs font-black uppercase tracking-wider ${
+                  isDark
+                    ? 'bg-[#60241E] border border-[#F59E0B]/40 text-amber-300'
+                    : 'bg-[#FAF0E4] border border-[#D97706]/40 text-[#8C4320]'
+                }`}
+              >
                 Pilihan Favorit
               </span>
-              <h2 className="mt-3 text-3xl sm:text-4xl lg:text-5xl font-dhaksinarga tracking-wide text-white">
+              <h2
+                className={`mt-3 text-3xl sm:text-4xl lg:text-5xl font-dhaksinarga tracking-wide ${
+                  isDark ? 'text-white' : 'text-[#2B120E]'
+                }`}
+              >
                 Menu Katering <span className="text-[#F59E0B]">Paling Laris</span>
               </h2>
-              <p className="mt-2 text-sm sm:text-base text-amber-100/70 max-w-xl">
+              <p
+                className={`mt-2 text-sm sm:text-base max-w-xl ${
+                  isDark ? 'text-amber-100/70' : 'text-[#6B423A]'
+                }`}
+              >
                 Dibuat segar setiap hari dengan bahan berkualitas tinggi dan bumbu racikan khas Pawon Hara.
               </p>
             </div>
 
             <Link
               to="/menu"
-              className="inline-flex items-center gap-2 text-sm font-black text-[#F59E0B] hover:text-amber-300 transition"
+              className={`inline-flex items-center gap-2 text-sm font-black transition ${
+                isDark ? 'text-[#F59E0B] hover:text-amber-300' : 'text-[#D97706] hover:text-[#B45309]'
+              }`}
             >
               <span>Lihat Semua Menu</span>
               <ArrowRight size={16} />
@@ -475,19 +565,25 @@ export default function HomePage() {
               { id: 'krisbar', label: 'Ayam Krisbar' },
               { id: 'kuning', label: 'Nasi Kuning' },
               { id: 'rames', label: 'Rames Nusantara' },
-            ].map((tab) => (
-              <button
-                key={tab.id}
-                type="button"
-                onClick={() => setSelectedCategory(tab.id)}
-                className={`shrink-0 rounded-2xl px-4 py-2 text-xs sm:text-sm font-bold transition cursor-pointer ${selectedCategory === tab.id
-                  ? 'bg-[#F59E0B] text-[#1C0B09] font-black shadow-lg shadow-[#F59E0B]/25 ring-2 ring-[#F59E0B]'
-                  : 'bg-[#2D120F] text-amber-100/80 border border-[#60241E] hover:bg-[#3B1814] hover:text-white'
+            ].map((tab) => {
+              const isActive = selectedCategory === tab.id
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => setSelectedCategory(tab.id)}
+                  className={`shrink-0 rounded-2xl px-4 py-2 text-xs sm:text-sm font-bold transition cursor-pointer ${
+                    isActive
+                      ? 'bg-[#F59E0B] text-[#1C0B09] font-black shadow-lg shadow-[#F59E0B]/25 ring-2 ring-[#F59E0B]'
+                      : isDark
+                        ? 'bg-[#2D120F] text-amber-100/80 border border-[#60241E] hover:bg-[#3B1814] hover:text-white'
+                        : 'bg-white text-[#5C3831] border border-[#E6DACD] hover:bg-[#FAF0E4] hover:text-[#2B120E]'
                   }`}
-              >
-                {tab.label}
-              </button>
-            ))}
+                >
+                  {tab.label}
+                </button>
+              )
+            })}
           </div>
 
           {/* Product Grid */}
@@ -500,7 +596,8 @@ export default function HomePage() {
               {displayProducts.map((item, idx) => {
                 const isApiItem = 'category_id' in item
                 const name = item.name
-                const description = item.description || 'Pilihan katering praktis higienis dengan lauk lengkap dan porsi mengenyangkan.'
+                const description =
+                  item.description || 'Pilihan katering praktis higienis dengan lauk lengkap dan porsi mengenyangkan.'
                 const imageSrc = isApiItem ? resolveProductImage(item as Product) : (item as CuratedProduct).image
                 const priceLabel = isApiItem
                   ? `Rp ${Number((item as Product).price).toLocaleString('id-ID')}`
@@ -519,7 +616,11 @@ export default function HomePage() {
                     key={idx}
                     data-aos="fade-up"
                     data-aos-delay={(idx % 3) * 100}
-                    className="group flex flex-col overflow-hidden rounded-3xl border border-[#60241E]/80 bg-[#2D120F] transition duration-300 hover:-translate-y-1.5 hover:border-[#F59E0B]/60 hover:shadow-2xl hover:shadow-black/50"
+                    className={`group flex flex-col overflow-hidden rounded-3xl transition duration-300 hover:-translate-y-1.5 ${
+                      isDark
+                        ? 'border border-[#60241E]/80 bg-[#2D120F] hover:border-[#F59E0B]/60 hover:shadow-2xl hover:shadow-black/50'
+                        : 'border border-[#E6DACD] bg-white shadow-md shadow-[#2B120E]/5 hover:border-[#D97706]/60 hover:shadow-xl'
+                    }`}
                   >
                     {/* Image Container */}
                     <div className="relative aspect-[4/3] w-full overflow-hidden bg-[#1A0A08]">
@@ -549,19 +650,37 @@ export default function HomePage() {
                     {/* Body Content */}
                     <div className="flex flex-1 flex-col p-6">
                       <div className="flex items-start justify-between gap-2">
-                        <h3 className="text-lg font-black text-white group-hover:text-[#F59E0B] transition">
+                        <h3
+                          className={`text-lg font-black transition ${
+                            isDark ? 'text-white group-hover:text-[#F59E0B]' : 'text-[#2B120E] group-hover:text-[#D97706]'
+                          }`}
+                        >
                           {name}
                         </h3>
                       </div>
 
-                      <p className="mt-2 text-xs sm:text-sm text-amber-100/65 leading-relaxed line-clamp-2">
+                      <p
+                        className={`mt-2 text-xs sm:text-sm leading-relaxed line-clamp-2 ${
+                          isDark ? 'text-amber-100/65' : 'text-[#6B423A]'
+                        }`}
+                      >
                         {description}
                       </p>
 
                       {/* Card Footer */}
-                      <div className="mt-6 pt-4 border-t border-[#60241E]/70 flex items-center justify-between">
+                      <div
+                        className={`mt-6 pt-4 border-t flex items-center justify-between ${
+                          isDark ? 'border-[#60241E]/70' : 'border-[#EFE5D8]'
+                        }`}
+                      >
                         <div>
-                          <span className="text-[10px] font-bold uppercase text-stone-400">Harga per Box</span>
+                          <span
+                            className={`text-[10px] font-bold uppercase ${
+                              isDark ? 'text-stone-400' : 'text-[#8C6B62]'
+                            }`}
+                          >
+                            Harga per Box
+                          </span>
                           <p className="text-xl font-black text-[#F59E0B]">{priceLabel}</p>
                         </div>
 
@@ -583,13 +702,25 @@ export default function HomePage() {
           {/* Bottom Callout */}
           <div
             data-aos="fade-up"
-            className="mt-12 rounded-3xl border-2 border-[#B34A44]/40 bg-gradient-to-br from-[#2D120F] via-[#381612] to-[#451B17] p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 text-center sm:text-left shadow-xl"
+            className={`mt-12 rounded-3xl p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 text-center sm:text-left ${
+              isDark
+                ? 'border-2 border-[#B34A44]/40 bg-gradient-to-br from-[#2D120F] via-[#381612] to-[#451B17] text-white shadow-xl'
+                : 'border-2 border-[#E77B49]/40 bg-gradient-to-br from-[#FAF3EA] via-[#F4E9DC] to-[#EFE1D1] text-[#2B120E] shadow-lg'
+            }`}
           >
             <div>
-              <h4 className="text-lg sm:text-xl font-dhaksinarga tracking-wide text-white">
+              <h4
+                className={`text-lg sm:text-xl font-dhaksinarga tracking-wide ${
+                  isDark ? 'text-white' : 'text-[#2B120E]'
+                }`}
+              >
                 Punya Kebutuhan Menu atau Anggaran Khusus?
               </h4>
-              <p className="text-xs sm:text-sm text-amber-100/75 mt-1">
+              <p
+                className={`text-xs sm:text-sm mt-1 ${
+                  isDark ? 'text-amber-100/75' : 'text-[#5C3831]'
+                }`}
+              >
                 Kami siap membantu menyesuaikan lauk, snack box, atau buah pelengkap sesuai kebutuhan acara Anda
               </p>
             </div>
@@ -609,26 +740,36 @@ export default function HomePage() {
       {/* =====================================================
           4. BENTO GRID: KENAPA MEMILIH PAWON HARA?
       ====================================================== */}
-      <section className="py-20 sm:py-28 bg-[#1C0B09] text-white">
+      <section
+        className={`py-20 sm:py-28 transition-colors duration-300 ${
+          isDark ? 'bg-[#1C0B09] text-white' : 'bg-[#FBF7F2] text-[#2B120E]'
+        }`}
+      >
         <div className="mx-auto max-w-7xl px-5 sm:px-8">
-
           {/* Heading */}
-          <div
-            data-aos="fade-up"
-            className="mb-10 max-w-2xl"
-          >
-            <span className="text-xs font-black uppercase tracking-[0.2em] text-[#F59E0B]">
+          <div data-aos="fade-up" className="mb-10 max-w-2xl">
+            <span
+              className={`text-xs font-black uppercase tracking-[0.2em] ${
+                isDark ? 'text-[#F59E0B]' : 'text-[#B45309]'
+              }`}
+            >
               Tentang Pawon Hara
             </span>
 
-            <h2 className="mt-3 text-3xl font-dhaksinarga leading-tight tracking-wide text-white sm:text-4xl lg:text-5xl">
+            <h2
+              className={`mt-3 text-3xl font-dhaksinarga leading-tight tracking-wide sm:text-4xl lg:text-5xl ${
+                isDark ? 'text-white' : 'text-[#2B120E]'
+              }`}
+            >
               Bukan sekadar nasi box
-              <span className="text-[#F59E0B]">
-                {" "}Kami hadirkan kelezatan khas Nusantara
-              </span>
+              <span className="text-[#F59E0B]"> Kami hadirkan kelezatan khas Nusantara</span>
             </h2>
 
-            <p className="mt-4 max-w-xl text-sm leading-relaxed text-amber-100/70 sm:text-base">
+            <p
+              className={`mt-4 max-w-xl text-sm leading-relaxed sm:text-base ${
+                isDark ? 'text-amber-100/70' : 'text-[#6B423A]'
+              }`}
+            >
               Dari meeting kantor sampai acara keluarga, Pawon Hara menyiapkan
               hidangan yang lezat, higienis, dan berkesan untuk setiap momen penting Anda.
             </p>
@@ -636,11 +777,12 @@ export default function HomePage() {
 
           {/* Gallery */}
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
-
             {/* Main Photo */}
             <div
               data-aos="fade-right"
-              className="group relative overflow-hidden rounded-[2rem] lg:col-span-7 border border-[#60241E]/80 shadow-xl"
+              className={`group relative overflow-hidden rounded-[2rem] lg:col-span-7 border shadow-xl ${
+                isDark ? 'border-[#60241E]/80' : 'border-[#E6DACD]'
+              }`}
             >
               <div className="aspect-[4/3] h-full min-h-[420px]">
                 <div className="absolute z-10 bg-[#1C0B09]/30 w-full h-full"></div>
@@ -651,7 +793,7 @@ export default function HomePage() {
                 />
               </div>
 
-              <div className="absolute z-20 inset-x-0 bottom-0 bg-gradient-to-t from-[#1C0B09] via-[#1C0B09]/60 to-transparent p-7 sm:p-9">
+              <div className="absolute z-20 inset-x-0 bottom-0 bg-gradient-to-t from-[#1C0B09] via-[#1C0B09]/60 to-transparent p-7 sm:p-9 text-white">
                 <span className="text-xs font-bold uppercase tracking-widest text-[#F59E0B]">
                   Pawon Hara
                 </span>
@@ -668,11 +810,12 @@ export default function HomePage() {
 
             {/* Supporting Photos */}
             <div className="grid gap-4 sm:grid-cols-2 lg:col-span-5 lg:grid-cols-1">
-
               <div
                 data-aos="fade-left"
                 data-aos-delay="100"
-                className="group relative min-h-[230px] overflow-hidden rounded-[2rem] border border-[#60241E]/80 shadow-lg"
+                className={`group relative min-h-[230px] overflow-hidden rounded-[2rem] border shadow-lg ${
+                  isDark ? 'border-[#60241E]/80' : 'border-[#E6DACD]'
+                }`}
               >
                 <img
                   src={DapurImg}
@@ -682,7 +825,7 @@ export default function HomePage() {
 
                 <div className="absolute inset-0 bg-gradient-to-t from-[#1C0B09]/85 via-[#1C0B09]/30 to-transparent" />
 
-                <div className="absolute bottom-0 left-0 p-6">
+                <div className="absolute bottom-0 left-0 p-6 text-white">
                   <span className="text-[10px] font-bold uppercase tracking-widest text-[#F59E0B]">
                     Dapur
                   </span>
@@ -696,7 +839,9 @@ export default function HomePage() {
               <div
                 data-aos="fade-left"
                 data-aos-delay="200"
-                className="group relative min-h-[230px] overflow-hidden rounded-[2rem] border border-[#60241E]/80 shadow-lg"
+                className={`group relative min-h-[230px] overflow-hidden rounded-[2rem] border shadow-lg ${
+                  isDark ? 'border-[#60241E]/80' : 'border-[#E6DACD]'
+                }`}
               >
                 <img
                   src={PackingImg}
@@ -706,7 +851,7 @@ export default function HomePage() {
 
                 <div className="absolute inset-0 bg-gradient-to-t from-[#1C0B09]/85 via-[#1C0B09]/30 to-transparent" />
 
-                <div className="absolute bottom-0 left-0 p-6">
+                <div className="absolute bottom-0 left-0 p-6 text-white">
                   <span className="text-[10px] font-bold uppercase tracking-widest text-[#F59E0B]">
                     Catering
                   </span>
@@ -716,7 +861,6 @@ export default function HomePage() {
                   </h3>
                 </div>
               </div>
-
             </div>
           </div>
 
@@ -724,9 +868,15 @@ export default function HomePage() {
           <div
             data-aos="fade-up"
             data-aos-delay="200"
-            className="mt-6 flex flex-col gap-5 border-t border-[#60241E]/80 pt-6 sm:flex-row sm:items-center sm:justify-between"
+            className={`mt-6 flex flex-col gap-5 border-t pt-6 sm:flex-row sm:items-center sm:justify-between ${
+              isDark ? 'border-[#60241E]/80' : 'border-[#E6DACD]'
+            }`}
           >
-            <div className="flex flex-wrap gap-x-6 gap-y-3 text-xs font-bold text-amber-100/80">
+            <div
+              className={`flex flex-wrap gap-x-6 gap-y-3 text-xs font-bold ${
+                isDark ? 'text-amber-100/80' : 'text-[#5C3831]'
+              }`}
+            >
               <span className="flex items-center gap-2">
                 <span className="h-1.5 w-1.5 rounded-full bg-[#F59E0B]" />
                 Minimal 10 porsi
@@ -745,7 +895,9 @@ export default function HomePage() {
 
             <Link
               to="/tentang-kami"
-              className="group inline-flex items-center gap-2 text-sm font-black text-[#F59E0B] transition hover:text-amber-300"
+              className={`group inline-flex items-center gap-2 text-sm font-black transition ${
+                isDark ? 'text-[#F59E0B] hover:text-amber-300' : 'text-[#D97706] hover:text-[#B45309]'
+              }`}
             >
               Kenal Pawon Hara
               <ArrowRight
@@ -754,23 +906,40 @@ export default function HomePage() {
               />
             </Link>
           </div>
-
         </div>
       </section>
 
       {/* =====================================================
           5. SOLUSI KATERING APAPUN ACARANYA (OCCASIONS)
       ====================================================== */}
-      <section className="py-20 sm:py-28 bg-[#240E0C] text-white border-t border-[#60241E]/60">
+      <section
+        className={`py-20 sm:py-28 border-t transition-colors duration-300 ${
+          isDark ? 'bg-[#240E0C] border-[#60241E]/60 text-white' : 'bg-[#F5EDE4] border-[#E6DACD] text-[#2B120E]'
+        }`}
+      >
         <div className="mx-auto max-w-7xl px-5 sm:px-8">
           <div data-aos="fade-up" className="max-w-2xl">
-            <span className="rounded-full bg-[#60241E] border border-[#F59E0B]/40 px-3.5 py-1 text-xs font-black uppercase tracking-wider text-amber-300">
+            <span
+              className={`rounded-full px-3.5 py-1 text-xs font-black uppercase tracking-wider ${
+                isDark
+                  ? 'bg-[#60241E] border border-[#F59E0B]/40 text-amber-300'
+                  : 'bg-[#FAF0E4] border border-[#D97706]/40 text-[#8C4320]'
+              }`}
+            >
               Fleksibel & Serbaguna
             </span>
-            <h2 className="mt-3 text-3xl sm:text-4xl lg:text-5xl font-dhaksinarga tracking-wide text-white">
+            <h2
+              className={`mt-3 text-3xl sm:text-4xl lg:text-5xl font-dhaksinarga tracking-wide ${
+                isDark ? 'text-white' : 'text-[#2B120E]'
+              }`}
+            >
               Solusi Katering untuk <span className="text-[#F59E0B]">Setiap Acara</span>
             </h2>
-            <p className="mt-2 text-sm sm:text-base text-amber-100/70">
+            <p
+              className={`mt-2 text-sm sm:text-base ${
+                isDark ? 'text-amber-100/70' : 'text-[#6B423A]'
+              }`}
+            >
               Dari kebutuhan formal perkantoran hingga kehangatan momen keluarga besar.
             </p>
           </div>
@@ -783,19 +952,39 @@ export default function HomePage() {
                   key={idx}
                   data-aos="fade-up"
                   data-aos-delay={idx * 100}
-                  className="group rounded-3xl border border-[#60241E]/80 bg-[#2D120F] p-7 transition duration-300 hover:-translate-y-1.5 hover:border-[#F59E0B]/50 hover:bg-[#361613] shadow-lg shadow-black/30"
+                  className={`group rounded-3xl p-7 transition duration-300 hover:-translate-y-1.5 ${
+                    isDark
+                      ? 'border border-[#60241E]/80 bg-[#2D120F] hover:bg-[#361613] hover:border-[#F59E0B]/50 shadow-lg shadow-black/30'
+                      : 'border border-[#E6DACD] bg-white hover:bg-[#FCF9F5] hover:border-[#D97706]/50 shadow-md shadow-[#2B120E]/5 hover:shadow-xl'
+                  }`}
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-[#60241E] to-[#95271D] text-[#F59E0B] transition-colors group-hover:bg-[#F59E0B] group-hover:text-[#1C0B09] ring-1 ring-[#F59E0B]/30">
                       <Icon size={22} />
                     </div>
-                    <span className="rounded-full bg-[#3B1814] border border-[#60241E] px-2.5 py-1 text-[10px] font-bold text-amber-300">
+                    <span
+                      className={`rounded-full px-2.5 py-1 text-[10px] font-bold ${
+                        isDark
+                          ? 'bg-[#3B1814] border border-[#60241E] text-amber-300'
+                          : 'bg-[#FAF0E4] border border-[#E6DACD] text-[#8C4320]'
+                      }`}
+                    >
                       {occ.tag}
                     </span>
                   </div>
 
-                  <h3 className="mt-6 text-lg font-black text-white group-hover:text-[#F59E0B] transition-colors">{occ.title}</h3>
-                  <p className="mt-2 text-xs sm:text-sm text-amber-100/70 leading-relaxed">
+                  <h3
+                    className={`mt-6 text-lg font-black transition-colors ${
+                      isDark ? 'text-white group-hover:text-[#F59E0B]' : 'text-[#2B120E] group-hover:text-[#D97706]'
+                    }`}
+                  >
+                    {occ.title}
+                  </h3>
+                  <p
+                    className={`mt-2 text-xs sm:text-sm leading-relaxed ${
+                      isDark ? 'text-amber-100/70' : 'text-[#6B423A]'
+                    }`}
+                  >
                     {occ.text}
                   </p>
                 </div>
@@ -808,23 +997,39 @@ export default function HomePage() {
       {/* =====================================================
           6. ALUR PEMESANAN PRAKTIS (HOW IT WORKS)
       ====================================================== */}
-      <section className="py-20 sm:py-28 bg-[#200B09] text-white border-y border-[#60241E]/50">
+      <section
+        className={`py-20 sm:py-28 border-y transition-colors duration-300 ${
+          isDark ? 'bg-[#200B09] border-[#60241E]/50 text-white' : 'bg-[#EFE5D8] border-[#E0D2C2] text-[#2B120E]'
+        }`}
+      >
         <div className="mx-auto max-w-7xl px-5 sm:px-8">
           <div
             data-aos="fade-up"
-            className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-12 border-b border-amber-900/30"
+            className={`flex flex-col md:flex-row md:items-end justify-between gap-6 pb-12 border-b ${
+              isDark ? 'border-amber-900/30' : 'border-[#D9C7B6]'
+            }`}
           >
             <div>
-              <span className="text-xs font-black uppercase tracking-[0.25em] text-amber-400">
+              <span
+                className={`text-xs font-black uppercase tracking-[0.25em] ${
+                  isDark ? 'text-amber-400' : 'text-[#B45309]'
+                }`}
+              >
                 Cara Pemesanan
               </span>
-              <h2 className="mt-3 text-3xl sm:text-4xl lg:text-5xl font-dhaksinarga tracking-wide text-white">
+              <h2
+                className={`mt-3 text-3xl sm:text-4xl lg:text-5xl font-dhaksinarga tracking-wide ${
+                  isDark ? 'text-white' : 'text-[#2B120E]'
+                }`}
+              >
                 Pesan Mudah dalam 4 Langkah
               </h2>
             </div>
             <Link
               to="/cara-pesan"
-              className="inline-flex items-center gap-2 text-sm font-bold text-amber-300 hover:text-amber-200 transition"
+              className={`inline-flex items-center gap-2 text-sm font-bold transition ${
+                isDark ? 'text-amber-300 hover:text-amber-200' : 'text-[#B45309] hover:text-[#92400E]'
+              }`}
             >
               <span>Lihat Panduan Lengkap</span>
               <ArrowRight size={16} />
@@ -860,11 +1065,23 @@ export default function HomePage() {
                 data-aos-delay={idx * 150}
                 className="relative group"
               >
-                <span className="text-4xl sm:text-5xl font-black text-[#F59E0B]/30 group-hover:text-[#F59E0B] transition-colors duration-300">
+                <span
+                  className={`text-4xl sm:text-5xl font-black transition-colors duration-300 ${
+                    isDark
+                      ? 'text-[#F59E0B]/30 group-hover:text-[#F59E0B]'
+                      : 'text-[#B45309]/30 group-hover:text-[#B45309]'
+                  }`}
+                >
                   {item.step}
                 </span>
-                <h3 className="mt-3 text-lg font-black text-white">{item.title}</h3>
-                <p className="mt-2 text-xs sm:text-sm text-stone-300 leading-relaxed">
+                <h3 className={`mt-3 text-lg font-black ${isDark ? 'text-white' : 'text-[#2B120E]'}`}>
+                  {item.title}
+                </h3>
+                <p
+                  className={`mt-2 text-xs sm:text-sm leading-relaxed ${
+                    isDark ? 'text-stone-300' : 'text-[#5C3831]'
+                  }`}
+                >
                   {item.desc}
                 </p>
               </div>
@@ -876,16 +1093,34 @@ export default function HomePage() {
       {/* =====================================================
           7. TESTIMONI PELANGGAN (SOCIAL PROOF)
       ====================================================== */}
-      <section className="py-20 sm:py-28 bg-[#1C0B09] text-white border-t border-[#60241E]/60">
+      <section
+        className={`py-20 sm:py-28 border-t transition-colors duration-300 ${
+          isDark ? 'bg-[#1C0B09] border-[#60241E]/60 text-white' : 'bg-[#FBF7F2] border-[#E6DACD] text-[#2B120E]'
+        }`}
+      >
         <div className="mx-auto max-w-7xl px-5 sm:px-8">
           <div data-aos="fade-up" className="text-center max-w-2xl mx-auto">
-            <span className="rounded-full bg-[#60241E] border border-[#F59E0B]/40 px-3.5 py-1 text-xs font-black uppercase tracking-wider text-amber-300">
+            <span
+              className={`rounded-full px-3.5 py-1 text-xs font-black uppercase tracking-wider ${
+                isDark
+                  ? 'bg-[#60241E] border border-[#F59E0B]/40 text-amber-300'
+                  : 'bg-[#FAF0E4] border border-[#D97706]/40 text-[#8C4320]'
+              }`}
+            >
               Ulasan Nyata
             </span>
-            <h2 className="mt-3 text-3xl sm:text-4xl font-dhaksinarga tracking-wide text-white">
+            <h2
+              className={`mt-3 text-3xl sm:text-4xl font-dhaksinarga tracking-wide ${
+                isDark ? 'text-white' : 'text-[#2B120E]'
+              }`}
+            >
               Kata Mereka yang Sudah Menikmati Sajian Kami
             </h2>
-            <p className="mt-2 text-sm sm:text-base text-amber-100/70">
+            <p
+              className={`mt-2 text-sm sm:text-base ${
+                isDark ? 'text-amber-100/70' : 'text-[#6B423A]'
+              }`}
+            >
               Ratusan perusahaan, komunitas, dan keluarga telah mempercayakan konsumsi acara kepada Pawon Hara.
             </p>
           </div>
@@ -899,16 +1134,34 @@ export default function HomePage() {
       {/* =====================================================
           8. FAQ INTERAKTIF (PERTANYAAN UMUM)
       ====================================================== */}
-      <section className="py-20 sm:py-24 bg-[#240E0C] text-white border-t border-[#60241E]/60">
+      <section
+        className={`py-20 sm:py-24 border-t transition-colors duration-300 ${
+          isDark ? 'bg-[#240E0C] border-[#60241E]/60 text-white' : 'bg-[#F5EDE4] border-[#E6DACD] text-[#2B120E]'
+        }`}
+      >
         <div className="mx-auto max-w-4xl px-5 sm:px-8">
           <div data-aos="fade-up" className="text-center mb-12">
-            <span className="rounded-full bg-[#60241E] border border-[#F59E0B]/40 px-3.5 py-1 text-xs font-black uppercase tracking-wider text-amber-300">
+            <span
+              className={`rounded-full px-3.5 py-1 text-xs font-black uppercase tracking-wider ${
+                isDark
+                  ? 'bg-[#60241E] border border-[#F59E0B]/40 text-amber-300'
+                  : 'bg-[#FAF0E4] border border-[#D97706]/40 text-[#8C4320]'
+              }`}
+            >
               Bantuan & FAQ
             </span>
-            <h2 className="mt-3 text-3xl sm:text-4xl font-dhaksinarga tracking-wide text-white">
+            <h2
+              className={`mt-3 text-3xl sm:text-4xl font-dhaksinarga tracking-wide ${
+                isDark ? 'text-white' : 'text-[#2B120E]'
+              }`}
+            >
               Pertanyaan yang Sering Diajukan
             </h2>
-            <p className="mt-2 text-sm text-amber-100/70">
+            <p
+              className={`mt-2 text-sm ${
+                isDark ? 'text-amber-100/70' : 'text-[#6B423A]'
+              }`}
+            >
               Informasi lengkap seputar pemesanan, pengantaran, dan katering di Pawon Hara.
             </p>
           </div>
@@ -921,23 +1174,44 @@ export default function HomePage() {
                   key={idx}
                   data-aos="fade-up"
                   data-aos-delay={idx * 80}
-                  className="rounded-2xl border border-[#60241E]/80 bg-[#2D120F] overflow-hidden transition hover:border-[#F59E0B]/40 shadow-lg"
+                  className={`rounded-2xl overflow-hidden transition ${
+                    isDark
+                      ? 'border border-[#60241E]/80 bg-[#2D120F] hover:border-[#F59E0B]/40 shadow-lg'
+                      : 'border border-[#E6DACD] bg-white hover:border-[#D97706]/40 shadow-md shadow-[#2B120E]/5'
+                  }`}
                 >
                   <button
                     type="button"
                     onClick={() => setOpenFaq(isOpen ? null : idx)}
-                    className="flex w-full items-center justify-between p-5 text-left text-sm sm:text-base font-black text-white hover:text-[#F59E0B] transition cursor-pointer"
+                    className={`flex w-full items-center justify-between p-5 text-left text-sm sm:text-base font-black transition cursor-pointer ${
+                      isDark
+                        ? 'text-white hover:text-[#F59E0B]'
+                        : 'text-[#2B120E] hover:text-[#D97706]'
+                    }`}
                   >
                     <span>{faq.question}</span>
                     <ChevronDown
                       size={18}
-                      className={`text-amber-200/50 transition-transform duration-200 shrink-0 ml-3 ${isOpen ? 'rotate-180 text-[#F59E0B]' : ''
-                        }`}
+                      className={`transition-transform duration-200 shrink-0 ml-3 ${
+                        isOpen
+                          ? isDark
+                            ? 'rotate-180 text-[#F59E0B]'
+                            : 'rotate-180 text-[#D97706]'
+                          : isDark
+                            ? 'text-amber-200/50'
+                            : 'text-[#8C6B62]'
+                      }`}
                     />
                   </button>
 
                   {isOpen && (
-                    <div className="px-5 pb-5 text-xs sm:text-sm text-amber-100/80 leading-relaxed animate-fade-in border-t border-[#60241E]/70 pt-3">
+                    <div
+                      className={`px-5 pb-5 text-xs sm:text-sm leading-relaxed animate-fade-in border-t pt-3 ${
+                        isDark
+                          ? 'border-[#60241E]/70 text-amber-100/80'
+                          : 'border-[#EFE5D8] text-[#5C3831]'
+                      }`}
+                    >
                       {faq.answer}
                     </div>
                   )}
@@ -951,7 +1225,11 @@ export default function HomePage() {
       {/* =====================================================
           9. CLOSING HEROIC CTA BANNER
       ====================================================== */}
-      <section className="py-16 sm:py-20 bg-[#1C0B09]">
+      <section
+        className={`py-16 sm:py-20 transition-colors duration-300 ${
+          isDark ? 'bg-[#1C0B09]' : 'bg-[#FBF7F2]'
+        }`}
+      >
         <div className="mx-auto max-w-7xl px-5 sm:px-8">
           <div
             data-aos="zoom-in"

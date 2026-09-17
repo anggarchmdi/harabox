@@ -1,12 +1,30 @@
 import { Link } from 'react-router-dom'
+import { useThemeStore } from '../stores/theme.store'
 
 export default function NotFound() {
+  const theme = useThemeStore((state) => state.theme)
+  const isDark = theme === 'dark'
+
   return (
-    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#1C0B09] text-stone-100 px-6 selection:bg-[#F59E0B] selection:text-[#1C0B09]">
+    <main
+      className={`relative flex min-h-screen items-center justify-center overflow-hidden px-6 transition-colors duration-300 ${
+        isDark
+          ? 'bg-[#1C0B09] text-stone-100 selection:bg-[#F59E0B] selection:text-[#1C0B09]'
+          : 'bg-[#FBF7F2] text-[#2B120E] selection:bg-[#F59E0B] selection:text-[#2B120E]'
+      }`}
+    >
       {/* Background decoration */}
-      <div className="absolute -left-40 -top-40 h-96 w-96 rounded-full bg-[#60241E]/30 blur-3xl pointer-events-none" />
+      <div
+        className={`absolute -left-40 -top-40 h-96 w-96 rounded-full blur-3xl pointer-events-none ${
+          isDark ? 'bg-[#60241E]/30' : 'bg-[#E77B49]/10'
+        }`}
+      />
       <div className="absolute -bottom-40 -right-40 h-96 w-96 rounded-full bg-[#F59E0B]/15 blur-3xl pointer-events-none" />
-      <div className="absolute left-1/2 top-1/2 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#60241E]/40 pointer-events-none" />
+      <div
+        className={`absolute left-1/2 top-1/2 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full pointer-events-none border ${
+          isDark ? 'border-[#60241E]/40' : 'border-[#E6DACD]/60'
+        }`}
+      />
 
       {/* Content */}
       <div className="relative z-10 w-full max-w-xl text-center">
@@ -24,11 +42,19 @@ export default function NotFound() {
 
         {/* Text */}
         <div className="mt-2">
-          <h2 className="font-dhaksinarga text-2xl sm:text-3xl font-bold tracking-wide text-white">
+          <h2
+            className={`font-dhaksinarga text-2xl sm:text-3xl font-bold tracking-wide ${
+              isDark ? 'text-white' : 'text-[#2B120E]'
+            }`}
+          >
             Halaman Tidak Ditemukan
           </h2>
 
-          <p className="mx-auto mt-3 max-w-md text-sm sm:text-base leading-relaxed text-amber-100/75">
+          <p
+            className={`mx-auto mt-3 max-w-md text-sm sm:text-base leading-relaxed ${
+              isDark ? 'text-amber-100/75' : 'text-[#6B423A]'
+            }`}
+          >
             Sepertinya tautan hidangan katering atau halaman yang Anda tuju sudah berpindah atau belum tersedia di Pawon Hara.
           </p>
         </div>
@@ -44,14 +70,22 @@ export default function NotFound() {
 
           <button
             onClick={() => window.history.back()}
-            className="rounded-xl border border-[#60241E] bg-[#2D120F] px-6 py-3 text-sm font-semibold text-amber-200 transition hover:bg-[#3B1814] hover:text-white cursor-pointer"
+            className={`rounded-xl border px-6 py-3 text-sm font-semibold transition cursor-pointer ${
+              isDark
+                ? 'border-[#60241E] bg-[#2D120F] text-amber-200 hover:bg-[#3B1814] hover:text-white'
+                : 'border-[#E6DACD] bg-white text-[#5C3831] hover:bg-[#FAF5EE] hover:text-[#2B120E]'
+            }`}
           >
             Kembali ke Halaman Sebelumnya
           </button>
         </div>
 
         {/* Footer */}
-        <p className="mt-12 text-xs font-dhaksinarga tracking-widest text-amber-200/50">
+        <p
+          className={`mt-12 text-xs font-dhaksinarga tracking-widest ${
+            isDark ? 'text-amber-200/50' : 'text-[#8C6B62]'
+          }`}
+        >
           PAWON HARA • KATERING & BENTO NUSANTARA
         </p>
       </div>

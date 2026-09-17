@@ -27,6 +27,7 @@ import { productService } from '../services/products.service'
 import { ordersService } from '../services/orders.service'
 import { getImageUrl } from '../utils/image'
 import { useCartStore, type CartItemAddon } from '../stores/cart.store'
+import { useThemeStore } from '../stores/theme.store'
 import type { Product } from '../types/products'
 import type { AddonGroup } from '../types/addon'
 
@@ -102,6 +103,8 @@ export default function ProductDetailPage() {
   }>()
   const navigate = useNavigate()
   const addItem = useCartStore((state) => state.addItem)
+  const theme = useThemeStore((state) => state.theme)
+  const isDark = theme === 'dark'
 
   const {
     data: product,
@@ -509,7 +512,13 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
 
   if (isLoading) {
     return (
-      <main className="min-h-screen bg-[#1C0B09] text-stone-100 selection:bg-[#F59E0B] selection:text-[#1C0B09]">
+      <main
+        className={`min-h-screen transition-colors duration-300 ${
+          isDark
+            ? 'bg-[#1C0B09] text-stone-100 selection:bg-[#F59E0B] selection:text-[#1C0B09]'
+            : 'bg-[#FBF7F2] text-[#2B120E] selection:bg-[#F59E0B] selection:text-[#2B120E]'
+        }`}
+      >
         <PageLoader
           isLoading={true}
           text="Menyiapkan Detail Menu..."
@@ -522,15 +531,33 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
 
   if (isError || !product) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-[#1C0B09] px-6 text-white">
-        <div className="text-center max-w-md rounded-3xl bg-[#2D120F] p-8 border border-[#60241E] shadow-xl">
-          <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#F59E0B]">
+      <main
+        className={`flex min-h-screen items-center justify-center px-6 transition-colors duration-300 ${
+          isDark ? 'bg-[#1C0B09] text-white' : 'bg-[#FBF7F2] text-[#2B120E]'
+        }`}
+      >
+        <div
+          className={`text-center max-w-md rounded-3xl p-8 border shadow-xl ${
+            isDark
+              ? 'bg-[#2D120F] border-[#60241E]'
+              : 'bg-white border-[#E6DACD]'
+          }`}
+        >
+          <p
+            className={`text-xs font-bold uppercase tracking-[0.2em] ${
+              isDark ? 'text-[#F59E0B]' : 'text-[#D97706]'
+            }`}
+          >
             Menu
           </p>
-          <h1 className="mt-3 text-2xl font-dhaksinarga tracking-wide text-white">
+          <h1
+            className={`mt-3 text-2xl font-dhaksinarga tracking-wide ${
+              isDark ? 'text-white' : 'text-[#2B120E]'
+            }`}
+          >
             Menu Tidak Ditemukan
           </h1>
-          <p className="mt-3 text-sm text-amber-100/70">
+          <p className={`mt-3 text-sm ${isDark ? 'text-amber-100/70' : 'text-[#6B423A]'}`}>
             Menu yang Anda cari mungkin sudah tidak tersedia atau telah diganti.
           </p>
           <Link
@@ -548,7 +575,13 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
   const displayImage = getProductDisplayImage(product)
 
   return (
-    <main className="min-h-screen bg-[#1C0B09] pb-24 text-stone-100 selection:bg-[#F59E0B] selection:text-[#1C0B09]">
+    <main
+      className={`min-h-screen pb-24 transition-colors duration-300 ${
+        isDark
+          ? 'bg-[#1C0B09] text-stone-100 selection:bg-[#F59E0B] selection:text-[#1C0B09]'
+          : 'bg-[#FBF7F2] text-[#2B120E] selection:bg-[#F59E0B] selection:text-[#2B120E]'
+      }`}
+    >
       <PageLoader
         isLoading={isLoading}
         text="Menyiapkan Menu Pawon Hara..."
@@ -560,7 +593,11 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
         <div className="mb-6">
           <Link
             to="/menu"
-            className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-amber-200/60 transition hover:text-[#F59E0B]"
+            className={`inline-flex items-center gap-2 text-xs sm:text-sm font-bold transition ${
+              isDark
+                ? 'text-amber-200/60 hover:text-[#F59E0B]'
+                : 'text-[#8C6B62] hover:text-[#D97706]'
+            }`}
           >
             <ArrowLeft size={16} />
             Kembali ke Semua Menu
@@ -574,7 +611,13 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
           <div className="contents md:flex md:flex-col md:gap-6">
             {/* KIRI ATAS: Foto Produk */}
             <div className="order-1">
-              <div className="relative overflow-hidden rounded-[2rem] sm:rounded-[2.5rem] border border-[#60241E]/80 bg-[#2D120F] shadow-2xl shadow-black/50">
+              <div
+                className={`relative overflow-hidden rounded-[2rem] sm:rounded-[2.5rem] border shadow-2xl ${
+                  isDark
+                    ? 'border-[#60241E]/80 bg-[#2D120F] shadow-black/50'
+                    : 'border-[#E6DACD] bg-white shadow-[#2B120E]/5'
+                }`}
+              >
                 <div className="relative aspect-[4/3] sm:aspect-[16/11] lg:aspect-[4/3] overflow-hidden bg-[#1A0A08]">
                   <img
                     src={displayImage}
@@ -611,15 +654,25 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
             <div className="order-4 space-y-4">
               {/* Notice Lead Time (Batas Pemesanan) */}
               {leadTimeDays > 0 && (
-                <div className="rounded-xl border border-[#60241E] bg-[#2D120F] p-3 sm:p-3.5 text-amber-100 shadow-2xs">
+                <div
+                  className={`rounded-xl border p-3 sm:p-3.5 shadow-2xs ${
+                    isDark
+                      ? 'border-[#60241E] bg-[#2D120F] text-amber-100'
+                      : 'border-[#E6DACD] bg-white text-[#5C3831]'
+                  }`}
+                >
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5">
                     <div className="flex items-center gap-2 min-w-0">
-                      <Clock size={16} className="text-[#F59E0B] shrink-0" />
+                      <Clock size={16} className={isDark ? 'text-[#F59E0B] shrink-0' : 'text-[#D97706] shrink-0'} />
                       <div className="text-xs leading-snug">
-                        <span className="font-extrabold uppercase tracking-wider text-[#F59E0B] text-[11px] mr-1.5">
+                        <span
+                          className={`font-extrabold uppercase tracking-wider text-[11px] mr-1.5 ${
+                            isDark ? 'text-[#F59E0B]' : 'text-[#D97706]'
+                          }`}
+                        >
                           Batas Waktu Pemesanan:
                         </span>
-                        <span className="text-amber-100/80">
+                        <span className={isDark ? 'text-amber-100/80' : 'text-[#6B423A]'}>
                           Pesanan reguler minimal <strong>H-{leadTimeDays}</strong> sebelum acara.
                         </span>
                       </div>
@@ -631,7 +684,9 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                       )}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-xs font-bold text-[#F59E0B] hover:text-amber-300 transition shrink-0 pl-6 sm:pl-0"
+                      className={`inline-flex items-center gap-1 text-xs font-bold transition shrink-0 pl-6 sm:pl-0 ${
+                        isDark ? 'text-[#F59E0B] hover:text-amber-300' : 'text-[#D97706] hover:text-[#B45309]'
+                      }`}
                     >
                       <span>Cek Slot Darurat WA</span>
                       <ArrowRight size={13} />
@@ -641,38 +696,80 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
               )}
 
               {/* Jaminan Layanan Katering Pawon Hara */}
-              <div className="rounded-2xl border border-[#60241E]/80 bg-[#2D120F] p-5 shadow-lg">
-                <h4 className="text-xs font-black uppercase tracking-wider text-[#F59E0B] mb-3.5 flex items-center gap-2">
-                  <ShieldCheck size={16} className="text-[#F59E0B]" />
+              <div
+                className={`rounded-2xl border p-5 shadow-lg ${
+                  isDark
+                    ? 'border-[#60241E]/80 bg-[#2D120F]'
+                    : 'border-[#E6DACD] bg-white shadow-[#2B120E]/5'
+                }`}
+              >
+                <h4
+                  className={`text-xs font-black uppercase tracking-wider mb-3.5 flex items-center gap-2 ${
+                    isDark ? 'text-[#F59E0B]' : 'text-[#D97706]'
+                  }`}
+                >
+                  <ShieldCheck size={16} className={isDark ? 'text-[#F59E0B]' : 'text-[#D97706]'} />
                   Jaminan Katering Pawon Hara
                 </h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                  <div className="flex items-start gap-2.5 rounded-xl bg-[#1C0B09] p-3 border border-[#60241E]/60">
-                    <CheckCircle2 size={16} className="text-emerald-400 shrink-0 mt-0.5" />
+                  <div
+                    className={`flex items-start gap-2.5 rounded-xl p-3 border ${
+                      isDark
+                        ? 'bg-[#1C0B09] border-[#60241E]/60 text-white'
+                        : 'bg-[#FAF5EE] border-[#E6DACD] text-[#2B120E]'
+                    }`}
+                  >
+                    <CheckCircle2 size={16} className="text-emerald-500 shrink-0 mt-0.5" />
                     <div>
-                      <p className="font-bold text-white">Sendok & Tisu Lengkap</p>
-                      <p className="text-[11px] text-amber-100/70 mt-0.5">Siap santap langsung di tempat tanpa repot alat makan.</p>
+                      <p className={`font-bold ${isDark ? 'text-white' : 'text-[#2B120E]'}`}>Sendok & Tisu Lengkap</p>
+                      <p className={`text-[11px] mt-0.5 ${isDark ? 'text-amber-100/70' : 'text-[#6B423A]'}`}>
+                        Siap santap langsung di tempat tanpa repot alat makan.
+                      </p>
                     </div>
                   </div>
-                  <div className="flex items-start gap-2.5 rounded-xl bg-[#1C0B09] p-3 border border-[#60241E]/60">
-                    <ShieldCheck size={16} className="text-emerald-400 shrink-0 mt-0.5" />
+                  <div
+                    className={`flex items-start gap-2.5 rounded-xl p-3 border ${
+                      isDark
+                        ? 'bg-[#1C0B09] border-[#60241E]/60 text-white'
+                        : 'bg-[#FAF5EE] border-[#E6DACD] text-[#2B120E]'
+                    }`}
+                  >
+                    <ShieldCheck size={16} className="text-emerald-500 shrink-0 mt-0.5" />
                     <div>
-                      <p className="font-bold text-white">100% Halal & Higienis</p>
-                      <p className="text-[11px] text-amber-100/70 mt-0.5">Daging ayam segar pilihan dengan standar dapur katering bersih.</p>
+                      <p className={`font-bold ${isDark ? 'text-white' : 'text-[#2B120E]'}`}>100% Halal & Higienis</p>
+                      <p className={`text-[11px] mt-0.5 ${isDark ? 'text-amber-100/70' : 'text-[#6B423A]'}`}>
+                        Daging ayam segar pilihan dengan standar dapur katering bersih.
+                      </p>
                     </div>
                   </div>
-                  <div className="flex items-start gap-2.5 rounded-xl bg-[#1C0B09] p-3 border border-[#60241E]/60">
-                    <Clock size={16} className="text-[#F59E0B] shrink-0 mt-0.5" />
+                  <div
+                    className={`flex items-start gap-2.5 rounded-xl p-3 border ${
+                      isDark
+                        ? 'bg-[#1C0B09] border-[#60241E]/60 text-white'
+                        : 'bg-[#FAF5EE] border-[#E6DACD] text-[#2B120E]'
+                    }`}
+                  >
+                    <Clock size={16} className={isDark ? 'text-[#F59E0B] shrink-0 mt-0.5' : 'text-[#D97706] shrink-0 mt-0.5'} />
                     <div>
-                      <p className="font-bold text-white">Pengantaran Tepat Waktu</p>
-                      <p className="text-[11px] text-amber-100/70 mt-0.5">Dijadwalkan khusus sesuai jam acara yang Anda butuhkan.</p>
+                      <p className={`font-bold ${isDark ? 'text-white' : 'text-[#2B120E]'}`}>Pengantaran Tepat Waktu</p>
+                      <p className={`text-[11px] mt-0.5 ${isDark ? 'text-amber-100/70' : 'text-[#6B423A]'}`}>
+                        Dijadwalkan khusus sesuai jam acara yang Anda butuhkan.
+                      </p>
                     </div>
                   </div>
-                  <div className="flex items-start gap-2.5 rounded-xl bg-[#1C0B09] p-3 border border-[#60241E]/60">
-                    <MapPin size={16} className="text-[#F59E0B] shrink-0 mt-0.5" />
+                  <div
+                    className={`flex items-start gap-2.5 rounded-xl p-3 border ${
+                      isDark
+                        ? 'bg-[#1C0B09] border-[#60241E]/60 text-white'
+                        : 'bg-[#FAF5EE] border-[#E6DACD] text-[#2B120E]'
+                    }`}
+                  >
+                    <MapPin size={16} className={isDark ? 'text-[#F59E0B] shrink-0 mt-0.5' : 'text-[#D97706] shrink-0 mt-0.5'} />
                     <div>
-                      <p className="font-bold text-white">Area Pengantaran Luas</p>
-                      <p className="text-[11px] text-amber-100/70 mt-0.5">Melayani pengantaran area Yogyakarta, Sleman, Bantul & sekitarnya.</p>
+                      <p className={`font-bold ${isDark ? 'text-white' : 'text-[#2B120E]'}`}>Area Pengantaran Luas</p>
+                      <p className={`text-[11px] mt-0.5 ${isDark ? 'text-amber-100/70' : 'text-[#6B423A]'}`}>
+                        Melayani pengantaran area Yogyakarta, Sleman, Bantul & sekitarnya.
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -693,27 +790,43 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                   </p>
                 )}
 
-                <h1 className="mt-1.5 text-2xl sm:text-3xl lg:text-4xl font-dhaksinarga tracking-wide leading-tight text-white">
+                <h1 className={`mt-1.5 text-2xl sm:text-3xl lg:text-4xl font-dhaksinarga tracking-wide leading-tight ${
+                  isDark ? 'text-white' : 'text-[#2B120E]'
+                }`}>
                   {product.name}
                 </h1>
 
-                <p className="mt-3 text-xs sm:text-sm leading-relaxed text-amber-100/75">
+                <p className={`mt-3 text-xs sm:text-sm leading-relaxed ${
+                  isDark ? 'text-amber-100/75' : 'text-[#5C3831]'
+                }`}>
                   {product.description ||
                     'Paket catering nasi box spesial dari Pawon Hara dengan cita rasa gurih meresap, higienis, dan dikemas rapi siap santap untuk melengkapi acaramu.'}
                 </p>
 
                 {/* Quick highlights */}
                 <div className="mt-4 flex flex-wrap gap-2">
-                  <div className="flex items-center gap-1.5 rounded-xl bg-[#2D120F] px-3 py-1.5 text-xs font-semibold text-amber-200 border border-[#60241E] shadow-sm">
-                    <CheckCircle2 size={13} className="text-emerald-400" />
+                  <div className={`flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-semibold shadow-sm border ${
+                    isDark
+                      ? 'bg-[#2D120F] text-amber-200 border-[#60241E]'
+                      : 'bg-[#FAF5EE] text-[#5C3831] border-[#E6DACD]'
+                  }`}>
+                    <CheckCircle2 size={13} className="text-emerald-500" />
                     Sendok & Tisu Termasuk
                   </div>
-                  <div className="flex items-center gap-1.5 rounded-xl bg-[#2D120F] px-3 py-1.5 text-xs font-semibold text-amber-200 border border-[#60241E] shadow-sm">
-                    <ShieldCheck size={13} className="text-emerald-400" />
+                  <div className={`flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-semibold shadow-sm border ${
+                    isDark
+                      ? 'bg-[#2D120F] text-amber-200 border-[#60241E]'
+                      : 'bg-[#FAF5EE] text-[#5C3831] border-[#E6DACD]'
+                  }`}>
+                    <ShieldCheck size={13} className="text-emerald-500" />
                     100% Halal & Higienis
                   </div>
-                  <div className="flex items-center gap-1.5 rounded-xl bg-[#2D120F] px-3 py-1.5 text-xs font-semibold text-amber-200 border border-[#60241E] shadow-sm">
-                    <Clock size={13} className="text-[#F59E0B]" />
+                  <div className={`flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-semibold shadow-sm border ${
+                    isDark
+                      ? 'bg-[#2D120F] text-amber-200 border-[#60241E]'
+                      : 'bg-[#FAF5EE] text-[#5C3831] border-[#E6DACD]'
+                  }`}>
+                    <Clock size={13} className={isDark ? 'text-[#F59E0B]' : 'text-[#D97706]'} />
                     Pengantaran Tepat Waktu
                   </div>
                 </div>
@@ -724,13 +837,17 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
               ====================================================== */}
               {product.addons_enabled && product.addon_groups && product.addon_groups.length > 0 && (
                 <div className="space-y-4">
-                  <div className="flex items-center gap-2 border-b border-zinc-200/80 pb-2.5">
-                    <Sparkles size={16} className="text-red-600" />
+                  <div className={`flex items-center gap-2 border-b pb-2.5 ${
+                    isDark ? 'border-[#60241E]' : 'border-[#E6DACD]'
+                  }`}>
+                    <Sparkles size={16} className={isDark ? 'text-[#F59E0B]' : 'text-[#D97706]'} />
                     <div>
-                      <h2 className="text-xs font-black uppercase tracking-wider text-zinc-900">
+                      <h2 className={`text-xs font-black uppercase tracking-wider ${
+                        isDark ? 'text-white' : 'text-[#2B120E]'
+                      }`}>
                         Pilihan Kustomisasi & Add-on Paket
                       </h2>
-                      <p className="text-[11px] text-amber-100/70">
+                      <p className={`text-[11px] ${isDark ? 'text-amber-100/70' : 'text-[#6B423A]'}`}>
                         Pilihan variasi nasi, lauk pelengkap, atau extra tambahan per porsi
                       </p>
                     </div>
@@ -744,31 +861,47 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                     return (
                       <div
                         key={group.id}
-                        className="rounded-2xl border border-[#60241E]/80 bg-[#2D120F] p-4 sm:p-5 shadow-lg transition-all"
+                        className={`rounded-2xl border p-4 sm:p-5 shadow-lg transition-all ${
+                          isDark
+                            ? 'border-[#60241E]/80 bg-[#2D120F]'
+                            : 'border-[#E6DACD] bg-white'
+                        }`}
                       >
                         {/* Group Header */}
                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 mb-3.5">
                           <div>
                             <div className="flex items-center gap-2">
-                              <h3 className="font-extrabold text-sm text-white">
+                              <h3 className={`font-extrabold text-sm ${isDark ? 'text-white' : 'text-[#2B120E]'}`}>
                                 {group.name}
                               </h3>
                               {isRequired ? (
-                                <span className="rounded-full bg-[#60241E] border border-[#F59E0B]/40 px-2 py-0.5 text-[10px] font-bold text-amber-300">
+                                <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold border ${
+                                  isDark
+                                    ? 'bg-[#60241E] border-[#F59E0B]/40 text-amber-300'
+                                    : 'bg-amber-100 border-amber-300 text-amber-900'
+                                }`}>
                                   Wajib Dipilih
                                 </span>
                               ) : (
-                                <span className="rounded-full bg-[#1C0B09] border border-[#60241E] px-2 py-0.5 text-[10px] font-bold text-amber-100/70">
+                                <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold border ${
+                                  isDark
+                                    ? 'bg-[#1C0B09] border-[#60241E] text-amber-100/70'
+                                    : 'bg-[#FAF5EE] border-[#E6DACD] text-[#6B423A]'
+                                }`}>
                                   Opsional (Maks {group.max_selection})
                                 </span>
                               )}
                             </div>
                             {group.description && (
-                              <p className="text-xs text-amber-100/70 mt-0.5">{group.description}</p>
+                              <p className={`text-xs mt-0.5 ${isDark ? 'text-amber-100/70' : 'text-[#6B423A]'}`}>
+                                {group.description}
+                              </p>
                             )}
                           </div>
 
-                          <span className="text-[11px] font-semibold text-amber-200/60 self-start sm:self-auto">
+                          <span className={`text-[11px] font-semibold self-start sm:self-auto ${
+                            isDark ? 'text-amber-200/60' : 'text-[#8C4320]'
+                          }`}>
                             {currentSelected.length} / {group.max_selection} dipilih
                           </span>
                         </div>
@@ -786,8 +919,12 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                                 onClick={() => handleToggleAddon(group, addon.id)}
                                 className={`group flex items-start justify-between rounded-xl p-3 text-left transition-all border ${
                                   isSelected
-                                    ? 'border-[#F59E0B] bg-[#3B1814] shadow-md ring-1 ring-[#F59E0B]'
-                                    : 'border-[#60241E] bg-[#1C0B09] hover:border-[#F59E0B]/40 hover:bg-[#250D0A]'
+                                    ? isDark
+                                      ? 'border-[#F59E0B] bg-[#3B1814] shadow-md ring-1 ring-[#F59E0B]'
+                                      : 'border-[#D97706] bg-amber-50 shadow-md ring-1 ring-[#D97706]'
+                                    : isDark
+                                      ? 'border-[#60241E] bg-[#1C0B09] hover:border-[#F59E0B]/40 hover:bg-[#250D0A]'
+                                      : 'border-[#E6DACD] bg-[#FAF5EE] hover:border-[#D97706]/50 hover:bg-[#F5EDE4]'
                                 }`}
                               >
                                 <div className="flex items-start gap-2.5 pr-2">
@@ -796,13 +933,17 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                                       isSingleSelect ? 'full' : 'md'
                                     } border transition ${
                                       isSelected
-                                        ? 'border-[#F59E0B] bg-[#F59E0B] text-[#1C0B09]'
-                                        : 'border-[#60241E] bg-[#2D120F] group-hover:border-amber-400'
+                                        ? isDark
+                                          ? 'border-[#F59E0B] bg-[#F59E0B] text-[#1C0B09]'
+                                          : 'border-[#D97706] bg-[#D97706] text-white'
+                                        : isDark
+                                          ? 'border-[#60241E] bg-[#2D120F] group-hover:border-amber-400'
+                                          : 'border-[#DDCBC0] bg-white group-hover:border-amber-500'
                                     }`}
                                   >
                                     {isSelected && (
                                       isSingleSelect ? (
-                                        <div className="h-1.5 w-1.5 rounded-full bg-[#1C0B09]" />
+                                        <div className={`h-1.5 w-1.5 rounded-full ${isDark ? 'bg-[#1C0B09]' : 'bg-white'}`} />
                                       ) : (
                                         <Check size={10} strokeWidth={3} />
                                       )
@@ -811,13 +952,17 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                                   <div>
                                     <p
                                       className={`text-xs font-bold leading-snug ${
-                                        isSelected ? 'text-[#F59E0B]' : 'text-white'
+                                        isSelected
+                                          ? isDark ? 'text-[#F59E0B]' : 'text-[#B45309]'
+                                          : isDark ? 'text-white' : 'text-[#2B120E]'
                                       }`}
                                     >
                                       {addon.name}
                                     </p>
                                     {addon.description && (
-                                      <p className="text-[11px] text-amber-100/60 mt-0.5 line-clamp-1">
+                                      <p className={`text-[11px] mt-0.5 line-clamp-1 ${
+                                        isDark ? 'text-amber-100/60' : 'text-[#6B423A]'
+                                      }`}>
                                         {addon.description}
                                       </p>
                                     )}
@@ -825,10 +970,14 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                                 </div>
 
                                 <span
-                                  className={`shrink-0 rounded-lg px-2 py-0.5 text-[10px] font-bold ${
+                                  className={`shrink-0 rounded-lg px-2 py-0.5 text-[10px] font-bold border ${
                                     priceNum === 0
-                                      ? 'bg-[#1C0B09] text-emerald-400 border border-[#60241E]'
-                                      : 'bg-[#1C0B09] text-amber-300 border border-[#60241E]'
+                                      ? isDark
+                                        ? 'bg-[#1C0B09] text-emerald-400 border-[#60241E]'
+                                        : 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                                      : isDark
+                                        ? 'bg-[#1C0B09] text-amber-300 border-[#60241E]'
+                                        : 'bg-amber-50 text-amber-800 border-amber-200'
                                   }`}
                                 >
                                   {priceNum === 0 ? 'Termasuk' : `+Rp ${priceNum.toLocaleString('id-ID')} / porsi`}
@@ -846,27 +995,41 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
               {/* =====================================================
                   CART-STYLE QUANTITY SELECTOR (SATUAN & KELIPATAN 10)
               ====================================================== */}
-              <div className="rounded-2xl border border-[#60241E]/80 bg-[#2D120F] p-5 shadow-lg space-y-4">
+              <div className={`rounded-2xl border p-5 shadow-lg space-y-4 ${
+                isDark
+                  ? 'border-[#60241E]/80 bg-[#2D120F]'
+                  : 'border-[#E6DACD] bg-white'
+              }`}>
                 {/* Mode Switcher & Header */}
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-[#60241E]/60 pb-4">
+                <div className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b pb-4 ${
+                  isDark ? 'border-[#60241E]/60' : 'border-[#E6DACD]'
+                }`}>
                   <div>
-                    <label className="text-xs font-black uppercase tracking-wider text-white flex items-center gap-1.5">
-                      <ShoppingBag size={15} className="text-[#F59E0B]" />
+                    <label className={`text-xs font-black uppercase tracking-wider flex items-center gap-1.5 ${
+                      isDark ? 'text-white' : 'text-[#2B120E]'
+                    }`}>
+                      <ShoppingBag size={15} className={isDark ? 'text-[#F59E0B]' : 'text-[#D97706]'} />
                       Jumlah Pesanan Porsi
                     </label>
-                    <p className="text-xs text-amber-100/70 mt-0.5">
+                    <p className={`text-xs mt-0.5 ${isDark ? 'text-amber-100/70' : 'text-[#6B423A]'}`}>
                       Minimal order menu ini: <span className="font-bold text-[#F59E0B]">{minOrder} porsi</span>
                     </p>
                   </div>
 
-                  <div className="inline-flex items-center rounded-xl bg-[#1C0B09] p-1 border border-[#60241E] self-start sm:self-auto shadow-inner">
+                  <div className={`inline-flex items-center rounded-xl p-1 border self-start sm:self-auto shadow-inner ${
+                    isDark
+                      ? 'bg-[#1C0B09] border-[#60241E]'
+                      : 'bg-[#FAF5EE] border-[#E6DACD]'
+                  }`}>
                     <button
                       type="button"
                       onClick={() => handleSwitchMode('kelipatan10')}
                       className={`rounded-lg px-3.5 py-1.5 text-xs transition-all duration-200 ${
                         portionMode === 'kelipatan10'
                           ? 'bg-[#F59E0B] text-[#1C0B09] font-black shadow-sm'
-                          : 'text-amber-100/70 hover:text-white font-semibold'
+                          : isDark
+                            ? 'text-amber-100/70 hover:text-white font-semibold'
+                            : 'text-[#6B423A] hover:text-[#2B120E] font-semibold'
                       }`}
                     >
                       Kelipatan 10
@@ -877,7 +1040,9 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                       className={`rounded-lg px-3.5 py-1.5 text-xs transition-all duration-200 ${
                         portionMode === 'satuan'
                           ? 'bg-[#F59E0B] text-[#1C0B09] font-black shadow-sm'
-                          : 'text-amber-100/70 hover:text-white font-semibold'
+                          : isDark
+                            ? 'text-amber-100/70 hover:text-white font-semibold'
+                            : 'text-[#6B423A] hover:text-[#2B120E] font-semibold'
                       }`}
                     >
                       Satuan (+1)
@@ -889,14 +1054,18 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                      <span className="inline-flex items-center rounded-md bg-[#60241E] px-2 py-0.5 text-[11px] font-bold text-amber-300 border border-[#F59E0B]/30">
+                      <span className={`inline-flex items-center rounded-md px-2 py-0.5 text-[11px] font-bold border ${
+                        isDark
+                          ? 'bg-[#60241E] text-amber-300 border-[#F59E0B]/30'
+                          : 'bg-amber-100 text-amber-900 border-amber-200'
+                      }`}>
                         {portionMode === 'kelipatan10' ? '⚡ Step ±10 Porsi' : '🎯 Step ±1 Porsi'}
                       </span>
-                      <p className="text-xs font-bold text-white">
+                      <p className={`text-xs font-bold ${isDark ? 'text-white' : 'text-[#2B120E]'}`}>
                         {portionMode === 'kelipatan10' ? 'Mode Kelipatan 10' : 'Mode Satuan Bebas'}
                       </p>
                     </div>
-                    <p className="text-[11px] text-amber-100/70">
+                    <p className={`text-[11px] ${isDark ? 'text-amber-100/70' : 'text-[#6B423A]'}`}>
                       {portionMode === 'kelipatan10'
                         ? 'Klik +/- untuk kelipatan 10 porsi (10, 20, 30...)'
                         : 'Klik +/- untuk atur porsi spesifik (misal 12, 15, 27 porsi)'}
@@ -904,12 +1073,20 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                   </div>
 
                   {/* Counter buttons */}
-                  <div className="inline-flex items-center rounded-2xl border border-[#60241E] bg-[#1C0B09] p-1.5 shadow-inner self-start sm:self-auto">
+                  <div className={`inline-flex items-center rounded-2xl border p-1.5 shadow-inner self-start sm:self-auto ${
+                    isDark
+                      ? 'border-[#60241E] bg-[#1C0B09]'
+                      : 'border-[#E6DACD] bg-[#FAF5EE]'
+                  }`}>
                     <button
                       type="button"
                       onClick={handleDecrease}
                       disabled={quantity <= minOrder}
-                      className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#2D120F] text-white border border-[#60241E] shadow-xs transition hover:bg-[#3B1814] active:scale-95 disabled:cursor-not-allowed disabled:opacity-40"
+                      className={`flex h-11 w-11 items-center justify-center rounded-xl border shadow-xs transition active:scale-95 disabled:cursor-not-allowed disabled:opacity-40 ${
+                        isDark
+                          ? 'bg-[#2D120F] text-white border-[#60241E] hover:bg-[#3B1814]'
+                          : 'bg-white text-[#2B120E] border-[#E6DACD] hover:bg-[#F5EDE4]'
+                      }`}
                       aria-label={`Kurangi ${step} porsi`}
                     >
                       <Minus size={16} strokeWidth={2.5} />
@@ -923,9 +1100,11 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                         min={minOrder}
                         onChange={(e) => handleQuantityInput(e.target.value)}
                         onBlur={handleQuantityBlur}
-                        className="w-16 text-center font-black text-xl text-white bg-transparent outline-none font-poppins"
+                        className={`w-16 text-center font-black text-xl bg-transparent outline-none font-poppins ${
+                          isDark ? 'text-white' : 'text-[#2B120E]'
+                        }`}
                       />
-                      <span className="text-xs font-bold text-amber-200/60">porsi</span>
+                      <span className={`text-xs font-bold ${isDark ? 'text-amber-200/60' : 'text-[#6B423A]'}`}>porsi</span>
                     </div>
 
                     <button
@@ -940,8 +1119,10 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                 </div>
 
                 {/* Quick portion chips */}
-                <div className="mt-4 flex flex-wrap items-center gap-2 pt-3 border-t border-[#60241E]/60">
-                  <span className="text-[11px] font-semibold text-amber-200/50">Pilih Cepat:</span>
+                <div className={`mt-4 flex flex-wrap items-center gap-2 pt-3 border-t ${
+                  isDark ? 'border-[#60241E]/60' : 'border-[#E6DACD]'
+                }`}>
+                  <span className={`text-[11px] font-semibold ${isDark ? 'text-amber-200/50' : 'text-[#6B423A]'}`}>Pilih Cepat:</span>
                   {portionMode === 'kelipatan10' ? (
                     [10, 20, 30, 50, 100, 200]
                       .filter((c) => c >= minOrder)
@@ -950,10 +1131,12 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                           key={count}
                           type="button"
                           onClick={() => setQuantity(count)}
-                          className={`rounded-xl px-2.5 py-1 text-xs font-bold transition ${
+                          className={`rounded-xl px-2.5 py-1 text-xs font-bold transition border ${
                             quantity === count
-                              ? 'bg-gradient-to-r from-[#F59E0B] to-[#E77B49] text-[#1C0B09] font-black shadow-sm'
-                              : 'bg-[#1C0B09] text-amber-200/70 border border-[#60241E] hover:bg-[#3B1814] hover:text-white'
+                              ? 'bg-gradient-to-r from-[#F59E0B] to-[#E77B49] text-[#1C0B09] font-black shadow-sm border-transparent'
+                              : isDark
+                                ? 'bg-[#1C0B09] text-amber-200/70 border-[#60241E] hover:bg-[#3B1814] hover:text-white'
+                                : 'bg-[#FAF5EE] text-[#5C3831] border-[#E6DACD] hover:bg-[#F5EDE4] hover:text-[#2B120E]'
                           }`}
                         >
                           {count} Porsi
@@ -968,22 +1151,28 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                             key={count}
                             type="button"
                             onClick={() => setQuantity(count)}
-                            className={`rounded-xl px-2.5 py-1 text-xs font-bold transition ${
+                            className={`rounded-xl px-2.5 py-1 text-xs font-bold transition border ${
                               quantity === count
-                                ? 'bg-gradient-to-r from-[#F59E0B] to-[#E77B49] text-[#1C0B09] font-black shadow-sm'
-                                : 'bg-[#1C0B09] text-amber-200/70 border border-[#60241E] hover:bg-[#3B1814] hover:text-white'
+                                ? 'bg-gradient-to-r from-[#F59E0B] to-[#E77B49] text-[#1C0B09] font-black shadow-sm border-transparent'
+                                : isDark
+                                  ? 'bg-[#1C0B09] text-amber-200/70 border-[#60241E] hover:bg-[#3B1814] hover:text-white'
+                                  : 'bg-[#FAF5EE] text-[#5C3831] border-[#E6DACD] hover:bg-[#F5EDE4] hover:text-[#2B120E]'
                             }`}
                           >
                             {count} Porsi
                           </button>
                         ))}
-                      <span className="text-amber-200/30 mx-1">|</span>
+                      <span className={`${isDark ? 'text-amber-200/30' : 'text-[#E6DACD]'} mx-1`}>|</span>
                       {[+1, +5, +10].map((inc) => (
                         <button
                           key={`inc-${inc}`}
                           type="button"
                           onClick={() => setQuantity((q) => q + inc)}
-                          className="rounded-xl px-2 py-1 text-xs font-bold bg-[#3B1814] text-amber-300 hover:bg-[#60241E] border border-[#F59E0B]/40 transition"
+                          className={`rounded-xl px-2 py-1 text-xs font-bold transition border ${
+                            isDark
+                              ? 'bg-[#3B1814] text-amber-300 hover:bg-[#60241E] border-[#F59E0B]/40'
+                              : 'bg-amber-100 text-amber-900 hover:bg-amber-200 border-amber-300'
+                          }`}
                         >
                           +{inc}
                         </button>
@@ -997,48 +1186,72 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
             {/* KANAN BAWAH: Ringkasan Harga & Tombol Pesan */}
             <div className="order-3 space-y-4">
               {/* Live Price Summary Box */}
-              <div className="rounded-2xl border border-[#60241E]/80 bg-[#2D120F] p-5 shadow-lg space-y-3.5">
-                <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-2 border-b border-[#60241E]/60 pb-3">
+              <div className={`rounded-2xl border p-5 shadow-lg space-y-3.5 ${
+                isDark
+                  ? 'border-[#60241E]/80 bg-[#2D120F]'
+                  : 'border-[#E6DACD] bg-white'
+              }`}>
+                <div className={`flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-2 border-b pb-3 ${
+                  isDark ? 'border-[#60241E]/60' : 'border-[#E6DACD]'
+                }`}>
                   <div>
-                    <p className="text-[11px] font-bold uppercase tracking-wider text-amber-200/50">
+                    <p className={`text-[11px] font-bold uppercase tracking-wider ${
+                      isDark ? 'text-amber-200/50' : 'text-[#6B423A]'
+                    }`}>
                       Harga Satuan Paket
                     </p>
                     <div className="mt-0.5 flex items-baseline gap-1.5">
                       <span className="text-2xl sm:text-3xl font-black tracking-tight text-[#F59E0B] font-poppins">
                         Rp {unitPrice.toLocaleString('id-ID')}
                       </span>
-                      <span className="text-xs font-medium text-amber-200/50">/ porsi</span>
+                      <span className={`text-xs font-medium ${isDark ? 'text-amber-200/50' : 'text-[#6B423A]'}`}>/ porsi</span>
                     </div>
                   </div>
 
                   <div className="sm:text-right">
-                    <p className="text-[11px] font-bold uppercase tracking-wider text-amber-200/50">
+                    <p className={`text-[11px] font-bold uppercase tracking-wider ${
+                      isDark ? 'text-amber-200/50' : 'text-[#6B423A]'
+                    }`}>
                       Total Estimasi ({quantity} Porsi)
                     </p>
-                    <p className="mt-0.5 text-xl sm:text-2xl font-black text-amber-300 font-poppins">
+                    <p className={`mt-0.5 text-xl sm:text-2xl font-black font-poppins ${
+                      isDark ? 'text-amber-300' : 'text-[#B45309]'
+                    }`}>
                       Rp {estimatedTotal.toLocaleString('id-ID')}
                     </p>
                   </div>
                 </div>
 
                 {/* Explicit calculation breakdown */}
-                <div className="rounded-xl bg-[#1C0B09] border border-[#60241E]/60 p-3 space-y-1.5 text-xs text-amber-100/80">
+                <div className={`rounded-xl border p-3 space-y-1.5 text-xs ${
+                  isDark
+                    ? 'bg-[#1C0B09] border-[#60241E]/60 text-amber-100/80'
+                    : 'bg-[#FAF5EE] border-[#E6DACD] text-[#5C3831]'
+                }`}>
                   <div className="flex justify-between">
                     <span>Paket Dasar ({product.name}):</span>
-                    <span className="font-mono text-white font-semibold">
+                    <span className={`font-mono font-semibold ${isDark ? 'text-white' : 'text-[#2B120E]'}`}>
                       Rp {basePrice.toLocaleString('id-ID')} × {quantity} porsi = Rp {baseTotal.toLocaleString('id-ID')}
                     </span>
                   </div>
 
                   {selectedAddonSummary.length > 0 && selectedAddonSummary.some((a) => a.price > 0) && (
-                    <div className="space-y-1 pt-1.5 border-t border-[#60241E]/60">
-                      <p className="text-[11px] font-bold text-[#F59E0B] uppercase tracking-wider">
+                    <div className={`space-y-1 pt-1.5 border-t ${
+                      isDark ? 'border-[#60241E]/60' : 'border-[#E6DACD]'
+                    }`}>
+                      <p className={`text-[11px] font-bold uppercase tracking-wider ${
+                        isDark ? 'text-[#F59E0B]' : 'text-[#B45309]'
+                      }`}>
                         Tambahan Add-on Paket:
                       </p>
                       {selectedAddonSummary.map((item, idx) => (
-                        <div key={idx} className="flex justify-between text-amber-100/70 pl-2">
+                        <div key={idx} className={`flex justify-between pl-2 ${
+                          isDark ? 'text-amber-100/70' : 'text-[#5C3831]'
+                        }`}>
                           <span>• {item.addonName}</span>
-                          <span className="font-mono text-amber-300 font-semibold">
+                          <span className={`font-mono font-semibold ${
+                            isDark ? 'text-amber-300' : 'text-[#8C4320]'
+                          }`}>
                             {item.price > 0
                               ? `+Rp ${item.price.toLocaleString('id-ID')} × ${quantity} porsi = +Rp ${(item.price * quantity).toLocaleString('id-ID')}`
                               : 'Termasuk'}
@@ -1056,7 +1269,11 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                   <button
                     type="button"
                     onClick={handleAddToCart}
-                    className="inline-flex cursor-pointer transform hover:scale-95 items-center justify-center gap-2.5 rounded-2xl border-2 border-[#F59E0B] bg-[#2D120F] px-6 py-4 text-sm font-black text-amber-300 shadow-md transition hover:bg-[#3B1814] active:scale-[0.99]"
+                    className={`inline-flex cursor-pointer transform hover:scale-95 items-center justify-center gap-2.5 rounded-2xl border-2 px-6 py-4 text-sm font-black shadow-md transition active:scale-[0.99] ${
+                      isDark
+                        ? 'border-[#F59E0B] bg-[#2D120F] text-amber-300 hover:bg-[#3B1814]'
+                        : 'border-[#D97706] bg-white text-[#B45309] hover:bg-[#FAF5EE]'
+                    }`}
                   >
                     <ShoppingCart size={19} />
                     <span>Tambahkan ke Keranjang</span>
@@ -1072,10 +1289,14 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                   </button>
                 </div>
 
-                <div className="flex flex-wrap items-center justify-between gap-2 px-1 text-[11px] text-amber-200/50">
+                <div className={`flex flex-wrap items-center justify-between gap-2 px-1 text-[11px] ${
+                  isDark ? 'text-amber-200/50' : 'text-[#6B423A]'
+                }`}>
                   <Link
                     to="/cara-pesan"
-                    className="font-medium text-amber-300 hover:text-amber-200 transition underline underline-offset-2"
+                    className={`font-medium underline underline-offset-2 transition ${
+                      isDark ? 'text-amber-300 hover:text-amber-200' : 'text-[#B45309] hover:text-[#92400E]'
+                    }`}
                   >
                     Panduan Cara Pesan
                   </Link>
@@ -1083,7 +1304,7 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                 </div>
               </div>
 
-              <p className="text-xs leading-relaxed text-amber-200/50">
+              <p className={`text-xs leading-relaxed ${isDark ? 'text-amber-200/50' : 'text-[#6B423A]'}`}>
                 * Harga final dan biaya ongkir akan dikonfirmasi via invoice katering oleh tim Pawon Hara setelah pesanan diterima.
               </p>
             </div>
@@ -1096,18 +1317,30 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
       ====================================================== */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-md animate-fade-in">
-          <div className="relative w-full max-w-lg overflow-hidden rounded-3xl bg-[#2D120F] border border-[#60241E] text-white shadow-2xl">
+          <div className={`relative w-full max-w-lg overflow-hidden rounded-3xl border shadow-2xl ${
+            isDark
+              ? 'bg-[#2D120F] border-[#60241E] text-white'
+              : 'bg-[#FBF7F2] border-[#E6DACD] text-[#2B120E]'
+          }`}>
             {/* Modal Header */}
-            <div className="flex items-center justify-between border-b border-[#60241E] px-6 py-5 bg-[#250D0A]">
+            <div className={`flex items-center justify-between border-b px-6 py-5 ${
+              isDark ? 'border-[#60241E] bg-[#250D0A]' : 'border-[#E6DACD] bg-[#F5EDE4]'
+            }`}>
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#60241E] text-[#F59E0B] ring-1 ring-[#F59E0B]/30">
+                <div className={`flex h-10 w-10 items-center justify-center rounded-2xl ring-1 ${
+                  isDark
+                    ? 'bg-[#60241E] text-[#F59E0B] ring-[#F59E0B]/30'
+                    : 'bg-[#EAE0D5] text-[#D97706] ring-[#D97706]/30'
+                }`}>
                   <ShoppingBag size={20} />
                 </div>
                 <div>
-                  <h3 className="font-dhaksinarga tracking-wide text-white text-lg">
+                  <h3 className={`font-dhaksinarga tracking-wide text-lg ${
+                    isDark ? 'text-white' : 'text-[#2B120E]'
+                  }`}>
                     Form Pemesanan Katering
                   </h3>
-                  <p className="text-xs text-amber-200/60">
+                  <p className={`text-xs ${isDark ? 'text-amber-200/60' : 'text-[#6B423A]'}`}>
                     {product.name} • <span className="font-bold text-[#F59E0B]">{quantity} Porsi</span>
                   </p>
                 </div>
@@ -1116,7 +1349,11 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
               <button
                 type="button"
                 onClick={() => setIsModalOpen(false)}
-                className="rounded-full p-2 text-amber-200/50 hover:bg-[#3B1814] hover:text-white transition"
+                className={`rounded-full p-2 transition ${
+                  isDark
+                    ? 'text-amber-200/50 hover:bg-[#3B1814] hover:text-white'
+                    : 'text-[#6B423A] hover:bg-[#EAE0D5] hover:text-[#2B120E]'
+                }`}
               >
                 <X size={18} />
               </button>
@@ -1125,30 +1362,36 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
             {/* Modal Body / Form */}
             <form onSubmit={handleSubmitOrder} className="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
               {/* Order Summary Box with Explicit Multiplication */}
-              <div className="rounded-2xl border border-[#60241E] bg-[#1C0B09] p-3.5 space-y-2.5 text-xs">
+              <div className={`rounded-2xl border p-3.5 space-y-2.5 text-xs ${
+                isDark
+                  ? 'border-[#60241E] bg-[#1C0B09]'
+                  : 'border-[#E6DACD] bg-white'
+              }`}>
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="font-bold text-white">{product.name}</p>
-                    <p className="text-amber-200/60">Jumlah: {quantity} porsi (@ Rp {unitPrice.toLocaleString('id-ID')})</p>
+                    <p className={`font-bold ${isDark ? 'text-white' : 'text-[#2B120E]'}`}>{product.name}</p>
+                    <p className={isDark ? 'text-amber-200/60' : 'text-[#6B423A]'}>Jumlah: {quantity} porsi (@ Rp {unitPrice.toLocaleString('id-ID')})</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-[10px] text-amber-200/50">Estimasi Total</p>
+                    <p className={`text-[10px] ${isDark ? 'text-amber-200/50' : 'text-[#6B423A]'}`}>Estimasi Total</p>
                     <p className="font-black text-sm text-[#F59E0B]">Rp {estimatedTotal.toLocaleString('id-ID')}</p>
                   </div>
                 </div>
 
                 {/* Calculation breakdown */}
-                <div className="pt-2 border-t border-[#60241E]/60 space-y-1 text-[11px]">
-                  <div className="flex justify-between text-amber-100/70">
+                <div className={`pt-2 border-t space-y-1 text-[11px] ${
+                  isDark ? 'border-[#60241E]/60' : 'border-[#E6DACD]'
+                }`}>
+                  <div className={`flex justify-between ${isDark ? 'text-amber-100/70' : 'text-[#5C3831]'}`}>
                     <span>Paket Dasar:</span>
-                    <span className="font-mono text-white">
+                    <span className={`font-mono ${isDark ? 'text-white' : 'text-[#2B120E] font-semibold'}`}>
                       Rp {basePrice.toLocaleString('id-ID')} × {quantity} = Rp {baseTotal.toLocaleString('id-ID')}
                     </span>
                   </div>
                   {selectedAddonSummary.map((item, idx) => (
-                    <div key={idx} className="flex justify-between text-amber-100/70 pl-2">
+                    <div key={idx} className={`flex justify-between pl-2 ${isDark ? 'text-amber-100/70' : 'text-[#5C3831]'}`}>
                       <span>↳ {item.addonName}:</span>
-                      <span className="font-mono text-amber-300 font-semibold">
+                      <span className={`font-mono font-semibold ${isDark ? 'text-amber-300' : 'text-[#8C4320]'}`}>
                         {item.price > 0 ? `+Rp ${(item.price * quantity).toLocaleString('id-ID')}` : 'Termasuk'}
                       </span>
                     </div>
@@ -1158,36 +1401,52 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
 
               {/* Customer Name */}
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-amber-200/80 mb-1.5">
+                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${
+                  isDark ? 'text-amber-200/80' : 'text-[#5C3831]'
+                }`}>
                   Nama Pemesan / Instansi <span className="text-[#F59E0B] font-black">*</span>
                 </label>
                 <div className="relative">
-                  <User size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-amber-200/50 pointer-events-none" />
+                  <User size={16} className={`absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none ${
+                    isDark ? 'text-amber-200/50' : 'text-[#8C4320]'
+                  }`} />
                   <input
                     type="text"
                     required
                     placeholder="Contoh: Bpk. Heru / PT Sinar Maju"
                     value={customerName}
                     onChange={(e) => setCustomerName(e.target.value)}
-                    className="w-full h-11 rounded-xl border border-[#60241E] bg-[#1C0B09] pl-10 pr-4 text-xs sm:text-sm font-medium text-white outline-none focus:border-[#F59E0B] transition"
+                    className={`w-full h-11 rounded-xl border pl-10 pr-4 text-xs sm:text-sm font-medium outline-none transition ${
+                      isDark
+                        ? 'border-[#60241E] bg-[#1C0B09] text-white focus:border-[#F59E0B]'
+                        : 'border-[#E6DACD] bg-white text-[#2B120E] focus:border-[#D97706]'
+                    }`}
                   />
                 </div>
               </div>
 
               {/* Customer Phone */}
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-amber-200/80 mb-1.5">
+                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${
+                  isDark ? 'text-amber-200/80' : 'text-[#5C3831]'
+                }`}>
                   Nomor WhatsApp Aktif <span className="text-[#F59E0B] font-black">*</span>
                 </label>
                 <div className="relative">
-                  <MessageCircle size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-amber-200/50 pointer-events-none" />
+                  <MessageCircle size={16} className={`absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none ${
+                    isDark ? 'text-amber-200/50' : 'text-[#8C4320]'
+                  }`} />
                   <input
                     type="tel"
                     required
                     placeholder="Contoh: 081234567890"
                     value={customerPhone}
                     onChange={(e) => setCustomerPhone(e.target.value)}
-                    className="w-full h-11 rounded-xl border border-[#60241E] bg-[#1C0B09] pl-10 pr-4 text-xs sm:text-sm font-medium text-white outline-none focus:border-[#F59E0B] transition"
+                    className={`w-full h-11 rounded-xl border pl-10 pr-4 text-xs sm:text-sm font-medium outline-none transition ${
+                      isDark
+                        ? 'border-[#60241E] bg-[#1C0B09] text-white focus:border-[#F59E0B]'
+                        : 'border-[#E6DACD] bg-white text-[#2B120E] focus:border-[#D97706]'
+                    }`}
                   />
                 </div>
               </div>
@@ -1195,11 +1454,15 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
               {/* Event Date & Time */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-amber-200/80 mb-1.5">
+                  <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${
+                    isDark ? 'text-amber-200/80' : 'text-[#5C3831]'
+                  }`}>
                     Tanggal Acara <span className="text-[#F59E0B] font-black">*</span>
                   </label>
                   <div className="relative">
-                    <Calendar size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-amber-200/50 pointer-events-none" />
+                    <Calendar size={16} className={`absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none ${
+                      isDark ? 'text-amber-200/50' : 'text-[#8C4320]'
+                    }`} />
                     <input
                       type="date"
                       required
@@ -1209,7 +1472,9 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                       className={`w-full h-11 rounded-xl border pl-10 pr-3 text-xs sm:text-sm font-medium outline-none transition ${
                         isDateInvalid
                           ? 'border-red-500 bg-red-950/40 text-red-200'
-                          : 'border-[#60241E] bg-[#1C0B09] text-white focus:border-[#F59E0B]'
+                          : isDark
+                            ? 'border-[#60241E] bg-[#1C0B09] text-white focus:border-[#F59E0B]'
+                            : 'border-[#E6DACD] bg-white text-[#2B120E] focus:border-[#D97706]'
                       }`}
                     />
                   </div>
@@ -1224,16 +1489,24 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-amber-200/80 mb-1.5">
+                  <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${
+                    isDark ? 'text-amber-200/80' : 'text-[#5C3831]'
+                  }`}>
                     Jam Acara (Kira-kira)
                   </label>
                   <div className="relative">
-                    <Clock size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-amber-200/50 pointer-events-none" />
+                    <Clock size={16} className={`absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none ${
+                      isDark ? 'text-amber-200/50' : 'text-[#8C4320]'
+                    }`} />
                     <input
                       type="time"
                       value={eventTime}
                       onChange={(e) => setEventTime(e.target.value)}
-                      className="w-full h-11 rounded-xl border border-[#60241E] bg-[#1C0B09] pl-10 pr-3 text-xs sm:text-sm font-medium text-white outline-none focus:border-[#F59E0B] transition"
+                      className={`w-full h-11 rounded-xl border pl-10 pr-3 text-xs sm:text-sm font-medium outline-none transition ${
+                        isDark
+                          ? 'border-[#60241E] bg-[#1C0B09] text-white focus:border-[#F59E0B]'
+                          : 'border-[#E6DACD] bg-white text-[#2B120E] focus:border-[#D97706]'
+                      }`}
                     />
                   </div>
                 </div>
@@ -1242,14 +1515,22 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
               {/* Lead Time Notice */}
               {leadTimeDays > 0 ? (
                 <div className="space-y-2">
-                  <div className="flex items-center gap-2 rounded-xl border border-[#60241E] bg-[#1C0B09] px-3.5 py-2.5 text-xs text-amber-200">
+                  <div className={`flex items-center gap-2 rounded-xl border px-3.5 py-2.5 text-xs ${
+                    isDark
+                      ? 'border-[#60241E] bg-[#1C0B09] text-amber-200'
+                      : 'border-[#E6DACD] bg-[#FAF5EE] text-[#5C3831]'
+                  }`}>
                     <Info size={15} className="shrink-0 text-[#F59E0B]" />
                     <span>
                       Menu ini memerlukan persiapan <strong>H-{leadTimeDays}</strong> (paling cepat {formatMinDateLabel(minDateString)}).
                     </span>
                   </div>
 
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 rounded-xl border border-[#60241E] bg-[#1C0B09] px-3.5 py-2.5 text-xs text-amber-100/70">
+                  <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-2 rounded-xl border px-3.5 py-2.5 text-xs ${
+                    isDark
+                      ? 'border-[#60241E] bg-[#1C0B09] text-amber-100/70'
+                      : 'border-[#E6DACD] bg-[#FAF5EE] text-[#5C3831]'
+                  }`}>
                     <div className="flex items-center gap-2">
                       <span className="flex h-2 w-2 rounded-full bg-[#F59E0B] animate-pulse shrink-0" />
                       <span>Butuh mendadak kurang dari H-{leadTimeDays}?</span>
@@ -1260,7 +1541,7 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                       )}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 font-bold text-[#F59E0B] hover:text-amber-300 transition"
+                      className="inline-flex items-center gap-1 font-bold text-[#F59E0B] hover:text-amber-400 transition"
                     >
                       Cek Slot Darurat via WhatsApp
                       <ArrowRight size={13} />
@@ -1268,32 +1549,42 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                   </div>
                 </div>
               ) : (
-                <p className="text-[11px] text-amber-200/50 -mt-1">
+                <p className={`text-[11px] -mt-1 ${isDark ? 'text-amber-200/50' : 'text-[#6B423A]'}`}>
                   Menu ini dapat dipesan mulai hari ini.
                 </p>
               )}
 
               {/* Delivery Address */}
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-amber-200/80 mb-1.5">
+                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${
+                  isDark ? 'text-amber-200/80' : 'text-[#5C3831]'
+                }`}>
                   Alamat Pengantaran / Lokasi Acara <span className="text-[#F59E0B] font-black">*</span>
                 </label>
                 <div className="relative">
-                  <MapPin size={16} className="absolute left-3.5 top-3 text-amber-200/50 pointer-events-none" />
+                  <MapPin size={16} className={`absolute left-3.5 top-3 pointer-events-none ${
+                    isDark ? 'text-amber-200/50' : 'text-[#8C4320]'
+                  }`} />
                   <textarea
                     required
                     rows={2}
                     placeholder="Contoh: Gedung Graha Lantai 4, Jl. Sudirman No. 12"
                     value={deliveryAddress}
                     onChange={(e) => setDeliveryAddress(e.target.value)}
-                    className="w-full rounded-xl border border-[#60241E] bg-[#1C0B09] pl-10 pr-4 py-2 text-xs sm:text-sm font-medium text-white outline-none focus:border-[#F59E0B] transition"
+                    className={`w-full rounded-xl border pl-10 pr-4 py-2 text-xs sm:text-sm font-medium outline-none transition ${
+                      isDark
+                        ? 'border-[#60241E] bg-[#1C0B09] text-white focus:border-[#F59E0B]'
+                        : 'border-[#E6DACD] bg-white text-[#2B120E] focus:border-[#D97706]'
+                    }`}
                   />
                 </div>
               </div>
 
               {/* Notes */}
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-amber-200/80 mb-1.5">
+                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${
+                  isDark ? 'text-amber-200/80' : 'text-[#5C3831]'
+                }`}>
                   Catatan Tambahan (Opsional)
                 </label>
                 <input
@@ -1301,16 +1592,26 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                   placeholder="Contoh: Sambal dipisah / minta sendok lebih"
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
-                  className="w-full h-11 rounded-xl border border-[#60241E] bg-[#1C0B09] px-4 text-xs sm:text-sm font-medium text-white outline-none focus:border-[#F59E0B] transition"
+                  className={`w-full h-11 rounded-xl border px-4 text-xs sm:text-sm font-medium outline-none transition ${
+                    isDark
+                      ? 'border-[#60241E] bg-[#1C0B09] text-white focus:border-[#F59E0B]'
+                      : 'border-[#E6DACD] bg-white text-[#2B120E] focus:border-[#D97706]'
+                  }`}
                 />
               </div>
 
               {/* Modal Buttons */}
-              <div className="pt-3 border-t border-[#60241E]/60 flex items-center justify-end gap-2.5">
+              <div className={`pt-3 border-t flex items-center justify-end gap-2.5 ${
+                isDark ? 'border-[#60241E]/60' : 'border-[#E6DACD]'
+              }`}>
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-5 py-3 rounded-xl border border-[#60241E] text-xs font-bold text-amber-200 hover:bg-[#3B1814] transition"
+                  className={`px-5 py-3 rounded-xl border text-xs font-bold transition ${
+                    isDark
+                      ? 'border-[#60241E] text-amber-200 hover:bg-[#3B1814]'
+                      : 'border-[#E6DACD] text-[#5C3831] hover:bg-[#EAE0D5]'
+                  }`}
                 >
                   Batal
                 </button>
@@ -1320,7 +1621,9 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                   disabled={isSubmitting || isDateInvalid || !eventDate}
                   className={`inline-flex items-center gap-2 px-6 py-3 rounded-xl text-xs font-black transition ${
                     isSubmitting || isDateInvalid || !eventDate
-                      ? 'bg-[#3B1814] text-amber-200/40 cursor-not-allowed shadow-none'
+                      ? isDark
+                        ? 'bg-[#3B1814] text-amber-200/40 cursor-not-allowed shadow-none'
+                        : 'bg-[#EAE0D5] text-[#8C4320]/40 cursor-not-allowed shadow-none'
                       : 'bg-gradient-to-r from-[#F59E0B] to-[#E77B49] text-[#1C0B09] shadow-md hover:from-amber-400 hover:to-amber-500 active:scale-[0.99]'
                   }`}
                 >

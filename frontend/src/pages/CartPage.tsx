@@ -18,6 +18,7 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { useQuery } from '@tanstack/react-query'
+import { useThemeStore } from '../stores/theme.store'
 import { useCartStore } from '../stores/cart.store'
 import { ordersService } from '../services/orders.service'
 import { settingsService } from '../services/settings.service'
@@ -70,6 +71,8 @@ function formatMinDateLabel(dateStr: string): string {
 
 export default function CartPage() {
   const navigate = useNavigate()
+  const theme = useThemeStore((state) => state.theme)
+  const isDark = theme === 'dark'
   const [pageLoading, setPageLoading] = useState(true)
 
   useEffect(() => {
@@ -297,7 +300,11 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
   }
 
   return (
-    <main className="min-h-screen bg-[#1C0B09] pb-32 sm:pb-36 lg:pb-28 text-stone-100 selection:bg-[#F59E0B] selection:text-[#1C0B09]">
+    <main className={`min-h-screen pb-32 sm:pb-36 lg:pb-28 transition-colors duration-300 ${
+      isDark
+        ? 'bg-[#1C0B09] text-stone-100 selection:bg-[#F59E0B] selection:text-[#1C0B09]'
+        : 'bg-[#FBF7F2] text-[#2B120E] selection:bg-[#F59E0B] selection:text-white'
+    }`}>
       {/* Branded Initial Page Loader */}
       <PageLoader
         isLoading={pageLoading}
@@ -310,14 +317,22 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
         <div className="mb-5 sm:mb-6 flex flex-wrap items-center justify-between gap-3">
           <Link
             to="/menu"
-            className="inline-flex items-center gap-2 rounded-xl bg-[#2D120F] px-3.5 py-2 text-xs sm:text-sm font-bold text-amber-200 border border-[#60241E] shadow-2xs transition hover:text-white hover:border-[#F59E0B] hover:bg-[#3B1814]"
+            className={`inline-flex items-center gap-2 rounded-xl px-3.5 py-2 text-xs sm:text-sm font-bold shadow-2xs transition ${
+              isDark
+                ? 'bg-[#2D120F] text-amber-200 border border-[#60241E] hover:text-white hover:border-[#F59E0B] hover:bg-[#3B1814]'
+                : 'bg-white text-[#5C3831] border border-[#E6DACD] hover:text-[#2B120E] hover:border-[#D97706] hover:bg-[#FAF5EE]'
+            }`}
           >
             <ArrowLeft size={15} />
             <span>Lanjut Pilih Menu Lain</span>
           </Link>
 
           {items.length > 0 && (
-            <span className="inline-flex items-center rounded-full bg-[#2D120F] px-3 py-1 text-xs font-bold text-amber-300 border border-[#60241E]">
+            <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-bold border ${
+              isDark
+                ? 'bg-[#2D120F] text-amber-300 border-[#60241E]'
+                : 'bg-amber-100 text-amber-900 border-amber-300'
+            }`}>
               {items.length} Menu di Keranjang
             </span>
           )}
@@ -330,10 +345,14 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
               <ShoppingCart size={20} className="sm:h-[22px] sm:w-[22px]" />
             </div>
             <div>
-              <h1 className="text-xl sm:text-2xl lg:text-3xl font-dhaksinarga tracking-wide font-black text-white">
+              <h1 className={`text-xl sm:text-2xl lg:text-3xl font-dhaksinarga tracking-wide font-black ${
+                isDark ? 'text-white' : 'text-[#2B120E]'
+              }`}>
                 Keranjang Pesanan
               </h1>
-              <p className="text-xs sm:text-sm text-amber-100/70 mt-0.5">
+              <p className={`text-xs sm:text-sm mt-0.5 ${
+                isDark ? 'text-amber-100/70' : 'text-[#5C3831]'
+              }`}>
                 Pilih paket katering Anda dan pesan langsung ke WhatsApp Admin Pawon Hara
               </p>
             </div>
@@ -342,14 +361,22 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
 
         {/* Empty State */}
         {items.length === 0 ? (
-          <div className="rounded-3xl border border-[#60241E] bg-[#240E0C] p-6 sm:p-12 lg:p-16 text-center shadow-xl">
-            <div className="mx-auto flex h-16 w-16 sm:h-20 sm:w-20 items-center justify-center rounded-2xl sm:rounded-3xl bg-[#2D120F] text-amber-400 border border-[#60241E] mb-4 sm:mb-5">
+          <div className={`rounded-3xl border p-6 sm:p-12 lg:p-16 text-center shadow-xl ${
+            isDark ? 'border-[#60241E] bg-[#240E0C]' : 'border-[#E6DACD] bg-white'
+          }`}>
+            <div className={`mx-auto flex h-16 w-16 sm:h-20 sm:w-20 items-center justify-center rounded-2xl sm:rounded-3xl border mb-4 sm:mb-5 ${
+              isDark ? 'bg-[#2D120F] text-amber-400 border-[#60241E]' : 'bg-[#FAF5EE] text-[#D97706] border-[#E6DACD]'
+            }`}>
               <ShoppingBag size={32} className="sm:h-9 sm:w-9" />
             </div>
-            <h2 className="text-lg sm:text-2xl font-dhaksinarga tracking-wide font-black text-white mb-2">
+            <h2 className={`text-lg sm:text-2xl font-dhaksinarga tracking-wide font-black mb-2 ${
+              isDark ? 'text-white' : 'text-[#2B120E]'
+            }`}>
               Keranjang Masih Kosong
             </h2>
-            <p className="text-xs sm:text-sm text-amber-100/70 max-w-md mx-auto mb-6 leading-relaxed">
+            <p className={`text-xs sm:text-sm max-w-md mx-auto mb-6 leading-relaxed ${
+              isDark ? 'text-amber-100/70' : 'text-[#5C3831]'
+            }`}>
               Anda belum menambahkan menu katering ke keranjang. Yuk jelajahi aneka paket nasi box, bento, dan tumpeng mini spesial kami untuk acaramu!
             </p>
             <Link
@@ -366,17 +393,23 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
             {/* LEFT COLUMN: Cart Items List */}
             <div className="space-y-3.5 sm:space-y-4">
               {/* Select All & Bulk Actions Bar */}
-              <div className="flex items-center justify-between rounded-2xl border border-[#60241E] bg-[#240E0C] px-3.5 py-3 sm:px-5 sm:py-3.5 shadow-2xs">
+              <div className={`flex items-center justify-between rounded-2xl border px-3.5 py-3 sm:px-5 sm:py-3.5 shadow-2xs ${
+                isDark ? 'border-[#60241E] bg-[#240E0C]' : 'border-[#E6DACD] bg-white'
+              }`}>
                 <label className="flex items-center gap-2.5 sm:gap-3 cursor-pointer select-none">
                   <input
                     type="checkbox"
                     checked={isAllSelected}
                     onChange={(e) => selectAll(e.target.checked)}
-                    className="h-4.5 w-4.5 sm:h-5 sm:w-5 rounded-md border-[#60241E] bg-[#1C0B09] text-[#F59E0B] accent-[#F59E0B] cursor-pointer"
+                    className={`h-4.5 w-4.5 sm:h-5 sm:w-5 rounded-md accent-[#F59E0B] cursor-pointer ${
+                      isDark ? 'border-[#60241E] bg-[#1C0B09]' : 'border-[#E6DACD] bg-[#FAF5EE]'
+                    }`}
                   />
-                  <span className="text-xs sm:text-sm font-bold text-white">
+                  <span className={`text-xs sm:text-sm font-bold ${isDark ? 'text-white' : 'text-[#2B120E]'}`}>
                     Pilih Semua{' '}
-                    <span className="text-amber-300/80 font-semibold text-[11px] sm:text-xs">
+                    <span className={`font-semibold text-[11px] sm:text-xs ${
+                      isDark ? 'text-amber-300/80' : 'text-[#8C4320]'
+                    }`}>
                       ({selectedDistinctCount}/{items.length} Menu)
                     </span>
                   </span>
@@ -407,8 +440,12 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                       key={item.id}
                       className={`relative rounded-2xl sm:rounded-3xl border p-3.5 sm:p-5 transition-all shadow-md ${
                         item.selected
-                          ? 'border-[#F59E0B]/60 bg-[#240E0C] ring-1 ring-[#F59E0B]/30'
-                          : 'border-[#60241E]/70 bg-[#1C0B09]/80 opacity-75 hover:opacity-100'
+                          ? isDark
+                            ? 'border-[#F59E0B]/60 bg-[#240E0C] ring-1 ring-[#F59E0B]/30'
+                            : 'border-[#D97706] bg-white shadow-md ring-1 ring-[#D97706]/30'
+                          : isDark
+                            ? 'border-[#60241E]/70 bg-[#1C0B09]/80 opacity-75 hover:opacity-100'
+                            : 'border-[#E6DACD] bg-[#FAF5EE] opacity-80 hover:opacity-100'
                       }`}
                     >
                       {/* Top Row: Checkbox + Image + Details + Delete */}
@@ -419,12 +456,16 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                             type="checkbox"
                             checked={item.selected}
                             onChange={() => toggleSelect(item.id)}
-                            className="h-4.5 w-4.5 sm:h-5 sm:w-5 rounded-md border-[#60241E] bg-[#1C0B09] text-[#F59E0B] accent-[#F59E0B] cursor-pointer"
+                            className={`h-4.5 w-4.5 sm:h-5 sm:w-5 rounded-md accent-[#F59E0B] cursor-pointer ${
+                              isDark ? 'border-[#60241E] bg-[#1C0B09]' : 'border-[#E6DACD] bg-[#FAF5EE]'
+                            }`}
                           />
                         </div>
 
                         {/* Product Image Thumbnail */}
-                        <div className="h-18 w-18 sm:h-22 sm:w-22 shrink-0 overflow-hidden rounded-xl sm:rounded-2xl border border-[#60241E] bg-[#2D120F] relative">
+                        <div className={`h-18 w-18 sm:h-22 sm:w-22 shrink-0 overflow-hidden rounded-xl sm:rounded-2xl border relative ${
+                          isDark ? 'border-[#60241E] bg-[#2D120F]' : 'border-[#E6DACD] bg-[#FAF5EE]'
+                        }`}>
                           <img
                             src={displayImg}
                             alt={item.product_name}
@@ -439,16 +480,22 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                             <div className="min-w-0 pr-1">
                               <Link
                                 to={`/menu/${item.product_slug}`}
-                                className="text-xs sm:text-base font-dhaksinarga tracking-wide font-black text-white hover:text-[#F59E0B] transition line-clamp-2 leading-snug"
+                                className={`text-xs sm:text-base font-dhaksinarga tracking-wide font-black transition line-clamp-2 leading-snug ${
+                                  isDark ? 'text-white hover:text-[#F59E0B]' : 'text-[#2B120E] hover:text-[#D97706]'
+                                }`}
                               >
                                 {item.product_name}
                               </Link>
 
                               <div className="mt-1 flex flex-wrap items-center gap-1 sm:gap-1.5">
-                                <span className="inline-flex items-center rounded-md bg-[#2D120F] border border-[#60241E] px-1.5 py-0.5 text-[10px] sm:text-[11px] font-semibold text-amber-200">
+                                <span className={`inline-flex items-center rounded-md border px-1.5 py-0.5 text-[10px] sm:text-[11px] font-semibold ${
+                                  isDark ? 'bg-[#2D120F] border-[#60241E] text-amber-200' : 'bg-[#FAF5EE] border-[#E6DACD] text-[#5C3831]'
+                                }`}>
                                   Min. {item.minimum_order} Porsi
                                 </span>
-                                <span className="inline-flex items-center rounded-md bg-[#2D120F] px-1.5 py-0.5 text-[10px] sm:text-[11px] font-semibold text-amber-300 border border-[#F59E0B]/40">
+                                <span className={`inline-flex items-center rounded-md px-1.5 py-0.5 text-[10px] sm:text-[11px] font-semibold border ${
+                                  isDark ? 'bg-[#2D120F] text-amber-300 border-[#F59E0B]/40' : 'bg-amber-50 text-amber-900 border-amber-200'
+                                }`}>
                                   {item.portion_mode === 'kelipatan10' ? 'Kelipatan 10' : 'Bebas Satuan'}
                                 </span>
                               </div>
@@ -458,7 +505,9 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                             <button
                               type="button"
                               onClick={() => removeItem(item.id)}
-                              className="shrink-0 -mr-1 -mt-1 rounded-lg p-1.5 text-stone-400 hover:bg-red-950/50 hover:text-red-400 transition cursor-pointer"
+                              className={`shrink-0 -mr-1 -mt-1 rounded-lg p-1.5 transition cursor-pointer ${
+                                isDark ? 'text-stone-400 hover:bg-red-950/50 hover:text-red-400' : 'text-[#6B423A] hover:bg-red-50 hover:text-red-600'
+                              }`}
                               title="Hapus menu dari keranjang"
                             >
                               <Trash2 size={15} />
@@ -467,31 +516,37 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
 
                           {/* Price per unit */}
                           <div className="mt-1.5 flex items-baseline gap-1">
-                            <span className="text-[11px] font-semibold text-stone-400">Harga:</span>
+                            <span className={`text-[11px] font-semibold ${isDark ? 'text-stone-400' : 'text-[#6B423A]'}`}>Harga:</span>
                             <span className="text-xs sm:text-sm font-bold text-[#F59E0B]">
                               Rp {item.unit_price.toLocaleString('id-ID')}
                             </span>
-                            <span className="text-[10px] text-stone-400">/ porsi</span>
+                            <span className={`text-[10px] ${isDark ? 'text-stone-400' : 'text-[#6B423A]'}`}>/ porsi</span>
                           </div>
                         </div>
                       </div>
 
                       {/* Middle Section: Selected Addons Badges (Indented cleanly) */}
                       {item.addons && item.addons.length > 0 ? (
-                        <div className="mt-3 rounded-xl bg-[#1C0B09] border border-[#60241E] p-2 sm:p-2.5 sm:ml-9">
-                          <p className="text-[10px] font-bold uppercase tracking-wider text-amber-300/70 mb-1.5">
+                        <div className={`mt-3 rounded-xl border p-2 sm:p-2.5 sm:ml-9 ${
+                          isDark ? 'bg-[#1C0B09] border-[#60241E]' : 'bg-[#FAF5EE] border-[#E6DACD]'
+                        }`}>
+                          <p className={`text-[10px] font-bold uppercase tracking-wider mb-1.5 ${
+                            isDark ? 'text-amber-300/70' : 'text-[#8C4320]'
+                          }`}>
                             Kustomisasi / Add-on Terpilih:
                           </p>
                           <div className="flex flex-wrap gap-1.5">
                             {item.addons.map((a, aIdx) => (
                               <span
                                 key={aIdx}
-                                className="inline-flex items-center gap-1 rounded-lg bg-[#2D120F] px-2 py-0.5 text-[10px] sm:text-[11px] font-medium text-amber-100 border border-[#60241E]"
+                                className={`inline-flex items-center gap-1 rounded-lg px-2 py-0.5 text-[10px] sm:text-[11px] font-medium border ${
+                                  isDark ? 'bg-[#2D120F] text-amber-100 border-[#60241E]' : 'bg-white text-[#5C3831] border-[#E6DACD]'
+                                }`}
                               >
-                                <span className="font-bold text-amber-300">{a.addon_group_name}:</span>
+                                <span className={`font-bold ${isDark ? 'text-amber-300' : 'text-[#B45309]'}`}>{a.addon_group_name}:</span>
                                 <span>{a.addon_name}</span>
                                 {a.price > 0 && (
-                                  <span className="text-[#F59E0B] font-semibold">
+                                  <span className={`font-semibold ${isDark ? 'text-[#F59E0B]' : 'text-[#B45309]'}`}>
                                     (+Rp {a.price.toLocaleString('id-ID')})
                                   </span>
                                 )}
@@ -502,24 +557,34 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                       ) : null}
 
                       {/* Bottom Section: Stepper & Subtotal */}
-                      <div className="mt-3 pt-3 border-t border-[#60241E]/80 flex items-center justify-between gap-2 sm:ml-9">
+                      <div className={`mt-3 pt-3 border-t flex items-center justify-between gap-2 sm:ml-9 ${
+                        isDark ? 'border-[#60241E]/80' : 'border-[#E6DACD]'
+                      }`}>
                         {/* Subtotal */}
                         <div>
-                          <p className="text-[10px] font-bold uppercase tracking-wider text-stone-400">
+                          <p className={`text-[10px] font-bold uppercase tracking-wider ${
+                            isDark ? 'text-stone-400' : 'text-[#6B423A]'
+                          }`}>
                             Subtotal ({item.quantity} Porsi)
                           </p>
-                          <p className="text-sm sm:text-base font-dhaksinarga tracking-wide font-black text-white">
+                          <p className={`text-sm sm:text-base font-dhaksinarga tracking-wide font-black ${
+                            isDark ? 'text-white' : 'text-[#2B120E]'
+                          }`}>
                             Rp {item.subtotal.toLocaleString('id-ID')}
                           </p>
                         </div>
 
                         {/* Stepper Counter */}
-                        <div className="inline-flex items-center rounded-xl border border-[#60241E] bg-[#1C0B09] p-0.5 sm:p-1">
+                        <div className={`inline-flex items-center rounded-xl border p-0.5 sm:p-1 ${
+                          isDark ? 'border-[#60241E] bg-[#1C0B09]' : 'border-[#E6DACD] bg-[#FAF5EE]'
+                        }`}>
                           <button
                             type="button"
                             onClick={() => stepQuantity(item.id, 'decrease')}
                             disabled={item.quantity <= item.minimum_order}
-                            className="flex h-7.5 w-7.5 sm:h-8 sm:w-8 items-center justify-center rounded-lg bg-[#2D120F] text-stone-300 transition hover:bg-[#3B1814] hover:text-white active:scale-95 disabled:cursor-not-allowed disabled:opacity-35 cursor-pointer"
+                            className={`flex h-7.5 w-7.5 sm:h-8 sm:w-8 items-center justify-center rounded-lg transition active:scale-95 disabled:cursor-not-allowed disabled:opacity-35 cursor-pointer ${
+                              isDark ? 'bg-[#2D120F] text-stone-300 hover:bg-[#3B1814] hover:text-white' : 'bg-white text-[#2B120E] hover:bg-[#F5EDE4] hover:text-[#2B120E]'
+                            }`}
                             title={`Kurangi porsi (minimal ${item.minimum_order})`}
                           >
                             <Minus size={12} strokeWidth={2.5} />
@@ -534,9 +599,11 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                               onChange={(e) =>
                                 updateQuantity(item.id, parseInt(e.target.value, 10) || item.minimum_order)
                               }
-                              className="w-10 sm:w-12 text-center text-xs sm:text-sm font-black text-amber-300 bg-transparent outline-none"
+                              className={`w-10 sm:w-12 text-center text-xs sm:text-sm font-black bg-transparent outline-none ${
+                                isDark ? 'text-amber-300' : 'text-[#2B120E]'
+                              }`}
                             />
-                            <span className="text-[10px] font-bold text-stone-400">porsi</span>
+                            <span className={`text-[10px] font-bold ${isDark ? 'text-stone-400' : 'text-[#6B423A]'}`}>porsi</span>
                           </div>
 
                           <button
@@ -557,48 +624,56 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
 
             {/* RIGHT COLUMN: Order Summary Card (Sticky on desktop, bottom details on mobile) */}
             <div className="lg:sticky lg:top-28 space-y-4">
-              <div className="rounded-3xl border border-[#60241E] bg-[#240E0C] p-5 sm:p-6 shadow-xl space-y-4 text-stone-100">
-                <h3 className="text-sm font-dhaksinarga tracking-wide font-black uppercase text-white border-b border-[#60241E] pb-3 flex items-center justify-between">
+              <div className={`rounded-3xl border p-5 sm:p-6 shadow-xl space-y-4 ${
+                isDark ? 'border-[#60241E] bg-[#240E0C] text-stone-100' : 'border-[#E6DACD] bg-white text-[#2B120E]'
+              }`}>
+                <h3 className={`text-sm font-dhaksinarga tracking-wide font-black uppercase border-b pb-3 flex items-center justify-between ${
+                  isDark ? 'border-[#60241E] text-white' : 'border-[#E6DACD] text-[#2B120E]'
+                }`}>
                   <span>Ringkasan Pesanan</span>
-                  <span className="rounded-full bg-[#2D120F] border border-[#60241E] px-2.5 py-0.5 text-xs font-bold text-amber-300">
+                  <span className={`rounded-full border px-2.5 py-0.5 text-xs font-bold ${
+                    isDark ? 'bg-[#2D120F] border-[#60241E] text-amber-300' : 'bg-amber-100 border-amber-300 text-amber-900'
+                  }`}>
                     {selectedDistinctCount} Menu Terpilih
                   </span>
                 </h3>
 
                 {/* Calculation Details */}
                 <div className="space-y-2.5 text-xs">
-                  <div className="flex justify-between text-amber-100/80">
+                  <div className={`flex justify-between ${isDark ? 'text-amber-100/80' : 'text-[#5C3831]'}`}>
                     <span>Total Porsi Terpilih:</span>
-                    <span className="font-bold text-white">{selectedTotalPortions} Porsi</span>
+                    <span className={`font-bold ${isDark ? 'text-white' : 'text-[#2B120E]'}`}>{selectedTotalPortions} Porsi</span>
                   </div>
 
-                  <div className="flex justify-between text-amber-100/80">
+                  <div className={`flex justify-between ${isDark ? 'text-amber-100/80' : 'text-[#5C3831]'}`}>
                     <span>Subtotal Menu:</span>
-                    <span className="font-bold text-white">
+                    <span className={`font-bold ${isDark ? 'text-white' : 'text-[#2B120E]'}`}>
                       Rp {selectedSubtotal.toLocaleString('id-ID')}
                     </span>
                   </div>
 
-                  <div className="flex justify-between text-amber-100/80">
+                  <div className={`flex justify-between ${isDark ? 'text-amber-100/80' : 'text-[#5C3831]'}`}>
                     <span className="flex items-center gap-1">
                       Biaya Pengiriman:
-                      <Info size={13} className="text-amber-400" />
+                      <Info size={13} className={isDark ? 'text-amber-400' : 'text-[#D97706]'} />
                     </span>
-                    <span className="font-semibold text-amber-200">
+                    <span className={`font-semibold ${isDark ? 'text-amber-200' : 'text-[#8C4320]'}`}>
                       {selectedDistinctCount > 0 ? `Rp ${deliveryFee.toLocaleString('id-ID')}` : 'Rp 0'}
                     </span>
                   </div>
 
                   {/* Lead Time Notice for Selected Items */}
                   {selectedMaxLeadDays > 0 && (
-                    <div className="mt-3 rounded-2xl border border-[#60241E] bg-[#2D120F] p-3 text-amber-100">
+                    <div className={`mt-3 rounded-2xl border p-3 ${
+                      isDark ? 'border-[#60241E] bg-[#2D120F] text-amber-100' : 'border-[#E6DACD] bg-[#FAF5EE] text-[#5C3831]'
+                    }`}>
                       <div className="flex items-start gap-2">
-                        <Clock size={15} className="text-[#F59E0B] shrink-0 mt-0.5" />
+                        <Clock size={15} className={`shrink-0 mt-0.5 ${isDark ? 'text-[#F59E0B]' : 'text-[#D97706]'}`} />
                         <div className="text-[11px] leading-snug">
-                          <p className="font-bold text-amber-300 font-dhaksinarga tracking-wide">
+                          <p className={`font-bold font-dhaksinarga tracking-wide ${isDark ? 'text-amber-300' : 'text-[#B45309]'}`}>
                             Batas Waktu Pemesanan (H-{selectedMaxLeadDays})
                           </p>
-                          <p className="text-amber-100/80 mt-0.5">
+                          <p className={`mt-0.5 ${isDark ? 'text-amber-100/80' : 'text-[#6B423A]'}`}>
                             Pemesanan kombinasi menu ini minimal dilakukan H-{selectedMaxLeadDays} sebelum acara.
                           </p>
                         </div>
@@ -606,12 +681,16 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                     </div>
                   )}
 
-                  <div className="border-t border-[#60241E] pt-3 flex items-baseline justify-between">
+                  <div className={`border-t pt-3 flex items-baseline justify-between ${
+                    isDark ? 'border-[#60241E]' : 'border-[#E6DACD]'
+                  }`}>
                     <div>
-                      <p className="text-xs font-dhaksinarga tracking-wide uppercase text-white font-bold">
+                      <p className={`text-xs font-dhaksinarga tracking-wide uppercase font-bold ${
+                        isDark ? 'text-white' : 'text-[#2B120E]'
+                      }`}>
                         Total Estimasi
                       </p>
-                      <p className="text-[10px] text-amber-200/60">Harga final via invoice katering</p>
+                      <p className={`text-[10px] ${isDark ? 'text-amber-200/60' : 'text-[#6B423A]'}`}>Harga final via invoice katering</p>
                     </div>
                     <p className="text-xl sm:text-2xl font-dhaksinarga tracking-wide font-black text-[#F59E0B]">
                       Rp {grandTotal.toLocaleString('id-ID')}
@@ -634,7 +713,7 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                   </span>
                 </button>
 
-                <p className="hidden lg:block text-center text-[11px] text-amber-200/60">
+                <p className={`hidden lg:block text-center text-[11px] ${isDark ? 'text-amber-200/60' : 'text-[#6B423A]'}`}>
                   Pesanan akan dibuat menjadi 1 nomor invoice dan diteruskan ke WhatsApp Admin Pawon Hara.
                 </p>
               </div>
@@ -647,7 +726,9 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
           MOBILE STICKY BOTTOM CHECKOUT BAR (App-like UX)
       ====================================================== */}
       {items.length > 0 && (
-        <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-[#1C0B09]/95 backdrop-blur-md border-t border-[#60241E] px-4 py-3 shadow-[0_-8px_25px_rgba(0,0,0,0.6)]">
+        <div className={`lg:hidden fixed bottom-0 inset-x-0 z-40 backdrop-blur-md border-t px-4 py-3 shadow-[0_-8px_25px_rgba(0,0,0,0.2)] ${
+          isDark ? 'bg-[#1C0B09]/95 border-[#60241E]' : 'bg-[#FBF7F2]/95 border-[#E6DACD]'
+        }`}>
           <div className="mx-auto max-w-lg flex items-center justify-between gap-3">
             {/* Left: Checkbox "Semua" + Total price */}
             <div className="flex items-center gap-2.5 min-w-0">
@@ -656,13 +737,17 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                   type="checkbox"
                   checked={isAllSelected}
                   onChange={(e) => selectAll(e.target.checked)}
-                  className="h-4.5 w-4.5 rounded-md border-[#60241E] bg-[#240E0C] text-[#F59E0B] accent-[#F59E0B] cursor-pointer"
+                  className={`h-4.5 w-4.5 rounded-md accent-[#F59E0B] cursor-pointer ${
+                    isDark ? 'border-[#60241E] bg-[#240E0C]' : 'border-[#E6DACD] bg-white'
+                  }`}
                 />
-                <span className="text-xs font-bold text-white">Semua</span>
+                <span className={`text-xs font-bold ${isDark ? 'text-white' : 'text-[#2B120E]'}`}>Semua</span>
               </label>
 
-              <div className="border-l border-[#60241E] pl-2.5 min-w-0">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-amber-200/60 leading-tight truncate">
+              <div className={`border-l pl-2.5 min-w-0 ${isDark ? 'border-[#60241E]' : 'border-[#E6DACD]'}`}>
+                <p className={`text-[10px] font-bold uppercase tracking-wider leading-tight truncate ${
+                  isDark ? 'text-amber-200/60' : 'text-[#6B423A]'
+                }`}>
                   Total ({selectedTotalPortions} Porsi)
                 </p>
                 <p className="text-base font-dhaksinarga tracking-wide font-black text-[#F59E0B] truncate leading-tight mt-0.5">
@@ -694,22 +779,34 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
       ====================================================== */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/75 p-0 sm:p-4 backdrop-blur-sm animate-fade-in">
-          <div className="relative w-full max-w-lg overflow-hidden rounded-t-[2rem] sm:rounded-3xl border border-[#60241E] bg-[#240E0C] shadow-2xl flex flex-col max-h-[92vh] sm:max-h-[85vh] text-stone-100">
+          <div className={`relative w-full max-w-lg overflow-hidden rounded-t-[2rem] sm:rounded-3xl border shadow-2xl flex flex-col max-h-[92vh] sm:max-h-[85vh] ${
+            isDark ? 'border-[#60241E] bg-[#240E0C] text-stone-100' : 'border-[#E6DACD] bg-[#FBF7F2] text-[#2B120E]'
+          }`}>
             {/* Modal Header */}
-            <div className="border-b border-[#60241E] px-5 sm:px-6 py-4 bg-[#1C0B09] shrink-0">
+            <div className={`border-b px-5 sm:px-6 py-4 shrink-0 ${
+              isDark ? 'border-[#60241E] bg-[#1C0B09]' : 'border-[#E6DACD] bg-[#F5EDE4]'
+            }`}>
               {/* Mobile grab handle */}
-              <div className="w-10 h-1 bg-[#60241E] rounded-full mx-auto mb-3 sm:hidden" />
+              <div className={`w-10 h-1 rounded-full mx-auto mb-3 sm:hidden ${
+                isDark ? 'bg-[#60241E]' : 'bg-[#E6DACD]'
+              }`} />
 
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#2D120F] text-[#F59E0B] border border-[#60241E]">
+                  <div className={`flex h-10 w-10 items-center justify-center rounded-2xl border ${
+                    isDark
+                      ? 'bg-[#2D120F] text-[#F59E0B] border-[#60241E]'
+                      : 'bg-white text-[#D97706] border-[#E6DACD]'
+                  }`}>
                     <ShoppingCart size={18} />
                   </div>
                   <div>
-                    <h3 className="font-dhaksinarga tracking-wide font-black text-white text-sm sm:text-base">
+                    <h3 className={`font-dhaksinarga tracking-wide font-black text-sm sm:text-base ${
+                      isDark ? 'text-white' : 'text-[#2B120E]'
+                    }`}>
                       Konfirmasi Pesanan Keranjang
                     </h3>
-                    <p className="text-xs text-amber-100/70">
+                    <p className={`text-xs ${isDark ? 'text-amber-100/70' : 'text-[#5C3831]'}`}>
                       {selectedDistinctCount} Menu Terpilih • {selectedTotalPortions} Porsi
                     </p>
                   </div>
@@ -718,7 +815,9 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="rounded-full p-2 text-stone-400 hover:bg-[#2D120F] hover:text-white transition cursor-pointer"
+                  className={`rounded-full p-2 transition cursor-pointer ${
+                    isDark ? 'text-stone-400 hover:bg-[#2D120F] hover:text-white' : 'text-[#6B423A] hover:bg-[#EAE0D5] hover:text-[#2B120E]'
+                  }`}
                 >
                   <X size={18} />
                 </button>
@@ -728,24 +827,34 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
             {/* Modal Scrollable Body */}
             <form onSubmit={handleSubmitOrder} className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-4">
               {/* Order Summary Box */}
-              <div className="rounded-2xl border border-[#60241E] bg-[#1C0B09] p-3.5 space-y-2 text-xs">
-                <p className="font-dhaksinarga tracking-wide font-bold text-amber-300 uppercase text-[11px]">
+              <div className={`rounded-2xl border p-3.5 space-y-2 text-xs ${
+                isDark ? 'border-[#60241E] bg-[#1C0B09]' : 'border-[#E6DACD] bg-white'
+              }`}>
+                <p className={`font-dhaksinarga tracking-wide font-bold uppercase text-[11px] ${
+                  isDark ? 'text-amber-300' : 'text-[#B45309]'
+                }`}>
                   Daftar Menu yang Dipesan:
                 </p>
                 <div className="space-y-1.5 max-h-32 overflow-y-auto pr-1">
                   {selectedItems.map((item, idx) => (
-                    <div key={idx} className="flex justify-between items-baseline text-amber-100/90">
+                    <div key={idx} className={`flex justify-between items-baseline ${
+                      isDark ? 'text-amber-100/90' : 'text-[#5C3831]'
+                    }`}>
                       <span className="truncate pr-2">
                         {item.product_name} ({item.quantity} porsi)
                       </span>
-                      <span className="font-mono font-semibold shrink-0 text-[#F59E0B]">
+                      <span className={`font-mono font-semibold shrink-0 ${
+                        isDark ? 'text-[#F59E0B]' : 'text-[#B45309]'
+                      }`}>
                         Rp {item.subtotal.toLocaleString('id-ID')}
                       </span>
                     </div>
                   ))}
                 </div>
 
-                <div className="border-t border-[#60241E] pt-2 flex justify-between items-baseline font-bold text-white">
+                <div className={`border-t pt-2 flex justify-between items-baseline font-bold ${
+                  isDark ? 'border-[#60241E] text-white' : 'border-[#E6DACD] text-[#2B120E]'
+                }`}>
                   <span className="font-dhaksinarga tracking-wide">Total ({selectedDistinctCount} Menu):</span>
                   <span className="text-[#F59E0B] font-dhaksinarga tracking-wide font-black text-base">
                     Rp {grandTotal.toLocaleString('id-ID')}
@@ -756,11 +865,15 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
               {/* Event Date & Time */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-amber-100/80 mb-1.5">
+                  <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${
+                    isDark ? 'text-amber-100/80' : 'text-[#5C3831]'
+                  }`}>
                     Tanggal Acara <span className="text-[#E77B49]">*</span>
                   </label>
                   <div className="relative">
-                    <Calendar size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-amber-400 pointer-events-none" />
+                    <Calendar size={16} className={`absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none ${
+                      isDark ? 'text-amber-400' : 'text-[#D97706]'
+                    }`} />
                     <input
                       type="date"
                       required
@@ -770,7 +883,9 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                       className={`w-full h-11 rounded-xl border pl-10 pr-3 text-xs sm:text-sm font-medium outline-none transition ${
                         isDateInvalid
                           ? 'border-red-500 bg-red-950/40 text-red-200 ring-2 ring-red-500/20'
-                          : 'border-[#60241E] bg-[#1C0B09] text-white focus:border-[#F59E0B] focus:ring-2 focus:ring-[#F59E0B]/20'
+                          : isDark
+                            ? 'border-[#60241E] bg-[#1C0B09] text-white focus:border-[#F59E0B] focus:ring-2 focus:ring-[#F59E0B]/20'
+                            : 'border-[#E6DACD] bg-white text-[#2B120E] focus:border-[#D97706] focus:ring-2 focus:ring-[#D97706]/20'
                       }`}
                     />
                   </div>
@@ -808,12 +923,16 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                           </span>
                         </div>
                       ) : dateCapacity ? (
-                        <div className="mt-2 flex items-center justify-between rounded-xl border border-[#F59E0B]/40 bg-[#2D120F] px-2.5 py-1.5 text-[11px] text-amber-200">
+                        <div className={`mt-2 flex items-center justify-between rounded-xl border px-2.5 py-1.5 text-[11px] ${
+                          isDark
+                            ? 'border-[#F59E0B]/40 bg-[#2D120F] text-amber-200'
+                            : 'border-emerald-300 bg-emerald-50 text-emerald-900'
+                        }`}>
                           <span className="flex items-center gap-1.5 font-medium">
-                            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                             <span>Kapasitas Dapur Tersedia</span>
                           </span>
-                          <span className="font-bold text-[#F59E0B]">
+                          <span className={`font-bold ${isDark ? 'text-[#F59E0B]' : 'text-emerald-700'}`}>
                             Sisa {dateCapacity.remaining_portions} Box
                           </span>
                         </div>
@@ -823,16 +942,24 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-amber-100/80 mb-1.5">
+                  <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${
+                    isDark ? 'text-amber-100/80' : 'text-[#5C3831]'
+                  }`}>
                     Jam Acara (Kira-kira)
                   </label>
                   <div className="relative">
-                    <Clock size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-amber-400 pointer-events-none" />
+                    <Clock size={16} className={`absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none ${
+                      isDark ? 'text-amber-400' : 'text-[#D97706]'
+                    }`} />
                     <input
                       type="time"
                       value={eventTime}
                       onChange={(e) => setEventTime(e.target.value)}
-                      className="w-full h-11 rounded-xl border border-[#60241E] bg-[#1C0B09] pl-10 pr-3 text-xs sm:text-sm font-medium text-white outline-none focus:border-[#F59E0B] focus:ring-2 focus:ring-[#F59E0B]/20 transition"
+                      className={`w-full h-11 rounded-xl border pl-10 pr-3 text-xs sm:text-sm font-medium outline-none transition ${
+                        isDark
+                          ? 'border-[#60241E] bg-[#1C0B09] text-white focus:border-[#F59E0B] focus:ring-2 focus:ring-[#F59E0B]/20'
+                          : 'border-[#E6DACD] bg-white text-[#2B120E] focus:border-[#D97706] focus:ring-2 focus:ring-[#D97706]/20'
+                      }`}
                     />
                   </div>
                 </div>
@@ -840,61 +967,87 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
 
               {/* Customer Name */}
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-amber-100/80 mb-1.5">
+                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${
+                  isDark ? 'text-amber-100/80' : 'text-[#5C3831]'
+                }`}>
                   Nama Lengkap Pemesan <span className="text-[#E77B49]">*</span>
                 </label>
                 <div className="relative">
-                  <User size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-amber-400 pointer-events-none" />
+                  <User size={16} className={`absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none ${
+                    isDark ? 'text-amber-400' : 'text-[#D97706]'
+                  }`} />
                   <input
                     type="text"
                     required
                     value={customerName}
                     onChange={(e) => setCustomerName(e.target.value)}
                     placeholder="Contoh: Budi Santoso"
-                    className="w-full h-11 rounded-xl border border-[#60241E] bg-[#1C0B09] pl-10 pr-3 text-xs sm:text-sm font-medium text-white placeholder-stone-500 outline-none focus:border-[#F59E0B] focus:ring-2 focus:ring-[#F59E0B]/20 transition"
+                    className={`w-full h-11 rounded-xl border pl-10 pr-3 text-xs sm:text-sm font-medium outline-none transition ${
+                      isDark
+                        ? 'border-[#60241E] bg-[#1C0B09] text-white placeholder-stone-500 focus:border-[#F59E0B] focus:ring-2 focus:ring-[#F59E0B]/20'
+                        : 'border-[#E6DACD] bg-white text-[#2B120E] placeholder-stone-400 focus:border-[#D97706] focus:ring-2 focus:ring-[#D97706]/20'
+                    }`}
                   />
                 </div>
               </div>
 
               {/* Customer Phone */}
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-amber-100/80 mb-1.5">
+                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${
+                  isDark ? 'text-amber-100/80' : 'text-[#5C3831]'
+                }`}>
                   Nomor WhatsApp Aktif <span className="text-[#E77B49]">*</span>
                 </label>
                 <div className="relative">
-                  <MessageCircle size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-amber-400 pointer-events-none" />
+                  <MessageCircle size={16} className={`absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none ${
+                    isDark ? 'text-amber-400' : 'text-[#D97706]'
+                  }`} />
                   <input
                     type="tel"
                     required
                     value={customerPhone}
                     onChange={(e) => setCustomerPhone(e.target.value)}
                     placeholder="Contoh: 081234567890"
-                    className="w-full h-11 rounded-xl border border-[#60241E] bg-[#1C0B09] pl-10 pr-3 text-xs sm:text-sm font-medium text-white placeholder-stone-500 outline-none focus:border-[#F59E0B] focus:ring-2 focus:ring-[#F59E0B]/20 transition"
+                    className={`w-full h-11 rounded-xl border pl-10 pr-3 text-xs sm:text-sm font-medium outline-none transition ${
+                      isDark
+                        ? 'border-[#60241E] bg-[#1C0B09] text-white placeholder-stone-500 focus:border-[#F59E0B] focus:ring-2 focus:ring-[#F59E0B]/20'
+                        : 'border-[#E6DACD] bg-white text-[#2B120E] placeholder-stone-400 focus:border-[#D97706] focus:ring-2 focus:ring-[#D97706]/20'
+                    }`}
                   />
                 </div>
               </div>
 
               {/* Delivery Address */}
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-amber-100/80 mb-1.5">
+                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${
+                  isDark ? 'text-amber-100/80' : 'text-[#5C3831]'
+                }`}>
                   Alamat Pengantaran / Lokasi Acara <span className="text-[#E77B49]">*</span>
                 </label>
                 <div className="relative">
-                  <MapPin size={16} className="absolute left-3.5 top-3 text-amber-400 pointer-events-none" />
+                  <MapPin size={16} className={`absolute left-3.5 top-3 pointer-events-none ${
+                    isDark ? 'text-amber-400' : 'text-[#D97706]'
+                  }`} />
                   <textarea
                     required
                     rows={2}
                     value={deliveryAddress}
                     onChange={(e) => setDeliveryAddress(e.target.value)}
                     placeholder="Contoh: Gedung Graha Lt. 5, Jl. Sudirman No. 10..."
-                    className="w-full rounded-xl border border-[#60241E] bg-[#1C0B09] pl-10 pr-3.5 py-2.5 text-xs sm:text-sm font-medium text-white placeholder-stone-500 outline-none focus:border-[#F59E0B] focus:ring-2 focus:ring-[#F59E0B]/20 transition"
+                    className={`w-full rounded-xl border pl-10 pr-3.5 py-2.5 text-xs sm:text-sm font-medium outline-none transition ${
+                      isDark
+                        ? 'border-[#60241E] bg-[#1C0B09] text-white placeholder-stone-500 focus:border-[#F59E0B] focus:ring-2 focus:ring-[#F59E0B]/20'
+                        : 'border-[#E6DACD] bg-white text-[#2B120E] placeholder-stone-400 focus:border-[#D97706] focus:ring-2 focus:ring-[#D97706]/20'
+                    }`}
                   />
                 </div>
               </div>
 
               {/* Special Notes */}
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-amber-100/80 mb-1.5">
+                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${
+                  isDark ? 'text-amber-100/80' : 'text-[#5C3831]'
+                }`}>
                   Catatan Tambahan (Opsional)
                 </label>
                 <textarea
@@ -902,16 +1055,24 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="Misal: Sambal dipisah, minta sendok ekstra, titip di resepsionis..."
-                  className="w-full rounded-xl border border-[#60241E] bg-[#1C0B09] px-3.5 py-2.5 text-xs sm:text-sm font-medium text-white placeholder-stone-500 outline-none focus:border-[#F59E0B] focus:ring-2 focus:ring-[#F59E0B]/20 transition"
+                  className={`w-full rounded-xl border px-3.5 py-2.5 text-xs sm:text-sm font-medium outline-none transition ${
+                    isDark
+                      ? 'border-[#60241E] bg-[#1C0B09] text-white placeholder-stone-500 focus:border-[#F59E0B] focus:ring-2 focus:ring-[#F59E0B]/20'
+                      : 'border-[#E6DACD] bg-white text-[#2B120E] placeholder-stone-400 focus:border-[#D97706] focus:ring-2 focus:ring-[#D97706]/20'
+                  }`}
                 />
               </div>
 
               {/* Modal Sticky Footer Actions inside Form */}
-              <div className="pt-3 flex items-center justify-end gap-2.5 border-t border-[#60241E]">
+              <div className={`pt-3 flex items-center justify-end gap-2.5 border-t ${
+                isDark ? 'border-[#60241E]' : 'border-[#E6DACD]'
+              }`}>
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2.5 rounded-xl text-xs font-bold text-amber-200 hover:bg-[#2D120F] transition cursor-pointer"
+                  className={`px-4 py-2.5 rounded-xl text-xs font-bold transition cursor-pointer ${
+                    isDark ? 'text-amber-200 hover:bg-[#2D120F]' : 'text-[#5C3831] hover:bg-[#EAE0D5]'
+                  }`}
                 >
                   Batal
                 </button>

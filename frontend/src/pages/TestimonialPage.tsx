@@ -29,6 +29,7 @@ import PageLoader from '../components/ui/PageLoader'
 import { testimonialService } from '../services/testimonial.service'
 import { getImageUrl } from '../utils/image'
 import type { OrderReviewDetail, Testimonial } from '../types/testimonial'
+import { useThemeStore } from '../stores/theme.store'
 
 const ratingDescriptions: Record<number, { title: string; subtitle: string }> = {
   5: { title: 'Luar Biasa!', subtitle: 'Sangat puas dengan rasa ayam, bento box, dan ketepatan pengantaran.' },
@@ -70,6 +71,8 @@ function formatDateIndo(dateStr?: string): string {
 }
 
 export default function TestimonialPage() {
+  const theme = useThemeStore((s) => s.theme)
+  const isDark = theme === 'dark'
   const [searchParams] = useSearchParams()
   const formRef = useRef<HTMLDivElement | null>(null)
 
@@ -285,7 +288,11 @@ export default function TestimonialPage() {
   const activeRatingDesc = ratingDescriptions[activeRating] || ratingDescriptions[5]
 
   return (
-    <div className="min-h-screen bg-[#1C0B09] text-stone-100 selection:bg-[#F59E0B] selection:text-[#1C0B09] pt-28 pb-24 sm:pt-36 sm:pb-32">
+    <div className={`min-h-screen transition-colors duration-300 selection:bg-[#F59E0B] pt-28 pb-24 sm:pt-36 sm:pb-32 ${
+      isDark
+        ? 'bg-[#1C0B09] text-stone-100 selection:text-[#1C0B09]'
+        : 'bg-[#FBF7F2] text-[#2B120E] selection:text-[#2B120E]'
+    }`}>
       {/* Branded Page Loader */}
       <PageLoader
         isLoading={isLoading}
@@ -296,9 +303,15 @@ export default function TestimonialPage() {
 
       {/* Background Decorative Blur Gradients */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
-        <div className="absolute -top-40 -right-40 w-96 h-96 rounded-full bg-[#60241E]/30 blur-3xl" />
-        <div className="absolute top-1/3 -left-40 w-96 h-96 rounded-full bg-[#95271D]/20 blur-3xl" />
-        <div className="absolute bottom-10 right-1/4 w-80 h-80 rounded-full bg-[#F59E0B]/15 blur-3xl" />
+        <div className={`absolute -top-40 -right-40 w-96 h-96 rounded-full blur-3xl ${
+          isDark ? 'bg-[#60241E]/30' : 'bg-amber-200/35'
+        }`} />
+        <div className={`absolute top-1/3 -left-40 w-96 h-96 rounded-full blur-3xl ${
+          isDark ? 'bg-[#95271D]/20' : 'bg-orange-200/30'
+        }`} />
+        <div className={`absolute bottom-10 right-1/4 w-80 h-80 rounded-full blur-3xl ${
+          isDark ? 'bg-[#F59E0B]/15' : 'bg-amber-100/40'
+        }`} />
       </div>
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-16 sm:space-y-20">
@@ -306,29 +319,43 @@ export default function TestimonialPage() {
             1. BREADCRUMB & HERO SHOWCASE
         ====================================================== */}
         <div className="space-y-6">
-          <div className="flex items-center gap-2 text-xs font-semibold text-amber-200/60">
+          <div className={`flex items-center gap-2 text-xs font-semibold ${
+            isDark ? 'text-amber-200/60' : 'text-[#6B423A]'
+          }`}>
             <Link to="/" className="hover:text-[#F59E0B] transition">
               Beranda
             </Link>
-            <ChevronRight size={14} className="text-stone-500" />
-            <span className="text-white font-bold">Suara & Testimoni Pelanggan</span>
+            <ChevronRight size={14} className={isDark ? 'text-stone-500' : 'text-stone-400'} />
+            <span className={`font-bold ${isDark ? 'text-white' : 'text-[#2B120E]'}`}>
+              Suara & Testimoni Pelanggan
+            </span>
           </div>
 
-          <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8 border-b border-[#60241E] pb-12">
+          <div className={`flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8 border-b pb-12 ${
+            isDark ? 'border-[#60241E]' : 'border-[#E6DACD]'
+          }`}>
             <div className="max-w-3xl space-y-4">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#2D120F] border border-[#60241E] text-amber-300 text-xs font-black uppercase tracking-wider shadow-2xs">
+              <div className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border text-xs font-black uppercase tracking-wider shadow-2xs ${
+                isDark
+                  ? 'bg-[#2D120F] border-[#60241E] text-amber-300'
+                  : 'bg-[#FAF5EE] border-[#E6DACD] text-[#8C4320]'
+              }`}>
                 <Sparkles size={14} className="text-[#F59E0B]" />
                 <span className="font-dhaksinarga tracking-widest text-xs">DIPERCAYA 250+ KANTOR & KELUARGA</span>
               </div>
 
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-dhaksinarga tracking-wide font-black text-white leading-[1.15]">
+              <h1 className={`text-3xl sm:text-4xl lg:text-5xl font-dhaksinarga tracking-wide font-black leading-[1.15] ${
+                isDark ? 'text-white' : 'text-[#2B120E]'
+              }`}>
                 Cerita Rasa & Kepuasan Pelanggan{' '}
                 <span className="bg-gradient-to-r from-[#F59E0B] via-[#E77B49] to-[#F59E0B] bg-clip-text text-transparent">
                   Pawon Hara
                 </span>
               </h1>
 
-              <p className="text-sm sm:text-base text-amber-100/80 leading-relaxed max-w-2xl font-normal">
+              <p className={`text-sm sm:text-base leading-relaxed max-w-2xl font-normal ${
+                isDark ? 'text-amber-100/80' : 'text-[#5C3831]'
+              }`}>
                 Setiap box bento dan hidangan katering dimasak segar di hari H dengan bumbu gurih meresap khas Nusantara, higienis, dan
                 disegel food-grade. Lihat bagaimana pengalaman nyata para pelanggan setia kami.
               </p>
@@ -345,9 +372,13 @@ export default function TestimonialPage() {
 
               <Link
                 to="/menu"
-                className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl border border-[#60241E] bg-[#2D120F] hover:bg-[#3B1814] text-amber-200 font-bold text-xs sm:text-sm shadow-2xs transition hover:text-white"
+                className={`inline-flex items-center gap-2 px-5 py-3 rounded-2xl border font-bold text-xs sm:text-sm shadow-2xs transition ${
+                  isDark
+                    ? 'border-[#60241E] bg-[#2D120F] hover:bg-[#3B1814] text-amber-200 hover:text-white'
+                    : 'border-[#E6DACD] bg-white hover:bg-[#FAF5EE] text-[#5C3831] hover:text-[#2B120E]'
+                }`}
               >
-                <UtensilsCrossed size={16} className="text-amber-400" />
+                <UtensilsCrossed size={16} className={isDark ? 'text-amber-400' : 'text-[#D97706]'} />
                 <span>Lihat Menu Katering</span>
               </Link>
             </div>
@@ -355,39 +386,55 @@ export default function TestimonialPage() {
 
           {/* 3 Key Trust Metrics */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
-            <div className="rounded-3xl border border-[#60241E] bg-[#240E0C] p-6 shadow-xl flex items-center gap-4 text-stone-100">
-              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#2D120F] text-amber-400 border border-[#60241E]">
+            <div className={`rounded-3xl border p-6 shadow-xl flex items-center gap-4 ${
+              isDark ? 'border-[#60241E] bg-[#240E0C] text-stone-100' : 'border-[#E6DACD] bg-white text-[#2B120E]'
+            }`}>
+              <div className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border ${
+                isDark ? 'bg-[#2D120F] text-amber-400 border-[#60241E]' : 'bg-[#FAF5EE] text-[#D97706] border-[#E6DACD]'
+              }`}>
                 <Star size={28} className="fill-amber-400 text-amber-400" />
               </div>
               <div>
                 <div className="flex items-baseline gap-1.5">
-                  <span className="text-2xl sm:text-3xl font-dhaksinarga tracking-wide font-black text-white">4.9</span>
-                  <span className="text-xs font-bold text-amber-300/70">/ 5.0</span>
+                  <span className={`text-2xl sm:text-3xl font-dhaksinarga tracking-wide font-black ${
+                    isDark ? 'text-white' : 'text-[#2B120E]'
+                  }`}>4.9</span>
+                  <span className={`text-xs font-bold ${isDark ? 'text-amber-300/70' : 'text-[#8C4320]'}`}>/ 5.0</span>
                 </div>
-                <p className="text-xs font-bold text-amber-100 mt-0.5">Skor Kepuasan Pelanggan</p>
-                <p className="text-[11px] text-amber-200/60">Dari ratusan review pemesan</p>
+                <p className={`text-xs font-bold mt-0.5 ${isDark ? 'text-amber-100' : 'text-[#2B120E]'}`}>Skor Kepuasan Pelanggan</p>
+                <p className={`text-[11px] ${isDark ? 'text-amber-200/60' : 'text-[#6B423A]'}`}>Dari ratusan review pemesan</p>
               </div>
             </div>
 
-            <div className="rounded-3xl border border-[#60241E] bg-[#240E0C] p-6 shadow-xl flex items-center gap-4 text-stone-100">
-              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#2D120F] text-[#F59E0B] border border-[#60241E]">
+            <div className={`rounded-3xl border p-6 shadow-xl flex items-center gap-4 ${
+              isDark ? 'border-[#60241E] bg-[#240E0C] text-stone-100' : 'border-[#E6DACD] bg-white text-[#2B120E]'
+            }`}>
+              <div className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border ${
+                isDark ? 'bg-[#2D120F] text-[#F59E0B] border-[#60241E]' : 'bg-[#FAF5EE] text-[#D97706] border-[#E6DACD]'
+              }`}>
                 <Package size={28} />
               </div>
               <div>
-                <span className="text-2xl sm:text-3xl font-dhaksinarga tracking-wide font-black text-white">15.000+</span>
-                <p className="text-xs font-bold text-amber-100 mt-0.5">Box Nasi Terkirim</p>
-                <p className="text-[11px] text-amber-200/60">Meeting, seminar & syukuran</p>
+                <span className={`text-2xl sm:text-3xl font-dhaksinarga tracking-wide font-black ${
+                  isDark ? 'text-white' : 'text-[#2B120E]'
+                }`}>15.000+</span>
+                <p className={`text-xs font-bold mt-0.5 ${isDark ? 'text-amber-100' : 'text-[#2B120E]'}`}>Box Nasi Terkirim</p>
+                <p className={`text-[11px] ${isDark ? 'text-amber-200/60' : 'text-[#6B423A]'}`}>Meeting, seminar & syukuran</p>
               </div>
             </div>
 
-            <div className="rounded-3xl border border-[#60241E] bg-[#240E0C] p-6 shadow-xl flex items-center gap-4 text-stone-100">
-              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#2D120F] text-emerald-400 border border-[#60241E]">
+            <div className={`rounded-3xl border p-6 shadow-xl flex items-center gap-4 ${
+              isDark ? 'border-[#60241E] bg-[#240E0C] text-stone-100' : 'border-[#E6DACD] bg-white text-[#2B120E]'
+            }`}>
+              <div className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border ${
+                isDark ? 'bg-[#2D120F] text-emerald-400 border-[#60241E]' : 'bg-emerald-50 text-emerald-600 border-emerald-200'
+              }`}>
                 <ShieldCheck size={28} />
               </div>
               <div>
-                <span className="text-2xl sm:text-3xl font-dhaksinarga tracking-wide font-black text-emerald-400">99.8%</span>
-                <p className="text-xs font-bold text-amber-100 mt-0.5">Tepat Waktu Sebelum Acara</p>
-                <p className="text-[11px] text-amber-200/60">Garansi kurir katering terpercaya</p>
+                <span className="text-2xl sm:text-3xl font-dhaksinarga tracking-wide font-black text-emerald-500">99.8%</span>
+                <p className={`text-xs font-bold mt-0.5 ${isDark ? 'text-amber-100' : 'text-[#2B120E]'}`}>Tepat Waktu Sebelum Acara</p>
+                <p className={`text-[11px] ${isDark ? 'text-amber-200/60' : 'text-[#6B423A]'}`}>Garansi kurir katering terpercaya</p>
               </div>
             </div>
           </div>
@@ -401,29 +448,39 @@ export default function TestimonialPage() {
             <div>
               <div className="flex items-center gap-2 mb-1">
                 <span className="flex h-2.5 w-2.5 rounded-full bg-[#F59E0B] animate-pulse" />
-                <h2 className="text-xl sm:text-2xl font-dhaksinarga tracking-wide font-black text-white">
+                <h2 className={`text-xl sm:text-2xl font-dhaksinarga tracking-wide font-black ${
+                  isDark ? 'text-white' : 'text-[#2B120E]'
+                }`}>
                   Ulasan Asli Pelanggan Pawon Hara
                 </h2>
               </div>
-              <p className="text-xs sm:text-sm text-amber-100/70">
+              <p className={`text-xs sm:text-sm ${isDark ? 'text-amber-100/70' : 'text-[#5C3831]'}`}>
                 Transparan dan tanpa rekayasa dari para pemesan katering yang telah menikmati hidangan kami.
               </p>
             </div>
 
             {/* Search Input */}
             <div className="relative w-full sm:w-72">
-              <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-amber-400" />
+              <Search size={16} className={`absolute left-3.5 top-1/2 -translate-y-1/2 ${
+                isDark ? 'text-amber-400' : 'text-[#D97706]'
+              }`} />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Cari ulasan / instansi..."
-                className="w-full h-10 pl-10 pr-4 rounded-xl border border-[#60241E] bg-[#1C0B09] text-xs font-medium text-white placeholder-stone-500 focus:outline-none focus:border-[#F59E0B] focus:ring-2 focus:ring-[#F59E0B]/20 transition"
+                className={`w-full h-10 pl-10 pr-4 rounded-xl border text-xs font-medium focus:outline-none focus:border-[#F59E0B] focus:ring-2 focus:ring-[#F59E0B]/20 transition ${
+                  isDark
+                    ? 'border-[#60241E] bg-[#1C0B09] text-white placeholder-stone-500'
+                    : 'border-[#E6DACD] bg-white text-[#2B120E] placeholder-[#8C6B64]'
+                }`}
               />
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery('')}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-white cursor-pointer"
+                  className={`absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer ${
+                    isDark ? 'text-stone-400 hover:text-white' : 'text-[#8C6B64] hover:text-[#2B120E]'
+                  }`}
                 >
                   <X size={14} />
                 </button>
@@ -438,7 +495,9 @@ export default function TestimonialPage() {
               className={`px-4 py-2 rounded-xl transition cursor-pointer whitespace-nowrap ${
                 activeCategory === 'all'
                   ? 'bg-gradient-to-r from-[#F59E0B] to-[#E77B49] text-[#1C0B09] font-dhaksinarga font-bold shadow-md'
-                  : 'bg-[#2D120F] border border-[#60241E] text-amber-200 hover:bg-[#3B1814] hover:text-white'
+                  : isDark
+                    ? 'bg-[#2D120F] border border-[#60241E] text-amber-200 hover:bg-[#3B1814] hover:text-white'
+                    : 'bg-white border border-[#E6DACD] text-[#5C3831] hover:bg-[#FAF5EE] hover:text-[#2B120E]'
               }`}
             >
               Semua Ulasan ({testimonials.length})
@@ -448,7 +507,9 @@ export default function TestimonialPage() {
               className={`px-4 py-2 rounded-xl transition cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
                 activeCategory === '5star'
                   ? 'bg-gradient-to-r from-[#F59E0B] to-[#E77B49] text-[#1C0B09] font-dhaksinarga font-bold shadow-md'
-                  : 'bg-[#2D120F] border border-[#60241E] text-amber-200 hover:bg-[#3B1814] hover:text-white'
+                  : isDark
+                    ? 'bg-[#2D120F] border border-[#60241E] text-amber-200 hover:bg-[#3B1814] hover:text-white'
+                    : 'bg-white border border-[#E6DACD] text-[#5C3831] hover:bg-[#FAF5EE] hover:text-[#2B120E]'
               }`}
             >
               <Star size={13} className="fill-current" />
@@ -459,7 +520,9 @@ export default function TestimonialPage() {
               className={`px-4 py-2 rounded-xl transition cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
                 activeCategory === 'office'
                   ? 'bg-gradient-to-r from-[#F59E0B] to-[#E77B49] text-[#1C0B09] font-dhaksinarga font-bold shadow-md'
-                  : 'bg-[#2D120F] border border-[#60241E] text-amber-200 hover:bg-[#3B1814] hover:text-white'
+                  : isDark
+                    ? 'bg-[#2D120F] border border-[#60241E] text-amber-200 hover:bg-[#3B1814] hover:text-white'
+                    : 'bg-white border border-[#E6DACD] text-[#5C3831] hover:bg-[#FAF5EE] hover:text-[#2B120E]'
               }`}
             >
               <Building2 size={13} />
@@ -470,7 +533,9 @@ export default function TestimonialPage() {
               className={`px-4 py-2 rounded-xl transition cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
                 activeCategory === ('large' as any)
                   ? 'bg-gradient-to-r from-[#F59E0B] to-[#E77B49] text-[#1C0B09] font-dhaksinarga font-bold shadow-md'
-                  : 'bg-[#2D120F] border border-[#60241E] text-amber-200 hover:bg-[#3B1814] hover:text-white'
+                  : isDark
+                    ? 'bg-[#2D120F] border border-[#60241E] text-amber-200 hover:bg-[#3B1814] hover:text-white'
+                    : 'bg-white border border-[#E6DACD] text-[#5C3831] hover:bg-[#FAF5EE] hover:text-[#2B120E]'
               }`}
             >
               <Package size={13} />
@@ -484,30 +549,38 @@ export default function TestimonialPage() {
               {[1, 2, 3, 4, 5, 6].map((i) => (
                 <div
                   key={i}
-                  className="rounded-3xl border border-[#60241E] bg-[#240E0C] p-6 space-y-4 animate-pulse"
+                  className={`rounded-3xl border p-6 space-y-4 animate-pulse ${
+                    isDark ? 'border-[#60241E] bg-[#240E0C]' : 'border-[#E6DACD] bg-white'
+                  }`}
                 >
                   <div className="flex items-center gap-3">
-                    <div className="h-12 w-12 rounded-2xl bg-[#2D120F]" />
+                    <div className={`h-12 w-12 rounded-2xl ${isDark ? 'bg-[#2D120F]' : 'bg-[#FAF5EE]'}`} />
                     <div className="space-y-2 flex-1">
-                      <div className="h-4 bg-[#2D120F] rounded-md w-3/4" />
-                      <div className="h-3 bg-[#2D120F] rounded-md w-1/2" />
+                      <div className={`h-4 rounded-md w-3/4 ${isDark ? 'bg-[#2D120F]' : 'bg-[#FAF5EE]'}`} />
+                      <div className={`h-3 rounded-md w-1/2 ${isDark ? 'bg-[#2D120F]' : 'bg-[#FAF5EE]'}`} />
                     </div>
                   </div>
-                  <div className="h-3 bg-[#2D120F] rounded-md w-1/3" />
+                  <div className={`h-3 rounded-md w-1/3 ${isDark ? 'bg-[#2D120F]' : 'bg-[#FAF5EE]'}`} />
                   <div className="space-y-1.5">
-                    <div className="h-3 bg-[#2D120F] rounded-md w-full" />
-                    <div className="h-3 bg-[#2D120F] rounded-md w-5/6" />
+                    <div className={`h-3 rounded-md w-full ${isDark ? 'bg-[#2D120F]' : 'bg-[#FAF5EE]'}`} />
+                    <div className={`h-3 rounded-md w-5/6 ${isDark ? 'bg-[#2D120F]' : 'bg-[#FAF5EE]'}`} />
                   </div>
                 </div>
               ))}
             </div>
           ) : filteredTestimonials.length === 0 ? (
-            <div className="rounded-3xl border border-dashed border-[#60241E] bg-[#240E0C] p-12 text-center max-w-md mx-auto space-y-3">
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#2D120F] text-amber-400 border border-[#60241E]">
+            <div className={`rounded-3xl border border-dashed p-12 text-center max-w-md mx-auto space-y-3 ${
+              isDark ? 'border-[#60241E] bg-[#240E0C]' : 'border-[#E6DACD] bg-white'
+            }`}>
+              <div className={`mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border ${
+                isDark ? 'bg-[#2D120F] text-amber-400 border-[#60241E]' : 'bg-[#FAF5EE] text-[#D97706] border-[#E6DACD]'
+              }`}>
                 <MessageSquareQuote size={24} />
               </div>
-              <h3 className="font-dhaksinarga tracking-wide text-base font-bold text-white">Tidak ada ulasan yang cocok</h3>
-              <p className="text-xs text-amber-100/70">
+              <h3 className={`font-dhaksinarga tracking-wide text-base font-bold ${
+                isDark ? 'text-white' : 'text-[#2B120E]'
+              }`}>Tidak ada ulasan yang cocok</h3>
+              <p className={`text-xs ${isDark ? 'text-amber-100/70' : 'text-[#5C3831]'}`}>
                 Coba ubah kata kunci pencarian atau filter kategori untuk melihat review pelanggan lainnya.
               </p>
               <button
@@ -529,7 +602,9 @@ export default function TestimonialPage() {
                 return (
                   <div
                     key={item.id}
-                    className="rounded-3xl border border-[#60241E] bg-[#240E0C] p-6 sm:p-7 shadow-xl hover:border-[#F59E0B]/50 transition-all duration-300 flex flex-col justify-between group"
+                    className={`rounded-3xl border p-6 sm:p-7 shadow-xl hover:border-[#F59E0B]/50 transition-all duration-300 flex flex-col justify-between group ${
+                      isDark ? 'border-[#60241E] bg-[#240E0C]' : 'border-[#E6DACD] bg-white shadow-sm'
+                    }`}
                   >
                     <div className="space-y-4">
                       {/* Card Header: Avatar & Info */}
@@ -541,21 +616,29 @@ export default function TestimonialPage() {
                             {initials}
                           </div>
                           <div>
-                            <h3 className="font-dhaksinarga tracking-wide font-black text-white text-sm sm:text-base leading-tight">
+                            <h3 className={`font-dhaksinarga tracking-wide font-black text-sm sm:text-base leading-tight ${
+                              isDark ? 'text-white' : 'text-[#2B120E]'
+                            }`}>
                               {item.name}
                             </h3>
                             {item.institution ? (
-                              <p className="text-xs font-semibold text-amber-300/80 mt-0.5 truncate max-w-[180px] sm:max-w-[200px]">
+                              <p className={`text-xs font-semibold mt-0.5 truncate max-w-[180px] sm:max-w-[200px] ${
+                                isDark ? 'text-amber-300/80' : 'text-[#8C4320]'
+                              }`}>
                                 {item.institution}
                               </p>
                             ) : (
-                              <p className="text-xs font-medium text-amber-100/60 mt-0.5">Pelanggan Katering</p>
+                              <p className={`text-xs font-medium mt-0.5 ${
+                                isDark ? 'text-amber-100/60' : 'text-[#6B423A]'
+                              }`}>Pelanggan Katering</p>
                             )}
                           </div>
                         </div>
 
                         {/* Order Quantity Badge */}
-                        <span className="inline-flex items-center gap-1 rounded-full bg-[#2D120F] border border-[#60241E] px-2.5 py-1 text-[11px] font-bold text-amber-300 shrink-0">
+                        <span className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[11px] font-bold shrink-0 ${
+                          isDark ? 'bg-[#2D120F] border-[#60241E] text-amber-300' : 'bg-[#FAF5EE] border-[#E6DACD] text-[#8C4320]'
+                        }`}>
                           <Package size={12} className="text-[#F59E0B]" />
                           <span>{item.order_quantity}</span>
                         </span>
@@ -569,27 +652,37 @@ export default function TestimonialPage() {
                       </div>
 
                       {/* Ordered Menu & Quantity Detail */}
-                      <div className="rounded-2xl bg-[#1C0B09] border border-[#60241E] p-2.5 flex items-start gap-2.5 text-xs text-stone-200">
-                        <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-[#60241E] text-amber-300 shadow-2xs mt-0.5">
+                      <div className={`rounded-2xl border p-2.5 flex items-start gap-2.5 text-xs ${
+                        isDark ? 'bg-[#1C0B09] border-[#60241E] text-stone-200' : 'bg-[#FAF5EE] border-[#E6DACD] text-[#5C3831]'
+                      }`}>
+                        <div className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-lg shadow-2xs mt-0.5 ${
+                          isDark ? 'bg-[#60241E] text-amber-300' : 'bg-[#E6DACD] text-[#8C4320]'
+                        }`}>
                           <UtensilsCrossed size={12} />
                         </div>
                         <div className="min-w-0 flex-1">
-                          <p className="text-[10px] font-bold uppercase tracking-wider text-amber-300/70">
+                          <p className={`text-[10px] font-bold uppercase tracking-wider ${
+                            isDark ? 'text-amber-300/70' : 'text-[#8C4320]'
+                          }`}>
                             Menu yang Dinikmati:
                           </p>
                           {item.ordered_items && item.ordered_items.length > 0 ? (
                             <div className="mt-0.5 space-y-1">
                               {item.ordered_items.map((ord, i) => (
-                                <div key={i} className="flex items-center justify-between text-xs font-black text-white gap-2">
+                                <div key={i} className={`flex items-center justify-between text-xs font-black gap-2 ${
+                                  isDark ? 'text-white' : 'text-[#2B120E]'
+                                }`}>
                                   <span className="truncate">{ord.name}</span>
-                                  <span className="inline-flex items-center rounded-md bg-[#2D120F] border border-[#60241E] px-1.5 py-0.5 text-[11px] font-black text-amber-300 shrink-0">
+                                  <span className={`inline-flex items-center rounded-md border px-1.5 py-0.5 text-[11px] font-black shrink-0 ${
+                                    isDark ? 'bg-[#2D120F] border-[#60241E] text-amber-300' : 'bg-white border-[#E6DACD] text-[#8C4320]'
+                                  }`}>
                                     {ord.quantity} Pcs
                                   </span>
                                 </div>
                               ))}
                             </div>
                           ) : (
-                            <p className="font-semibold text-white truncate mt-0.5">
+                            <p className={`font-semibold truncate mt-0.5 ${isDark ? 'text-white' : 'text-[#2B120E]'}`}>
                               {item.order_quantity || 'Paket Nasi Box Spesial Pawon Hara'}
                             </p>
                           )}
@@ -598,16 +691,20 @@ export default function TestimonialPage() {
 
                       {/* Testimonial Quote Message */}
                       <div className="relative">
-                        <p className="text-xs sm:text-sm text-amber-100/90 leading-relaxed italic">
+                        <p className={`text-xs sm:text-sm leading-relaxed italic ${
+                          isDark ? 'text-amber-100/90' : 'text-[#5C3831]'
+                        }`}>
                           "{item.message}"
                         </p>
                       </div>
                     </div>
 
                     {/* Card Footer: Verified & Date */}
-                    <div className="mt-5 pt-4 border-t border-[#60241E]/80 flex items-center justify-between text-[11px] text-amber-200/60 font-semibold">
-                      <span className="inline-flex items-center gap-1 text-emerald-400">
-                        <BadgeCheck size={14} className="fill-emerald-400/20" />
+                    <div className={`mt-5 pt-4 border-t flex items-center justify-between text-[11px] font-semibold ${
+                      isDark ? 'border-[#60241E]/80 text-amber-200/60' : 'border-[#E6DACD] text-[#6B423A]'
+                    }`}>
+                      <span className="inline-flex items-center gap-1 text-emerald-500">
+                        <BadgeCheck size={14} className="fill-emerald-500/20" />
                         <span>Pesanan Terverifikasi</span>
                       </span>
                       <span>{formatDateIndo(item.created_at)}</span>
@@ -626,8 +723,12 @@ export default function TestimonialPage() {
           <div className="max-w-3xl mx-auto">
             {isSubmitted ? (
               /* Success State Card */
-              <div className="rounded-3xl border border-[#60241E] bg-[#240E0C] p-8 sm:p-12 shadow-xl text-center animate-in fade-in zoom-in-95 text-stone-100">
-                <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-3xl bg-[#2D120F] text-emerald-400 border border-[#60241E] mb-6">
+              <div className={`rounded-3xl border p-8 sm:p-12 shadow-xl text-center animate-in fade-in zoom-in-95 ${
+                isDark ? 'border-[#60241E] bg-[#240E0C] text-stone-100' : 'border-[#E6DACD] bg-white text-[#2B120E]'
+              }`}>
+                <div className={`mx-auto flex h-20 w-20 items-center justify-center rounded-3xl border mb-6 ${
+                  isDark ? 'bg-[#2D120F] text-emerald-400 border-[#60241E]' : 'bg-emerald-50 text-emerald-600 border-emerald-200'
+                }`}>
                   <CheckCircle2 size={44} strokeWidth={2.2} />
                 </div>
 
@@ -635,11 +736,15 @@ export default function TestimonialPage() {
                   <Sparkles size={13} /> Ulasan Berhasil Dikirim
                 </span>
 
-                <h2 className="mt-4 text-2xl sm:text-3xl font-dhaksinarga tracking-wide font-black text-white">
+                <h2 className={`mt-4 text-2xl sm:text-3xl font-dhaksinarga tracking-wide font-black ${
+                  isDark ? 'text-white' : 'text-[#2B120E]'
+                }`}>
                   Terima Kasih Banyak, Kak {name || orderData?.customers_name || 'Pelanggan Setia'}!
                 </h2>
 
-                <p className="mt-3 text-sm sm:text-base text-amber-100/80 max-w-lg mx-auto leading-relaxed">
+                <p className={`mt-3 text-sm sm:text-base max-w-lg mx-auto leading-relaxed ${
+                  isDark ? 'text-amber-100/80' : 'text-[#5C3831]'
+                }`}>
                   Ulasan dan penilaian yang Anda berikan sangat berarti bagi seluruh kru dapur Pawon Hara untuk
                   terus menjaga cita rasa katering lezat dan pelayanan tepat waktu.
                 </p>
@@ -650,7 +755,9 @@ export default function TestimonialPage() {
                   ))}
                 </div>
 
-                <div className="mt-8 pt-8 border-t border-[#60241E] flex flex-col sm:flex-row items-center justify-center gap-3.5">
+                <div className={`mt-8 pt-8 border-t flex flex-col sm:flex-row items-center justify-center gap-3.5 ${
+                  isDark ? 'border-[#60241E]' : 'border-[#E6DACD]'
+                }`}>
                   <Link
                     to="/"
                     className="w-full sm:w-auto inline-flex items-center justify-center rounded-2xl bg-gradient-to-r from-[#F59E0B] via-[#E77B49] to-[#F59E0B] px-6 py-3.5 text-xs sm:text-sm font-dhaksinarga tracking-wide font-black text-[#1C0B09] hover:brightness-110 transition shadow-md"
@@ -659,7 +766,11 @@ export default function TestimonialPage() {
                   </Link>
                   <Link
                     to="/menu"
-                    className="w-full sm:w-auto inline-flex items-center justify-center rounded-2xl border border-[#60241E] bg-[#2D120F] px-6 py-3.5 text-xs sm:text-sm font-bold text-amber-200 hover:bg-[#3B1814] hover:text-white transition"
+                    className={`w-full sm:w-auto inline-flex items-center justify-center rounded-2xl border px-6 py-3.5 text-xs sm:text-sm font-bold transition ${
+                      isDark
+                        ? 'border-[#60241E] bg-[#2D120F] text-amber-200 hover:bg-[#3B1814] hover:text-white'
+                        : 'border-[#E6DACD] bg-[#FAF5EE] text-[#5C3831] hover:bg-white hover:text-[#2B120E]'
+                    }`}
                   >
                     Lihat Menu Katering
                   </Link>
@@ -667,43 +778,57 @@ export default function TestimonialPage() {
               </div>
             ) : hasReviewedAlready ? (
               /* Already Reviewed State Card */
-              <div className="rounded-3xl border border-[#60241E] bg-[#240E0C] p-8 sm:p-12 shadow-xl text-center space-y-5 animate-in fade-in zoom-in-95 text-stone-100">
-                <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-3xl bg-[#2D120F] text-[#F59E0B] border border-[#60241E]">
+              <div className={`rounded-3xl border p-8 sm:p-12 shadow-xl text-center space-y-5 animate-in fade-in zoom-in-95 ${
+                isDark ? 'border-[#60241E] bg-[#240E0C] text-stone-100' : 'border-[#E6DACD] bg-white text-[#2B120E]'
+              }`}>
+                <div className={`mx-auto flex h-20 w-20 items-center justify-center rounded-3xl border ${
+                  isDark ? 'bg-[#2D120F] text-[#F59E0B] border-[#60241E]' : 'bg-[#FAF5EE] text-[#D97706] border-[#E6DACD]'
+                }`}>
                   <CheckCircle2 size={44} strokeWidth={2.2} />
                 </div>
 
                 <div>
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-[#2D120F] border border-[#60241E] px-3.5 py-1 text-xs font-black text-amber-300 uppercase tracking-wider">
+                  <span className={`inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1 text-xs font-black uppercase tracking-wider ${
+                    isDark ? 'bg-[#2D120F] border-[#60241E] text-amber-300' : 'bg-[#FAF5EE] border-[#E6DACD] text-[#8C4320]'
+                  }`}>
                     <BadgeCheck size={14} /> Pesanan Sudah Pernah Diulas
                   </span>
 
-                  <h2 className="mt-4 text-2xl sm:text-3xl font-dhaksinarga tracking-wide font-black text-white">
+                  <h2 className={`mt-4 text-2xl sm:text-3xl font-dhaksinarga tracking-wide font-black ${
+                    isDark ? 'text-white' : 'text-[#2B120E]'
+                  }`}>
                     Terima Kasih, Kak {existingReview?.name || name || 'Pelanggan Setia'}!
                   </h2>
 
-                  <p className="mt-2 text-xs sm:text-sm text-amber-100/80 max-w-md mx-auto">
+                  <p className={`mt-2 text-xs sm:text-sm max-w-md mx-auto ${
+                    isDark ? 'text-amber-100/80' : 'text-[#5C3831]'
+                  }`}>
                     Anda sudah memberikan penilaian dan ulasan untuk pesanan ini. Masukan Anda sangat berharga bagi peningkatan mutu layanan Pawon Hara.
                   </p>
                 </div>
 
                 {existingReview && (
-                  <div className="max-w-md mx-auto rounded-2xl bg-[#1C0B09] border border-[#60241E] p-5 text-left space-y-3">
+                  <div className={`max-w-md mx-auto rounded-2xl border p-5 text-left space-y-3 ${
+                    isDark ? 'bg-[#1C0B09] border-[#60241E]' : 'bg-[#FAF5EE] border-[#E6DACD]'
+                  }`}>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-1 text-amber-400">
                         {Array.from({ length: existingReview.rating }).map((_, i) => (
                           <Star key={i} size={18} className="fill-amber-400 text-amber-400" />
                         ))}
                       </div>
-                      <span className="text-[11px] text-amber-200/60 font-semibold">
+                      <span className={`text-[11px] font-semibold ${isDark ? 'text-amber-200/60' : 'text-[#6B423A]'}`}>
                         {formatDateIndo(existingReview.created_at)}
                       </span>
                     </div>
 
-                    <p className="text-xs sm:text-sm font-medium text-amber-100 italic">
+                    <p className={`text-xs sm:text-sm font-medium italic ${isDark ? 'text-amber-100' : 'text-[#5C3831]'}`}>
                       "{existingReview.message}"
                     </p>
 
-                    <div className="flex items-center justify-between pt-2 border-t border-[#60241E] text-[11px] text-amber-200/70 font-semibold">
+                    <div className={`flex items-center justify-between pt-2 border-t text-[11px] font-semibold ${
+                      isDark ? 'border-[#60241E] text-amber-200/70' : 'border-[#E6DACD] text-[#6B423A]'
+                    }`}>
                       <span>Porsi: <strong>{existingReview.order_quantity}</strong></span>
                       {existingReview.institution && (
                         <span>Instansi: <strong>{existingReview.institution}</strong></span>
@@ -713,16 +838,24 @@ export default function TestimonialPage() {
                 )}
 
                 {orderData && orderData.items.length > 0 && (
-                  <div className="max-w-md mx-auto rounded-2xl border border-[#60241E] bg-[#1C0B09] p-4 text-left space-y-2">
-                    <p className="text-[11px] font-black uppercase tracking-wider text-amber-300 flex items-center gap-1.5">
+                  <div className={`max-w-md mx-auto rounded-2xl border p-4 text-left space-y-2 ${
+                    isDark ? 'border-[#60241E] bg-[#1C0B09]' : 'border-[#E6DACD] bg-[#FAF5EE]'
+                  }`}>
+                    <p className={`text-[11px] font-black uppercase tracking-wider flex items-center gap-1.5 ${
+                      isDark ? 'text-amber-300' : 'text-[#8C4320]'
+                    }`}>
                       <UtensilsCrossed size={12} className="text-[#F59E0B]" />
                       <span>Menu Katering Yang Dipesan:</span>
                     </p>
                     <div className="space-y-2">
                       {orderData.items.map((item) => (
-                        <div key={item.id} className="flex items-center justify-between text-xs font-semibold text-stone-200">
+                        <div key={item.id} className={`flex items-center justify-between text-xs font-semibold ${
+                          isDark ? 'text-stone-200' : 'text-[#2B120E]'
+                        }`}>
                           <span className="truncate">{item.item_name}</span>
-                          <span className="text-amber-300 font-bold shrink-0 ml-2">{item.quantity} Box</span>
+                          <span className={`font-bold shrink-0 ml-2 ${isDark ? 'text-amber-300' : 'text-[#8C4320]'}`}>
+                            {item.quantity} Box
+                          </span>
                         </div>
                       ))}
                     </div>
@@ -738,7 +871,11 @@ export default function TestimonialPage() {
                   </Link>
                   <Link
                     to="/menu"
-                    className="w-full sm:w-auto inline-flex items-center justify-center rounded-2xl border border-[#60241E] bg-[#2D120F] px-6 py-3.5 text-xs sm:text-sm font-bold text-amber-200 hover:bg-[#3B1814] hover:text-white transition"
+                    className={`w-full sm:w-auto inline-flex items-center justify-center rounded-2xl border px-6 py-3.5 text-xs sm:text-sm font-bold transition ${
+                      isDark
+                        ? 'border-[#60241E] bg-[#2D120F] text-amber-200 hover:bg-[#3B1814] hover:text-white'
+                        : 'border-[#E6DACD] bg-[#FAF5EE] text-[#5C3831] hover:bg-white hover:text-[#2B120E]'
+                    }`}
                   >
                     Pesan Katering Lagi
                   </Link>
@@ -746,9 +883,13 @@ export default function TestimonialPage() {
               </div>
             ) : (
               /* Shopee-Style Submission Form */
-              <div className="rounded-3xl border border-[#60241E] bg-[#240E0C] shadow-2xl overflow-hidden text-stone-100">
+              <div className={`rounded-3xl border shadow-2xl overflow-hidden ${
+                isDark ? 'border-[#60241E] bg-[#240E0C] text-stone-100' : 'border-[#E6DACD] bg-white text-[#2B120E]'
+              }`}>
                 {/* Form Header */}
-                <div className="relative bg-gradient-to-r from-[#60241E] via-[#95271D] to-[#2D120F] px-6 py-8 sm:px-10 sm:py-10 text-white overflow-hidden border-b border-[#60241E]">
+                <div className={`relative bg-gradient-to-r from-[#60241E] via-[#95271D] to-[#2D120F] px-6 py-8 sm:px-10 sm:py-10 text-white overflow-hidden border-b ${
+                  isDark ? 'border-[#60241E]' : 'border-[#E6DACD]'
+                }`}>
                   <div className="relative z-10 space-y-2">
                     <div className="inline-flex items-center gap-2 rounded-full bg-black/30 backdrop-blur-md px-3.5 py-1 text-xs font-black text-amber-300 border border-amber-400/30 mb-2">
                       <Heart size={14} className="fill-amber-300" />
@@ -770,7 +911,9 @@ export default function TestimonialPage() {
                 <form onSubmit={handleSubmit} className="p-6 sm:p-10 space-y-7">
                   {/* Order Loading State */}
                   {isCheckingOrder && (
-                    <div className="rounded-2xl border border-[#60241E] bg-[#1C0B09] p-6 flex items-center justify-center gap-3 text-amber-300 animate-pulse">
+                    <div className={`rounded-2xl border p-6 flex items-center justify-center gap-3 animate-pulse ${
+                      isDark ? 'border-[#60241E] bg-[#1C0B09] text-amber-300' : 'border-[#E6DACD] bg-[#FAF5EE] text-[#8C4320]'
+                    }`}>
                       <Loader2 size={20} className="animate-spin text-[#F59E0B]" />
                       <span className="text-xs font-bold font-dhaksinarga">Memverifikasi pesanan & memuat menu Pawon Hara...</span>
                     </div>
@@ -778,31 +921,39 @@ export default function TestimonialPage() {
 
                   {/* Verified Order & Product Card */}
                   {orderData ? (
-                    <div className="rounded-2xl border-2 border-[#60241E] bg-[#1C0B09] p-5 sm:p-6 shadow-xl space-y-4">
+                    <div className={`rounded-2xl border-2 p-5 sm:p-6 shadow-xl space-y-4 ${
+                      isDark ? 'border-[#60241E] bg-[#1C0B09]' : 'border-[#E6DACD] bg-[#FAF5EE]'
+                    }`}>
                       {/* Order Header */}
-                      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#60241E] pb-4">
+                      <div className={`flex flex-wrap items-center justify-between gap-3 border-b pb-4 ${
+                        isDark ? 'border-[#60241E]' : 'border-[#E6DACD]'
+                      }`}>
                         <div className="flex items-center gap-3">
                           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-emerald-950/70 text-emerald-400 border border-emerald-800">
                             <ShieldCheck size={22} />
                           </div>
                           <div>
                             <div className="flex items-center gap-2">
-                              <span className="text-xs font-black uppercase tracking-wider text-emerald-400 flex items-center gap-1 font-dhaksinarga">
-                                <BadgeCheck size={14} className="text-emerald-400" />
+                              <span className="text-xs font-black uppercase tracking-wider text-emerald-500 flex items-center gap-1 font-dhaksinarga">
+                                <BadgeCheck size={14} className="text-emerald-500" />
                                 Pesanan Terverifikasi
                               </span>
-                              <span className="rounded-lg bg-[#2D120F] border border-[#60241E] px-2 py-0.5 text-[11px] font-black text-amber-300">
+                              <span className={`rounded-lg border px-2 py-0.5 text-[11px] font-black ${
+                                isDark ? 'bg-[#2D120F] border-[#60241E] text-amber-300' : 'bg-white border-[#E6DACD] text-[#8C4320]'
+                              }`}>
                                 #{orderData.order_code}
                               </span>
                             </div>
-                            <p className="text-xs font-semibold text-amber-100/70 mt-0.5">
-                              Pemesan: <strong className="text-white">{orderData.customers_name}</strong>
+                            <p className={`text-xs font-semibold mt-0.5 ${isDark ? 'text-amber-100/70' : 'text-[#5C3831]'}`}>
+                              Pemesan: <strong className={isDark ? 'text-white' : 'text-[#2B120E]'}>{orderData.customers_name}</strong>
                             </p>
                           </div>
                         </div>
 
                         <div className="flex items-center gap-2">
-                          <span className="inline-flex items-center gap-1 rounded-xl bg-[#2D120F] border border-[#60241E] px-3 py-1.5 text-xs font-black text-amber-300">
+                          <span className={`inline-flex items-center gap-1 rounded-xl border px-3 py-1.5 text-xs font-black ${
+                            isDark ? 'bg-[#2D120F] border-[#60241E] text-amber-300' : 'bg-white border-[#E6DACD] text-[#8C4320]'
+                          }`}>
                             <Package size={13} className="text-[#F59E0B]" />
                             <span>Total {orderData.total_quantity} Box</span>
                           </span>
@@ -815,7 +966,9 @@ export default function TestimonialPage() {
                               setIsManualMode(false)
                             }}
                             title="Ganti nomor pesanan"
-                            className="p-1.5 text-stone-400 hover:text-white hover:bg-[#2D120F] rounded-lg transition cursor-pointer"
+                            className={`p-1.5 rounded-lg transition cursor-pointer ${
+                              isDark ? 'text-stone-400 hover:text-white hover:bg-[#2D120F]' : 'text-stone-500 hover:text-[#2B120E] hover:bg-stone-100'
+                            }`}
                           >
                             <RotateCcw size={14} />
                           </button>
@@ -824,12 +977,16 @@ export default function TestimonialPage() {
 
                       {/* Products List */}
                       <div className="space-y-2.5">
-                        <div className="flex items-center justify-between text-[11px] font-black uppercase tracking-wider text-amber-300">
+                        <div className={`flex items-center justify-between text-[11px] font-black uppercase tracking-wider ${
+                          isDark ? 'text-amber-300' : 'text-[#8C4320]'
+                        }`}>
                           <span className="flex items-center gap-1.5 font-dhaksinarga">
                             <UtensilsCrossed size={13} className="text-[#F59E0B]" />
                             Produk Katering Yang Dipesan
                           </span>
-                          <span className="text-[10px] text-amber-200/60 font-semibold lowercase">
+                          <span className={`text-[10px] font-semibold lowercase ${
+                            isDark ? 'text-amber-200/60' : 'text-[#6B423A]'
+                          }`}>
                             (otomatis dari pesanan)
                           </span>
                         </div>
@@ -840,10 +997,14 @@ export default function TestimonialPage() {
                             return (
                               <div
                                 key={item.id}
-                                className="flex items-center justify-between gap-3.5 rounded-2xl border border-[#60241E] bg-[#240E0C] p-3 sm:p-3.5 shadow-md hover:border-[#F59E0B]/50 transition group"
+                                className={`flex items-center justify-between gap-3.5 rounded-2xl border p-3 sm:p-3.5 shadow-md hover:border-[#F59E0B]/50 transition group ${
+                                  isDark ? 'border-[#60241E] bg-[#240E0C]' : 'border-[#E6DACD] bg-white'
+                                }`}
                               >
                                 <div className="flex items-center gap-3.5 min-w-0">
-                                  <div className="relative h-14 w-14 sm:h-16 sm:w-16 shrink-0 overflow-hidden rounded-xl border border-[#60241E] bg-[#2D120F] flex items-center justify-center">
+                                  <div className={`relative h-14 w-14 sm:h-16 sm:w-16 shrink-0 overflow-hidden rounded-xl border flex items-center justify-center ${
+                                    isDark ? 'border-[#60241E] bg-[#2D120F]' : 'border-[#E6DACD] bg-[#FAF5EE]'
+                                  }`}>
                                     {imgUrl ? (
                                       <img
                                         src={imgUrl}
@@ -851,31 +1012,39 @@ export default function TestimonialPage() {
                                         className="h-full w-full object-cover group-hover:scale-105 transition duration-300"
                                         onError={(e) => {
                                           e.currentTarget.style.display = 'none'
-                                          e.currentTarget.parentElement?.classList.add('bg-[#2D120F]')
+                                          e.currentTarget.parentElement?.classList.add(isDark ? 'bg-[#2D120F]' : 'bg-[#FAF5EE]')
                                         }}
                                       />
                                     ) : (
-                                      <div className="flex h-full w-full items-center justify-center bg-[#2D120F] text-amber-400">
+                                      <div className={`flex h-full w-full items-center justify-center ${
+                                        isDark ? 'bg-[#2D120F] text-amber-400' : 'bg-[#FAF5EE] text-[#D97706]'
+                                      }`}>
                                         <UtensilsCrossed size={22} />
                                       </div>
                                     )}
                                   </div>
 
                                   <div className="min-w-0">
-                                    <h4 className="text-xs sm:text-sm font-dhaksinarga tracking-wide font-black text-white truncate">
+                                    <h4 className={`text-xs sm:text-sm font-dhaksinarga tracking-wide font-black truncate ${
+                                      isDark ? 'text-white' : 'text-[#2B120E]'
+                                    }`}>
                                       {item.item_name}
                                     </h4>
                                     <p className="text-xs font-bold text-[#F59E0B] mt-0.5">
                                       Rp {Number(item.price).toLocaleString('id-ID')} / box
                                     </p>
-                                    <p className="text-[11px] text-amber-200/60 hidden sm:block">
+                                    <p className={`text-[11px] hidden sm:block ${
+                                      isDark ? 'text-amber-200/60' : 'text-[#6B423A]'
+                                    }`}>
                                       Kemasan Food-Grade & Higienis Pawon Hara
                                     </p>
                                   </div>
                                 </div>
 
                                 <div className="text-right shrink-0">
-                                  <span className="inline-flex items-center gap-1 rounded-xl bg-[#2D120F] border border-[#60241E] px-3 py-1 text-xs font-black text-amber-300">
+                                  <span className={`inline-flex items-center gap-1 rounded-xl border px-3 py-1 text-xs font-black ${
+                                    isDark ? 'bg-[#2D120F] border-[#60241E] text-amber-300' : 'bg-[#FAF5EE] border-[#E6DACD] text-[#8C4320]'
+                                  }`}>
                                     x{item.quantity} Box
                                   </span>
                                 </div>
@@ -886,7 +1055,9 @@ export default function TestimonialPage() {
                       </div>
 
                       {/* Auto-filled Notification Banner */}
-                      <div className="rounded-xl bg-[#2D120F] border border-[#60241E] p-2.5 text-center text-xs font-bold text-amber-200 flex items-center justify-center gap-2">
+                      <div className={`rounded-xl border p-2.5 text-center text-xs font-bold flex items-center justify-center gap-2 ${
+                        isDark ? 'bg-[#2D120F] border-[#60241E] text-amber-200' : 'bg-amber-50 border-amber-200 text-amber-900'
+                      }`}>
                         <Sparkles size={14} className="text-[#F59E0B] shrink-0" />
                         <span>Nama pemesan, produk katering, dan jumlah pesanan telah terisi otomatis. Anda cukup memberikan penilaian bintang dan ulasan di bawah.</span>
                       </div>
@@ -894,14 +1065,20 @@ export default function TestimonialPage() {
                   ) : (
                     /* Order Lookup Card when opened directly without order parameter */
                     <div className="space-y-4">
-                      <div className="rounded-2xl border border-[#60241E] bg-[#1C0B09] p-5 space-y-3">
+                      <div className={`rounded-2xl border p-5 space-y-3 ${
+                        isDark ? 'border-[#60241E] bg-[#1C0B09]' : 'border-[#E6DACD] bg-[#FAF5EE]'
+                      }`}>
                         <div className="flex items-center gap-2">
                           <ShoppingBag size={18} className="text-[#F59E0B]" />
-                          <h3 className="text-xs font-dhaksinarga tracking-wide font-black uppercase text-amber-300">
+                          <h3 className={`text-xs font-dhaksinarga tracking-wide font-black uppercase ${
+                            isDark ? 'text-amber-300' : 'text-[#8C4320]'
+                          }`}>
                             Punya Nomor Pesanan Pawon Hara?
                           </h3>
                         </div>
-                        <p className="text-xs text-amber-100/70 leading-relaxed">
+                        <p className={`text-xs leading-relaxed ${
+                          isDark ? 'text-amber-100/70' : 'text-[#5C3831]'
+                        }`}>
                           Masukkan nomor pesanan Anda (contoh: <strong>PH-202609-0001</strong>) agar data nama, produk yang dipesan, dan jumlah porsi terisi otomatis seperti di Shopee.
                         </p>
 
@@ -911,7 +1088,11 @@ export default function TestimonialPage() {
                             value={orderLookupInput}
                             onChange={(e) => setOrderLookupInput(e.target.value.toUpperCase())}
                             placeholder="Contoh: PH-2026-XXXX"
-                            className="flex-1 rounded-xl border border-[#60241E] bg-[#240E0C] px-3.5 py-2.5 text-xs font-black text-white placeholder-stone-500 uppercase tracking-wider focus:border-[#F59E0B] focus:outline-none focus:ring-2 focus:ring-[#F59E0B]/20"
+                            className={`flex-1 rounded-xl border px-3.5 py-2.5 text-xs font-black uppercase tracking-wider focus:border-[#F59E0B] focus:outline-none focus:ring-2 focus:ring-[#F59E0B]/20 ${
+                              isDark
+                                ? 'border-[#60241E] bg-[#240E0C] text-white placeholder-stone-500'
+                                : 'border-[#E6DACD] bg-white text-[#2B120E] placeholder-[#8C6B64]'
+                            }`}
                             onKeyDown={(e) => {
                               if (e.key === 'Enter') {
                                 e.preventDefault()
@@ -942,7 +1123,9 @@ export default function TestimonialPage() {
                         <button
                           type="button"
                           onClick={() => setIsManualMode(!isManualMode)}
-                          className="text-xs font-bold text-amber-300 hover:text-[#F59E0B] underline underline-offset-4 cursor-pointer transition"
+                          className={`text-xs font-bold underline underline-offset-4 cursor-pointer transition ${
+                            isDark ? 'text-amber-300 hover:text-[#F59E0B]' : 'text-[#8C4320] hover:text-[#B45309]'
+                          }`}
                         >
                           {isManualMode
                             ? 'Sembunyikan form manual'
@@ -951,9 +1134,13 @@ export default function TestimonialPage() {
                       </div>
 
                       {isManualMode && (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 rounded-2xl bg-[#1C0B09] border border-[#60241E] animate-in fade-in">
+                        <div className={`grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 rounded-2xl border animate-in fade-in ${
+                          isDark ? 'bg-[#1C0B09] border-[#60241E]' : 'bg-[#FAF5EE] border-[#E6DACD]'
+                        }`}>
                           <div>
-                            <label className="block text-xs font-black uppercase tracking-wider text-amber-100/80 mb-1.5 flex items-center gap-1.5">
+                            <label className={`block text-xs font-black uppercase tracking-wider mb-1.5 flex items-center gap-1.5 ${
+                              isDark ? 'text-amber-100/80' : 'text-[#2B120E]'
+                            }`}>
                               <User size={13} className="text-[#F59E0B]" />
                               Nama Lengkap *
                             </label>
@@ -963,12 +1150,18 @@ export default function TestimonialPage() {
                               value={name}
                               onChange={(e) => setName(e.target.value)}
                               placeholder="Contoh: Dian Safitri"
-                              className="w-full rounded-xl border border-[#60241E] bg-[#240E0C] px-3.5 py-2.5 text-xs font-medium text-white placeholder-stone-500 focus:border-[#F59E0B] focus:outline-none"
+                              className={`w-full rounded-xl border px-3.5 py-2.5 text-xs font-medium focus:border-[#F59E0B] focus:outline-none ${
+                                isDark
+                                  ? 'border-[#60241E] bg-[#240E0C] text-white placeholder-stone-500'
+                                  : 'border-[#E6DACD] bg-white text-[#2B120E] placeholder-[#8C6B64]'
+                              }`}
                             />
                           </div>
 
                           <div>
-                            <label className="block text-xs font-black uppercase tracking-wider text-amber-100/80 mb-1.5 flex items-center gap-1.5">
+                            <label className={`block text-xs font-black uppercase tracking-wider mb-1.5 flex items-center gap-1.5 ${
+                              isDark ? 'text-amber-100/80' : 'text-[#2B120E]'
+                            }`}>
                               <Package size={13} className="text-[#F59E0B]" />
                               Jumlah Pesanan / Box *
                             </label>
@@ -978,7 +1171,11 @@ export default function TestimonialPage() {
                               value={orderQuantity}
                               onChange={(e) => setOrderQuantity(e.target.value)}
                               placeholder="Contoh: 85 Box Bento"
-                              className="w-full rounded-xl border border-[#60241E] bg-[#240E0C] px-3.5 py-2.5 text-xs font-medium text-white placeholder-stone-500 focus:border-[#F59E0B] focus:outline-none"
+                              className={`w-full rounded-xl border px-3.5 py-2.5 text-xs font-medium focus:border-[#F59E0B] focus:outline-none ${
+                                isDark
+                                  ? 'border-[#60241E] bg-[#240E0C] text-white placeholder-stone-500'
+                                  : 'border-[#E6DACD] bg-white text-[#2B120E] placeholder-[#8C6B64]'
+                              }`}
                             />
                           </div>
                         </div>
@@ -987,8 +1184,12 @@ export default function TestimonialPage() {
                   )}
 
                   {/* 1. Rating Bintang Interaktif */}
-                  <div className="rounded-2xl bg-[#1C0B09] border border-[#60241E] p-5 sm:p-6 text-center space-y-2">
-                    <label className="block text-xs font-black uppercase tracking-wider text-amber-300/80 font-dhaksinarga">
+                  <div className={`rounded-2xl border p-5 sm:p-6 text-center space-y-2 ${
+                    isDark ? 'bg-[#1C0B09] border-[#60241E]' : 'bg-[#FAF5EE] border-[#E6DACD]'
+                  }`}>
+                    <label className={`block text-xs font-black uppercase tracking-wider font-dhaksinarga ${
+                      isDark ? 'text-amber-300/80' : 'text-[#8C4320]'
+                    }`}>
                       Penilaian Keseluruhan (Bintang) *
                     </label>
 
@@ -1010,7 +1211,9 @@ export default function TestimonialPage() {
                               className={`transition-all duration-200 ${
                                 isFilled
                                   ? 'text-amber-400 fill-amber-400 drop-shadow-sm scale-110'
-                                  : 'text-stone-600 group-hover:text-amber-300'
+                                  : isDark
+                                    ? 'text-stone-600 group-hover:text-amber-300'
+                                    : 'text-stone-300 group-hover:text-amber-400'
                               }`}
                             />
                           </button>
@@ -1018,20 +1221,26 @@ export default function TestimonialPage() {
                       })}
                     </div>
 
-                    <div className="text-xs sm:text-sm font-dhaksinarga tracking-wide font-black text-white">
+                    <div className={`text-xs sm:text-sm font-dhaksinarga tracking-wide font-black ${
+                      isDark ? 'text-white' : 'text-[#2B120E]'
+                    }`}>
                       {activeRatingDesc.title} —{' '}
-                      <span className="font-medium text-amber-200/70">{activeRatingDesc.subtitle}</span>
+                      <span className={`font-medium ${isDark ? 'text-amber-200/70' : 'text-[#6B423A]'}`}>
+                        {activeRatingDesc.subtitle}
+                      </span>
                     </div>
                   </div>
 
                   {/* 2. Teks Ulasan */}
                   <div>
-                    <label className="block text-xs font-black uppercase tracking-wider text-amber-100/80 mb-2 flex items-center justify-between">
+                    <label className={`block text-xs font-black uppercase tracking-wider mb-2 flex items-center justify-between ${
+                      isDark ? 'text-amber-100/80' : 'text-[#2B120E]'
+                    }`}>
                       <span className="flex items-center gap-1.5">
                         <MessageSquareQuote size={14} className="text-[#F59E0B]" />
                         Ulasan Pengalaman Katering Anda *
                       </span>
-                      <span className="text-[11px] font-normal text-stone-500">
+                      <span className={`text-[11px] font-normal ${isDark ? 'text-stone-500' : 'text-[#8C6B64]'}`}>
                         {message.length}/1000 karakter
                       </span>
                     </label>
@@ -1042,18 +1251,24 @@ export default function TestimonialPage() {
                       value={message}
                       onChange={(e) => setMessage(e.target.value)}
                       placeholder="Ceritakan kepuasan Anda mengenai kelezatan bento, porsi, ketepatan pengantaran, atau respon admin Pawon Hara..."
-                      className="w-full rounded-2xl border border-[#60241E] bg-[#1C0B09] px-4 py-3 text-sm text-white placeholder-stone-500 focus:border-[#F59E0B] focus:outline-none focus:ring-2 focus:ring-[#F59E0B]/20 transition resize-y"
+                      className={`w-full rounded-2xl border px-4 py-3 text-sm focus:border-[#F59E0B] focus:outline-none focus:ring-2 focus:ring-[#F59E0B]/20 transition resize-y ${
+                        isDark
+                          ? 'border-[#60241E] bg-[#1C0B09] text-white placeholder-stone-500'
+                          : 'border-[#E6DACD] bg-[#FAF5EE] text-[#2B120E] placeholder-[#8C6B64]'
+                      }`}
                     />
                   </div>
 
                   {/* 3. Instansi / Acara (Opsional) */}
                   <div>
-                    <label className="block text-xs font-black uppercase tracking-wider text-amber-100/80 mb-2 flex items-center justify-between">
+                    <label className={`block text-xs font-black uppercase tracking-wider mb-2 flex items-center justify-between ${
+                      isDark ? 'text-amber-100/80' : 'text-[#2B120E]'
+                    }`}>
                       <span className="flex items-center gap-1.5">
                         <Building2 size={14} className="text-[#F59E0B]" />
                         Nama Instansi / Acara (Opsional)
                       </span>
-                      <span className="text-[11px] font-normal text-stone-500 normal-case">
+                      <span className={`text-[11px] font-normal normal-case ${isDark ? 'text-stone-500' : 'text-[#8C6B64]'}`}>
                         Untuk dicantumkan di kartu testimoni
                       </span>
                     </label>
@@ -1062,7 +1277,11 @@ export default function TestimonialPage() {
                       value={institution}
                       onChange={(e) => setInstitution(e.target.value)}
                       placeholder="Contoh: HR PT Mandiri / Syukuran Keluarga"
-                      className="w-full rounded-2xl border border-[#60241E] bg-[#1C0B09] px-4 py-3 text-sm text-white placeholder-stone-500 focus:border-[#F59E0B] focus:outline-none focus:ring-2 focus:ring-[#F59E0B]/20 transition"
+                      className={`w-full rounded-2xl border px-4 py-3 text-sm focus:border-[#F59E0B] focus:outline-none focus:ring-2 focus:ring-[#F59E0B]/20 transition ${
+                        isDark
+                          ? 'border-[#60241E] bg-[#1C0B09] text-white placeholder-stone-500'
+                          : 'border-[#E6DACD] bg-[#FAF5EE] text-[#2B120E] placeholder-[#8C6B64]'
+                      }`}
                     />
                   </div>
 
@@ -1089,7 +1308,7 @@ export default function TestimonialPage() {
                       )}
                     </button>
 
-                    <p className="mt-3 text-center text-[11px] text-amber-200/60">
+                    <p className={`mt-3 text-center text-[11px] ${isDark ? 'text-amber-200/60' : 'text-[#6B423A]'}`}>
                       Ulasan Anda membantu pelanggan lain memilih paket katering terbaik di Pawon Hara.
                     </p>
                   </div>
