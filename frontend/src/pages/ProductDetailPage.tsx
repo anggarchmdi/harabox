@@ -1449,7 +1449,7 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                     isDark ? 'text-amber-100/90' : 'text-[#5C3831]'
                   }`}>
                     <span className="font-semibold truncate">{product.name} ({quantity} porsi)</span>
-                    <span className={`font-mono font-semibold shrink-0 ${
+                    <span className={`font-poppins font-semibold shrink-0 ${
                       isDark ? 'text-[#F59E0B]' : 'text-[#B45309]'
                     }`}>
                       Rp {baseTotal.toLocaleString('id-ID')}
@@ -1471,7 +1471,7 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                   isDark ? 'border-[#60241E] text-white' : 'border-[#E6DACD] text-[#2B120E]'
                 }`}>
                   <span className="font-dhaksinarga tracking-wide truncate">Total Estimasi ({quantity} Porsi):</span>
-                  <span className="text-[#F59E0B] font-dhaksinarga tracking-wide font-black text-base shrink-0">
+                  <span className="text-[#F59E0B] font-poppins tracking-wide font-black text-base shrink-0">
                     Rp {estimatedTotal.toLocaleString('id-ID')}
                   </span>
                 </div>
@@ -1733,7 +1733,7 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                   ) : (
                     <>
                       <MessageCircle size={16} className="shrink-0" />
-                      <span className="truncate">Kirim Pesanan via WhatsApp</span>
+                      <span className="truncate">Kirim Pesanan</span>
                     </>
                   )}
                 </button>

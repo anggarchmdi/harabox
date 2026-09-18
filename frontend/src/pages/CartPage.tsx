@@ -767,7 +767,7 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                 }`}>
                   Total ({selectedTotalPortions} Porsi)
                 </p>
-                <p className="text-base font-dhaksinarga tracking-wide font-black text-[#F59E0B] truncate leading-tight mt-0.5">
+                <p className="text-base font-poppins tracking-wide font-black text-[#F59E0B] truncate leading-tight mt-0.5">
                   Rp {grandTotal.toLocaleString('id-ID')}
                 </p>
               </div>
@@ -873,7 +873,7 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                       <span className="truncate pr-2">
                         {item.product_name} ({item.quantity} porsi)
                       </span>
-                      <span className={`font-mono font-semibold shrink-0 ${
+                      <span className={`font-poppins font-semibold shrink-0 ${
                         isDark ? 'text-[#F59E0B]' : 'text-[#B45309]'
                       }`}>
                         Rp {item.subtotal.toLocaleString('id-ID')}
