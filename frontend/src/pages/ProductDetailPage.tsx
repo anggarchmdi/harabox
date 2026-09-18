@@ -513,7 +513,7 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
   if (isLoading) {
     return (
       <main
-        className={`min-h-screen transition-colors duration-300 ${
+        className={`min-h-screen overflow-x-clip transition-colors duration-300 ${
           isDark
             ? 'bg-[#1C0B09] text-stone-100 selection:bg-[#F59E0B] selection:text-[#1C0B09]'
             : 'bg-[#FBF7F2] text-[#2B120E] selection:bg-[#F59E0B] selection:text-[#2B120E]'
@@ -576,7 +576,7 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
 
   return (
     <main
-      className={`min-h-screen pb-24 transition-colors duration-300 ${
+      className={`min-h-screen overflow-x-clip pb-24 transition-colors duration-300 ${
         isDark
           ? 'bg-[#1C0B09] text-stone-100 selection:bg-[#F59E0B] selection:text-[#1C0B09]'
           : 'bg-[#FBF7F2] text-[#2B120E] selection:bg-[#F59E0B] selection:text-[#2B120E]'

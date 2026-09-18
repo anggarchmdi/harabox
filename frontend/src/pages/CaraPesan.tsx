@@ -107,7 +107,7 @@ export default function CaraPesan() {
 
   return (
     <main
-      className={`min-h-screen transition-colors duration-300 ${
+      className={`min-h-screen overflow-x-clip transition-colors duration-300 ${
         isDark
           ? 'bg-[#1C0B09] text-stone-100 selection:bg-[#F59E0B] selection:text-[#1C0B09]'
           : 'bg-[#FBF7F2] text-[#2B120E] selection:bg-[#F59E0B] selection:text-[#2B120E]'
@@ -226,7 +226,7 @@ export default function CaraPesan() {
           WHATSAPP INVOICE PREVIEW SECTION
       ====================================================== */}
       <section
-        className={`border-t py-20 lg:py-28 transition-colors duration-300 ${
+        className={`border-t py-20 lg:py-28 overflow-hidden transition-colors duration-300 ${
           isDark ? 'border-[#60241E]/80 bg-[#200B09]' : 'border-[#E0D2C2] bg-[#EFE5D8]'
         }`}
       >
@@ -318,7 +318,7 @@ export default function CaraPesan() {
               </div>
 
               <div
-                className={`rounded-2xl border p-4 font-mono text-xs space-y-2 shadow-inner ${
+                className={`rounded-2xl border p-4 font-mono text-xs space-y-2 shadow-inner overflow-hidden break-words ${
                   isDark
                     ? 'border-[#60241E] bg-[#1C0B09] text-amber-100'
                     : 'border-[#E6DACD] bg-[#FAF5EE] text-[#2B120E]'

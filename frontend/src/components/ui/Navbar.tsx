@@ -87,7 +87,7 @@ export default function Navbar() {
       ========================== */}
       <header
         className={`
-          fixed inset-x-0 top-0 z-50
+          fixed inset-x-0 top-0 z-50 w-full max-w-[100vw]
           transition-all duration-300
           ${solidNavbar
             ? isDark

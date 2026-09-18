@@ -300,7 +300,7 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
   }
 
   return (
-    <main className={`min-h-screen pb-32 sm:pb-36 lg:pb-28 transition-colors duration-300 ${
+    <main className={`min-h-screen overflow-x-clip pb-32 sm:pb-36 lg:pb-28 transition-colors duration-300 ${
       isDark
         ? 'bg-[#1C0B09] text-stone-100 selection:bg-[#F59E0B] selection:text-[#1C0B09]'
         : 'bg-[#FBF7F2] text-[#2B120E] selection:bg-[#F59E0B] selection:text-white'

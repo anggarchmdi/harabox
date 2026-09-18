@@ -138,7 +138,7 @@ export default function AdminLayout() {
   }
 
   return (
-    <div className="min-h-screen bg-[#fafaf9] text-stone-900 font-sans selection:bg-red-500/15 selection:text-red-700">
+    <div className="min-h-screen w-full max-w-full overflow-x-clip bg-[#fafaf9] text-stone-900 font-sans selection:bg-red-500/15 selection:text-red-700">
       {/* =====================================================
           DESKTOP SIDEBAR (EXPAND / COLLAPSE)
       ====================================================== */}
@@ -652,7 +652,7 @@ export default function AdminLayout() {
         </header>
 
         {/* Page Content Outlet */}
-        <main>
+        <main className="w-full max-w-full overflow-x-clip">
           <Outlet />
         </main>
       </div>

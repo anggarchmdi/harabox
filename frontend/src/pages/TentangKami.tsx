@@ -181,7 +181,7 @@ export default function TentangKami() {
 
   return (
     <main
-      className={`min-h-screen transition-colors duration-300 ${
+      className={`min-h-screen overflow-x-clip transition-colors duration-300 ${
         isDark
           ? 'bg-[#1C0B09] text-stone-100 selection:bg-[#F59E0B] selection:text-[#1C0B09]'
           : 'bg-[#FBF7F2] text-[#2B120E] selection:bg-[#F59E0B] selection:text-[#2B120E]'
@@ -205,7 +205,7 @@ export default function TentangKami() {
       {/* =====================================================
           SECTION 1: EDITORIAL STORY WITH LUXURY SHOWCASE
       ====================================================== */}
-      <section className="mx-auto max-w-7xl px-6 py-20 lg:px-8 lg:py-28">
+      <section className="mx-auto max-w-7xl px-6 py-20 lg:px-8 lg:py-28 overflow-hidden">
         <div className="grid gap-14 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
           {/* Text Story */}
           <div data-aos="fade-right" className="space-y-6">
@@ -452,7 +452,7 @@ export default function TentangKami() {
           SECTION 4: KENAPA MEMILIH PAWON HARA?
       ====================================================== */}
       <section
-        className={`border-t py-20 lg:py-28 transition-colors duration-300 ${
+        className={`border-t py-20 lg:py-28 overflow-hidden transition-colors duration-300 ${
           isDark ? 'border-[#60241E]/80 bg-[#200B09]' : 'border-[#E0D2C2] bg-[#EFE5D8]'
         }`}
       >

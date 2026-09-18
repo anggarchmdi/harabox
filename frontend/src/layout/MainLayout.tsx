@@ -10,14 +10,14 @@ export default function MainLayout() {
 
   return (
     <div
-      className={`min-h-screen transition-colors duration-300 ${
+      className={`min-h-screen w-full max-w-full overflow-x-clip transition-colors duration-300 ${
         isDark
           ? 'bg-[#1C0B09] text-stone-100 selection:bg-[#F59E0B] selection:text-[#1C0B09]'
           : 'bg-[#FBF7F2] text-[#2B120E] selection:bg-[#F59E0B] selection:text-[#2B120E]'
       }`}
     >
       <Navbar />
-      <main>
+      <main className="w-full max-w-full overflow-x-clip">
         <Outlet />
       </main>
 

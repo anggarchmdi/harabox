@@ -337,7 +337,7 @@ export default function OrderTrackingPage() {
     : 'https://wa.me/6289669743193'
 
   return (
-    <main className={`min-h-screen pt-24 sm:pt-28 pb-28 transition-colors duration-300 print:bg-white print:pt-0 print:pb-0 ${
+    <main className={`min-h-screen overflow-x-clip pt-24 sm:pt-28 pb-28 transition-colors duration-300 print:bg-white print:pt-0 print:pb-0 ${
       isDark
         ? 'bg-[#1C0B09] text-stone-100 selection:bg-[#F59E0B] selection:text-[#1C0B09]'
         : 'bg-[#FBF7F2] text-[#2B120E] selection:bg-[#F59E0B] selection:text-white'

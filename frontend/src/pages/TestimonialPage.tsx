@@ -288,7 +288,7 @@ export default function TestimonialPage() {
   const activeRatingDesc = ratingDescriptions[activeRating] || ratingDescriptions[5]
 
   return (
-    <div className={`min-h-screen transition-colors duration-300 selection:bg-[#F59E0B] pt-28 pb-24 sm:pt-36 sm:pb-32 ${
+    <div className={`min-h-screen overflow-x-clip transition-colors duration-300 selection:bg-[#F59E0B] pt-28 pb-24 sm:pt-36 sm:pb-32 ${
       isDark
         ? 'bg-[#1C0B09] text-stone-100 selection:text-[#1C0B09]'
         : 'bg-[#FBF7F2] text-[#2B120E] selection:text-[#2B120E]'
