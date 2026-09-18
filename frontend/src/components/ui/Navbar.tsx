@@ -115,12 +115,12 @@ export default function Navbar() {
             className="relative z-50 shrink-0 flex items-center gap-3 group"
           >
             <div>
-              <img src={PawonHaraImg} className="w-12 md:w-16" alt="Pawon Hara Logo" />
+              <img src={PawonHaraImg} className="w-10 md:w-14" alt="Pawon Hara Logo" />
             </div>
             <div className="flex flex-col">
               <div className="flex items-center gap-1.5">
                 <span
-                  className={`font-dhaksinarga tracking-wide text-xl sm:text-3xl leading-none transition-colors duration-300 ${
+                  className={`font-dhaksinarga tracking-wide text-md sm:text-xl leading-none transition-colors duration-300 ${
                     solidNavbar && !isDark ? 'text-[#2B120E]' : 'text-white'
                   }`}
                 >
@@ -193,7 +193,7 @@ export default function Navbar() {
               aria-label={isDark ? 'Beralih ke mode terang' : 'Beralih ke mode gelap'}
               title={isDark ? 'Mode Terang (Coklat Terang)' : 'Mode Gelap (Coklat Tua)'}
               className={`
-                group relative flex h-11 w-11 items-center justify-center rounded-full
+                group relative flex w-8 h-8 md:h-11 md:w-11 items-center justify-center rounded-full
                 border transition-all duration-300 cursor-pointer
                 ${isDark
                   ? 'border-[#60241E] bg-[#2D120F]/90 text-[#F59E0B] shadow-md hover:border-[#F59E0B] hover:bg-[#60241E] hover:text-amber-200'
@@ -212,7 +212,7 @@ export default function Navbar() {
             <Link
               to="/cart"
               className={`
-                group relative flex h-11 w-11 items-center justify-center rounded-full
+                group relative flex w-8 h-8 md:h-11 md:w-11 items-center justify-center rounded-full
                 border transition-all duration-300
                 ${isCartPage
                   ? isDark
@@ -273,7 +273,7 @@ export default function Navbar() {
               onClick={toggleTheme}
               aria-label={isDark ? 'Beralih ke mode terang' : 'Beralih ke mode gelap'}
               className={`
-                relative z-50 flex h-11 w-11 items-center justify-center rounded-full border transition-all duration-300 cursor-pointer
+                relative z-50 flex w-8 h-8 md:h-11 md:w-11 items-center justify-center rounded-full border transition-all duration-300 cursor-pointer
                 ${isDark
                   ? 'border-[#60241E] bg-[#2D120F] text-[#F59E0B] shadow-md'
                   : solidNavbar
@@ -290,7 +290,7 @@ export default function Navbar() {
               onClick={() => setMobileOpen(false)}
               className={`
                 relative z-50
-                flex h-11 w-11
+                flex w-8 h-8 md:h-11 md:w-11
                 items-center justify-center
                 rounded-full border
                 transition-all duration-300
@@ -318,7 +318,7 @@ export default function Navbar() {
               onClick={() => setMobileOpen((value) => !value)}
               className={`
                 relative z-50
-                flex h-11 w-11
+                flex w-8 h-8 md:h-11 md:w-11
                 items-center justify-center
                 rounded-full
                 border
