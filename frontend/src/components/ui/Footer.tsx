@@ -119,18 +119,6 @@ export default function Footer() {
                 <span>halo@pawonhara.com</span>
               </a>
             </div>
-
-            <div className={`mt-6 pt-5 border-t ${isDark ? 'border-[#60241E]/60' : 'border-[#D9C7B6]'}`}>
-              <a
-                href="https://wa.me/6289669743193"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-[#F59E0B] to-[#E77B49] hover:from-[#D97706] hover:to-[#B34A44] px-5 py-3 text-xs font-black text-[#200B09] shadow-md transition duration-300 hover:shadow-lg"
-              >
-                <MessageCircle size={15} />
-                <span>Konsultasi Menu WhatsApp</span>
-              </a>
-            </div>
           </div>
         </div>
 

@@ -115,19 +115,19 @@ export default function Navbar() {
             className="relative z-50 shrink-0 flex items-center gap-3 group"
           >
             <div>
-              <img src={PawonHaraImg} className="w-16" alt="Pawon Hara Logo" />
+              <img src={PawonHaraImg} className="w-12 md:w-16" alt="Pawon Hara Logo" />
             </div>
             <div className="flex flex-col">
               <div className="flex items-center gap-1.5">
                 <span
-                  className={`font-dhaksinarga tracking-wide text-2xl sm:text-3xl leading-none transition-colors duration-300 ${
+                  className={`font-dhaksinarga tracking-wide text-xl sm:text-3xl leading-none transition-colors duration-300 ${
                     solidNavbar && !isDark ? 'text-[#2B120E]' : 'text-white'
                   }`}
                 >
                   Pawon Hara
                 </span>
               </div>
-              <span className="text-[10px] sm:text-[11px] italic font-bold uppercase tracking-widest text-[#E77B49] mt-0.5">
+              <span className="text-[8px] sm:text-[11px] italic font-bold uppercase tracking-widest text-[#E77B49] mt-0.5">
                 Dari Pawon Ke Meja Anda
               </span>
             </div>
@@ -430,7 +430,7 @@ export default function Navbar() {
                   <div className="flex items-center justify-between">
                     <span
                       className={`
-                        font-dhaksinarga tracking-wide text-2xl
+                        font-dhaksinarga tracking-wide text-md
                         transition-all duration-300
                         ${isActive
                           ? 'font-bold text-[#F59E0B]'
@@ -485,7 +485,7 @@ export default function Navbar() {
                     <ShoppingCart size={22} className={isActive ? 'text-[#F59E0B]' : isDark ? 'text-stone-300' : 'text-[#5C3831]'} />
                     <span
                       className={`
-                        font-dhaksinarga tracking-wide text-2xl
+                        font-dhaksinarga tracking-wide text-md
                         transition-all duration-300
                         ${isActive
                           ? 'font-bold text-[#F59E0B]'
