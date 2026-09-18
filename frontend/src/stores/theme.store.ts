@@ -49,14 +49,14 @@ function refreshAOS() {
 }
 
 export const useThemeStore = create<ThemeState>((set, get) => ({
-  theme: 'dark',
+  theme: 'light',
   isSwitching: false,
   targetTheme: null,
 
   hydrateTheme: () => {
     if (typeof window === 'undefined') return
     const saved = localStorage.getItem(STORAGE_KEY) as Theme | null
-    const initialTheme: Theme = saved === 'light' || saved === 'dark' ? saved : 'dark'
+    const initialTheme: Theme = saved === 'light' || saved === 'dark' ? saved : 'light'
 
     applyThemeToDom(initialTheme)
     set({ theme: initialTheme })

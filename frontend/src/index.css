@@ -58,14 +58,23 @@
 
 html {
   scroll-behavior: smooth;
-  background-color: #1C0B09;
+  background-color: #FBF7F2;
   overflow-x: clip;
   max-width: 100%;
+}
+
+html.dark {
+  background-color: #1C0B09;
 }
 
 body {
   overflow-x: clip;
   max-width: 100%;
+  background-color: #FBF7F2;
+  color: #2B120E;
+}
+
+html.dark body {
   background-color: #1C0B09;
   color: #FDFBF7;
 }
