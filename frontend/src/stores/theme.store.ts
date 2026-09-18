@@ -21,18 +21,18 @@ function applyThemeToDom(theme: Theme) {
   const root = document.documentElement
   const body = document.body
 
-  if (theme === 'dark') {
-    root.classList.remove('light')
-    root.classList.add('dark')
-    root.setAttribute('data-theme', 'dark')
-    root.style.backgroundColor = '#1C0B09'
-    body.style.backgroundColor = '#1C0B09'
-  } else {
+  if (theme === 'light') {
     root.classList.remove('dark')
     root.classList.add('light')
     root.setAttribute('data-theme', 'light')
     root.style.backgroundColor = '#FBF7F2'
     body.style.backgroundColor = '#FBF7F2'
+  } else {
+    root.classList.remove('light')
+    root.classList.add('dark')
+    root.setAttribute('data-theme', 'dark')
+    root.style.backgroundColor = '#1C0B09'
+    body.style.backgroundColor = '#1C0B09'
   }
 }
 
