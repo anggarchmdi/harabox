@@ -341,8 +341,8 @@ export default function HomePage() {
         <div
           className={`w-full absolute hidden md:flex z-10 h-[600px] bg-gradient-to-t ${
             isDark
-              ? 'from-[#1C0B09] via-transparent to-black/40'
-              : 'from-black via-transparent to-black/30'
+              ? 'from-black/20 via-transparent to-black/40'
+              : 'from-black/20 via-transparent to-black/30'
           }`}
         />
         <img
