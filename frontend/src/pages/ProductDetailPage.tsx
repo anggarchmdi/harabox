@@ -8,7 +8,6 @@ import {
   Check,
   CheckCircle2,
   Clock,
-  Info,
   MapPin,
   MessageCircle,
   Minus,
@@ -25,6 +24,7 @@ import { toast } from 'sonner'
 import PageLoader from '../components/ui/PageLoader'
 import { productService } from '../services/products.service'
 import { ordersService } from '../services/orders.service'
+import { settingsService } from '../services/settings.service'
 import { getImageUrl } from '../utils/image'
 import { useCartStore, type CartItemAddon } from '../stores/cart.store'
 import { useThemeStore } from '../stores/theme.store'
@@ -124,7 +124,6 @@ export default function ProductDetailPage() {
   const [quantity, setQuantity] = useState<number>(10)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [orderSuccessCode, setOrderSuccessCode] = useState<string | null>(null)
 
   // Addon selection state: { [groupId: number]: number[] (addonIds) }
   const [selectedAddons, setSelectedAddons] = useState<Record<number, number[]>>({})
@@ -150,6 +149,26 @@ export default function ProductDetailPage() {
   }, [leadTimeDays])
 
   const isDateInvalid = Boolean(eventDate && minDateString && eventDate < minDateString)
+
+  // Realtime Kitchen Capacity check for selected event date
+  const { data: dateCapacity } = useQuery({
+    queryKey: ['capacity-check', eventDate],
+    queryFn: () => settingsService.checkCapacity(eventDate),
+    enabled: Boolean(eventDate && !isDateInvalid),
+  })
+
+  const isDateClosed = Boolean(dateCapacity?.is_closed)
+  const isDateFull = Boolean(dateCapacity && !dateCapacity.is_closed && dateCapacity.remaining_portions <= 0)
+  const isExceedingCapacity = Boolean(
+    dateCapacity && !dateCapacity.is_closed && quantity > dateCapacity.remaining_portions
+  )
+
+  useEffect(() => {
+    document.body.style.overflow = isModalOpen ? 'hidden' : ''
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [isModalOpen])
 
   const handleEventDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value
@@ -295,7 +314,14 @@ export default function ProductDetailPage() {
 
   // Open modal with pre-validation
   const handleOpenOrderModal = () => {
-    if (product?.addons_enabled && product.addon_groups) {
+    if (!product) return
+
+    if (quantity < minOrder) {
+      toast.error(`Minimal order menu ini adalah ${minOrder} porsi.`)
+      return
+    }
+
+    if (product.addons_enabled && product.addon_groups) {
       for (const group of product.addon_groups) {
         const selected = selectedAddons[group.id] || []
         if (selected.length < group.min_selection) {
@@ -308,6 +334,11 @@ export default function ProductDetailPage() {
         }
       }
     }
+
+    if (!eventDate) {
+      setEventDate(minDateString)
+    }
+
     setIsModalOpen(true)
   }
 
@@ -405,6 +436,23 @@ export default function ProductDetailPage() {
       return
     }
 
+    if (isDateClosed) {
+      toast.error('Dapur libur pada tanggal tersebut. Silakan pilih tanggal lain.')
+      return
+    }
+
+    if (isDateFull) {
+      toast.error('Kapasitas dapur untuk tanggal tersebut sudah penuh (maksimal tercapai).')
+      return
+    }
+
+    if (isExceedingCapacity) {
+      toast.error(
+        `Kapasitas dapur tanggal tersebut tersisa ${dateCapacity?.remaining_portions} box (pesanan Anda: ${quantity} box).`
+      )
+      return
+    }
+
     if (!deliveryAddress.trim()) {
       toast.error('Mohon isi alamat pengantaran / lokasi acara.')
       return
@@ -457,7 +505,7 @@ export default function ProductDetailPage() {
       })
 
       const orderCode = createdOrder.order_code
-      setOrderSuccessCode(orderCode)
+      setIsModalOpen(false)
       toast.success(`Pesanan ${orderCode} berhasil dicatat! Menghubungkan ke WhatsApp...`)
 
       // 2. Format customization summary for WhatsApp with transparent calculation
@@ -1313,141 +1361,96 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
       </section>
 
       {/* =====================================================
-          ORDER CONFIRMATION MODAL (FORM PEMESANAN CATERING)
+          ORDER CONFIRMATION MODAL (FORM PEMESANAN CATERING LANGSUNG)
       ====================================================== */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-md animate-fade-in">
-          <div className={`relative w-full max-w-lg overflow-hidden rounded-3xl border shadow-2xl ${
-            isDark
-              ? 'bg-[#2D120F] border-[#60241E] text-white'
-              : 'bg-[#FBF7F2] border-[#E6DACD] text-[#2B120E]'
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/75 p-0 sm:p-4 backdrop-blur-sm animate-fade-in">
+          <div className={`relative w-full max-w-lg overflow-hidden rounded-t-[2rem] sm:rounded-3xl border shadow-2xl flex flex-col max-h-[92vh] sm:max-h-[85vh] ${
+            isDark ? 'border-[#60241E] bg-[#240E0C] text-stone-100' : 'border-[#E6DACD] bg-[#FBF7F2] text-[#2B120E]'
           }`}>
             {/* Modal Header */}
-            <div className={`flex items-center justify-between border-b px-6 py-5 ${
-              isDark ? 'border-[#60241E] bg-[#250D0A]' : 'border-[#E6DACD] bg-[#F5EDE4]'
+            <div className={`border-b px-5 sm:px-6 py-4 shrink-0 ${
+              isDark ? 'border-[#60241E] bg-[#1C0B09]' : 'border-[#E6DACD] bg-[#F5EDE4]'
             }`}>
-              <div className="flex items-center gap-3">
-                <div className={`flex h-10 w-10 items-center justify-center rounded-2xl ring-1 ${
-                  isDark
-                    ? 'bg-[#60241E] text-[#F59E0B] ring-[#F59E0B]/30'
-                    : 'bg-[#EAE0D5] text-[#D97706] ring-[#D97706]/30'
-                }`}>
-                  <ShoppingBag size={20} />
-                </div>
-                <div>
-                  <h3 className={`font-dhaksinarga tracking-wide text-lg ${
-                    isDark ? 'text-white' : 'text-[#2B120E]'
-                  }`}>
-                    Form Pemesanan Katering
-                  </h3>
-                  <p className={`text-xs ${isDark ? 'text-amber-200/60' : 'text-[#6B423A]'}`}>
-                    {product.name} • <span className="font-bold text-[#F59E0B]">{quantity} Porsi</span>
-                  </p>
-                </div>
-              </div>
+              {/* Mobile grab handle */}
+              <div className={`w-10 h-1 rounded-full mx-auto mb-3 sm:hidden ${
+                isDark ? 'bg-[#60241E]' : 'bg-[#E6DACD]'
+              }`} />
 
-              <button
-                type="button"
-                onClick={() => setIsModalOpen(false)}
-                className={`rounded-full p-2 transition ${
-                  isDark
-                    ? 'text-amber-200/50 hover:bg-[#3B1814] hover:text-white'
-                    : 'text-[#6B423A] hover:bg-[#EAE0D5] hover:text-[#2B120E]'
-                }`}
-              >
-                <X size={18} />
-              </button>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className={`flex h-10 w-10 items-center justify-center rounded-2xl border ${
+                    isDark
+                      ? 'bg-[#2D120F] text-[#F59E0B] border-[#60241E]'
+                      : 'bg-white text-[#D97706] border-[#E6DACD]'
+                  }`}>
+                    <ShoppingBag size={18} />
+                  </div>
+                  <div>
+                    <h3 className={`font-dhaksinarga tracking-wide font-black text-sm sm:text-base ${
+                      isDark ? 'text-white' : 'text-[#2B120E]'
+                    }`}>
+                      Konfirmasi Pesanan Langsung
+                    </h3>
+                    <p className={`text-xs ${isDark ? 'text-amber-100/70' : 'text-[#5C3831]'}`}>
+                      {product.name} • {quantity} Porsi
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setIsModalOpen(false)}
+                  className={`rounded-full p-2 transition cursor-pointer ${
+                    isDark ? 'text-stone-400 hover:bg-[#2D120F] hover:text-white' : 'text-[#6B423A] hover:bg-[#EAE0D5] hover:text-[#2B120E]'
+                  }`}
+                >
+                  <X size={18} />
+                </button>
+              </div>
             </div>
 
-            {/* Modal Body / Form */}
-            <form onSubmit={handleSubmitOrder} className="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
-              {/* Order Summary Box with Explicit Multiplication */}
-              <div className={`rounded-2xl border p-3.5 space-y-2.5 text-xs ${
-                isDark
-                  ? 'border-[#60241E] bg-[#1C0B09]'
-                  : 'border-[#E6DACD] bg-white'
+            {/* Modal Scrollable Body */}
+            <form onSubmit={handleSubmitOrder} className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-4">
+              {/* Order Summary Box */}
+              <div className={`rounded-2xl border p-3.5 space-y-2 text-xs ${
+                isDark ? 'border-[#60241E] bg-[#1C0B09]' : 'border-[#E6DACD] bg-white'
               }`}>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className={`font-bold ${isDark ? 'text-white' : 'text-[#2B120E]'}`}>{product.name}</p>
-                    <p className={isDark ? 'text-amber-200/60' : 'text-[#6B423A]'}>Jumlah: {quantity} porsi (@ Rp {unitPrice.toLocaleString('id-ID')})</p>
-                  </div>
-                  <div className="text-right">
-                    <p className={`text-[10px] ${isDark ? 'text-amber-200/50' : 'text-[#6B423A]'}`}>Estimasi Total</p>
-                    <p className="font-black text-sm text-[#F59E0B]">Rp {estimatedTotal.toLocaleString('id-ID')}</p>
-                  </div>
-                </div>
-
-                {/* Calculation breakdown */}
-                <div className={`pt-2 border-t space-y-1 text-[11px] ${
-                  isDark ? 'border-[#60241E]/60' : 'border-[#E6DACD]'
+                <p className={`font-dhaksinarga tracking-wide font-bold uppercase text-[11px] ${
+                  isDark ? 'text-amber-300' : 'text-[#B45309]'
                 }`}>
-                  <div className={`flex justify-between ${isDark ? 'text-amber-100/70' : 'text-[#5C3831]'}`}>
-                    <span>Paket Dasar:</span>
-                    <span className={`font-mono ${isDark ? 'text-white' : 'text-[#2B120E] font-semibold'}`}>
-                      Rp {basePrice.toLocaleString('id-ID')} × {quantity} = Rp {baseTotal.toLocaleString('id-ID')}
+                  Rincian Menu yang Dipesan:
+                </p>
+                <div className="space-y-1.5 pr-1">
+                  <div className={`flex justify-between items-baseline ${
+                    isDark ? 'text-amber-100/90' : 'text-[#5C3831]'
+                  }`}>
+                    <span className="font-semibold">{product.name} ({quantity} porsi)</span>
+                    <span className={`font-mono font-semibold shrink-0 ${
+                      isDark ? 'text-[#F59E0B]' : 'text-[#B45309]'
+                    }`}>
+                      Rp {baseTotal.toLocaleString('id-ID')}
                     </span>
                   </div>
                   {selectedAddonSummary.map((item, idx) => (
-                    <div key={idx} className={`flex justify-between pl-2 ${isDark ? 'text-amber-100/70' : 'text-[#5C3831]'}`}>
-                      <span>↳ {item.addonName}:</span>
+                    <div key={idx} className={`flex justify-between items-baseline text-[11px] pl-2 ${
+                      isDark ? 'text-amber-100/70' : 'text-[#6B423A]'
+                    }`}>
+                      <span>↳ {item.addonName}</span>
                       <span className={`font-mono font-semibold ${isDark ? 'text-amber-300' : 'text-[#8C4320]'}`}>
                         {item.price > 0 ? `+Rp ${(item.price * quantity).toLocaleString('id-ID')}` : 'Termasuk'}
                       </span>
                     </div>
                   ))}
                 </div>
-              </div>
 
-              {/* Customer Name */}
-              <div>
-                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${
-                  isDark ? 'text-amber-200/80' : 'text-[#5C3831]'
+                <div className={`border-t pt-2 flex justify-between items-baseline font-bold ${
+                  isDark ? 'border-[#60241E] text-white' : 'border-[#E6DACD] text-[#2B120E]'
                 }`}>
-                  Nama Pemesan / Instansi <span className="text-[#F59E0B] font-black">*</span>
-                </label>
-                <div className="relative">
-                  <User size={16} className={`absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none ${
-                    isDark ? 'text-amber-200/50' : 'text-[#8C4320]'
-                  }`} />
-                  <input
-                    type="text"
-                    required
-                    placeholder="Contoh: Bpk. Heru / PT Sinar Maju"
-                    value={customerName}
-                    onChange={(e) => setCustomerName(e.target.value)}
-                    className={`w-full h-11 rounded-xl border pl-10 pr-4 text-xs sm:text-sm font-medium outline-none transition ${
-                      isDark
-                        ? 'border-[#60241E] bg-[#1C0B09] text-white focus:border-[#F59E0B]'
-                        : 'border-[#E6DACD] bg-white text-[#2B120E] focus:border-[#D97706]'
-                    }`}
-                  />
-                </div>
-              </div>
-
-              {/* Customer Phone */}
-              <div>
-                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${
-                  isDark ? 'text-amber-200/80' : 'text-[#5C3831]'
-                }`}>
-                  Nomor WhatsApp Aktif <span className="text-[#F59E0B] font-black">*</span>
-                </label>
-                <div className="relative">
-                  <MessageCircle size={16} className={`absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none ${
-                    isDark ? 'text-amber-200/50' : 'text-[#8C4320]'
-                  }`} />
-                  <input
-                    type="tel"
-                    required
-                    placeholder="Contoh: 081234567890"
-                    value={customerPhone}
-                    onChange={(e) => setCustomerPhone(e.target.value)}
-                    className={`w-full h-11 rounded-xl border pl-10 pr-4 text-xs sm:text-sm font-medium outline-none transition ${
-                      isDark
-                        ? 'border-[#60241E] bg-[#1C0B09] text-white focus:border-[#F59E0B]'
-                        : 'border-[#E6DACD] bg-white text-[#2B120E] focus:border-[#D97706]'
-                    }`}
-                  />
+                  <span className="font-dhaksinarga tracking-wide">Total Estimasi ({quantity} Porsi):</span>
+                  <span className="text-[#F59E0B] font-dhaksinarga tracking-wide font-black text-base">
+                    Rp {estimatedTotal.toLocaleString('id-ID')}
+                  </span>
                 </div>
               </div>
 
@@ -1455,13 +1458,13 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${
-                    isDark ? 'text-amber-200/80' : 'text-[#5C3831]'
+                    isDark ? 'text-amber-100/80' : 'text-[#5C3831]'
                   }`}>
-                    Tanggal Acara <span className="text-[#F59E0B] font-black">*</span>
+                    Tanggal Acara <span className="text-[#E77B49]">*</span>
                   </label>
                   <div className="relative">
                     <Calendar size={16} className={`absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none ${
-                      isDark ? 'text-amber-200/50' : 'text-[#8C4320]'
+                      isDark ? 'text-amber-400' : 'text-[#D97706]'
                     }`} />
                     <input
                       type="date"
@@ -1471,32 +1474,74 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                       onChange={handleEventDateChange}
                       className={`w-full h-11 rounded-xl border pl-10 pr-3 text-xs sm:text-sm font-medium outline-none transition ${
                         isDateInvalid
-                          ? 'border-red-500 bg-red-950/40 text-red-200'
+                          ? 'border-red-500 bg-red-950/40 text-red-200 ring-2 ring-red-500/20'
                           : isDark
-                            ? 'border-[#60241E] bg-[#1C0B09] text-white focus:border-[#F59E0B]'
-                            : 'border-[#E6DACD] bg-white text-[#2B120E] focus:border-[#D97706]'
+                            ? 'border-[#60241E] bg-[#1C0B09] text-white focus:border-[#F59E0B] focus:ring-2 focus:ring-[#F59E0B]/20'
+                            : 'border-[#E6DACD] bg-white text-[#2B120E] focus:border-[#D97706] focus:ring-2 focus:ring-[#D97706]/20'
                       }`}
                     />
                   </div>
                   {isDateInvalid && (
-                    <div className="mt-2 flex items-start gap-1.5 rounded-xl border border-red-500/50 bg-red-950/40 p-2.5 text-xs text-red-200">
-                      <AlertCircle size={15} className="shrink-0 text-red-400 mt-0.5" />
+                    <div className="mt-2 flex items-start gap-1.5 rounded-xl border border-red-800 bg-red-950/60 p-2 text-[11px] text-red-200">
+                      <AlertCircle size={14} className="shrink-0 text-red-400 mt-0.5" />
                       <span>
-                        <strong>Tanggal tidak diperbolehkan!</strong> Pemesanan menu ini minimal H-{leadTimeDays} sebelum acara (paling cepat tanggal {formatMinDateLabel(minDateString)}).
+                        Pemesanan minimal H-{leadTimeDays} sebelum acara (paling cepat {formatMinDateLabel(minDateString)}).
                       </span>
                     </div>
+                  )}
+
+                  {!isDateInvalid && eventDate && (
+                    <>
+                      {isDateClosed ? (
+                        <div className="mt-2 flex items-start gap-1.5 rounded-xl border border-red-800 bg-red-950/60 p-2 text-[11px] text-red-200">
+                          <AlertCircle size={14} className="shrink-0 text-red-400 mt-0.5" />
+                          <span>
+                            Dapur libur / tutup pesanan pada tanggal ini.
+                            {dateCapacity?.override_note ? ` (${dateCapacity.override_note})` : ''} Silakan pilih tanggal lain.
+                          </span>
+                        </div>
+                      ) : isDateFull ? (
+                        <div className="mt-2 flex items-start gap-1.5 rounded-xl border border-red-800 bg-red-950/60 p-2 text-[11px] text-red-200">
+                          <AlertCircle size={14} className="shrink-0 text-red-400 mt-0.5" />
+                          <span>
+                            Kapasitas dapur untuk tanggal ini sudah penuh ({dateCapacity?.max_capacity} box). Silakan pilih tanggal lain.
+                          </span>
+                        </div>
+                      ) : isExceedingCapacity ? (
+                        <div className="mt-2 flex items-start gap-1.5 rounded-xl border border-amber-600 bg-amber-950/60 p-2 text-[11px] text-amber-200">
+                          <AlertCircle size={14} className="shrink-0 text-amber-400 mt-0.5" />
+                          <span>
+                            Sisa kuota dapur tanggal ini hanya <strong>{dateCapacity?.remaining_portions} box</strong> (pesanan Anda: <strong>{quantity} box</strong>).
+                          </span>
+                        </div>
+                      ) : dateCapacity ? (
+                        <div className={`mt-2 flex items-center justify-between rounded-xl border px-2.5 py-1.5 text-[11px] ${
+                          isDark
+                            ? 'border-[#F59E0B]/40 bg-[#2D120F] text-amber-200'
+                            : 'border-emerald-300 bg-emerald-50 text-emerald-900'
+                        }`}>
+                          <span className="flex items-center gap-1.5 font-medium">
+                            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                            <span>Kapasitas Dapur Tersedia</span>
+                          </span>
+                          <span className={`font-bold ${isDark ? 'text-[#F59E0B]' : 'text-emerald-700'}`}>
+                            Sisa {dateCapacity.remaining_portions} Box
+                          </span>
+                        </div>
+                      ) : null}
+                    </>
                   )}
                 </div>
 
                 <div>
                   <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${
-                    isDark ? 'text-amber-200/80' : 'text-[#5C3831]'
+                    isDark ? 'text-amber-100/80' : 'text-[#5C3831]'
                   }`}>
                     Jam Acara (Kira-kira)
                   </label>
                   <div className="relative">
                     <Clock size={16} className={`absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none ${
-                      isDark ? 'text-amber-200/50' : 'text-[#8C4320]'
+                      isDark ? 'text-amber-400' : 'text-[#D97706]'
                     }`} />
                     <input
                       type="time"
@@ -1504,161 +1549,173 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                       onChange={(e) => setEventTime(e.target.value)}
                       className={`w-full h-11 rounded-xl border pl-10 pr-3 text-xs sm:text-sm font-medium outline-none transition ${
                         isDark
-                          ? 'border-[#60241E] bg-[#1C0B09] text-white focus:border-[#F59E0B]'
-                          : 'border-[#E6DACD] bg-white text-[#2B120E] focus:border-[#D97706]'
+                          ? 'border-[#60241E] bg-[#1C0B09] text-white focus:border-[#F59E0B] focus:ring-2 focus:ring-[#F59E0B]/20'
+                          : 'border-[#E6DACD] bg-white text-[#2B120E] focus:border-[#D97706] focus:ring-2 focus:ring-[#D97706]/20'
                       }`}
                     />
                   </div>
                 </div>
               </div>
 
-              {/* Lead Time Notice */}
-              {leadTimeDays > 0 ? (
-                <div className="space-y-2">
-                  <div className={`flex items-center gap-2 rounded-xl border px-3.5 py-2.5 text-xs ${
-                    isDark
-                      ? 'border-[#60241E] bg-[#1C0B09] text-amber-200'
-                      : 'border-[#E6DACD] bg-[#FAF5EE] text-[#5C3831]'
-                  }`}>
-                    <Info size={15} className="shrink-0 text-[#F59E0B]" />
-                    <span>
-                      Menu ini memerlukan persiapan <strong>H-{leadTimeDays}</strong> (paling cepat {formatMinDateLabel(minDateString)}).
-                    </span>
+              {/* Lead Time Notice if any */}
+              {leadTimeDays > 0 && (
+                <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-2 rounded-xl border px-3.5 py-2.5 text-xs ${
+                  isDark
+                    ? 'border-[#60241E] bg-[#1C0B09] text-amber-100/70'
+                    : 'border-[#E6DACD] bg-[#FAF5EE] text-[#5C3831]'
+                }`}>
+                  <div className="flex items-center gap-2">
+                    <span className="flex h-2 w-2 rounded-full bg-[#F59E0B] animate-pulse shrink-0" />
+                    <span>Butuh mendadak kurang dari H-{leadTimeDays}?</span>
                   </div>
-
-                  <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-2 rounded-xl border px-3.5 py-2.5 text-xs ${
-                    isDark
-                      ? 'border-[#60241E] bg-[#1C0B09] text-amber-100/70'
-                      : 'border-[#E6DACD] bg-[#FAF5EE] text-[#5C3831]'
-                  }`}>
-                    <div className="flex items-center gap-2">
-                      <span className="flex h-2 w-2 rounded-full bg-[#F59E0B] animate-pulse shrink-0" />
-                      <span>Butuh mendadak kurang dari H-{leadTimeDays}?</span>
-                    </div>
-                    <a
-                      href={`https://wa.me/6289669743193?text=${encodeURIComponent(
-                        `Halo Admin Pawon Hara, saya ingin menanyakan ketersediaan slot mendadak untuk menu "${product.name}". Apakah ada slot dapur darurat yang tersedia?`
-                      )}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 font-bold text-[#F59E0B] hover:text-amber-400 transition"
-                    >
-                      Cek Slot Darurat via WhatsApp
-                      <ArrowRight size={13} />
-                    </a>
-                  </div>
+                  <a
+                    href={`https://wa.me/6289669743193?text=${encodeURIComponent(
+                      `Halo Admin Pawon Hara, saya ingin menanyakan ketersediaan slot mendadak untuk menu "${product.name}". Apakah ada slot dapur darurat yang tersedia?`
+                    )}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 font-bold text-[#F59E0B] hover:text-amber-400 transition"
+                  >
+                    Cek Slot Darurat via WhatsApp
+                    <ArrowRight size={13} />
+                  </a>
                 </div>
-              ) : (
-                <p className={`text-[11px] -mt-1 ${isDark ? 'text-amber-200/50' : 'text-[#6B423A]'}`}>
-                  Menu ini dapat dipesan mulai hari ini.
-                </p>
               )}
 
-              {/* Delivery Address */}
+              {/* Customer Name */}
               <div>
                 <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${
-                  isDark ? 'text-amber-200/80' : 'text-[#5C3831]'
+                  isDark ? 'text-amber-100/80' : 'text-[#5C3831]'
                 }`}>
-                  Alamat Pengantaran / Lokasi Acara <span className="text-[#F59E0B] font-black">*</span>
+                  Nama Pemesan / Instansi <span className="text-[#E77B49]">*</span>
                 </label>
                 <div className="relative">
-                  <MapPin size={16} className={`absolute left-3.5 top-3 pointer-events-none ${
-                    isDark ? 'text-amber-200/50' : 'text-[#8C4320]'
+                  <User size={16} className={`absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none ${
+                    isDark ? 'text-amber-400' : 'text-[#D97706]'
                   }`} />
-                  <textarea
+                  <input
+                    type="text"
                     required
-                    rows={2}
-                    placeholder="Contoh: Gedung Graha Lantai 4, Jl. Sudirman No. 12"
-                    value={deliveryAddress}
-                    onChange={(e) => setDeliveryAddress(e.target.value)}
-                    className={`w-full rounded-xl border pl-10 pr-4 py-2 text-xs sm:text-sm font-medium outline-none transition ${
+                    value={customerName}
+                    onChange={(e) => setCustomerName(e.target.value)}
+                    placeholder="Contoh: Bpk. Budi Santoso / PT Sejahtera"
+                    className={`w-full h-11 rounded-xl border pl-10 pr-3 text-xs sm:text-sm font-medium outline-none transition ${
                       isDark
-                        ? 'border-[#60241E] bg-[#1C0B09] text-white focus:border-[#F59E0B]'
-                        : 'border-[#E6DACD] bg-white text-[#2B120E] focus:border-[#D97706]'
+                        ? 'border-[#60241E] bg-[#1C0B09] text-white placeholder-stone-500 focus:border-[#F59E0B] focus:ring-2 focus:ring-[#F59E0B]/20'
+                        : 'border-[#E6DACD] bg-white text-[#2B120E] placeholder-stone-400 focus:border-[#D97706] focus:ring-2 focus:ring-[#D97706]/20'
                     }`}
                   />
                 </div>
               </div>
 
-              {/* Notes */}
+              {/* Customer Phone */}
               <div>
                 <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${
-                  isDark ? 'text-amber-200/80' : 'text-[#5C3831]'
+                  isDark ? 'text-amber-100/80' : 'text-[#5C3831]'
+                }`}>
+                  Nomor WhatsApp Aktif <span className="text-[#E77B49]">*</span>
+                </label>
+                <div className="relative">
+                  <MessageCircle size={16} className={`absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none ${
+                    isDark ? 'text-amber-400' : 'text-[#D97706]'
+                  }`} />
+                  <input
+                    type="tel"
+                    required
+                    value={customerPhone}
+                    onChange={(e) => setCustomerPhone(e.target.value)}
+                    placeholder="Contoh: 081234567890"
+                    className={`w-full h-11 rounded-xl border pl-10 pr-3 text-xs sm:text-sm font-medium outline-none transition ${
+                      isDark
+                        ? 'border-[#60241E] bg-[#1C0B09] text-white placeholder-stone-500 focus:border-[#F59E0B] focus:ring-2 focus:ring-[#F59E0B]/20'
+                        : 'border-[#E6DACD] bg-white text-[#2B120E] placeholder-stone-400 focus:border-[#D97706] focus:ring-2 focus:ring-[#D97706]/20'
+                    }`}
+                  />
+                </div>
+              </div>
+
+              {/* Delivery Address */}
+              <div>
+                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${
+                  isDark ? 'text-amber-100/80' : 'text-[#5C3831]'
+                }`}>
+                  Alamat Pengantaran / Lokasi Acara <span className="text-[#E77B49]">*</span>
+                </label>
+                <div className="relative">
+                  <MapPin size={16} className={`absolute left-3.5 top-3 pointer-events-none ${
+                    isDark ? 'text-amber-400' : 'text-[#D97706]'
+                  }`} />
+                  <textarea
+                    required
+                    rows={2}
+                    value={deliveryAddress}
+                    onChange={(e) => setDeliveryAddress(e.target.value)}
+                    placeholder="Contoh: Gedung Graha Lt. 5, Jl. Sudirman No. 10..."
+                    className={`w-full rounded-xl border pl-10 pr-3.5 py-2.5 text-xs sm:text-sm font-medium outline-none transition ${
+                      isDark
+                        ? 'border-[#60241E] bg-[#1C0B09] text-white placeholder-stone-500 focus:border-[#F59E0B] focus:ring-2 focus:ring-[#F59E0B]/20'
+                        : 'border-[#E6DACD] bg-white text-[#2B120E] placeholder-stone-400 focus:border-[#D97706] focus:ring-2 focus:ring-[#D97706]/20'
+                    }`}
+                  />
+                </div>
+              </div>
+
+              {/* Special Notes */}
+              <div>
+                <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${
+                  isDark ? 'text-amber-100/80' : 'text-[#5C3831]'
                 }`}>
                   Catatan Tambahan (Opsional)
                 </label>
-                <input
-                  type="text"
-                  placeholder="Contoh: Sambal dipisah / minta sendok lebih"
+                <textarea
+                  rows={2}
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
-                  className={`w-full h-11 rounded-xl border px-4 text-xs sm:text-sm font-medium outline-none transition ${
+                  placeholder="Misal: Sambal dipisah, minta sendok ekstra, titip di resepsionis..."
+                  className={`w-full rounded-xl border px-3.5 py-2.5 text-xs sm:text-sm font-medium outline-none transition ${
                     isDark
-                      ? 'border-[#60241E] bg-[#1C0B09] text-white focus:border-[#F59E0B]'
-                      : 'border-[#E6DACD] bg-white text-[#2B120E] focus:border-[#D97706]'
+                      ? 'border-[#60241E] bg-[#1C0B09] text-white placeholder-stone-500 focus:border-[#F59E0B] focus:ring-2 focus:ring-[#F59E0B]/20'
+                      : 'border-[#E6DACD] bg-white text-[#2B120E] placeholder-stone-400 focus:border-[#D97706] focus:ring-2 focus:ring-[#D97706]/20'
                   }`}
                 />
               </div>
 
-              {/* Modal Buttons */}
-              <div className={`pt-3 border-t flex items-center justify-end gap-2.5 ${
-                isDark ? 'border-[#60241E]/60' : 'border-[#E6DACD]'
+              {/* Modal Sticky Footer Actions inside Form */}
+              <div className={`pt-3 flex items-center justify-end gap-2.5 border-t ${
+                isDark ? 'border-[#60241E]' : 'border-[#E6DACD]'
               }`}>
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className={`px-5 py-3 rounded-xl border text-xs font-bold transition ${
-                    isDark
-                      ? 'border-[#60241E] text-amber-200 hover:bg-[#3B1814]'
-                      : 'border-[#E6DACD] text-[#5C3831] hover:bg-[#EAE0D5]'
+                  className={`px-4 py-2.5 rounded-xl text-xs font-bold transition cursor-pointer ${
+                    isDark ? 'text-amber-200 hover:bg-[#2D120F]' : 'text-[#5C3831] hover:bg-[#EAE0D5]'
                   }`}
                 >
                   Batal
                 </button>
-
                 <button
                   type="submit"
-                  disabled={isSubmitting || isDateInvalid || !eventDate}
-                  className={`inline-flex items-center gap-2 px-6 py-3 rounded-xl text-xs font-black transition ${
-                    isSubmitting || isDateInvalid || !eventDate
-                      ? isDark
-                        ? 'bg-[#3B1814] text-amber-200/40 cursor-not-allowed shadow-none'
-                        : 'bg-[#EAE0D5] text-[#8C4320]/40 cursor-not-allowed shadow-none'
-                      : 'bg-gradient-to-r from-[#F59E0B] to-[#E77B49] text-[#1C0B09] shadow-md hover:from-amber-400 hover:to-amber-500 active:scale-[0.99]'
-                  }`}
+                  disabled={
+                    isSubmitting ||
+                    isDateInvalid ||
+                    !eventDate ||
+                    isDateClosed ||
+                    isDateFull ||
+                    isExceedingCapacity
+                  }
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-dhaksinarga tracking-wide font-black transition bg-gradient-to-r from-[#F59E0B] via-[#E77B49] to-[#F59E0B] text-[#1C0B09] shadow-lg shadow-[#F59E0B]/20 hover:brightness-110 active:scale-[0.99] disabled:bg-[#2D120F] disabled:text-stone-500 disabled:border disabled:border-[#60241E] disabled:cursor-not-allowed disabled:shadow-none cursor-pointer"
                 >
                   {isSubmitting ? (
-                    <>
-                      <span className="h-4 w-4 rounded-full border-2 border-[#1C0B09] border-t-transparent animate-spin" />
-                      <span>Memproses Order...</span>
-                    </>
-                  ) : isDateInvalid ? (
-                    <>
-                      <AlertCircle size={16} className="text-red-500" />
-                      <span>Tanggal Harus Minimal H-{leadTimeDays}</span>
-                    </>
-                  ) : !eventDate ? (
-                    <>
-                      <Calendar size={16} />
-                      <span>Pilih Tanggal Acara Dulu</span>
-                    </>
+                    <span>Memproses...</span>
                   ) : (
                     <>
                       <MessageCircle size={16} />
-                      <span>Kirim Pesanan ke WhatsApp</span>
+                      <span>Kirim Pesanan via WhatsApp</span>
                     </>
                   )}
                 </button>
               </div>
             </form>
-
-            {/* Success state footer notice */}
-            {orderSuccessCode && (
-              <div className="p-4 bg-emerald-50 border-t border-emerald-100 text-center text-xs text-emerald-800">
-                <p className="font-bold">Kode Pesanan: {orderSuccessCode}</p>
-                <p className="text-[11px] mt-0.5">Pesanan Anda telah tercatat di sistem kami!</p>
-              </div>
-            )}
           </div>
         </div>
       )}
