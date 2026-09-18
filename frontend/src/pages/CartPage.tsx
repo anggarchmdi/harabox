@@ -584,7 +584,7 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                           }`}>
                             Subtotal ({item.quantity} Porsi)
                           </p>
-                          <p className={`text-sm sm:text-base font-dhaksinarga tracking-wide font-black ${
+                          <p className={`text-sm sm:text-base font-poppins tracking-wide font-black ${
                             isDark ? 'text-white' : 'text-[#2B120E]'
                           }`}>
                             Rp {item.subtotal.toLocaleString('id-ID')}
@@ -709,7 +709,7 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                       </p>
                       <p className={`text-[10px] ${isDark ? 'text-amber-200/60' : 'text-[#6B423A]'}`}>Harga final via invoice katering</p>
                     </div>
-                    <p className="text-xl sm:text-2xl font-dhaksinarga tracking-wide font-black text-[#F59E0B]">
+                    <p className="text-xl sm:text-2xl font-poppins tracking-wide font-black text-[#F59E0B]">
                       Rp {grandTotal.toLocaleString('id-ID')}
                     </p>
                   </div>
