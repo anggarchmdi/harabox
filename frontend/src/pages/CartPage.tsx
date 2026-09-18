@@ -886,7 +886,7 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                   isDark ? 'border-[#60241E] text-white' : 'border-[#E6DACD] text-[#2B120E]'
                 }`}>
                   <span className="font-dhaksinarga tracking-wide truncate">Total ({selectedDistinctCount} Menu):</span>
-                  <span className="text-[#F59E0B] font-dhaksinarga tracking-wide font-black text-base shrink-0">
+                  <span className="text-[#F59E0B] font-poppins tracking-wide font-black text-base shrink-0">
                     Rp {grandTotal.toLocaleString('id-ID')}
                   </span>
                 </div>
@@ -1123,7 +1123,7 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                   ) : (
                     <>
                       <MessageCircle size={16} className="shrink-0" />
-                      <span className="truncate">Kirim Pesanan via WhatsApp</span>
+                      <span className="truncate">Kirim Pesanan</span>
                     </>
                   )}
                 </button>
