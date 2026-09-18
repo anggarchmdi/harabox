@@ -146,6 +146,23 @@ export default function CartPage() {
     dateCapacity && !dateCapacity.is_closed && selectedTotalPortions > dateCapacity.remaining_portions
   )
 
+  useEffect(() => {
+    if (isModalOpen) {
+      const scrollY = window.scrollY
+      document.body.style.position = 'fixed'
+      document.body.style.top = `-${scrollY}px`
+      document.body.style.width = '100%'
+      document.body.style.overflow = 'hidden'
+      return () => {
+        document.body.style.position = ''
+        document.body.style.top = ''
+        document.body.style.width = ''
+        document.body.style.overflow = ''
+        window.scrollTo(0, scrollY)
+      }
+    }
+  }, [isModalOpen])
+
   const handleOpenCheckout = () => {
     if (selectedDistinctCount === 0) {
       toast.error('Silakan pilih minimal 1 menu di keranjang untuk dipesan.')
@@ -778,8 +795,17 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
           MULTI-ITEM CART CHECKOUT MODAL (Bottom-sheet on mobile)
       ====================================================== */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/75 p-0 sm:p-4 backdrop-blur-sm animate-fade-in">
-          <div className={`relative w-full max-w-lg overflow-hidden rounded-t-[2rem] sm:rounded-3xl border shadow-2xl flex flex-col max-h-[92vh] sm:max-h-[85vh] ${
+        <div
+          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/75 p-0 sm:p-4 backdrop-blur-sm animate-fade-in w-full max-w-full overflow-hidden overscroll-none"
+          style={{ touchAction: 'pan-y' }}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setIsModalOpen(false)
+          }}
+          onTouchMove={(e) => {
+            if (e.target === e.currentTarget) e.preventDefault()
+          }}
+        >
+          <div className={`relative w-full max-w-lg overflow-hidden rounded-t-[2rem] sm:rounded-3xl border shadow-2xl flex flex-col max-h-[90dvh] sm:max-h-[85vh] ${
             isDark ? 'border-[#60241E] bg-[#240E0C] text-stone-100' : 'border-[#E6DACD] bg-[#FBF7F2] text-[#2B120E]'
           }`}>
             {/* Modal Header */}
@@ -791,22 +817,22 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                 isDark ? 'bg-[#60241E]' : 'bg-[#E6DACD]'
               }`} />
 
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className={`flex h-10 w-10 items-center justify-center rounded-2xl border ${
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border ${
                     isDark
                       ? 'bg-[#2D120F] text-[#F59E0B] border-[#60241E]'
                       : 'bg-white text-[#D97706] border-[#E6DACD]'
                   }`}>
                     <ShoppingCart size={18} />
                   </div>
-                  <div>
-                    <h3 className={`font-dhaksinarga tracking-wide font-black text-sm sm:text-base ${
+                  <div className="min-w-0">
+                    <h3 className={`font-dhaksinarga tracking-wide font-black text-sm sm:text-base truncate ${
                       isDark ? 'text-white' : 'text-[#2B120E]'
                     }`}>
                       Konfirmasi Pesanan Keranjang
                     </h3>
-                    <p className={`text-xs ${isDark ? 'text-amber-100/70' : 'text-[#5C3831]'}`}>
+                    <p className={`text-xs truncate ${isDark ? 'text-amber-100/70' : 'text-[#5C3831]'}`}>
                       {selectedDistinctCount} Menu Terpilih • {selectedTotalPortions} Porsi
                     </p>
                   </div>
@@ -815,7 +841,7 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className={`rounded-full p-2 transition cursor-pointer ${
+                  className={`shrink-0 rounded-full p-2 transition cursor-pointer ${
                     isDark ? 'text-stone-400 hover:bg-[#2D120F] hover:text-white' : 'text-[#6B423A] hover:bg-[#EAE0D5] hover:text-[#2B120E]'
                   }`}
                 >
@@ -825,9 +851,13 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
             </div>
 
             {/* Modal Scrollable Body */}
-            <form onSubmit={handleSubmitOrder} className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-4">
+            <form
+              onSubmit={handleSubmitOrder}
+              className="flex-1 overflow-y-auto overflow-x-hidden p-5 sm:p-6 space-y-4 overscroll-contain"
+              style={{ WebkitOverflowScrolling: 'touch', touchAction: 'pan-y' }}
+            >
               {/* Order Summary Box */}
-              <div className={`rounded-2xl border p-3.5 space-y-2 text-xs ${
+              <div className={`rounded-2xl border p-3.5 space-y-2 text-xs w-full max-w-full overflow-hidden ${
                 isDark ? 'border-[#60241E] bg-[#1C0B09]' : 'border-[#E6DACD] bg-white'
               }`}>
                 <p className={`font-dhaksinarga tracking-wide font-bold uppercase text-[11px] ${
@@ -837,7 +867,7 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                 </p>
                 <div className="space-y-1.5 max-h-32 overflow-y-auto pr-1">
                   {selectedItems.map((item, idx) => (
-                    <div key={idx} className={`flex justify-between items-baseline ${
+                    <div key={idx} className={`flex justify-between items-baseline gap-2 min-w-0 ${
                       isDark ? 'text-amber-100/90' : 'text-[#5C3831]'
                     }`}>
                       <span className="truncate pr-2">
@@ -852,18 +882,18 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                   ))}
                 </div>
 
-                <div className={`border-t pt-2 flex justify-between items-baseline font-bold ${
+                <div className={`border-t pt-2 flex justify-between items-baseline gap-2 font-bold min-w-0 ${
                   isDark ? 'border-[#60241E] text-white' : 'border-[#E6DACD] text-[#2B120E]'
                 }`}>
-                  <span className="font-dhaksinarga tracking-wide">Total ({selectedDistinctCount} Menu):</span>
-                  <span className="text-[#F59E0B] font-dhaksinarga tracking-wide font-black text-base">
+                  <span className="font-dhaksinarga tracking-wide truncate">Total ({selectedDistinctCount} Menu):</span>
+                  <span className="text-[#F59E0B] font-dhaksinarga tracking-wide font-black text-base shrink-0">
                     Rp {grandTotal.toLocaleString('id-ID')}
                   </span>
                 </div>
               </div>
 
               {/* Event Date & Time */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full max-w-full">
                 <div>
                   <label className={`block text-xs font-bold uppercase tracking-wider mb-1.5 ${
                     isDark ? 'text-amber-100/80' : 'text-[#5C3831]'
@@ -880,7 +910,7 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                       min={minDateString}
                       value={eventDate}
                       onChange={(e) => setEventDate(e.target.value)}
-                      className={`w-full h-11 rounded-xl border pl-10 pr-3 text-xs sm:text-sm font-medium outline-none transition ${
+                      className={`w-full max-w-full min-w-0 h-11 rounded-xl border pl-10 pr-3 text-base sm:text-sm font-medium outline-none transition ${
                         isDateInvalid
                           ? 'border-red-500 bg-red-950/40 text-red-200 ring-2 ring-red-500/20'
                           : isDark
@@ -955,7 +985,7 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                       type="time"
                       value={eventTime}
                       onChange={(e) => setEventTime(e.target.value)}
-                      className={`w-full h-11 rounded-xl border pl-10 pr-3 text-xs sm:text-sm font-medium outline-none transition ${
+                      className={`w-full max-w-full min-w-0 h-11 rounded-xl border pl-10 pr-3 text-base sm:text-sm font-medium outline-none transition ${
                         isDark
                           ? 'border-[#60241E] bg-[#1C0B09] text-white focus:border-[#F59E0B] focus:ring-2 focus:ring-[#F59E0B]/20'
                           : 'border-[#E6DACD] bg-white text-[#2B120E] focus:border-[#D97706] focus:ring-2 focus:ring-[#D97706]/20'
@@ -982,7 +1012,7 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                     value={customerName}
                     onChange={(e) => setCustomerName(e.target.value)}
                     placeholder="Contoh: Budi Santoso"
-                    className={`w-full h-11 rounded-xl border pl-10 pr-3 text-xs sm:text-sm font-medium outline-none transition ${
+                    className={`w-full max-w-full min-w-0 h-11 rounded-xl border pl-10 pr-3 text-base sm:text-sm font-medium outline-none transition ${
                       isDark
                         ? 'border-[#60241E] bg-[#1C0B09] text-white placeholder-stone-500 focus:border-[#F59E0B] focus:ring-2 focus:ring-[#F59E0B]/20'
                         : 'border-[#E6DACD] bg-white text-[#2B120E] placeholder-stone-400 focus:border-[#D97706] focus:ring-2 focus:ring-[#D97706]/20'
@@ -1008,7 +1038,7 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                     value={customerPhone}
                     onChange={(e) => setCustomerPhone(e.target.value)}
                     placeholder="Contoh: 081234567890"
-                    className={`w-full h-11 rounded-xl border pl-10 pr-3 text-xs sm:text-sm font-medium outline-none transition ${
+                    className={`w-full max-w-full min-w-0 h-11 rounded-xl border pl-10 pr-3 text-base sm:text-sm font-medium outline-none transition ${
                       isDark
                         ? 'border-[#60241E] bg-[#1C0B09] text-white placeholder-stone-500 focus:border-[#F59E0B] focus:ring-2 focus:ring-[#F59E0B]/20'
                         : 'border-[#E6DACD] bg-white text-[#2B120E] placeholder-stone-400 focus:border-[#D97706] focus:ring-2 focus:ring-[#D97706]/20'
@@ -1034,7 +1064,7 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                     value={deliveryAddress}
                     onChange={(e) => setDeliveryAddress(e.target.value)}
                     placeholder="Contoh: Gedung Graha Lt. 5, Jl. Sudirman No. 10..."
-                    className={`w-full rounded-xl border pl-10 pr-3.5 py-2.5 text-xs sm:text-sm font-medium outline-none transition ${
+                    className={`w-full max-w-full min-w-0 rounded-xl border pl-10 pr-3.5 py-2.5 text-base sm:text-sm font-medium outline-none transition resize-none ${
                       isDark
                         ? 'border-[#60241E] bg-[#1C0B09] text-white placeholder-stone-500 focus:border-[#F59E0B] focus:ring-2 focus:ring-[#F59E0B]/20'
                         : 'border-[#E6DACD] bg-white text-[#2B120E] placeholder-stone-400 focus:border-[#D97706] focus:ring-2 focus:ring-[#D97706]/20'
@@ -1055,7 +1085,7 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="Misal: Sambal dipisah, minta sendok ekstra, titip di resepsionis..."
-                  className={`w-full rounded-xl border px-3.5 py-2.5 text-xs sm:text-sm font-medium outline-none transition ${
+                  className={`w-full max-w-full min-w-0 rounded-xl border px-3.5 py-2.5 text-base sm:text-sm font-medium outline-none transition resize-none ${
                     isDark
                       ? 'border-[#60241E] bg-[#1C0B09] text-white placeholder-stone-500 focus:border-[#F59E0B] focus:ring-2 focus:ring-[#F59E0B]/20'
                       : 'border-[#E6DACD] bg-white text-[#2B120E] placeholder-stone-400 focus:border-[#D97706] focus:ring-2 focus:ring-[#D97706]/20'
@@ -1064,13 +1094,13 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
               </div>
 
               {/* Modal Sticky Footer Actions inside Form */}
-              <div className={`pt-3 flex items-center justify-end gap-2.5 border-t ${
+              <div className={`pt-3 flex items-center justify-end gap-2.5 border-t w-full max-w-full ${
                 isDark ? 'border-[#60241E]' : 'border-[#E6DACD]'
               }`}>
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className={`px-4 py-2.5 rounded-xl text-xs font-bold transition cursor-pointer ${
+                  className={`px-3.5 sm:px-4 py-2.5 rounded-xl text-xs font-bold transition cursor-pointer shrink-0 ${
                     isDark ? 'text-amber-200 hover:bg-[#2D120F]' : 'text-[#5C3831] hover:bg-[#EAE0D5]'
                   }`}
                 >
@@ -1086,14 +1116,14 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                     isDateFull ||
                     isExceedingCapacity
                   }
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-dhaksinarga tracking-wide font-black transition bg-gradient-to-r from-[#F59E0B] via-[#E77B49] to-[#F59E0B] text-[#1C0B09] shadow-lg shadow-[#F59E0B]/20 hover:brightness-110 active:scale-[0.99] disabled:bg-[#2D120F] disabled:text-stone-500 disabled:border disabled:border-[#60241E] disabled:cursor-not-allowed disabled:shadow-none cursor-pointer"
+                  className="inline-flex items-center justify-center gap-2 px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm font-dhaksinarga tracking-wide font-black transition bg-gradient-to-r from-[#F59E0B] via-[#E77B49] to-[#F59E0B] text-[#1C0B09] shadow-lg shadow-[#F59E0B]/20 hover:brightness-110 active:scale-[0.99] disabled:bg-[#2D120F] disabled:text-stone-500 disabled:border disabled:border-[#60241E] disabled:cursor-not-allowed disabled:shadow-none cursor-pointer min-w-0 shrink"
                 >
                   {isSubmitting ? (
                     <span>Memproses...</span>
                   ) : (
                     <>
-                      <MessageCircle size={16} />
-                      <span>Kirim Pesanan via WhatsApp</span>
+                      <MessageCircle size={16} className="shrink-0" />
+                      <span className="truncate">Kirim Pesanan via WhatsApp</span>
                     </>
                   )}
                 </button>
