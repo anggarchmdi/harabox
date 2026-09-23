@@ -26,6 +26,7 @@ import {
 import { toast } from 'sonner'
 
 import PageLoader from '../components/ui/PageLoader'
+import useDebounce from '../hooks/useDebounce'
 import { testimonialService } from '../services/testimonial.service'
 import { getImageUrl } from '../utils/image'
 import type { OrderReviewDetail, Testimonial } from '../types/testimonial'
@@ -99,6 +100,7 @@ export default function TestimonialPage() {
 
   // Filter & Search state
   const [searchQuery, setSearchQuery] = useState('')
+  const debouncedSearchQuery = useDebounce(searchQuery.trim(), 350)
   const [activeCategory, setActiveCategory] = useState<'all' | '5star' | 'office' | 'event'>('all')
 
   // Fetch Public Testimonials
@@ -241,8 +243,8 @@ export default function TestimonialPage() {
   const filteredTestimonials = useMemo(() => {
     return testimonials.filter((t) => {
       // Search
-      if (searchQuery.trim()) {
-        const q = searchQuery.toLowerCase()
+      if (debouncedSearchQuery) {
+        const q = debouncedSearchQuery.toLowerCase()
         const matchName = t.name.toLowerCase().includes(q)
         const matchInst = t.institution?.toLowerCase().includes(q)
         const matchMsg = t.message.toLowerCase().includes(q)
@@ -282,7 +284,7 @@ export default function TestimonialPage() {
 
       return true
     })
-  }, [testimonials, searchQuery, activeCategory])
+  }, [testimonials, debouncedSearchQuery, activeCategory])
 
   const activeRating = hoverRating !== null ? hoverRating : rating
   const activeRatingDesc = ratingDescriptions[activeRating] || ratingDescriptions[5]

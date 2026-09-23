@@ -24,6 +24,7 @@ import type { Product } from '../types/products'
 import PageLoader from '../components/ui/PageLoader'
 import ProductCardSkeleton from '../components/ui/ProductCardSkeleton'
 import { useThemeStore } from '../stores/theme.store'
+import useDebounce from '../hooks/useDebounce'
 
 // Aset lokal untuk smart fallback beresolusi tinggi & menggugah selera
 import BentoKatsuImg from '../assets/nasibox/bento-katsu-b.webp'
@@ -89,7 +90,7 @@ export default function MenuPage() {
   })
 
   const [search, setSearch] = useState('')
-  const [debouncedSearch, setDebouncedSearch] = useState('')
+  const debouncedSearch = useDebounce(search.trim(), 400)
   const [activeCategory, setActiveCategory] = useState('all')
   const [sortBy, setSortBy] = useState<SortOption>('default')
 
@@ -120,14 +121,6 @@ export default function MenuPage() {
       offset: 40,
     })
   }, [])
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedSearch(search.trim())
-    }, 300)
-
-    return () => clearTimeout(timer)
-  }, [search])
 
   const categories = useMemo(() => {
     if (!products) return []
@@ -209,7 +202,6 @@ export default function MenuPage() {
 
   const clearFilters = () => {
     setSearch('')
-    setDebouncedSearch('')
     setActiveCategory('all')
     setSortBy('default')
   }
@@ -428,7 +420,6 @@ export default function MenuPage() {
                   type="button"
                   onClick={() => {
                     setSearch('')
-                    setDebouncedSearch('')
                   }}
                   className={`absolute right-2.5 top-1/2 -translate-y-1/2 flex h-5 w-5 items-center justify-center rounded-full ${
                     isDark
