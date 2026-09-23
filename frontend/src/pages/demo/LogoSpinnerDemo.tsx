@@ -15,11 +15,11 @@ import LogoSpinner, { type LogoSpinnerProps } from '../../components/ui/LogoSpin
 
 export default function LogoSpinnerDemo() {
   // Controls state
-  const [size, setSize] = useState<LogoSpinnerProps['size']>('sm')
+  const [size, setSize] = useState<LogoSpinnerProps['size']>('lg')
   const [theme, setTheme] = useState<'light' | 'dark' | 'glass'>('light')
   const [logoVariant, setLogoVariant] = useState<'mascot' | 'full'>('mascot')
-  const [customText, setCustomText] = useState('Memproses Autentikasi...')
-  const [customSubtext, setCustomSubtext] = useState('Mohon tunggu sebentar, menyiapkan akun Anda')
+  const [customText, setCustomText] = useState('Meracik Hidangan Tradisional...')
+  const [customSubtext, setCustomSubtext] = useState('Bumbu rempah meresap, disajikan hangat khas Pawon Hara')
   const [showGlow, setShowGlow] = useState(true)
   const [showRipples, setShowRipples] = useState(true)
   const [showProgressBar, setShowProgressBar] = useState(true)
@@ -29,9 +29,9 @@ export default function LogoSpinnerDemo() {
   const [simulationStep, setSimulationStep] = useState(0)
 
   const simulationSteps = [
-    { text: 'Memvalidasi Email & Kata Sandi...', subtext: 'Memeriksa kredensial ke server katering...' },
-    { text: 'Mengamankan Sesi Admin...', subtext: 'Menerbitkan token otorisasi akun...' },
-    { text: 'Menyiapkan Dashboard HaraBox...', subtext: 'Memuat data pesanan & inventaris...' },
+    { text: 'Menyiapkan Racikan Pawon...', subtext: 'Mengolah rempah pilihan khas Jawa...' },
+    { text: 'Mengukus Hidangan Hangat...', subtext: 'Aroma wangi dari pawon siap disajikan...' },
+    { text: 'Menyelaraskan Meja Saji...', subtext: 'Sugeng rawuh ing Pawon Hara Catering...' },
   ]
 
   const handleStartLoginSimulation = () => {
@@ -79,14 +79,14 @@ export default function LogoSpinnerDemo() {
           <div>
             <div className="inline-flex items-center gap-2 rounded-full border border-amber-300 bg-amber-50 px-3.5 py-1 text-[11px] font-black uppercase tracking-wider text-amber-900 shadow-sm">
               <Sparkles size={13} className="text-amber-600" />
-              Demo Pratinjau (Belum Dipasang di Produksi)
+              Tema Tradisional Jawa • Pawon Hara
             </div>
             <h1 className="mt-3 text-3xl sm:text-4xl font-black text-zinc-950 tracking-tight">
-              Animasi Spinner Logo <span className="text-red-600">Hara Chicken</span>
+              Animasi Loader Tradisional <span className="text-[#B45309]">Pawon Hara</span>
             </h1>
             <p className="mt-1.5 text-xs sm:text-sm text-zinc-500 max-w-2xl">
-              Pratinjau interaktif komponen loading spinner dengan logo PT/brand di tengahnya.
-              Bebas dieksplorasi sebelum dipasang ke alur login asli.
+              Pratinjau interaktif komponen loader bernuansa tradisional Jawa: putaran Cakra Mandala Batik Kawung,
+              kebul uap dapur hangat, dan denyut bulir rempah Nusantara.
             </p>
           </div>
 
@@ -108,27 +108,27 @@ export default function LogoSpinnerDemo() {
         </div>
 
         {/* Big Action: Trigger Fullscreen Login Simulation */}
-        <div className="mt-8 rounded-3xl bg-gradient-to-r from-red-600 via-red-500 to-orange-500 p-6 sm:p-8 text-white shadow-xl shadow-red-600/20 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+        <div className="mt-8 rounded-3xl bg-gradient-to-r from-[#60241E] via-[#95271D] to-[#E77B49] p-6 sm:p-8 text-white shadow-xl shadow-[#60241E]/20 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
           <div>
             <span className="rounded-full bg-white/20 border border-white/30 px-3 py-1 text-[10px] font-black uppercase tracking-wider">
               Simulasi Interaktif
             </span>
             <h2 className="mt-2 text-2xl font-black tracking-tight">
-              Coba Sensasi Fullscreen Login Loading (3.5 Detik)
+              Coba Sensasi Fullscreen Loader Tradisional (3.5 Detik)
             </h2>
-            <p className="text-xs sm:text-sm text-white/90 mt-1 max-w-xl">
-              Klik tombol di samping untuk melihat bagaimana animasi ini bekerja secara sinematis
-              saat pengguna menekan tombol "Masuk ke Akun".
+            <p className="text-xs sm:text-sm text-amber-100/90 mt-1 max-w-xl">
+              Lihat bagaimana putaran cakra batik kawung dan kebul uap hangat pawon tampil secara sinematik
+              dengan nuansa dapur tradisional Jawa.
             </p>
           </div>
 
           <button
             type="button"
             onClick={handleStartLoginSimulation}
-            className="inline-flex shrink-0 items-center justify-center gap-2.5 rounded-2xl bg-white text-zinc-950 px-6 py-4 text-xs sm:text-sm font-black shadow-lg transition hover:scale-105 active:scale-95 cursor-pointer"
+            className="inline-flex shrink-0 items-center justify-center gap-2.5 rounded-2xl bg-[#F59E0B] hover:bg-amber-400 text-[#1C0B09] px-6 py-4 text-xs sm:text-sm font-black shadow-lg transition hover:scale-105 active:scale-95 cursor-pointer"
           >
-            <Play size={16} className="fill-red-600 text-red-600" />
-            <span>Mulai Simulasi Login</span>
+            <Play size={16} className="fill-[#1C0B09] text-[#1C0B09]" />
+            <span>Mulai Simulasi Loader</span>
           </button>
         </div>
 
@@ -286,32 +286,32 @@ export default function LogoSpinnerDemo() {
             {/* 5. Effect Toggles */}
             <div className="pt-2 border-t border-zinc-100 space-y-2.5">
               <label className="flex items-center justify-between text-xs font-bold text-zinc-700 cursor-pointer">
-                <span>Efek Cahaya (Glow Orbs)</span>
+                <span>Pendaran Bara Tungku (Hearth Glow)</span>
                 <input
                   type="checkbox"
                   checked={showGlow}
                   onChange={(e) => setShowGlow(e.target.checked)}
-                  className="h-4 w-4 rounded accent-red-600 cursor-pointer"
+                  className="h-4 w-4 rounded accent-[#95271D] cursor-pointer"
                 />
               </label>
 
               <label className="flex items-center justify-between text-xs font-bold text-zinc-700 cursor-pointer">
-                <span>Efek Gelombang Radar (Ripples)</span>
+                <span>Pendaran Piring Gerabah</span>
                 <input
                   type="checkbox"
                   checked={showRipples}
                   onChange={(e) => setShowRipples(e.target.checked)}
-                  className="h-4 w-4 rounded accent-red-600 cursor-pointer"
+                  className="h-4 w-4 rounded accent-[#95271D] cursor-pointer"
                 />
               </label>
 
               <label className="flex items-center justify-between text-xs font-bold text-zinc-700 cursor-pointer">
-                <span>Shimmer Progress Bar</span>
+                <span>Indikator Bulir Rempah Tradisional</span>
                 <input
                   type="checkbox"
                   checked={showProgressBar}
                   onChange={(e) => setShowProgressBar(e.target.checked)}
-                  className="h-4 w-4 rounded accent-red-600 cursor-pointer"
+                  className="h-4 w-4 rounded accent-[#95271D] cursor-pointer"
                 />
               </label>
             </div>

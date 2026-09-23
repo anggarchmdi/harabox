@@ -1,5 +1,6 @@
 import { CheckCircle2, Clock, Coins } from 'lucide-react'
 import type { PaymentStatus } from '../../../types/orders'
+import { useThemeStore } from '../../../stores/theme.store'
 
 interface PaymentStatusBadgeProps {
   status?: PaymentStatus | null
@@ -25,15 +26,26 @@ export default function PaymentStatusBadge({
   paymentMethod,
   compact = false,
 }: PaymentStatusBadgeProps) {
+  const isDark = useThemeStore((state) => state.theme === 'dark')
   const effectiveStatus: PaymentStatus = status || 'unpaid'
 
   if (effectiveStatus === 'paid') {
     return (
-      <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-bold text-emerald-800 border border-emerald-200/90 shadow-2xs">
-        <CheckCircle2 size={13} className="text-emerald-600" />
+      <span
+        className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-bold shadow-2xs ${
+          isDark
+            ? 'bg-emerald-950/60 text-emerald-400 border border-emerald-800/60'
+            : 'bg-emerald-50 text-emerald-800 border border-emerald-200/90'
+        }`}
+      >
+        <CheckCircle2 size={13} className={isDark ? 'text-emerald-400' : 'text-emerald-600'} />
         <span>Lunas</span>
         {!compact && paymentMethod && (
-          <span className="text-[10px] font-semibold text-emerald-600/80">
+          <span
+            className={`text-[10px] font-semibold ${
+              isDark ? 'text-emerald-300/80' : 'text-emerald-600/80'
+            }`}
+          >
             ({paymentMethod.replace('Transfer ', '')})
           </span>
         )}
@@ -43,11 +55,21 @@ export default function PaymentStatusBadge({
 
   if (effectiveStatus === 'dp') {
     return (
-      <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-2.5 py-1 text-xs font-bold text-amber-800 border border-amber-300/90 shadow-2xs">
-        <Coins size={13} className="text-amber-600" />
+      <span
+        className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-bold shadow-2xs ${
+          isDark
+            ? 'bg-amber-950/60 text-amber-400 border border-amber-800/60'
+            : 'bg-amber-50 text-amber-800 border border-amber-300/90'
+        }`}
+      >
+        <Coins size={13} className={isDark ? 'text-amber-400' : 'text-amber-600'} />
         <span>DP Masuk</span>
         {!compact && paidAmount && Number(paidAmount) > 0 && (
-          <span className="text-[10px] font-mono font-semibold text-amber-700">
+          <span
+            className={`text-[10px] font-mono font-semibold ${
+              isDark ? 'text-amber-300' : 'text-amber-700'
+            }`}
+          >
             ({formatRupiahShort(paidAmount)})
           </span>
         )}
@@ -56,9 +78,16 @@ export default function PaymentStatusBadge({
   }
 
   return (
-    <span className="inline-flex items-center gap-1.5 rounded-full bg-stone-100 px-2.5 py-1 text-xs font-semibold text-stone-600 border border-stone-200 shadow-2xs">
-      <Clock size={13} className="text-stone-400" />
+    <span
+      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold shadow-2xs ${
+        isDark
+          ? 'bg-[#1C0B09] text-stone-400 border border-[#60241E]'
+          : 'bg-stone-100 text-stone-600 border border-stone-200'
+      }`}
+    >
+      <Clock size={13} className={isDark ? 'text-stone-500' : 'text-stone-400'} />
       <span>Belum Bayar</span>
     </span>
   )
 }
+

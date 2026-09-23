@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   AlertCircle,
@@ -16,14 +16,23 @@ import { toast } from 'sonner'
 import { testimonialService, type TestimonialFilters } from '../../services/testimonial.service'
 import type { Testimonial } from '../../types/testimonial'
 import PageLoader from '../../components/ui/PageLoader'
+import { useThemeStore } from '../../stores/theme.store'
+import useDebounce from '../../hooks/useDebounce'
 
 export default function AdminTestimonials() {
+  const isDark = useThemeStore((state) => state.theme === 'dark')
   const queryClient = useQueryClient()
 
   // State filter
   const [search, setSearch] = useState('')
+  const debouncedSearch = useDebounce(search, 400)
   const [statusFilter, setStatusFilter] = useState<'all' | 'displayed' | 'hidden'>('all')
   const [page, setPage] = useState(1)
+
+  // Reset page when search or statusFilter changes
+  useEffect(() => {
+    setPage(1)
+  }, [debouncedSearch, statusFilter])
 
   // State Modal Tambah Manual
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -40,7 +49,7 @@ export default function AdminTestimonials() {
   // Filter params untuk service
   const queryParams: TestimonialFilters = {
     page,
-    search: search.trim() || undefined,
+    search: debouncedSearch.trim() || undefined,
     is_displayed:
       statusFilter === 'displayed'
         ? true
@@ -151,14 +160,18 @@ export default function AdminTestimonials() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-xl sm:text-2xl font-black text-stone-900 tracking-tight">
+            <h1 className={`text-xl sm:text-2xl font-black tracking-tight ${isDark ? 'text-white' : 'text-stone-900'}`}>
               Testimoni & Ulasan Pelanggan
             </h1>
-            <span className="rounded-full bg-red-50 border border-red-200 px-2.5 py-0.5 text-xs font-bold text-red-700">
+            <span className={`rounded-full px-2.5 py-0.5 text-xs font-bold ${
+              isDark
+                ? 'bg-red-950/60 border border-red-800/80 text-red-400'
+                : 'bg-red-50 border border-red-200 text-red-700'
+            }`}>
               Live Filter
             </span>
           </div>
-          <p className="mt-1 text-xs sm:text-sm text-stone-500">
+          <p className={`mt-1 text-xs sm:text-sm ${isDark ? 'text-amber-100/60' : 'text-stone-500'}`}>
             Pilih dan filter testimoni pelanggan yang akan ditampilkan pada slider beranda utama.
           </p>
         </div>
@@ -166,7 +179,11 @@ export default function AdminTestimonials() {
         <button
           type="button"
           onClick={() => setIsModalOpen(true)}
-          className="inline-flex items-center gap-2 rounded-2xl bg-stone-900 px-4 py-2.5 text-xs sm:text-sm font-bold text-white hover:bg-stone-800 transition shadow-sm self-start sm:self-auto cursor-pointer"
+          className={`inline-flex items-center gap-2 rounded-2xl px-4 py-2.5 text-xs sm:text-sm font-bold transition shadow-sm self-start sm:self-auto cursor-pointer ${
+            isDark
+              ? 'bg-red-500 border border-[#60241E] text-stone-200 hover:bg-red-700 transition transform hover:scale-95 duration-300'
+              : 'bg-stone-900 text-white hover:bg-stone-800'
+          }`}
         >
           <Plus size={16} />
           Tambah Ulasan Manual
@@ -175,59 +192,79 @@ export default function AdminTestimonials() {
 
       {/* Ringkasan Statistik */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        <div className="rounded-2xl border border-stone-200/80 bg-white p-4 sm:p-5 shadow-xs">
+        <div className={`rounded-2xl border p-4 sm:p-5 shadow-xs ${
+          isDark ? 'border-[#60241E] bg-[#240E0C]' : 'border-stone-200/80 bg-white'
+        }`}>
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-stone-500">Total Ulasan</span>
-            <div className="h-8 w-8 rounded-xl bg-stone-100 flex items-center justify-center text-stone-600">
+            <span className={`text-xs font-bold ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>Total Ulasan</span>
+            <div className={`h-8 w-8 rounded-xl flex items-center justify-center ${
+              isDark ? 'bg-[#2D120F] text-stone-300' : 'bg-stone-100 text-stone-600'
+            }`}>
               <MessageSquareQuote size={16} />
             </div>
           </div>
-          <div className="mt-3 text-2xl font-black text-stone-900">{summary.total}</div>
-          <p className="text-[11px] text-stone-400 mt-0.5">Semua ulasan yang tercatat</p>
+          <div className={`mt-3 text-2xl font-black ${isDark ? 'text-white' : 'text-stone-900'}`}>{summary.total}</div>
+          <p className={`text-[11px] mt-0.5 ${isDark ? 'text-stone-500' : 'text-stone-400'}`}>Semua ulasan yang tercatat</p>
         </div>
 
-        <div className="rounded-2xl border border-emerald-200/80 bg-emerald-50/40 p-4 sm:p-5 shadow-xs">
+        <div className={`rounded-2xl border p-4 sm:p-5 shadow-xs ${
+          isDark ? 'border-[#60241E] bg-[#240E0C]' : 'border-emerald-200/80 bg-emerald-50/40'
+        }`}>
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-emerald-800">Tampil di Beranda</span>
-            <div className="h-8 w-8 rounded-xl bg-emerald-100 flex items-center justify-center text-emerald-700">
+            <span className={`text-xs font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-800'}`}>Tampil di Beranda</span>
+            <div className={`h-8 w-8 rounded-xl flex items-center justify-center ${
+              isDark ? 'bg-emerald-950/80 text-emerald-300' : 'bg-emerald-100 text-emerald-700'
+            }`}>
               <Eye size={16} />
             </div>
           </div>
-          <div className="mt-3 text-2xl font-black text-emerald-900">{summary.displayed}</div>
-          <p className="text-[11px] text-emerald-700/70 mt-0.5">Aktif di slider homepage</p>
+          <div className={`mt-3 text-2xl font-black ${isDark ? 'text-emerald-300' : 'text-emerald-900'}`}>{summary.displayed}</div>
+          <p className={`text-[11px] mt-0.5 ${isDark ? 'text-emerald-400/70' : 'text-emerald-700/70'}`}>Aktif di slider homepage</p>
         </div>
 
-        <div className="rounded-2xl border border-amber-200/80 bg-amber-50/40 p-4 sm:p-5 shadow-xs">
+        <div className={`rounded-2xl border p-4 sm:p-5 shadow-xs ${
+          isDark ? 'border-[#60241E] bg-[#240E0C]' : 'border-amber-200/80 bg-amber-50/40'
+        }`}>
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-amber-800">Disembunyikan</span>
-            <div className="h-8 w-8 rounded-xl bg-amber-100 flex items-center justify-center text-amber-700">
+            <span className={`text-xs font-bold ${isDark ? 'text-amber-400' : 'text-amber-800'}`}>Disembunyikan</span>
+            <div className={`h-8 w-8 rounded-xl flex items-center justify-center ${
+              isDark ? 'bg-amber-950/80 text-amber-300' : 'bg-amber-100 text-amber-700'
+            }`}>
               <EyeOff size={16} />
             </div>
           </div>
-          <div className="mt-3 text-2xl font-black text-amber-900">{summary.hidden}</div>
-          <p className="text-[11px] text-amber-700/70 mt-0.5">Tidak muncul di homepage</p>
+          <div className={`mt-3 text-2xl font-black ${isDark ? 'text-amber-300' : 'text-amber-900'}`}>{summary.hidden}</div>
+          <p className={`text-[11px] mt-0.5 ${isDark ? 'text-amber-400/70' : 'text-amber-700/70'}`}>Tidak muncul di homepage</p>
         </div>
 
-        <div className="rounded-2xl border border-stone-200/80 bg-white p-4 sm:p-5 shadow-xs">
+        <div className={`rounded-2xl border p-4 sm:p-5 shadow-xs ${
+          isDark ? 'border-[#60241E] bg-[#240E0C]' : 'border-stone-200/80 bg-white'
+        }`}>
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-stone-500">Rata-Rata Rating</span>
-            <div className="h-8 w-8 rounded-xl bg-amber-50 text-amber-500 flex items-center justify-center">
+            <span className={`text-xs font-bold ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>Rata-Rata Rating</span>
+            <div className={`h-8 w-8 rounded-xl flex items-center justify-center ${
+              isDark ? 'bg-amber-950/80 text-amber-400' : 'bg-amber-50 text-amber-500'
+            }`}>
               <Star size={16} className="fill-amber-400 text-amber-400" />
             </div>
           </div>
-          <div className="mt-3 text-2xl font-black text-stone-900 flex items-center gap-1.5">
+          <div className={`mt-3 text-2xl font-black flex items-center gap-1.5 ${isDark ? 'text-white' : 'text-stone-900'}`}>
             {summary.average_rating}
             <span className="text-xs font-bold text-amber-500">/ 5.0</span>
           </div>
-          <p className="text-[11px] text-stone-400 mt-0.5">Tingkat kepuasan pesanan</p>
+          <p className={`text-[11px] mt-0.5 ${isDark ? 'text-stone-500' : 'text-stone-400'}`}>Tingkat kepuasan pesanan</p>
         </div>
       </div>
 
       {/* Toolbar & Filter */}
-      <div className="rounded-3xl border border-stone-200/80 bg-white p-4 sm:p-5 shadow-xs space-y-4">
+      <div className={`rounded-3xl border p-4 sm:p-5 shadow-xs space-y-4 ${
+        isDark ? 'border-[#60241E] bg-[#240E0C]' : 'border-stone-200/80 bg-white'
+      }`}>
         <div className="flex flex-col md:flex-row gap-3 items-center justify-between">
           {/* Status Tabs */}
-          <div className="flex items-center gap-1 p-1 bg-stone-100 rounded-2xl w-full md:w-auto">
+          <div className={`flex items-center gap-1 p-1 rounded-2xl w-full md:w-auto ${
+            isDark ? 'bg-[#1C0B09] border border-[#60241E]/60' : 'bg-stone-100'
+          }`}>
             <button
               type="button"
               onClick={() => {
@@ -236,8 +273,8 @@ export default function AdminTestimonials() {
               }}
               className={`flex-1 md:flex-initial px-3.5 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer ${
                 statusFilter === 'all'
-                  ? 'bg-white text-stone-900 shadow-xs'
-                  : 'text-stone-500 hover:text-stone-900'
+                  ? isDark ? 'bg-[#240E0C] text-white shadow-xs' : 'bg-white text-stone-900 shadow-xs'
+                  : isDark ? 'text-stone-400 hover:text-white' : 'text-stone-500 hover:text-stone-900'
               }`}
             >
               Semua ({summary.total})
@@ -251,7 +288,7 @@ export default function AdminTestimonials() {
               className={`flex-1 md:flex-initial px-3.5 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer ${
                 statusFilter === 'displayed'
                   ? 'bg-emerald-600 text-white shadow-xs'
-                  : 'text-stone-500 hover:text-stone-900'
+                  : isDark ? 'text-stone-400 hover:text-white' : 'text-stone-500 hover:text-stone-900'
               }`}
             >
               Ditampilkan ({summary.displayed})
@@ -264,8 +301,8 @@ export default function AdminTestimonials() {
               }}
               className={`flex-1 md:flex-initial px-3.5 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer ${
                 statusFilter === 'hidden'
-                  ? 'bg-amber-500 text-white shadow-xs'
-                  : 'text-stone-500 hover:text-stone-900'
+                  ? 'bg-amber-600 text-white shadow-xs'
+                  : isDark ? 'text-stone-400 hover:text-white' : 'text-stone-500 hover:text-stone-900'
               }`}
             >
               Disembunyikan ({summary.hidden})
@@ -278,20 +315,34 @@ export default function AdminTestimonials() {
             <input
               type="text"
               value={search}
-              onChange={(e) => {
-                setSearch(e.target.value)
-                setPage(1)
-              }}
+              onChange={(e) => setSearch(e.target.value)}
               placeholder="Cari nama, instansi, ulasan..."
-              className="w-full rounded-2xl border border-stone-200 bg-stone-50/50 pl-9 pr-4 py-2 text-xs sm:text-sm text-stone-900 placeholder-stone-400 focus:border-red-500 focus:bg-white focus:outline-none transition"
+              className={`w-full rounded-2xl border pl-9 pr-8 py-2 text-xs sm:text-sm outline-none transition focus:border-red-500 ${
+                isDark
+                  ? 'border-[#60241E] bg-[#1C0B09] text-white placeholder-stone-500 focus:bg-[#1C0B09]'
+                  : 'border-stone-200 bg-stone-50/50 text-stone-900 placeholder-stone-400 focus:bg-white'
+              }`}
             />
+            {search && (
+              <button
+                type="button"
+                onClick={() => setSearch('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-200"
+              >
+                <X size={13} />
+              </button>
+            )}
           </div>
         </div>
 
         {/* Tabel Data Testimoni */}
-        <div className="overflow-x-auto rounded-2xl border border-stone-100">
+        <div className={`overflow-x-auto rounded-2xl border ${
+          isDark ? 'border-[#60241E]/60' : 'border-stone-100'
+        }`}>
           <table className="w-full text-left text-xs sm:text-sm">
-            <thead className="bg-stone-50 text-stone-500 font-bold uppercase tracking-wider text-[10px] border-b border-stone-100">
+            <thead className={`font-bold uppercase tracking-wider text-[10px] border-b ${
+              isDark ? 'bg-[#1C0B09] text-stone-400 border-[#60241E]/60' : 'bg-stone-50 text-stone-500 border-stone-100'
+            }`}>
               <tr>
                 <th className="px-4 py-3.5">Pelanggan & Instansi</th>
                 <th className="px-4 py-3.5">Rating & Pesanan</th>
@@ -300,7 +351,7 @@ export default function AdminTestimonials() {
                 <th className="px-4 py-3.5 text-right">Aksi</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-stone-100">
+            <tbody className={`divide-y ${isDark ? 'divide-[#60241E]/40' : 'divide-stone-100'}`}>
               {isLoading ? (
                 <tr>
                   <td colSpan={5} className="px-4 py-12 text-center text-stone-400">
@@ -317,9 +368,9 @@ export default function AdminTestimonials() {
                 <tr>
                   <td colSpan={5} className="px-4 py-12 text-center text-stone-400">
                     <div className="flex flex-col items-center justify-center gap-2 max-w-sm mx-auto">
-                      <MessageSquareQuote size={32} className="text-stone-300" />
-                      <p className="font-bold text-stone-700">Belum ada testimoni yang sesuai</p>
-                      <p className="text-xs text-stone-400">
+                      <MessageSquareQuote size={32} className={isDark ? 'text-[#60241E]' : 'text-stone-300'} />
+                      <p className={`font-bold ${isDark ? 'text-white' : 'text-stone-700'}`}>Belum ada testimoni yang sesuai</p>
+                      <p className={`text-xs ${isDark ? 'text-stone-400' : 'text-stone-400'}`}>
                         {search
                           ? 'Coba ganti kata kunci pencarian Anda.'
                           : 'Ulasan baru dari formulir /testimoni akan otomatis muncul di sini.'}
@@ -329,15 +380,15 @@ export default function AdminTestimonials() {
                 </tr>
               ) : (
                 testimonials.map((item) => (
-                  <tr key={item.id} className="hover:bg-stone-50/70 transition">
+                  <tr key={item.id} className={`transition ${isDark ? 'hover:bg-[#2D120F]' : 'hover:bg-stone-50/70'}`}>
                     {/* Nama & Instansi */}
                     <td className="px-4 py-3.5 align-top">
-                      <div className="font-black text-stone-900">{item.name}</div>
-                      <div className="text-[11px] text-stone-500">
+                      <div className={`font-black ${isDark ? 'text-white' : 'text-stone-900'}`}>{item.name}</div>
+                      <div className={`text-[11px] ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
                         {item.institution || 'Pelanggan Personal'}
                       </div>
                       {item.order_code && (
-                        <span className="inline-block mt-1 font-mono text-[10px] text-stone-400">
+                        <span className={`inline-block mt-1 font-mono text-[10px] ${isDark ? 'text-stone-500' : 'text-stone-400'}`}>
                           {item.order_code}
                         </span>
                       )}
@@ -351,7 +402,11 @@ export default function AdminTestimonials() {
                         ))}
                       </div>
                       <div className="mt-1">
-                        <span className="inline-block rounded-full bg-stone-100 border border-stone-200/80 px-2 py-0.5 text-[10px] font-bold text-stone-700">
+                        <span className={`inline-block rounded-full border px-2 py-0.5 text-[10px] font-bold ${
+                          isDark
+                            ? 'bg-[#1C0B09] border-[#60241E] text-stone-300'
+                            : 'bg-stone-100 border-stone-200/80 text-stone-700'
+                        }`}>
                           {item.order_quantity}
                         </span>
                       </div>
@@ -359,11 +414,11 @@ export default function AdminTestimonials() {
 
                     {/* Isi Ulasan */}
                     <td className="px-4 py-3.5 align-top">
-                      <p className="text-xs sm:text-sm text-stone-700 italic leading-relaxed">
+                      <p className={`text-xs sm:text-sm italic leading-relaxed ${isDark ? 'text-stone-200' : 'text-stone-700'}`}>
                         "{item.message}"
                       </p>
                       {item.created_at && (
-                        <span className="block mt-1 text-[10px] text-stone-400">
+                        <span className={`block mt-1 text-[10px] ${isDark ? 'text-stone-500' : 'text-stone-400'}`}>
                           {new Date(item.created_at).toLocaleDateString('id-ID', {
                             day: 'numeric',
                             month: 'short',
@@ -386,13 +441,17 @@ export default function AdminTestimonials() {
                         }
                         className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold transition cursor-pointer ${
                           item.is_displayed
-                            ? 'bg-emerald-100 text-emerald-800 hover:bg-emerald-200/80 border border-emerald-200'
-                            : 'bg-stone-100 text-stone-600 hover:bg-stone-200 border border-stone-200'
+                            ? isDark
+                              ? 'bg-emerald-950/70 text-emerald-300 hover:bg-emerald-900/60 border border-emerald-800/80'
+                              : 'bg-emerald-100 text-emerald-800 hover:bg-emerald-200/80 border border-emerald-200'
+                            : isDark
+                              ? 'bg-[#1C0B09] text-stone-400 hover:bg-[#2D120F] border border-[#60241E]'
+                              : 'bg-stone-100 text-stone-600 hover:bg-stone-200 border border-stone-200'
                         }`}
                       >
                         {item.is_displayed ? (
                           <>
-                            <Eye size={13} className="text-emerald-700" />
+                            <Eye size={13} className={isDark ? 'text-emerald-400' : 'text-emerald-700'} />
                             <span>Tampil</span>
                           </>
                         ) : (
@@ -409,7 +468,11 @@ export default function AdminTestimonials() {
                       <button
                         type="button"
                         onClick={() => setDeleteTarget(item)}
-                        className="p-1.5 rounded-xl text-stone-400 hover:text-red-600 hover:bg-red-50 transition cursor-pointer"
+                        className={`p-1.5 rounded-xl transition cursor-pointer ${
+                          isDark
+                            ? 'text-stone-400 hover:text-red-400 hover:bg-red-950/40'
+                            : 'text-stone-400 hover:text-red-600 hover:bg-red-50'
+                        }`}
                         title="Hapus ulasan ini"
                       >
                         <Trash2 size={16} />
@@ -424,8 +487,10 @@ export default function AdminTestimonials() {
 
         {/* Pagination Controls */}
         {data?.data && data.data.last_page > 1 && (
-          <div className="flex items-center justify-between pt-2 border-t border-stone-100 text-xs">
-            <span className="text-stone-500">
+          <div className={`flex items-center justify-between pt-2 border-t text-xs ${
+            isDark ? 'border-[#60241E]/60' : 'border-stone-100'
+          }`}>
+            <span className={isDark ? 'text-stone-400' : 'text-stone-500'}>
               Menampilkan {data.data.from ?? 0} - {data.data.to ?? 0} dari {data.data.total} testimoni
             </span>
             <div className="flex items-center gap-1">
@@ -433,18 +498,26 @@ export default function AdminTestimonials() {
                 type="button"
                 disabled={page <= 1}
                 onClick={() => setPage((p) => Math.max(p - 1, 1))}
-                className="px-3 py-1.5 rounded-xl border border-stone-200 bg-white font-bold text-stone-700 hover:bg-stone-50 disabled:opacity-40 disabled:pointer-events-none"
+                className={`px-3 py-1.5 rounded-xl border font-bold disabled:opacity-40 disabled:pointer-events-none transition ${
+                  isDark
+                    ? 'border-[#60241E] bg-[#1C0B09] text-stone-300 hover:bg-[#2D120F]'
+                    : 'border-stone-200 bg-white text-stone-700 hover:bg-stone-50'
+                }`}
               >
                 Sebelumnya
               </button>
-              <span className="px-2 font-bold text-stone-800">
+              <span className={`px-2 font-bold ${isDark ? 'text-stone-200' : 'text-stone-800'}`}>
                 {page} / {data.data.last_page}
               </span>
               <button
                 type="button"
                 disabled={page >= data.data.last_page}
                 onClick={() => setPage((p) => Math.min(p + 1, data.data.last_page))}
-                className="px-3 py-1.5 rounded-xl border border-stone-200 bg-white font-bold text-stone-700 hover:bg-stone-50 disabled:opacity-40 disabled:pointer-events-none"
+                className={`px-3 py-1.5 rounded-xl border font-bold disabled:opacity-40 disabled:pointer-events-none transition ${
+                  isDark
+                    ? 'border-[#60241E] bg-[#1C0B09] text-stone-300 hover:bg-[#2D120F]'
+                    : 'border-stone-200 bg-white text-stone-700 hover:bg-stone-50'
+                }`}
               >
                 Berikutnya
               </button>
@@ -457,17 +530,23 @@ export default function AdminTestimonials() {
           MODAL TAMBAH ULASAN MANUAL (ADMIN)
       ====================================================== */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-950/40 backdrop-blur-xs">
-          <div className="w-full max-w-lg rounded-3xl bg-white p-6 shadow-2xl border border-stone-200 animate-in fade-in zoom-in-95 duration-200">
-            <div className="flex items-center justify-between border-b border-stone-100 pb-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-950/60 backdrop-blur-xs">
+          <div className={`w-full max-w-lg rounded-3xl p-6 shadow-2xl border animate-in fade-in zoom-in-95 duration-200 ${
+            isDark ? 'bg-[#240E0C] border-[#60241E]' : 'bg-white border-stone-200'
+          }`}>
+            <div className={`flex items-center justify-between border-b pb-4 ${
+              isDark ? 'border-[#60241E]/60' : 'border-stone-100'
+            }`}>
               <div className="flex items-center gap-2">
-                <Sparkles size={18} className="text-red-600" />
-                <h3 className="text-base font-black text-stone-900">Tambah Ulasan Testimoni</h3>
+                <Sparkles size={18} className="text-red-500" />
+                <h3 className={`text-base font-black ${isDark ? 'text-white' : 'text-stone-900'}`}>Tambah Ulasan Testimoni</h3>
               </div>
               <button
                 type="button"
                 onClick={() => setIsModalOpen(false)}
-                className="rounded-xl p-1 text-stone-400 hover:bg-stone-100 hover:text-stone-700"
+                className={`rounded-xl p-1 transition ${
+                  isDark ? 'text-stone-400 hover:bg-[#2D120F] hover:text-white' : 'text-stone-400 hover:bg-stone-100 hover:text-stone-700'
+                }`}
               >
                 <X size={18} />
               </button>
@@ -476,7 +555,7 @@ export default function AdminTestimonials() {
             <form onSubmit={handleCreateSubmit} className="mt-4 space-y-4">
               {/* Rating Bintang */}
               <div>
-                <label className="block text-xs font-bold text-stone-700 mb-1">
+                <label className={`block text-xs font-bold mb-1 ${isDark ? 'text-stone-300' : 'text-stone-700'}`}>
                   Rating Bintang (1 - 5) *
                 </label>
                 <div className="flex items-center gap-2">
@@ -492,19 +571,19 @@ export default function AdminTestimonials() {
                         className={
                           s <= modalRating
                             ? 'text-amber-400 fill-amber-400'
-                            : 'text-stone-200'
+                            : isDark ? 'text-stone-600' : 'text-stone-200'
                         }
                       />
                     </button>
                   ))}
-                  <span className="text-xs font-bold text-stone-700 ml-2">{modalRating} Bintang</span>
+                  <span className={`text-xs font-bold ml-2 ${isDark ? 'text-stone-300' : 'text-stone-700'}`}>{modalRating} Bintang</span>
                 </div>
               </div>
 
               {/* Nama & Instansi */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-stone-700 mb-1">
+                  <label className={`block text-xs font-bold mb-1 ${isDark ? 'text-stone-300' : 'text-stone-700'}`}>
                     Nama Pemesan *
                   </label>
                   <input
@@ -513,11 +592,15 @@ export default function AdminTestimonials() {
                     value={modalName}
                     onChange={(e) => setModalName(e.target.value)}
                     placeholder="Contoh: Dian Safitri"
-                    className="w-full rounded-xl border border-stone-200 px-3 py-2 text-xs sm:text-sm focus:border-red-500 focus:outline-none"
+                    className={`w-full rounded-xl border px-3 py-2 text-xs sm:text-sm outline-none transition focus:border-red-500 ${
+                      isDark
+                        ? 'border-[#60241E] bg-[#1C0B09] text-white placeholder-stone-500 focus:bg-[#1C0B09]'
+                        : 'border-stone-200 bg-white text-stone-900 placeholder-stone-400 focus:bg-white'
+                    }`}
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-stone-700 mb-1">
+                  <label className={`block text-xs font-bold mb-1 ${isDark ? 'text-stone-300' : 'text-stone-700'}`}>
                     Nama Instansi / Acara
                   </label>
                   <input
@@ -525,16 +608,20 @@ export default function AdminTestimonials() {
                     value={modalInstitution}
                     onChange={(e) => setModalInstitution(e.target.value)}
                     placeholder="Contoh: PT Mandiri / Syukuran"
-                    className="w-full rounded-xl border border-stone-200 px-3 py-2 text-xs sm:text-sm focus:border-red-500 focus:outline-none"
+                    className={`w-full rounded-xl border px-3 py-2 text-xs sm:text-sm outline-none transition focus:border-red-500 ${
+                      isDark
+                        ? 'border-[#60241E] bg-[#1C0B09] text-white placeholder-stone-500 focus:bg-[#1C0B09]'
+                        : 'border-stone-200 bg-white text-stone-900 placeholder-stone-400 focus:bg-white'
+                    }`}
                   />
                 </div>
               </div>
 
               {/* Jumlah Pesanan */}
               <div>
-                <label className="block text-xs font-bold text-stone-700 mb-1 flex items-center justify-between">
+                <label className={`block text-xs font-bold mb-1 flex items-center justify-between ${isDark ? 'text-stone-300' : 'text-stone-700'}`}>
                   <span>Jumlah Pesanan *</span>
-                  <span className="text-[10px] text-stone-400 font-normal">Tanpa addons</span>
+                  <span className={`text-[10px] font-normal ${isDark ? 'text-stone-500' : 'text-stone-400'}`}>Tanpa addons</span>
                 </label>
                 <input
                   type="text"
@@ -542,13 +629,17 @@ export default function AdminTestimonials() {
                   value={modalQuantity}
                   onChange={(e) => setModalQuantity(e.target.value)}
                   placeholder="Contoh: 85 Box atau 50 Porsi"
-                  className="w-full rounded-xl border border-stone-200 px-3 py-2 text-xs sm:text-sm focus:border-red-500 focus:outline-none"
+                  className={`w-full rounded-xl border px-3 py-2 text-xs sm:text-sm outline-none transition focus:border-red-500 ${
+                    isDark
+                      ? 'border-[#60241E] bg-[#1C0B09] text-white placeholder-stone-500 focus:bg-[#1C0B09]'
+                      : 'border-stone-200 bg-white text-stone-900 placeholder-stone-400 focus:bg-white'
+                  }`}
                 />
               </div>
 
               {/* Teks Pesan */}
               <div>
-                <label className="block text-xs font-bold text-stone-700 mb-1">
+                <label className={`block text-xs font-bold mb-1 ${isDark ? 'text-stone-300' : 'text-stone-700'}`}>
                   Isi Testimoni / Ulasan *
                 </label>
                 <textarea
@@ -557,7 +648,11 @@ export default function AdminTestimonials() {
                   value={modalMessage}
                   onChange={(e) => setModalMessage(e.target.value)}
                   placeholder="Ceritakan kepuasan pelanggan..."
-                  className="w-full rounded-xl border border-stone-200 px-3 py-2 text-xs sm:text-sm focus:border-red-500 focus:outline-none"
+                  className={`w-full rounded-xl border px-3 py-2 text-xs sm:text-sm outline-none transition focus:border-red-500 ${
+                    isDark
+                      ? 'border-[#60241E] bg-[#1C0B09] text-white placeholder-stone-500 focus:bg-[#1C0B09]'
+                      : 'border-stone-200 bg-white text-stone-900 placeholder-stone-400 focus:bg-white'
+                  }`}
                 />
               </div>
 
@@ -570,16 +665,20 @@ export default function AdminTestimonials() {
                   onChange={(e) => setModalIsDisplayed(e.target.checked)}
                   className="h-4 w-4 rounded-md border-stone-300 text-red-600 focus:ring-red-500"
                 />
-                <label htmlFor="modalIsDisplayed" className="text-xs font-semibold text-stone-700 cursor-pointer">
+                <label htmlFor="modalIsDisplayed" className={`text-xs font-semibold cursor-pointer ${isDark ? 'text-stone-300' : 'text-stone-700'}`}>
                   Langsung tampilkan di slider homepage
                 </label>
               </div>
 
-              <div className="mt-6 flex items-center justify-end gap-2 pt-3 border-t border-stone-100">
+              <div className={`mt-6 flex items-center justify-end gap-2 pt-3 border-t ${
+                isDark ? 'border-[#60241E]/60' : 'border-stone-100'
+              }`}>
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="rounded-xl px-4 py-2 text-xs font-bold text-stone-600 hover:bg-stone-100"
+                  className={`rounded-xl px-4 py-2 text-xs font-bold transition ${
+                    isDark ? 'border border-[#60241E] text-stone-300 hover:bg-[#2D120F]' : 'text-stone-600 hover:bg-stone-100'
+                  }`}
                 >
                   Batal
                 </button>
@@ -600,22 +699,30 @@ export default function AdminTestimonials() {
           MODAL KONFIRMASI HAPUS
       ====================================================== */}
       {deleteTarget && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-950/40 backdrop-blur-xs">
-          <div className="w-full max-w-sm rounded-3xl bg-white p-6 shadow-2xl border border-stone-200 animate-in fade-in zoom-in-95 duration-150 text-center">
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-red-50 text-red-600 mb-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-950/60 backdrop-blur-xs">
+          <div className={`w-full max-w-sm rounded-3xl p-6 shadow-2xl border animate-in fade-in zoom-in-95 duration-150 text-center ${
+            isDark ? 'bg-[#240E0C] border-[#60241E]' : 'bg-white border-stone-200'
+          }`}>
+            <div className={`mx-auto flex h-12 w-12 items-center justify-center rounded-2xl mb-4 ${
+              isDark ? 'bg-red-950/60 text-red-400' : 'bg-red-50 text-red-600'
+            }`}>
               <AlertCircle size={24} />
             </div>
-            <h3 className="text-base font-black text-stone-900">Hapus Testimoni?</h3>
-            <p className="mt-1.5 text-xs text-stone-500 leading-relaxed">
+            <h3 className={`text-base font-black ${isDark ? 'text-white' : 'text-stone-900'}`}>Hapus Testimoni?</h3>
+            <p className={`mt-1.5 text-xs leading-relaxed ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
               Apakah Anda yakin ingin menghapus testimoni dari{' '}
-              <strong className="text-stone-800">{deleteTarget.name}</strong>? Tindakan ini tidak dapat dibatalkan.
+              <strong className={isDark ? 'text-white' : 'text-stone-800'}>{deleteTarget.name}</strong>? Tindakan ini tidak dapat dibatalkan.
             </p>
 
             <div className="mt-6 flex items-center justify-center gap-2">
               <button
                 type="button"
                 onClick={() => setDeleteTarget(null)}
-                className="flex-1 rounded-xl px-4 py-2.5 text-xs font-bold text-stone-600 hover:bg-stone-100 border border-stone-200"
+                className={`flex-1 rounded-xl px-4 py-2.5 text-xs font-bold transition border ${
+                  isDark
+                    ? 'border-[#60241E] text-stone-300 hover:bg-[#2D120F]'
+                    : 'border-stone-200 text-stone-600 hover:bg-stone-100'
+                }`}
               >
                 Batal
               </button>

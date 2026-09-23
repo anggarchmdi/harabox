@@ -19,6 +19,7 @@ import { productService } from '../../../services/products.service'
 import { categoryService } from '../../../services/category.services'
 import { getImageUrl } from '../../../utils/image'
 import { PageLoader } from '../../../components/ui/PageLoader'
+import { useThemeStore } from '../../../stores/theme.store'
 
 interface ProductForm {
   category_id: string
@@ -49,6 +50,7 @@ const ADDON_PRESETS = [
 ]
 
 export default function EditProduct() {
+  const isDark = useThemeStore((state) => state.theme === 'dark')
   const navigate = useNavigate()
   const { id } = useParams()
   const queryClient = useQueryClient()
@@ -309,15 +311,15 @@ export default function EditProduct() {
       {loading ? (
         <div className="mx-auto max-w-5xl space-y-6">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 animate-pulse rounded-xl bg-stone-200" />
+            <div className={`h-10 w-10 animate-pulse rounded-xl ${isDark ? 'bg-[#2D120F]' : 'bg-stone-200'}`} />
             <div className="space-y-2">
-              <div className="h-4 w-24 animate-pulse rounded bg-stone-200" />
-              <div className="h-6 w-48 animate-pulse rounded bg-stone-200" />
+              <div className={`h-4 w-24 animate-pulse rounded ${isDark ? 'bg-[#2D120F]' : 'bg-stone-200'}`} />
+              <div className={`h-6 w-48 animate-pulse rounded ${isDark ? 'bg-[#2D120F]' : 'bg-stone-200'}`} />
             </div>
           </div>
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-            <div className="h-96 animate-pulse rounded-2xl bg-stone-200 lg:col-span-2" />
-            <div className="h-96 animate-pulse rounded-2xl bg-stone-200" />
+            <div className={`h-96 animate-pulse rounded-2xl ${isDark ? 'bg-[#2D120F]' : 'bg-stone-200'} lg:col-span-2`} />
+            <div className={`h-96 animate-pulse rounded-2xl ${isDark ? 'bg-[#2D120F]' : 'bg-stone-200'}`} />
           </div>
         </div>
       ) : (
@@ -328,18 +330,22 @@ export default function EditProduct() {
           <button
             type="button"
             onClick={() => navigate('/admin/products')}
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-stone-200 bg-white text-stone-600 shadow-2xs transition hover:bg-stone-50 hover:text-stone-900 active:scale-95"
+            className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border shadow-2xs transition active:scale-95 ${
+              isDark
+                ? 'border-[#60241E] bg-[#240E0C] text-stone-300 hover:bg-[#2D120F] hover:text-white'
+                : 'border-stone-200 bg-white text-stone-600 hover:bg-stone-50 hover:text-stone-900'
+            }`}
             title="Kembali ke Katalog Produk"
           >
             <ArrowLeft size={18} />
           </button>
           <div>
             <div className="flex items-center gap-2 text-xs font-semibold text-stone-400">
-              <span className="cursor-pointer hover:text-stone-600" onClick={() => navigate('/admin/products')}>Katalog Produk</span>
+              <span className={`cursor-pointer transition ${isDark ? 'hover:text-stone-200' : 'hover:text-stone-600'}`} onClick={() => navigate('/admin/products')}>Katalog Produk</span>
               <span>/</span>
-              <span className="text-red-700">Edit Produk</span>
+              <span className="text-red-500 font-bold">Edit Produk</span>
             </div>
-            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-stone-900">
+            <h1 className={`text-xl sm:text-2xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-stone-900'}`}>
               Edit Produk: {form.name || 'Produk'}
             </h1>
           </div>
@@ -350,7 +356,11 @@ export default function EditProduct() {
             type="button"
             onClick={() => navigate('/admin/products')}
             disabled={saving}
-            className="rounded-xl border border-stone-200 bg-white px-4 py-2.5 text-xs sm:text-sm font-semibold text-stone-700 shadow-2xs transition hover:bg-stone-50 hover:text-stone-900 disabled:opacity-50"
+            className={`rounded-xl border px-4 py-2.5 text-xs sm:text-sm font-semibold shadow-2xs transition disabled:opacity-50 ${
+              isDark
+                ? 'border-[#60241E] bg-[#240E0C] text-stone-300 hover:bg-[#2D120F] hover:text-white'
+                : 'border-stone-200 bg-white text-stone-700 hover:bg-stone-50 hover:text-stone-900'
+            }`}
           >
             Batal
           </button>
@@ -374,22 +384,30 @@ export default function EditProduct() {
         {/* Left Column: Product Info & Details (2 Cols) */}
         <div className="space-y-6 lg:col-span-2">
           {/* Main Info Card */}
-          <div className="rounded-2xl border border-stone-200/90 bg-white p-5 sm:p-7 shadow-2xs">
-            <div className="mb-5 flex items-center gap-2.5 border-b border-stone-100 pb-4">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-50 text-red-700">
+          <div className={`rounded-2xl border p-5 sm:p-7 shadow-2xs ${
+            isDark ? 'border-[#60241E] bg-[#240E0C]' : 'border-stone-200/90 bg-white'
+          }`}>
+            <div className={`mb-5 flex items-center gap-2.5 border-b pb-4 ${
+              isDark ? 'border-[#60241E]/60' : 'border-stone-100'
+            }`}>
+              <div className={`flex h-8 w-8 items-center justify-center rounded-lg ${
+                isDark ? 'bg-red-950/60 text-red-400' : 'bg-red-50 text-red-700'
+              }`}>
                 <Package size={16} />
               </div>
               <div>
-                <h2 className="text-sm sm:text-base font-bold text-stone-900">Informasi Utama</h2>
-                <p className="text-xs text-stone-500">Nama menu, kategori produk, dan harga satuan</p>
+                <h2 className={`text-sm sm:text-base font-bold ${isDark ? 'text-white' : 'text-stone-900'}`}>Informasi Utama</h2>
+                <p className={`text-xs ${isDark ? 'text-amber-100/60' : 'text-stone-500'}`}>Nama menu, kategori produk, dan harga satuan</p>
               </div>
             </div>
 
             <div className="space-y-4">
               {/* Product Name */}
               <div>
-                <label htmlFor="name" className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-stone-600">
-                  Nama Produk <span className="text-red-600">*</span>
+                <label htmlFor="name" className={`mb-1.5 block text-xs font-bold uppercase tracking-wider ${
+                  isDark ? 'text-stone-300' : 'text-stone-600'
+                }`}>
+                  Nama Produk <span className="text-red-500">*</span>
                 </label>
                 <input
                   id="name"
@@ -399,7 +417,11 @@ export default function EditProduct() {
                   onChange={handleChange}
                   disabled={saving}
                   placeholder="Contoh: Paket Nasi Ayam Bakar Madu"
-                  className="w-full rounded-xl border border-stone-200 bg-stone-50/50 px-4 py-2.5 sm:py-3 text-sm text-stone-900 placeholder:text-stone-400 outline-none transition focus:border-red-600 focus:bg-white focus:ring-1 focus:ring-red-600"
+                  className={`w-full rounded-xl border px-4 py-2.5 sm:py-3 text-sm outline-none transition focus:border-red-500 focus:ring-1 focus:ring-red-500 ${
+                    isDark
+                      ? 'border-[#60241E] bg-[#1C0B09] text-white placeholder:text-stone-500 focus:bg-[#1C0B09]'
+                      : 'border-stone-200 bg-stone-50/50 text-stone-900 placeholder:text-stone-400 focus:bg-white'
+                  }`}
                 />
               </div>
 
@@ -407,8 +429,10 @@ export default function EditProduct() {
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 {/* Category */}
                 <div>
-                  <label htmlFor="category_id" className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-stone-600">
-                    Kategori Menu <span className="text-red-600">*</span>
+                  <label htmlFor="category_id" className={`mb-1.5 block text-xs font-bold uppercase tracking-wider ${
+                    isDark ? 'text-stone-300' : 'text-stone-600'
+                  }`}>
+                    Kategori Menu <span className="text-red-500">*</span>
                   </label>
                   <select
                     id="category_id"
@@ -416,13 +440,17 @@ export default function EditProduct() {
                     value={form.category_id}
                     onChange={handleChange}
                     disabled={categoriesLoading || saving}
-                    className="w-full rounded-xl border border-stone-200 bg-stone-50/50 px-3.5 py-2.5 sm:py-3 text-sm text-stone-900 outline-none transition focus:border-red-600 focus:bg-white focus:ring-1 focus:ring-red-600"
+                    className={`w-full rounded-xl border px-3.5 py-2.5 sm:py-3 text-sm outline-none transition focus:border-red-500 focus:ring-1 focus:ring-red-500 ${
+                      isDark
+                        ? 'border-[#60241E] bg-[#1C0B09] text-white focus:bg-[#1C0B09]'
+                        : 'border-stone-200 bg-stone-50/50 text-stone-900 focus:bg-white'
+                    }`}
                   >
-                    <option value="">
+                    <option value="" className={isDark ? 'bg-[#1C0B09] text-white' : ''}>
                       {categoriesLoading ? 'Memuat kategori...' : '-- Pilih Kategori --'}
                     </option>
                     {categories.map((category) => (
-                      <option key={category.id} value={category.id}>
+                      <option key={category.id} value={category.id} className={isDark ? 'bg-[#1C0B09] text-white' : ''}>
                         {category.name}
                       </option>
                     ))}
@@ -431,11 +459,13 @@ export default function EditProduct() {
 
                 {/* Price */}
                 <div>
-                  <label htmlFor="price" className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-stone-600">
-                    Harga Satuan <span className="text-red-600">*</span>
+                  <label htmlFor="price" className={`mb-1.5 block text-xs font-bold uppercase tracking-wider ${
+                    isDark ? 'text-stone-300' : 'text-stone-600'
+                  }`}>
+                    Harga Satuan <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
-                    <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-stone-500">
+                    <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-stone-400">
                       Rp
                     </span>
                     <input
@@ -448,11 +478,15 @@ export default function EditProduct() {
                       onChange={handleChange}
                       disabled={saving}
                       placeholder="35000"
-                      className="w-full rounded-xl border border-stone-200 bg-stone-50/50 pl-10 pr-4 py-2.5 sm:py-3 text-sm font-semibold text-stone-900 placeholder:font-normal placeholder:text-stone-400 outline-none transition focus:border-red-600 focus:bg-white focus:ring-1 focus:ring-red-600"
+                      className={`w-full rounded-xl border pl-10 pr-4 py-2.5 sm:py-3 text-sm font-semibold outline-none transition focus:border-red-500 focus:ring-1 focus:ring-red-500 ${
+                        isDark
+                          ? 'border-[#60241E] bg-[#1C0B09] text-white placeholder:font-normal placeholder:text-stone-500 focus:bg-[#1C0B09]'
+                          : 'border-stone-200 bg-stone-50/50 text-stone-900 placeholder:font-normal placeholder:text-stone-400 focus:bg-white'
+                      }`}
                     />
                   </div>
                   {formattedPrice && (
-                    <p className="mt-1 text-[11px] font-semibold text-red-600">
+                    <p className="mt-1 text-[11px] font-semibold text-red-500">
                       Preview: {formattedPrice} / porsi
                     </p>
                   )}
@@ -460,8 +494,10 @@ export default function EditProduct() {
 
                 {/* Minimum Order */}
                 <div>
-                  <label htmlFor="minimum_order" className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-stone-600">
-                    Minimal Pesanan (Porsi) <span className="text-red-600">*</span>
+                  <label htmlFor="minimum_order" className={`mb-1.5 block text-xs font-bold uppercase tracking-wider ${
+                    isDark ? 'text-stone-300' : 'text-stone-600'
+                  }`}>
+                    Minimal Pesanan (Porsi) <span className="text-red-500">*</span>
                   </label>
                   <input
                     id="minimum_order"
@@ -473,7 +509,11 @@ export default function EditProduct() {
                     onChange={handleChange}
                     disabled={saving}
                     placeholder="10"
-                    className="w-full rounded-xl border border-stone-200 bg-stone-50/50 px-3.5 py-2.5 sm:py-3 text-sm font-semibold text-stone-900 placeholder:font-normal placeholder:text-stone-400 outline-none transition focus:border-red-600 focus:bg-white focus:ring-1 focus:ring-red-600"
+                    className={`w-full rounded-xl border px-3.5 py-2.5 sm:py-3 text-sm font-semibold outline-none transition focus:border-red-500 focus:ring-1 focus:ring-red-500 ${
+                      isDark
+                        ? 'border-[#60241E] bg-[#1C0B09] text-white placeholder:font-normal placeholder:text-stone-500 focus:bg-[#1C0B09]'
+                        : 'border-stone-200 bg-stone-50/50 text-stone-900 placeholder:font-normal placeholder:text-stone-400 focus:bg-white'
+                    }`}
                   />
                   <p className="mt-1 text-[11px] text-stone-400">
                     Gunakan 1 untuk satuan, atau 10 untuk paket
@@ -482,8 +522,10 @@ export default function EditProduct() {
 
                 {/* Lead Time Days */}
                 <div>
-                  <label htmlFor="lead_time_days" className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-stone-600">
-                    Batas Order (H- Hari) <span className="text-red-600">*</span>
+                  <label htmlFor="lead_time_days" className={`mb-1.5 block text-xs font-bold uppercase tracking-wider ${
+                    isDark ? 'text-stone-300' : 'text-stone-600'
+                  }`}>
+                    Batas Order (H- Hari) <span className="text-red-500">*</span>
                   </label>
                   <input
                     id="lead_time_days"
@@ -496,7 +538,11 @@ export default function EditProduct() {
                     onChange={handleChange}
                     disabled={saving}
                     placeholder="3"
-                    className="w-full rounded-xl border border-stone-200 bg-stone-50/50 px-3.5 py-2.5 sm:py-3 text-sm font-semibold text-stone-900 placeholder:font-normal placeholder:text-stone-400 outline-none transition focus:border-red-600 focus:bg-white focus:ring-1 focus:ring-red-600"
+                    className={`w-full rounded-xl border px-3.5 py-2.5 sm:py-3 text-sm font-semibold outline-none transition focus:border-red-500 focus:ring-1 focus:ring-red-500 ${
+                      isDark
+                        ? 'border-[#60241E] bg-[#1C0B09] text-white placeholder:font-normal placeholder:text-stone-500 focus:bg-[#1C0B09]'
+                        : 'border-stone-200 bg-stone-50/50 text-stone-900 placeholder:font-normal placeholder:text-stone-400 focus:bg-white'
+                    }`}
                   />
                   <p className="mt-1 text-[11px] text-stone-400">
                     Minimal H-X hari sebelum acara (0 = bisa hari H)
@@ -506,7 +552,9 @@ export default function EditProduct() {
 
               {/* Description */}
               <div>
-                <label htmlFor="description" className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-stone-600">
+                <label htmlFor="description" className={`mb-1.5 block text-xs font-bold uppercase tracking-wider ${
+                  isDark ? 'text-stone-300' : 'text-stone-600'
+                }`}>
                   Deskripsi Menu
                 </label>
                 <textarea
@@ -517,23 +565,35 @@ export default function EditProduct() {
                   disabled={saving}
                   rows={4}
                   placeholder="Jelaskan isi paket, lauk pelengkap, rasa khas, atau catatan saji..."
-                  className="w-full resize-none rounded-xl border border-stone-200 bg-stone-50/50 px-4 py-3 text-sm text-stone-900 placeholder:text-stone-400 outline-none transition focus:border-red-600 focus:bg-white focus:ring-1 focus:ring-red-600"
+                  className={`w-full resize-none rounded-xl border px-4 py-3 text-sm outline-none transition focus:border-red-500 focus:ring-1 focus:ring-red-500 ${
+                    isDark
+                      ? 'border-[#60241E] bg-[#1C0B09] text-white placeholder:text-stone-500 focus:bg-[#1C0B09]'
+                      : 'border-stone-200 bg-stone-50/50 text-stone-900 placeholder:text-stone-400 focus:bg-white'
+                  }`}
                 />
               </div>
             </div>
           </div>
 
           {/* Add-on & Customization Card (1 Paket Menu) */}
-          <div className="rounded-2xl border border-stone-200/90 bg-white p-5 sm:p-7 shadow-2xs">
-            <div className="flex items-center justify-between border-b border-stone-100 pb-5">
+          <div className={`rounded-2xl border p-5 sm:p-7 shadow-2xs ${
+            isDark ? 'border-[#60241E] bg-[#240E0C]' : 'border-stone-200/90 bg-white'
+          }`}>
+            <div className={`flex items-center justify-between border-b pb-5 ${
+              isDark ? 'border-[#60241E]/60' : 'border-stone-100'
+            }`}>
               <div>
                 <div className="flex items-center gap-2">
-                  <h3 className="text-sm font-bold text-stone-900">Kustomisasi & Pilihan Tambahan Paket</h3>
-                  <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${form.addons_enabled ? 'bg-emerald-100 text-emerald-700' : 'bg-stone-100 text-stone-500'}`}>
+                  <h3 className={`text-sm font-bold ${isDark ? 'text-white' : 'text-stone-900'}`}>Kustomisasi & Pilihan Tambahan Paket</h3>
+                  <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
+                    form.addons_enabled
+                      ? isDark ? 'bg-emerald-950/60 text-emerald-400' : 'bg-emerald-100 text-emerald-700'
+                      : isDark ? 'bg-[#1C0B09] text-stone-400' : 'bg-stone-100 text-stone-500'
+                  }`}>
                     {form.addons_enabled ? 'ON (Aktif)' : 'OFF (Nonaktif)'}
                   </span>
                 </div>
-                <p className="mt-1 text-xs text-stone-500 max-w-xl">
+                <p className={`mt-1 text-xs max-w-xl ${isDark ? 'text-amber-100/60' : 'text-stone-500'}`}>
                   Add-on ini menjadi satu kesatuan paket dengan menu produk. Pilihan seperti tambah nasi, variasi nasi kuning, atau aneka lauk akan dikalikan sesuai jumlah porsi pesanan.
                 </p>
               </div>
@@ -542,12 +602,18 @@ export default function EditProduct() {
               <button
                 type="button"
                 onClick={() => setForm((prev) => ({ ...prev, addons_enabled: !prev.addons_enabled }))}
-                className={`relative inline-flex h-7 w-12 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${form.addons_enabled ? 'bg-emerald-600' : 'bg-stone-300'}`}
+                className={`relative inline-flex h-7 w-12 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                  form.addons_enabled
+                    ? 'bg-emerald-600'
+                    : isDark ? 'bg-[#381612]' : 'bg-stone-300'
+                }`}
                 role="switch"
                 aria-checked={form.addons_enabled}
               >
                 <span
-                  className={`pointer-events-none inline-block h-6 w-6 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${form.addons_enabled ? 'translate-x-5' : 'translate-x-0'}`}
+                  className={`pointer-events-none inline-block h-6 w-6 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                    form.addons_enabled ? 'translate-x-5' : 'translate-x-0'
+                  }`}
                 />
               </button>
             </div>
@@ -555,8 +621,12 @@ export default function EditProduct() {
             {form.addons_enabled ? (
               <div className="mt-5 space-y-4">
                 {/* Info alert */}
-                <div className="flex items-start gap-2.5 rounded-xl border border-blue-100 bg-blue-50/70 p-3.5 text-xs text-blue-900">
-                  <Info size={16} className="text-blue-600 shrink-0 mt-0.5" />
+                <div className={`flex items-start gap-2.5 rounded-xl border p-3.5 text-xs ${
+                  isDark
+                    ? 'border-blue-900/60 bg-blue-950/40 text-blue-200'
+                    : 'border-blue-100 bg-blue-50/70 text-blue-900'
+                }`}>
+                  <Info size={16} className={`shrink-0 mt-0.5 ${isDark ? 'text-blue-400' : 'text-blue-600'}`} />
                   <div>
                     <span className="font-bold">Sistem Harga 1 Paket:</span> Harga add-on di bawah adalah penambahan per porsi. Jika pelanggan memesan 100 porsi dan memilih <em>Tambah Nasi (+Rp 2.000)</em>, sistem otomatis menghitung tambahan Rp 2.000 × 100 = Rp 200.000.
                   </div>
@@ -564,7 +634,9 @@ export default function EditProduct() {
 
                 {/* Preset Chips */}
                 <div>
-                  <label className="text-xs font-semibold text-stone-700 block mb-1.5">
+                  <label className={`text-xs font-semibold block mb-1.5 ${
+                    isDark ? 'text-stone-300' : 'text-stone-700'
+                  }`}>
                     Klik Cepat untuk Tambah Pilihan Populer:
                   </label>
                   <div className="flex flex-wrap gap-1.5">
@@ -573,7 +645,11 @@ export default function EditProduct() {
                         key={idx}
                         type="button"
                         onClick={() => handleAddAddonRow(preset.name, preset.price)}
-                        className="inline-flex items-center gap-1 rounded-lg border border-stone-200 bg-stone-50 px-2.5 py-1 text-xs font-medium text-stone-700 hover:border-red-500 hover:bg-red-50 hover:text-red-700 transition active:scale-95"
+                        className={`inline-flex items-center gap-1 rounded-lg border px-2.5 py-1 text-xs font-medium transition active:scale-95 ${
+                          isDark
+                            ? 'border-[#60241E] bg-[#1C0B09] text-stone-300 hover:border-red-500 hover:bg-red-950/40 hover:text-red-300'
+                            : 'border-stone-200 bg-stone-50 text-stone-700 hover:border-red-500 hover:bg-red-50 hover:text-red-700'
+                        }`}
                       >
                         <Plus size={12} className="text-stone-400" />
                         {preset.label}
@@ -585,13 +661,15 @@ export default function EditProduct() {
                 {/* Addon Items List */}
                 <div className="space-y-2 pt-2">
                   <div className="flex items-center justify-between">
-                    <label className="text-xs font-bold uppercase tracking-wider text-stone-600">
+                    <label className={`text-xs font-bold uppercase tracking-wider ${
+                      isDark ? 'text-stone-300' : 'text-stone-600'
+                    }`}>
                       Daftar Pilihan Add-on / Variasi Paket ({packageAddons.length})
                     </label>
                     <button
                       type="button"
                       onClick={() => handleAddAddonRow('', '0')}
-                      className="inline-flex items-center gap-1 text-xs font-bold text-red-600 hover:text-red-700"
+                      className="inline-flex items-center gap-1 text-xs font-bold text-red-500 hover:text-red-600"
                     >
                       <Plus size={14} />
                       Tambah Pilihan Baru
@@ -599,7 +677,11 @@ export default function EditProduct() {
                   </div>
 
                   {packageAddons.length === 0 ? (
-                    <div className="rounded-xl border border-dashed border-stone-200 bg-stone-50 p-6 text-center text-xs text-stone-500">
+                    <div className={`rounded-xl border border-dashed p-6 text-center text-xs ${
+                      isDark
+                        ? 'border-[#60241E] bg-[#1C0B09] text-stone-400'
+                        : 'border-stone-200 bg-stone-50 text-stone-500'
+                    }`}>
                       Belum ada pilihan add-on untuk paket ini. Silakan klik salah satu tombol pilihan populer di atas atau tombol "Tambah Pilihan Baru".
                     </div>
                   ) : (
@@ -607,10 +689,16 @@ export default function EditProduct() {
                       {packageAddons.map((addon, index) => (
                         <div
                           key={index}
-                          className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 rounded-xl border border-stone-200 bg-stone-50/60 p-2.5 transition focus-within:border-red-500 focus-within:bg-white"
+                          className={`flex flex-col sm:flex-row items-stretch sm:items-center gap-2 rounded-xl border p-2.5 transition focus-within:border-red-500 ${
+                            isDark
+                              ? 'border-[#60241E] bg-[#1C0B09]'
+                              : 'border-stone-200 bg-stone-50/60 focus-within:bg-white'
+                          }`}
                         >
                           <div className="flex items-center gap-2 flex-1">
-                            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-stone-200 text-[11px] font-bold text-stone-600">
+                            <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-[11px] font-bold ${
+                              isDark ? 'bg-[#2D120F] text-stone-300' : 'bg-stone-200 text-stone-600'
+                            }`}>
                               {index + 1}
                             </span>
                             <input
@@ -618,13 +706,17 @@ export default function EditProduct() {
                               value={addon.name}
                               onChange={(e) => handleAddonFieldChange(index, 'name', e.target.value)}
                               placeholder="Nama Pilihan (contoh: Nasi Kuning / Telur Balado)"
-                              className="w-full rounded-lg border border-stone-200 bg-white px-3 py-2 text-xs sm:text-sm font-semibold text-stone-900 placeholder:font-normal placeholder:text-stone-400 outline-none focus:border-red-600 focus:ring-1 focus:ring-red-600"
+                              className={`w-full rounded-lg border px-3 py-2 text-xs sm:text-sm font-semibold outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 ${
+                                isDark
+                                  ? 'border-[#60241E] bg-[#240E0C] text-white placeholder:font-normal placeholder:text-stone-500'
+                                  : 'border-stone-200 bg-white text-stone-900 placeholder:font-normal placeholder:text-stone-400'
+                              }`}
                             />
                           </div>
 
                           <div className="flex items-center gap-2">
                             <div className="relative w-36 sm:w-40">
-                              <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[11px] font-bold text-stone-500">
+                              <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[11px] font-bold text-stone-400">
                                 +Rp
                               </span>
                               <input
@@ -634,14 +726,22 @@ export default function EditProduct() {
                                 value={addon.price}
                                 onChange={(e) => handleAddonFieldChange(index, 'price', e.target.value)}
                                 placeholder="0"
-                                className="w-full rounded-lg border border-stone-200 bg-white pl-10 pr-3 py-2 text-xs sm:text-sm font-semibold text-stone-900 placeholder:font-normal placeholder:text-stone-400 outline-none focus:border-red-600 focus:ring-1 focus:ring-red-600"
+                                className={`w-full rounded-lg border pl-10 pr-3 py-2 text-xs sm:text-sm font-semibold outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 ${
+                                  isDark
+                                    ? 'border-[#60241E] bg-[#240E0C] text-white placeholder:font-normal placeholder:text-stone-500'
+                                    : 'border-stone-200 bg-white text-stone-900 placeholder:font-normal placeholder:text-stone-400'
+                                }`}
                               />
                             </div>
 
                             <button
                               type="button"
                               onClick={() => handleRemoveAddonRow(index)}
-                              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-stone-200 bg-white text-stone-400 hover:border-red-200 hover:bg-red-50 hover:text-red-600 transition"
+                              className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border transition ${
+                                isDark
+                                  ? 'border-[#60241E] bg-[#240E0C] text-stone-400 hover:border-red-800 hover:bg-red-950/50 hover:text-red-400'
+                                  : 'border-stone-200 bg-white text-stone-400 hover:border-red-200 hover:bg-red-50 hover:text-red-600'
+                              }`}
                               title="Hapus baris ini"
                             >
                               <Trash2 size={15} />
@@ -654,22 +754,30 @@ export default function EditProduct() {
                 </div>
               </div>
             ) : (
-              <div className="mt-4 rounded-xl bg-stone-50 p-3.5 text-xs text-stone-500">
-                Fitur Add-on sedang <strong className="text-stone-700">Nonaktif</strong>. Menu ini akan dijual sebagai paket standar tanpa pilihan variasi kustomisasi.
+              <div className={`mt-4 rounded-xl p-3.5 text-xs ${
+                isDark ? 'bg-[#1C0B09] text-stone-400' : 'bg-stone-50 text-stone-500'
+              }`}>
+                Fitur Add-on sedang <strong className={isDark ? 'text-stone-200' : 'text-stone-700'}>Nonaktif</strong>. Menu ini akan dijual sebagai paket standar tanpa pilihan variasi kustomisasi.
               </div>
             )}
           </div>
 
           {/* Visibility / Status Card */}
-          <div className="rounded-2xl border border-stone-200/90 bg-white p-5 sm:p-7 shadow-2xs">
+          <div className={`rounded-2xl border p-5 sm:p-7 shadow-2xs ${
+            isDark ? 'border-[#60241E] bg-[#240E0C]' : 'border-stone-200/90 bg-white'
+          }`}>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className={`flex h-10 w-10 items-center justify-center rounded-xl transition ${form.is_active ? 'bg-emerald-50 text-emerald-700' : 'bg-stone-100 text-stone-400'}`}>
+                <div className={`flex h-10 w-10 items-center justify-center rounded-xl transition ${
+                  form.is_active
+                    ? isDark ? 'bg-emerald-950/60 text-emerald-400' : 'bg-emerald-50 text-emerald-700'
+                    : isDark ? 'bg-[#1C0B09] text-stone-500' : 'bg-stone-100 text-stone-400'
+                }`}>
                   <Check size={18} />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-stone-900">Status Ketersediaan Produk</h3>
-                  <p className="text-xs text-stone-500">
+                  <h3 className={`text-sm font-bold ${isDark ? 'text-white' : 'text-stone-900'}`}>Status Ketersediaan Produk</h3>
+                  <p className={`text-xs ${isDark ? 'text-amber-100/60' : 'text-stone-500'}`}>
                     {form.is_active
                       ? 'Produk aktif dan dapat langsung dipesan oleh pelanggan'
                       : 'Produk nonaktif / disembunyikan sementara dari katalog'}
@@ -685,7 +793,9 @@ export default function EditProduct() {
                 disabled={saving}
                 onClick={() => setForm((prev) => ({ ...prev, is_active: !prev.is_active }))}
                 className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                  form.is_active ? 'bg-emerald-600' : 'bg-stone-300'
+                  form.is_active
+                    ? 'bg-emerald-600'
+                    : isDark ? 'bg-[#381612]' : 'bg-stone-300'
                 }`}
               >
                 <span
@@ -701,19 +811,27 @@ export default function EditProduct() {
         {/* Right Column: Photo Management (1 Col) */}
         <div className="space-y-6">
           {/* Photo Card */}
-          <div className="rounded-2xl border border-stone-200/90 bg-white p-5 sm:p-6 shadow-2xs">
-            <div className="mb-4 flex items-center justify-between border-b border-stone-100 pb-3">
+          <div className={`rounded-2xl border p-5 sm:p-6 shadow-2xs ${
+            isDark ? 'border-[#60241E] bg-[#240E0C]' : 'border-stone-200/90 bg-white'
+          }`}>
+            <div className={`mb-4 flex items-center justify-between border-b pb-3 ${
+              isDark ? 'border-[#60241E]/60' : 'border-stone-100'
+            }`}>
               <div className="flex items-center gap-2">
-                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-amber-50 text-amber-600">
+                <div className={`flex h-7 w-7 items-center justify-center rounded-lg ${
+                  isDark ? 'bg-amber-950/60 text-amber-400' : 'bg-amber-50 text-amber-600'
+                }`}>
                   <ImageIcon size={15} />
                 </div>
-                <h3 className="text-xs sm:text-sm font-bold text-stone-900">Foto Menu Produk</h3>
+                <h3 className={`text-xs sm:text-sm font-bold ${isDark ? 'text-white' : 'text-stone-900'}`}>Foto Menu Produk</h3>
               </div>
               {newPreviewUrl && (
                 <button
                   type="button"
                   onClick={handleCancelNewImage}
-                  className="flex items-center gap-1 text-[11px] font-semibold text-stone-600 transition hover:text-stone-900"
+                  className={`flex items-center gap-1 text-[11px] font-semibold transition ${
+                    isDark ? 'text-stone-400 hover:text-white' : 'text-stone-600 hover:text-stone-900'
+                  }`}
                   title="Batalkan perubahan foto baru"
                 >
                   <RotateCcw size={12} />
@@ -735,7 +853,9 @@ export default function EditProduct() {
 
             {/* Display new preview if selected, or existing image, or dropzone */}
             {newPreviewUrl ? (
-              <div className="group relative overflow-hidden rounded-xl border border-stone-200 bg-stone-50">
+              <div className={`group relative overflow-hidden rounded-xl border ${
+                isDark ? 'border-[#60241E] bg-[#1C0B09]' : 'border-stone-200 bg-stone-50'
+              }`}>
                 <img
                   src={newPreviewUrl}
                   alt="New Preview"
@@ -754,16 +874,20 @@ export default function EditProduct() {
                   </button>
                 </div>
                 {form.image && (
-                  <div className="border-t border-stone-100 bg-white p-2.5 text-center">
-                    <p className="truncate text-xs font-medium text-stone-700">{form.image.name}</p>
-                    <p className="text-[10px] text-stone-400">
+                  <div className={`border-t p-2.5 text-center ${
+                    isDark ? 'border-[#60241E]/60 bg-[#1C0B09]' : 'border-stone-100 bg-white'
+                  }`}>
+                    <p className={`truncate text-xs font-medium ${isDark ? 'text-stone-300' : 'text-stone-700'}`}>{form.image.name}</p>
+                    <p className={`text-[10px] ${isDark ? 'text-stone-500' : 'text-stone-400'}`}>
                       {(form.image.size / 1024).toFixed(0)} KB • Akan disimpan saat klik tombol Simpan
                     </p>
                   </div>
                 )}
               </div>
             ) : existingImageUrl ? (
-              <div className="group relative overflow-hidden rounded-xl border border-stone-200 bg-stone-50">
+              <div className={`group relative overflow-hidden rounded-xl border ${
+                isDark ? 'border-[#60241E] bg-[#1C0B09]' : 'border-stone-200 bg-stone-50'
+              }`}>
                 <img
                   src={existingImageUrl}
                   alt={form.name}
@@ -782,12 +906,14 @@ export default function EditProduct() {
                     Ganti Foto Menu
                   </button>
                 </div>
-                <div className="border-t border-stone-100 bg-white p-2.5 text-center">
-                  <p className="text-[11px] font-medium text-stone-500">Foto menu saat ini</p>
+                <div className={`border-t p-2.5 text-center ${
+                  isDark ? 'border-[#60241E]/60 bg-[#1C0B09]' : 'border-stone-100 bg-white'
+                }`}>
+                  <p className={`text-[11px] font-medium ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>Foto menu saat ini</p>
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    className="mt-1 text-xs font-semibold text-red-600 hover:text-red-700"
+                    className="mt-1 text-xs font-semibold text-red-500 hover:text-red-600"
                   >
                     Klik untuk unggah foto baru
                   </button>
@@ -796,12 +922,18 @@ export default function EditProduct() {
             ) : (
               <div
                 onClick={() => fileInputRef.current?.click()}
-                className="group flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-stone-200 bg-stone-50/70 p-6 text-center transition hover:border-red-400 hover:bg-red-50/30"
+                className={`group flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed p-6 text-center transition ${
+                  isDark
+                    ? 'border-[#60241E] bg-[#1C0B09] hover:border-red-500/70 hover:bg-red-950/20'
+                    : 'border-stone-200 bg-stone-50/70 hover:border-red-400 hover:bg-red-50/30'
+                }`}
               >
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-stone-400 shadow-2xs transition group-hover:scale-110 group-hover:text-red-600">
+                <div className={`flex h-12 w-12 items-center justify-center rounded-2xl shadow-2xs transition group-hover:scale-110 group-hover:text-red-500 ${
+                  isDark ? 'bg-[#240E0C] text-stone-400' : 'bg-white text-stone-400'
+                }`}>
                   <UploadCloud size={24} />
                 </div>
-                <p className="mt-3 text-xs font-bold text-stone-800">
+                <p className={`mt-3 text-xs font-bold ${isDark ? 'text-stone-200' : 'text-stone-800'}`}>
                   Belum ada foto menu
                 </p>
                 <p className="mt-1 text-[11px] text-stone-400">
@@ -812,12 +944,20 @@ export default function EditProduct() {
           </div>
 
           {/* Info Card */}
-          <div className="rounded-2xl border border-stone-200/90 bg-stone-50/80 p-4 text-stone-600">
-            <div className="flex items-center gap-2 text-stone-700">
+          <div className={`rounded-2xl border p-4 ${
+            isDark
+              ? 'border-[#60241E] bg-[#240E0C] text-stone-300'
+              : 'border-stone-200/90 bg-stone-50/80 text-stone-600'
+          }`}>
+            <div className={`flex items-center gap-2 ${
+              isDark ? 'text-amber-300' : 'text-stone-700'
+            }`}>
               <AlertCircle size={15} />
               <h4 className="text-xs font-bold">Catatan Perubahan</h4>
             </div>
-            <p className="mt-2 text-xs leading-relaxed text-stone-500">
+            <p className={`mt-2 text-xs leading-relaxed ${
+              isDark ? 'text-stone-400' : 'text-stone-500'
+            }`}>
               Jika tidak ingin mengganti foto menu, biarkan input foto kosong. Foto yang sudah ada tidak akan hilang atau tertimpa.
             </p>
           </div>
