@@ -151,7 +151,7 @@ export default function AdminOrderRecap() {
   const summary = data?.summary
   const orders = data?.orders?.data ?? []
   const pagination = data?.orders
-  const filterInfo = data?.filter_info
+  // const filterInfo = data?.filter_info
 
   // Export handler
   const handleExport = async () => {
