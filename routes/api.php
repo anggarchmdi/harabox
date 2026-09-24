@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\Admin\AuthController;
 use App\Http\Controllers\Api\Admin\CategoryController as AdminCategoryController;
 use App\Http\Controllers\Api\Admin\DashboardController;
 use App\Http\Controllers\Api\Admin\OrderController as AdminOrderController;
+use App\Http\Controllers\Api\Admin\OrderRecapController;
 use App\Http\Controllers\Api\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Api\Admin\SettingController as AdminSettingController;
 use App\Http\Controllers\Api\Admin\TestimonialController as AdminTestimonialController;
@@ -134,6 +135,17 @@ Route::prefix('v1')->group(function () {
                 'addon-groups',
                 AdminAddonGroupController::class
             );
+
+            // Order Recap & Export
+            Route::get('/orders/recap', [
+                OrderRecapController::class,
+                'index',
+            ]);
+
+            Route::get('/orders/recap/export', [
+                OrderRecapController::class,
+                'export',
+            ]);
 
             // orders
             Route::get('/orders', [

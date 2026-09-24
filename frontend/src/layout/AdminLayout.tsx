@@ -7,6 +7,7 @@ import {
   ChevronDown,
   ChevronLeft,
   ExternalLink,
+  FileSpreadsheet,
   HelpCircle,
   LayoutDashboard,
   LogOut,
@@ -33,6 +34,7 @@ interface MenuItem {
   to: string
   icon: typeof LayoutDashboard
   badgeKey?: 'pending_orders' | 'active_products'
+  end?: boolean
 }
 
 const mainMenus: MenuItem[] = [
@@ -40,12 +42,20 @@ const mainMenus: MenuItem[] = [
     label: 'Dashboard',
     to: '/admin',
     icon: LayoutDashboard,
+    end: true,
   },
   {
     label: 'Pesanan Masuk',
     to: '/admin/orders',
     icon: ShoppingCart,
     badgeKey: 'pending_orders',
+    end: true,
+  },
+  {
+    label: 'Rekap Pesanan',
+    to: '/admin/orders/recap',
+    icon: FileSpreadsheet,
+    end: true,
   },
   {
     label: 'Katalog Produk',
@@ -118,6 +128,7 @@ export default function AdminLayout() {
   const pageTitle = useMemo(() => {
     const path = location.pathname
     if (path === '/admin') return 'Dashboard Monitoring'
+    if (path.startsWith('/admin/orders/recap')) return 'Rekapitulasi Data Pesanan'
     if (path.startsWith('/admin/orders')) return 'Manajemen Pesanan'
     if (path === '/admin/products/create') return 'Tambah Menu Katering'
     if (path.includes('/admin/products/') && path.includes('/edit')) return 'Edit Menu Katering'
@@ -289,7 +300,7 @@ export default function AdminLayout() {
                   <div key={menu.to} className="relative group">
                     <NavLink
                       to={menu.to}
-                      end={menu.to === '/admin'}
+                      end={menu.end ?? menu.to === '/admin'}
                       className={({ isActive }) =>
                         `group relative flex items-center rounded-xl transition-all ${
                           isCollapsed
@@ -547,7 +558,7 @@ export default function AdminLayout() {
                     <NavLink
                       key={menu.to}
                       to={menu.to}
-                      end={menu.to === '/admin'}
+                      end={menu.end ?? menu.to === '/admin'}
                       onClick={() => setMobileSidebarOpen(false)}
                       className={({ isActive }) =>
                         `flex items-center justify-between rounded-xl px-3.5 py-3 text-sm font-semibold transition ${

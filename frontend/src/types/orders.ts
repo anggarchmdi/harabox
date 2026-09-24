@@ -143,3 +143,50 @@ export interface UpdateOrderStatusResponse {
   message: string
   data: Order
 }
+
+export interface OrderRecapSummary {
+  total_orders: number
+  total_portions: number
+  total_revenue: number
+  total_paid: number
+  total_unpaid: number
+  status_counts: Record<string, number>
+  payment_status_counts: Record<string, number>
+}
+
+export interface OrderRecapFilterInfo {
+  start_date?: string | null
+  end_date?: string | null
+  period_label?: string
+  year?: number
+  month?: number | 'all'
+  month_name?: string
+  date_type: 'event_date' | 'created_at'
+  date_type_label: string
+}
+
+export interface OrderRecapResponse {
+  success: boolean
+  message: string
+  data: {
+    summary: OrderRecapSummary
+    filter_info: OrderRecapFilterInfo
+    orders: OrderPagination
+  }
+}
+
+export interface OrderRecapParams {
+  start_date?: string
+  end_date?: string
+  date_from?: string
+  date_to?: string
+  year?: number
+  month?: number | 'all'
+  date_type?: 'event_date' | 'created_at'
+  status?: OrderStatus | 'all' | ''
+  payment_status?: PaymentStatus | 'all' | ''
+  search?: string
+  page?: number
+  per_page?: number
+}
+

@@ -9,6 +9,8 @@ import type {
   PaymentStatus,
   UpdateOrderPaymentPayload,
   CreateOrderPayload,
+  OrderRecapResponse,
+  OrderRecapParams,
 } from '../types/orders'
 
 export interface OrderFilters {
@@ -145,5 +147,73 @@ export const ordersService = {
     }>(`/orders/${encodeURIComponent(orderCode.trim())}${query}`)
 
     return response.data.data
+  },
+
+  async getRecap(
+    params: OrderRecapParams = {},
+  ): Promise<OrderRecapResponse['data']> {
+    const searchParams = new URLSearchParams()
+    if (params.start_date) searchParams.set('start_date', params.start_date)
+    if (params.end_date) searchParams.set('end_date', params.end_date)
+    if (params.date_from) searchParams.set('date_from', params.date_from)
+    if (params.date_to) searchParams.set('date_to', params.date_to)
+    if (params.year) searchParams.set('year', String(params.year))
+    if (params.month !== undefined) searchParams.set('month', String(params.month))
+    if (params.date_type) searchParams.set('date_type', params.date_type)
+    if (params.status && params.status !== 'all') searchParams.set('status', params.status)
+    if (params.payment_status && params.payment_status !== 'all') searchParams.set('payment_status', params.payment_status)
+    if (params.search) searchParams.set('search', params.search)
+    if (params.page) searchParams.set('page', String(params.page))
+    if (params.per_page) searchParams.set('per_page', String(params.per_page))
+
+    const query = searchParams.toString() ? `?${searchParams.toString()}` : ''
+    const response = await api.get<OrderRecapResponse>(`/admin/orders/recap${query}`)
+    return response.data.data
+  },
+
+  async exportRecap(params: OrderRecapParams = {}): Promise<void> {
+    const searchParams = new URLSearchParams()
+    if (params.start_date) searchParams.set('start_date', params.start_date)
+    if (params.end_date) searchParams.set('end_date', params.end_date)
+    if (params.date_from) searchParams.set('date_from', params.date_from)
+    if (params.date_to) searchParams.set('date_to', params.date_to)
+    if (params.year) searchParams.set('year', String(params.year))
+    if (params.month !== undefined) searchParams.set('month', String(params.month))
+    if (params.date_type) searchParams.set('date_type', params.date_type)
+    if (params.status && params.status !== 'all') searchParams.set('status', params.status)
+    if (params.payment_status && params.payment_status !== 'all') searchParams.set('payment_status', params.payment_status)
+    if (params.search) searchParams.set('search', params.search)
+
+    const query = searchParams.toString() ? `?${searchParams.toString()}` : ''
+    const response = await api.get(`/admin/orders/recap/export${query}`, {
+      responseType: 'blob',
+    })
+
+    const periodSlug =
+      params.start_date && params.end_date
+        ? `${params.start_date.replace(/-/g, '')}-sd-${params.end_date.replace(/-/g, '')}`
+        : params.month === 'all'
+          ? `tahun-${params.year || new Date().getFullYear()}`
+          : `${params.year || new Date().getFullYear()}-${String(params.month || new Date().getMonth() + 1).padStart(2, '0')}`
+    const defaultFileName = `rekap-pesanan-harabox-${periodSlug}.csv`
+
+    const disposition = response.headers['content-disposition']
+    let fileName = defaultFileName
+    if (disposition && disposition.indexOf('filename=') !== -1) {
+      const matches = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(disposition)
+      if (matches != null && matches[1]) {
+        fileName = matches[1].replace(/['"]/g, '')
+      }
+    }
+
+    const blob = new Blob([response.data], { type: 'text/csv;charset=utf-8;' })
+    const url = window.URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.setAttribute('download', fileName)
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    window.URL.revokeObjectURL(url)
   },
 }

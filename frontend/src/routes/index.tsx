@@ -8,6 +8,7 @@ import Notfound from '../pages/Notfound'
 // admin
 import AdminDashboard from '../pages/admin/AdminDashboard'
 import AdminOrders from '../pages/admin/AdminOrders'
+import AdminOrderRecap from '../pages/admin/AdminOrderRecap'
 import AdminProducts from '../pages/admin/products/AdminProducts'
 import AdminCategories from '../pages/admin/AdminCategories'
 import AdminAddons from '../pages/admin/addons/AdminAddons'
@@ -53,6 +54,7 @@ export default function AppRoutes() {
 
           {/* orders */}
           <Route path="orders" element={<AdminOrders />} />
+          <Route path="orders/recap" element={<AdminOrderRecap />} />
 
           {/* products */}
           <Route path="products">

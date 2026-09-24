@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import {
   Calendar,
   CheckCircle2,
@@ -7,6 +8,7 @@ import {
   ChevronRight,
   Clock,
   Coins,
+  FileSpreadsheet,
   LayoutGrid,
   MapPin,
   MessageCircle,
@@ -315,22 +317,32 @@ export default function AdminOrders() {
           </p>
         </div>
 
-        <button
-          type="button"
-          onClick={() => refetch()}
-          disabled={isFetching}
-          className={`inline-flex items-center justify-center gap-2 rounded-xl border px-3.5 py-2 text-xs font-semibold shadow-2xs transition disabled:opacity-50 self-start sm:self-auto cursor-pointer ${
-            isDark
-              ? 'border-[#60241E] bg-[#240E0C] text-stone-200 hover:bg-[#2D120F]'
-              : 'border-stone-200 bg-white text-stone-700 hover:bg-stone-50'
-          }`}
-        >
-          <RefreshCw
-            size={14}
-            className={isFetching ? 'animate-spin' : ''}
-          />
-          <span>Segarkan Data</span>
-        </button>
+        <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
+          <Link
+            to="/admin/orders/recap"
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-700 hover:to-rose-800 text-white px-3.5 py-2 text-xs font-bold shadow-md shadow-red-950/20 transition cursor-pointer"
+          >
+            <FileSpreadsheet size={15} />
+            <span>Tarik Rekap Bulanan (Excel)</span>
+          </Link>
+
+          <button
+            type="button"
+            onClick={() => refetch()}
+            disabled={isFetching}
+            className={`inline-flex items-center justify-center gap-2 rounded-xl border px-3.5 py-2 text-xs font-semibold shadow-2xs transition disabled:opacity-50 cursor-pointer ${
+              isDark
+                ? 'border-[#60241E] bg-[#240E0C] text-stone-200 hover:bg-[#2D120F]'
+                : 'border-stone-200 bg-white text-stone-700 hover:bg-stone-50'
+            }`}
+          >
+            <RefreshCw
+              size={14}
+              className={isFetching ? 'animate-spin' : ''}
+            />
+            <span>Segarkan Data</span>
+          </button>
+        </div>
       </div>
 
       {/* Summary Stat Cards */}
