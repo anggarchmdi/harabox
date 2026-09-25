@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
-import LogoSpinner from './LogoSpinner'
+import TraditionalLoader from './TraditionalLoader'
 import { useThemeStore } from '../../stores/theme.store'
 
 export interface PageLoaderProps {
@@ -187,12 +187,16 @@ export function PageLoader({
       </div>
 
       <div className="relative z-10">
-        <LogoSpinner
-          size="md"
+        <TraditionalLoader
+          variant="kendil"
+          size="lg"
           theme={isDark ? 'dark' : 'light'}
-          logoVariant="mascot"
           text={text}
           subtext={subtext}
+          showSteam={true}
+          showGlow={true}
+          showEmbers={true}
+          showBrandBadge={true}
           fullScreen={false}
         />
       </div>

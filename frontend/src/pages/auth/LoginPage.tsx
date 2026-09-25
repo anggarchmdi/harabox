@@ -19,7 +19,7 @@ import {
 import { authService } from '../../services/auth.service'
 import { useAuthStore } from '../../stores/auth.store'
 import type { ApiErrorResponse } from '../../types/api'
-import LogoSpinner from '../../components/ui/LogoSpinner'
+import TraditionalLoader from '../../components/ui/TraditionalLoader'
 import PawonHaraImg from '../../assets/PawonHara.webp'
 
 const REMEMBERED_EMAIL_KEY = 'harabox_remember_email'
@@ -134,15 +134,19 @@ export default function LoginPage() {
 
   return (
     <div className="w-full z-10">
-      {/* Loading Overlay dengan LogoSpinner Variant Dark */}
+      {/* Loading Overlay dengan TraditionalLoader Kendil Gerabah */}
       {loading && (
-        <LogoSpinner
+        <TraditionalLoader
           fullScreen
+          variant="kendil"
           theme="dark"
-          size="sm"
-          logoVariant="mascot"
+          size="lg"
           text={loadingText}
           subtext={loadingSubtext}
+          showSteam={true}
+          showGlow={true}
+          showEmbers={true}
+          showBrandBadge={true}
         />
       )}
 

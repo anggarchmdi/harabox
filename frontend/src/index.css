@@ -232,6 +232,103 @@ html.dark body {
   }
 }
 
+/* Animasi Bernapas Anyaman Bambu & Besek Alami */
+@keyframes bamboo-breathe {
+  0%, 100% {
+    transform: scale(1) translateY(0);
+  }
+  50% {
+    transform: scale(1.035) translateY(-3px);
+  }
+}
+
+/* Animasi Ayunan Halus Gunungan Kayon Wayang Kulit */
+@keyframes gunungan-sway {
+  0%, 100% {
+    transform: rotate(0deg) scale(1);
+  }
+  25% {
+    transform: rotate(-1.5deg) scale(1.015);
+  }
+  75% {
+    transform: rotate(1.5deg) scale(1.015);
+  }
+}
+
+/* Pendaran Cahaya Lampu Blencong Wayang Kulit */
+@keyframes blencong-flicker {
+  0%, 100% {
+    opacity: 0.65;
+    transform: scale(0.96);
+    filter: blur(24px);
+  }
+  30% {
+    opacity: 0.9;
+    transform: scale(1.06);
+    filter: blur(32px);
+  }
+  65% {
+    opacity: 0.72;
+    transform: scale(0.98);
+    filter: blur(26px);
+  }
+  85% {
+    opacity: 0.98;
+    transform: scale(1.08);
+    filter: blur(36px);
+  }
+}
+
+/* Animasi Rebusan Kaldu Kendil Gerabah (Simmering & Bobbing) */
+@keyframes kendil-simmer {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  20% {
+    transform: translateY(-2px) rotate(-1.2deg);
+  }
+  40% {
+    transform: translateY(-0.5px) rotate(0.8deg);
+  }
+  60% {
+    transform: translateY(-2.8px) rotate(1deg);
+  }
+  80% {
+    transform: translateY(-1px) rotate(-0.5deg);
+  }
+}
+
+/* Animasi Bunga Padma & Kelopak Tradisional Mekar (Breathing Lotus) */
+@keyframes padma-bloom {
+  0%, 100% {
+    transform: scale(0.96);
+    opacity: 0.88;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+}
+
+/* Animasi Melayang Halus Partikel Rempah / Abu Hangat Pawon */
+@keyframes ember-drift {
+  0% {
+    transform: translateY(0) translateX(0) scale(0.7);
+    opacity: 0;
+  }
+  25% {
+    opacity: 0.85;
+  }
+  70% {
+    transform: translateY(-28px) translateX(6px) scale(1.1);
+    opacity: 0.6;
+  }
+  100% {
+    transform: translateY(-50px) translateX(-4px) scale(0.5);
+    opacity: 0;
+  }
+}
+
 .animate-spin-reverse {
   animation: spin-reverse 2.5s linear infinite;
 }
@@ -271,6 +368,41 @@ html.dark body {
 .animate-rempah {
   animation: rempah-pulse 1.8s ease-in-out infinite;
 }
+
+.animate-bamboo-breathe {
+  animation: bamboo-breathe 2.8s ease-in-out infinite;
+}
+
+.animate-gunungan-sway {
+  animation: gunungan-sway 5s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+
+.animate-blencong-flicker {
+  animation: blencong-flicker 3.5s ease-in-out infinite;
+}
+
+.animate-kendil-simmer {
+  animation: kendil-simmer 1.6s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+
+.animate-padma-bloom {
+  animation: padma-bloom 3s ease-in-out infinite;
+}
+
+.animate-ember-1 {
+  animation: ember-drift 3.2s ease-out infinite;
+}
+
+.animate-ember-2 {
+  animation: ember-drift 3.8s ease-out infinite 1.1s;
+}
+
+.animate-ember-3 {
+  animation: ember-drift 3.5s ease-out infinite 1.9s;
+}
+
 
 /* ==========================================================================
    MARQUEE / INFINITE CONTINUOUS SLIDER
