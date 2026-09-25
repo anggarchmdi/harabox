@@ -153,6 +153,11 @@ Route::prefix('v1')->group(function () {
                 'index',
             ]);
 
+            Route::post('/orders', [
+                AdminOrderController::class,
+                'store',
+            ]);
+
             Route::get('/orders/{order}', [
                 AdminOrderController::class,
                 'show',

@@ -3,18 +3,45 @@
 namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreAdminOrderRequest;
 use App\Http\Requests\UpdateOrderPaymentRequest;
 use App\Http\Requests\UpdateOrderStatusRequest;
 use App\Models\Order;
 use App\Services\KitchenCapacityService;
+use App\Services\OrderService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use RuntimeException;
 
 class OrderController extends Controller
 {
     public function __construct(
-        protected KitchenCapacityService $capacityService
+        protected KitchenCapacityService $capacityService,
+        protected OrderService $orderService
     ) {}
+
+    /**
+     * Store a new manual order created by admin.
+     */
+    public function store(StoreAdminOrderRequest $request): JsonResponse
+    {
+        try {
+            $order = $this->orderService->createOrder(
+                $request->validated()
+            );
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Pesanan manual berhasil dibuat',
+                'data' => $order->load(['items.product', 'items.addons', 'addons.addon']),
+            ], 201);
+        } catch (RuntimeException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 422);
+        }
+    }
 
     /**
      * Display a listing of orders.

@@ -129,6 +129,7 @@ export default function AdminLayout() {
     const path = location.pathname
     if (path === '/admin') return 'Dashboard Monitoring'
     if (path.startsWith('/admin/orders/recap')) return 'Rekapitulasi Data Pesanan'
+    if (path === '/admin/orders/create') return 'Tambah Pesanan Manual'
     if (path.startsWith('/admin/orders')) return 'Manajemen Pesanan'
     if (path === '/admin/products/create') return 'Tambah Menu Katering'
     if (path.includes('/admin/products/') && path.includes('/edit')) return 'Edit Menu Katering'

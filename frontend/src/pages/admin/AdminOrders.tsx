@@ -22,6 +22,7 @@ import {
   X,
   XCircle,
   Check,
+  Plus,
 } from 'lucide-react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
@@ -318,6 +319,14 @@ export default function AdminOrders() {
         </div>
 
         <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
+          <Link
+            to="/admin/orders/create"
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white px-3.5 py-2 text-xs font-bold shadow-md shadow-amber-950/20 transition cursor-pointer"
+          >
+            <Plus size={15} />
+            <span>+ Pesanan Manual / Offline</span>
+          </Link>
+
           <Link
             to="/admin/orders/recap"
             className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-700 hover:to-rose-800 text-white px-3.5 py-2 text-xs font-bold shadow-md shadow-red-950/20 transition cursor-pointer"

@@ -29,7 +29,7 @@ class ProductController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $query = Product::with('category');
+        $query = Product::with(['category', 'addonGroups.addons']);
 
         // Search berdasarkan nama produk
         if ($request->filled('search')) {

@@ -155,8 +155,18 @@ class OrderService
                 ];
             }
 
-            $deliveryFee = 10000;
+            $deliveryFee = isset($data['delivery_fee']) ? (float) $data['delivery_fee'] : 10000;
             $total = $subtotal + $deliveryFee;
+
+            $status = $data['status'] ?? 'pending';
+            $paymentStatus = $data['payment_status'] ?? 'unpaid';
+            $paidAmount = isset($data['paid_amount']) ? (float) $data['paid_amount'] : 0.0;
+
+            if ($paymentStatus === 'paid' && $paidAmount <= 0) {
+                $paidAmount = $total;
+            } elseif ($paymentStatus === 'unpaid') {
+                $paidAmount = 0.0;
+            }
 
             $order = Order::create([
                 'order_code' => $this->generateOrderCode(),
@@ -169,7 +179,12 @@ class OrderService
                 'subtotal' => $subtotal,
                 'delivery_fee' => $deliveryFee,
                 'total' => $total,
-                'status' => 'pending',
+                'status' => $status,
+                'payment_status' => $paymentStatus,
+                'paid_amount' => $paidAmount,
+                'payment_method' => $data['payment_method'] ?? null,
+                'payment_note' => $data['payment_note'] ?? null,
+                'paid_at' => $paymentStatus !== 'unpaid' ? ($data['paid_at'] ?? now()) : null,
             ]);
 
             foreach ($itemsCalculated as $calcItem) {

@@ -29,6 +29,15 @@ export interface CreateOrderPayload {
   }[]
 }
 
+export interface CreateAdminOrderPayload extends CreateOrderPayload {
+  delivery_fee?: number
+  status?: OrderStatus
+  payment_status?: PaymentStatus
+  paid_amount?: number
+  payment_method?: string
+  payment_note?: string
+}
+
 export interface OrderItemAddon {
   id?: number
   addon_id?: number | null

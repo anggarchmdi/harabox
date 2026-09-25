@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Addon;
 use App\Models\AddonGroup;
+use App\Models\CapacityOverride;
 use App\Models\Category;
 use App\Models\Order;
 use App\Models\Product;
@@ -15,6 +16,12 @@ use Tests\TestCase;
 class OrderFlowTest extends TestCase
 {
     use DatabaseTransactions;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        CapacityOverride::query()->delete();
+    }
 
     public function test_customer_can_order_product_without_addons(): void
     {

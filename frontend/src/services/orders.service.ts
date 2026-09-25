@@ -9,6 +9,7 @@ import type {
   PaymentStatus,
   UpdateOrderPaymentPayload,
   CreateOrderPayload,
+  CreateAdminOrderPayload,
   OrderRecapResponse,
   OrderRecapParams,
 } from '../types/orders'
@@ -126,6 +127,18 @@ export const ordersService = {
         message: string
         data: { order_code: string }
       }>('/orders', data)
+
+    return response.data.data
+  },
+
+  async createManualOrder(
+    data: CreateAdminOrderPayload,
+  ): Promise<Order> {
+    const response = await api.post<{
+      success: boolean
+      message: string
+      data: Order
+    }>('/admin/orders', data)
 
     return response.data.data
   },
