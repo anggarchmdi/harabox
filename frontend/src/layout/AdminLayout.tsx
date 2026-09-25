@@ -27,7 +27,7 @@ import { authService } from '../services/auth.service'
 import { useAuthStore } from '../stores/auth.store'
 import { useThemeStore } from '../stores/theme.store'
 import { dashboardService } from '../services/dashboard.service'
-import LogoProfile from '../assets/hachi.webp'
+import LogoProfile from '../assets/PawonHara.webp'
 
 interface MenuItem {
   label: string
@@ -178,7 +178,7 @@ export default function AdminLayout() {
           onClick={toggleCollapse}
           aria-label={isCollapsed ? 'Perluas Sidebar' : 'Perkecil Sidebar'}
           title={isCollapsed ? 'Perluas Sidebar' : 'Perkecil Sidebar'}
-          className={`absolute -right-3.5 top-7 hidden lg:flex h-7 w-7 items-center justify-center rounded-full border shadow-xs transition-all z-40 focus:outline-none cursor-pointer ${
+          className={`absolute -right-3.5 top-80 hidden lg:flex h-7 w-7 items-center justify-center rounded-full border shadow-xs transition-all z-40 focus:outline-none cursor-pointer ${
             isDark
               ? 'bg-[#2D120F] border-[#60241E] text-stone-300 hover:text-white hover:bg-[#381612] focus:ring-2 focus:ring-[#F59E0B]/30'
               : 'bg-white border-stone-200 text-stone-500 hover:text-stone-950 hover:bg-stone-50 focus:ring-2 focus:ring-red-500/20'
@@ -200,11 +200,10 @@ export default function AdminLayout() {
           {isCollapsed ? (
             <Link
               to="/admin"
-              className="group relative flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#60241E] via-[#95271D] to-[#E77B49] text-amber-300 shadow-md ring-2 ring-[#F59E0B]/30 transition hover:scale-105"
+              className="group relative flex h-14 w-14 items-center justify-center transition hover:scale-105"
               title="Pawon Hara Admin"
             >
-              <span className="font-dhaksinarga text-base font-bold tracking-wider">PH</span>
-
+                <img src={LogoProfile} alt="" />
               {/* Tooltip */}
               <div className="pointer-events-none absolute left-full ml-3 hidden group-hover:flex items-center rounded-xl bg-stone-900 px-3 py-1.5 text-xs font-semibold text-white shadow-xl z-50 whitespace-nowrap">
                 Pawon Hara Admin
@@ -213,8 +212,8 @@ export default function AdminLayout() {
           ) : (
             <>
               <Link to="/admin" className="flex items-center gap-3">
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#60241E] via-[#95271D] to-[#E77B49] text-amber-300 shadow-md ring-2 ring-[#F59E0B]/30">
-                  <span className="font-dhaksinarga text-base font-bold tracking-wider">PH</span>
+                <div className="flex h-14 w-14 items-center justify-center rounded-xl">
+                <img src={LogoProfile} className='w-' alt="" />
                 </div>
                 <div className="flex flex-col">
                   <span
@@ -230,15 +229,6 @@ export default function AdminLayout() {
                 </div>
               </Link>
               <div className="flex items-center gap-1.5">
-                <span
-                  className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
-                    isDark
-                      ? 'bg-[#1C0B09] border border-[#60241E] text-amber-300'
-                      : 'bg-stone-100 border border-stone-200/80 text-stone-600'
-                  }`}
-                >
-                  Admin
-                </span>
               </div>
             </>
           )}
@@ -818,7 +808,7 @@ export default function AdminLayout() {
                       {user?.name || 'Administrator'}
                     </p>
                     <p className={`text-[11px] truncate ${isDark ? 'text-stone-400' : 'text-stone-400'}`}>
-                      {user?.email || 'admin@harabox.com'}
+                      {user?.email || 'admin@pawonhara.com'}
                     </p>
                     <div
                       className={`mt-2 flex items-center gap-1.5 text-[10px] font-semibold rounded-md px-2 py-0.5 ${
