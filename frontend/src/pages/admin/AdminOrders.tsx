@@ -13,6 +13,7 @@ import {
   MapPin,
   MessageCircle,
   PackageCheck,
+  Printer,
   Receipt,
   RefreshCw,
   Search,
@@ -34,6 +35,7 @@ import OrderTable, {
   getWhatsAppInvoiceUrl,
   getWhatsAppTestimonialUrl,
 } from '../../components/admin/orders/OrderTable'
+import PrintOrderModal from '../../components/admin/orders/PrintOrderModal'
 import OrderStatusBadge from '../../components/admin/orders/OrderStatusBadge'
 import PaymentStatusBadge from '../../components/admin/orders/PaymentStatusBadge'
 import PageLoader from '../../components/ui/PageLoader'
@@ -147,6 +149,7 @@ export default function AdminOrders() {
   const [selectedStatus, setSelectedStatus] = useState<OrderStatus | ''>('')
   const [selectedPaymentStatus, setSelectedPaymentStatus] = useState<PaymentStatus | ''>('')
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
+  const [printingOrder, setPrintingOrder] = useState<Order | null>(null)
   const [updatingStatus, setUpdatingStatus] = useState(false)
   const [updatingPayment, setUpdatingPayment] = useState(false)
 
@@ -624,6 +627,7 @@ export default function AdminOrders() {
           <OrderTable
             orders={orders}
             onView={(order) => setSelectedOrder(order)}
+            onPrint={(order) => setPrintingOrder(order)}
             onStatusUpdated={() => refetch()}
           />
 
@@ -1279,6 +1283,16 @@ export default function AdminOrders() {
                   </a>
                 )}
 
+                <button
+                  type="button"
+                  onClick={() => setPrintingOrder(selectedOrder)}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold shadow-xs transition cursor-pointer"
+                  title="Cetak Struk Kasir / Slip Dapur / Invoice Resmi"
+                >
+                  <Printer size={14} />
+                  <span>Cetak Nota / Slip</span>
+                </button>
+
                 <a
                   href={getWhatsAppInvoiceUrl(selectedOrder)}
                   target="_blank"
@@ -1293,6 +1307,13 @@ export default function AdminOrders() {
           </div>
         </div>
       )}
+
+      {/* Print Order Modal (Struk Thermal, Slip Dapur, Invoice Resmi) */}
+      <PrintOrderModal
+        order={printingOrder}
+        isOpen={!!printingOrder}
+        onClose={() => setPrintingOrder(null)}
+      />
     </div>
     </>
   )

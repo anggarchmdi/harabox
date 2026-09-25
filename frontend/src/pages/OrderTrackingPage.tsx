@@ -37,6 +37,7 @@ import { useThemeStore } from '../stores/theme.store'
 import { getImageUrl } from '../utils/image'
 import PageLoader from '../components/ui/PageLoader'
 import PaymentStatusBadge from '../components/admin/orders/PaymentStatusBadge'
+import PrintOrderModal from '../components/admin/orders/PrintOrderModal'
 
 // Fallback images
 import BentoKatsuImg from '../assets/nasibox/bento-katsu-b.webp'
@@ -256,6 +257,7 @@ export default function OrderTrackingPage() {
   const [loading, setLoading] = useState(false)
   const [hasSearched, setHasSearched] = useState(false)
   const [copied, setCopied] = useState(false)
+  const [isPrintModalOpen, setIsPrintModalOpen] = useState(false)
 
   const fetchOrder = async (codeToFetch: string, phoneToVerify?: string) => {
     const cleanCode = codeToFetch.trim().toUpperCase()
@@ -301,7 +303,7 @@ export default function OrderTrackingPage() {
   }
 
   const handlePrint = () => {
-    window.print()
+    setIsPrintModalOpen(true)
   }
 
   const currentTheme = order ? STATUS_CONFIG[order.status] || STATUS_CONFIG.pending : STATUS_CONFIG.pending
@@ -1291,6 +1293,13 @@ export default function OrderTrackingPage() {
             </p>
           </div>
         )}
+
+        {/* Print Order Modal (Struk Thermal, Slip Dapur, Invoice) */}
+        <PrintOrderModal
+          order={order}
+          isOpen={isPrintModalOpen}
+          onClose={() => setIsPrintModalOpen(false)}
+        />
       </div>
     </main>
   )

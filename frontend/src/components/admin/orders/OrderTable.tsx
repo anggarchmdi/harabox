@@ -4,6 +4,7 @@ import {
   Eye,
   MapPin,
   MessageCircle,
+  Printer,
   Receipt,
   Star,
   User,
@@ -19,6 +20,7 @@ import PaymentStatusBadge from './PaymentStatusBadge'
 interface OrderTableProps {
   orders: Order[]
   onView: (order: Order) => void
+  onPrint?: (order: Order) => void
   onStatusUpdated?: () => void
 }
 
@@ -153,6 +155,7 @@ Terima kasih banyak atas kepercayaannya! Semoga acaranya sukses dan berkesan, ka
 export default function OrderTable({
   orders,
   onView,
+  onPrint,
   onStatusUpdated,
 }: OrderTableProps) {
   const isDark = useThemeStore((state) => state.theme === 'dark')
@@ -488,6 +491,18 @@ export default function OrderTable({
                         </a>
                       )}
 
+                      {onPrint && (
+                        <button
+                          type="button"
+                          onClick={() => onPrint(order)}
+                          className="inline-flex items-center gap-1 rounded-lg bg-red-600 px-2.5 py-1 text-xs font-semibold text-white shadow-2xs hover:bg-red-700 transition cursor-pointer"
+                          title="Cetak Nota Kasir / Slip Dapur / Invoice"
+                        >
+                          <Printer size={13} />
+                          <span>Cetak Nota</span>
+                        </button>
+                      )}
+
                       <button
                         type="button"
                         onClick={() => onView(order)}
@@ -684,6 +699,18 @@ export default function OrderTable({
                       <Star size={13} className="fill-white" />
                       <span>Testimoni</span>
                     </a>
+                  )}
+
+                  {onPrint && (
+                    <button
+                      type="button"
+                      onClick={() => onPrint(order)}
+                      className="inline-flex items-center gap-1 rounded-lg bg-red-600 px-3 py-1.5 text-xs font-semibold text-white shadow-2xs hover:bg-red-700 transition cursor-pointer"
+                      title="Cetak Nota Kasir / Slip Dapur"
+                    >
+                      <Printer size={13} />
+                      <span>Cetak</span>
+                    </button>
                   )}
 
                   <button
