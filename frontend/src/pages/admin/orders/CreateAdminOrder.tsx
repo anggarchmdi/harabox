@@ -13,6 +13,7 @@ import {
   X,
   AlertCircle,
   FileCheck2,
+  Check,
 } from 'lucide-react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
@@ -84,7 +85,9 @@ export default function CreateAdminOrder() {
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
   const [configuringProduct, setConfiguringProduct] = useState<Product | null>(null)
   const [tempQuantity, setTempQuantity] = useState(1)
-  const [tempAddons, setTempAddons] = useState<Record<number, Addon>>({}) // groupId -> Addon
+  const [tempSelectedAddons, setTempSelectedAddons] = useState<
+    { addon: Addon; groupName: string; groupId: number }[]
+  >([])
 
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -139,33 +142,58 @@ export default function CreateAdminOrder() {
   const handleOpenConfigure = (product: Product) => {
     setConfiguringProduct(product)
     setTempQuantity(Math.max(1, product.minimum_order || 1))
-    setTempAddons({})
+    setTempSelectedAddons([])
+  }
 
-    // Auto-select required addon if only 1 option exists
-    const groups: AddonGroup[] = product.addon_groups || product.addonGroups || []
-    const initialAddons: Record<number, Addon> = {}
-    groups.forEach((g) => {
-      if (g.is_required && g.addons && g.addons.length > 0) {
-        initialAddons[g.id] = g.addons[0]
+  // Toggle single addon in modal (multi-select / checkbox)
+  const handleToggleAddon = (group: AddonGroup, addon: Addon) => {
+    setTempSelectedAddons((prev) => {
+      const isSelected = prev.some((item) => item.addon.id === addon.id)
+      if (isSelected) {
+        return prev.filter((item) => item.addon.id !== addon.id)
+      } else {
+        return [...prev, { addon, groupName: group.name, groupId: group.id }]
       }
     })
-    setTempAddons(initialAddons)
   }
+
+  // Select all addons in a group
+  const handleSelectAllInGroup = (group: AddonGroup) => {
+    setTempSelectedAddons((prev) => {
+      const otherGroups = prev.filter((item) => item.groupId !== group.id)
+      const allThisGroup = group.addons.map((a) => ({
+        addon: a,
+        groupName: group.name,
+        groupId: group.id,
+      }))
+      return [...otherGroups, ...allThisGroup]
+    })
+  }
+
+  // Clear all addons in a group
+  const handleClearGroup = (groupId: number) => {
+    setTempSelectedAddons((prev) => prev.filter((item) => item.groupId !== groupId))
+  }
+
+  // Modal live calculations
+  const modalAddonsExtraPerUnit = useMemo(() => {
+    return tempSelectedAddons.reduce(
+      (sum, item) => sum + Number(item.addon.price || 0),
+      0
+    )
+  }, [tempSelectedAddons])
+
+  const modalUnitPrice = useMemo(() => {
+    return Number(configuringProduct?.price || 0) + modalAddonsExtraPerUnit
+  }, [configuringProduct, modalAddonsExtraPerUnit])
+
+  const modalTotalPrice = useMemo(() => {
+    return modalUnitPrice * tempQuantity
+  }, [modalUnitPrice, tempQuantity])
 
   // Confirm Product Addition to Cart
   const handleConfirmAddToCart = () => {
     if (!configuringProduct) return
-
-    const groups: AddonGroup[] =
-      configuringProduct.addon_groups || configuringProduct.addonGroups || []
-
-    // Validate required addon groups
-    for (const g of groups) {
-      if (g.is_required && !tempAddons[g.id]) {
-        toast.error(`Silakan pilih opsi untuk "${g.name}".`)
-        return
-      }
-    }
 
     if (tempQuantity < (configuringProduct.minimum_order || 1)) {
       toast.error(
@@ -174,13 +202,10 @@ export default function CreateAdminOrder() {
       return
     }
 
-    const selectedAddonList = Object.entries(tempAddons).map(([groupIdStr, addon]) => {
-      const g = groups.find((grp) => grp.id === Number(groupIdStr))
-      return {
-        addon,
-        groupName: g?.name || 'Addon',
-      }
-    })
+    const selectedAddonList = tempSelectedAddons.map(({ addon, groupName }) => ({
+      addon,
+      groupName,
+    }))
 
     const newItem: SelectedOrderItem = {
       tempId: `${configuringProduct.id}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
@@ -191,7 +216,11 @@ export default function CreateAdminOrder() {
 
     setItems((prev) => [...prev, newItem])
     setConfiguringProduct(null)
-    toast.success(`${configuringProduct.name} (${tempQuantity}x) ditambahkan ke pesanan.`)
+    toast.success(
+      `${configuringProduct.name} (${tempQuantity}x${
+        selectedAddonList.length > 0 ? ` + ${selectedAddonList.length} addon` : ''
+      }) ditambahkan ke pesanan.`
+    )
   }
 
   // Change quantity of item in cart
@@ -716,13 +745,18 @@ export default function CreateAdminOrder() {
                                 {item.selectedAddons.map((a, aIdx) => (
                                   <span
                                     key={aIdx}
-                                    className={`text-[9px] px-1.5 py-0.5 rounded font-medium ${
+                                    className={`text-[9px] px-1.5 py-0.5 rounded font-medium inline-flex items-center gap-1 ${
                                       isDark
                                         ? 'bg-[#240E0C] text-amber-300 border border-[#60241E]'
                                         : 'bg-amber-50 text-amber-800 border border-amber-200'
                                     }`}
                                   >
-                                    {a.addon.name}
+                                    <span>{a.addon.name}</span>
+                                    {Number(a.addon.price || 0) > 0 && (
+                                      <span className="opacity-75 font-semibold">
+                                        (+{formatRupiah(a.addon.price)})
+                                      </span>
+                                    )}
                                   </span>
                                 ))}
                               </div>
@@ -997,25 +1031,33 @@ export default function CreateAdminOrder() {
       {configuringProduct && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200">
           <div
-            className={`w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-3xl border p-6 shadow-2xl transition-all ${
+            className={`w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-3xl border p-5 sm:p-6 shadow-2xl transition-all ${
               isDark ? 'border-[#60241E] bg-[#1C0B09] text-stone-100' : 'border-stone-200 bg-white text-stone-900'
             }`}
           >
             {/* Modal Header */}
-            <div className="flex items-center justify-between pb-4 border-b border-stone-200 dark:border-[#60241E]">
+            <div className="flex items-start justify-between pb-4 border-b border-stone-200 dark:border-[#60241E]">
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-wider text-red-600">
-                  Kustomisasi Menu
-                </p>
+                <div className="flex items-center gap-2">
+                  <span className="flex h-2 w-2 rounded-full bg-red-600" />
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-red-600">
+                    Kustomisasi Menu & Addon (Pilihan Banyak)
+                  </p>
+                </div>
                 <h3 className="text-lg font-extrabold mt-0.5">{configuringProduct.name}</h3>
-                <p className="text-xs font-bold text-red-600 dark:text-red-400 mt-0.5">
-                  Harga Dasar: {formatRupiah(configuringProduct.price)}
-                </p>
+                <div className="flex flex-wrap items-center gap-2 mt-1">
+                  <span className="text-xs font-bold text-red-600 dark:text-red-400">
+                    Harga Dasar: {formatRupiah(configuringProduct.price)}
+                  </span>
+                  <span className="text-[10px] px-2 py-0.5 rounded-full font-semibold border border-red-500/30 bg-red-500/10 text-red-600 dark:text-red-300">
+                    Bebas Pilih Banyak
+                  </span>
+                </div>
               </div>
               <button
                 type="button"
                 onClick={() => setConfiguringProduct(null)}
-                className={`p-2 rounded-full border transition cursor-pointer ${
+                className={`p-2 rounded-full border transition cursor-pointer shrink-0 ${
                   isDark
                     ? 'border-[#60241E] bg-[#240E0C] text-stone-400 hover:text-white'
                     : 'border-stone-200 bg-stone-50 text-stone-500 hover:text-stone-900'
@@ -1029,51 +1071,125 @@ export default function CreateAdminOrder() {
             <div className="py-4 space-y-5">
               {/* Addon Groups */}
               {((configuringProduct.addon_groups || configuringProduct.addonGroups || []) as AddonGroup[]).map(
-                (group) => (
-                  <div key={group.id} className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <p className="text-xs font-bold">
-                        {group.name}{' '}
-                        {group.is_required && <span className="text-red-500">*Wajib</span>}
-                      </p>
-                      <span className="text-[10px] text-stone-400">
-                        {group.min_selection > 0
-                          ? `Pilih min. ${group.min_selection}`
-                          : 'Pilihan opsional'}
-                      </span>
-                    </div>
+                (group) => {
+                  const groupSelectedCount = tempSelectedAddons.filter(
+                    (item) => item.groupId === group.id
+                  ).length
+                  const allSelectedInGroup =
+                    group.addons.length > 0 &&
+                    group.addons.every((a) =>
+                      tempSelectedAddons.some((item) => item.addon.id === a.id)
+                    )
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                      {group.addons.map((addon) => {
-                        const isSelected = tempAddons[group.id]?.id === addon.id
-                        return (
+                  return (
+                    <div
+                      key={group.id}
+                      className={`p-3.5 rounded-2xl border space-y-2.5 ${
+                        isDark ? 'border-[#60241E]/70 bg-[#240E0C]/70' : 'border-stone-200/90 bg-stone-50/60'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <h4 className="text-xs font-bold tracking-tight">
+                              {group.name}
+                            </h4>
+                            {groupSelectedCount > 0 ? (
+                              <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-red-600 text-white shadow-2xs">
+                                {groupSelectedCount} dipilih
+                              </span>
+                            ) : (
+                              <span className="text-[10px] px-2 py-0.5 rounded-full font-medium text-stone-400 bg-stone-200/60 dark:bg-stone-800">
+                                0 dipilih
+                              </span>
+                            )}
+                          </div>
+                          {group.description && (
+                            <p className="text-[11px] text-stone-400 mt-0.5">{group.description}</p>
+                          )}
+                        </div>
+
+                        {/* Quick group toggle */}
+                        {group.addons.length > 1 && (
                           <button
-                            key={addon.id}
                             type="button"
-                            onClick={() => {
-                              setTempAddons((prev) => ({
-                                ...prev,
-                                [group.id]: addon,
-                              }))
-                            }}
-                            className={`p-2.5 rounded-xl border text-left transition cursor-pointer flex items-center justify-between ${
-                              isSelected
-                                ? 'border-red-600 bg-red-50/10 text-red-600 dark:text-red-400 shadow-xs'
-                                : isDark
-                                  ? 'border-[#60241E]/60 bg-[#240E0C] text-stone-300 hover:border-stone-600'
-                                  : 'border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100'
-                            }`}
+                            onClick={() =>
+                              allSelectedInGroup
+                                ? handleClearGroup(group.id)
+                                : handleSelectAllInGroup(group)
+                            }
+                            className="text-[10px] font-bold text-red-600 dark:text-red-400 hover:underline cursor-pointer shrink-0"
                           >
-                            <span className="text-xs font-semibold">{addon.name}</span>
-                            <span className="text-[10px] font-bold shrink-0">
-                              {Number(addon.price) > 0 ? `+${formatRupiah(addon.price)}` : 'Termasuk'}
-                            </span>
+                            {allSelectedInGroup ? 'Batal Semua' : 'Pilih Semua'}
                           </button>
-                        )
-                      })}
+                        )}
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        {group.addons.map((addon) => {
+                          const isSelected = tempSelectedAddons.some(
+                            (item) => item.addon.id === addon.id
+                          )
+                          const priceNum = Number(addon.price || 0)
+
+                          return (
+                            <button
+                              key={addon.id}
+                              type="button"
+                              onClick={() => handleToggleAddon(group, addon)}
+                              className={`p-2.5 rounded-xl border text-left transition cursor-pointer flex items-center justify-between gap-2.5 ${
+                                isSelected
+                                  ? isDark
+                                    ? 'border-red-500 bg-red-950/40 text-white shadow-xs ring-1 ring-red-500/40'
+                                    : 'border-red-600 bg-red-50 text-red-950 shadow-xs ring-1 ring-red-500/20'
+                                  : isDark
+                                    ? 'border-[#60241E]/60 bg-[#1C0B09] text-stone-300 hover:border-red-600/50 hover:bg-[#250E0C]'
+                                    : 'border-stone-200 bg-white text-stone-700 hover:border-red-300 hover:bg-stone-50'
+                              }`}
+                            >
+                              <div className="flex items-center gap-2.5 min-w-0">
+                                {/* Checkbox Indicator */}
+                                <div
+                                  className={`w-4 h-4 rounded-md border flex items-center justify-center shrink-0 transition-all ${
+                                    isSelected
+                                      ? 'border-red-600 bg-red-600 text-white'
+                                      : isDark
+                                        ? 'border-stone-600 bg-[#240E0C]'
+                                        : 'border-stone-300 bg-white'
+                                  }`}
+                                >
+                                  {isSelected && <Check size={11} strokeWidth={3} />}
+                                </div>
+                                <div className="min-w-0">
+                                  <p className="text-xs font-semibold truncate leading-tight">
+                                    {addon.name}
+                                  </p>
+                                  {addon.description && (
+                                    <p className="text-[10px] text-stone-400 truncate">
+                                      {addon.description}
+                                    </p>
+                                  )}
+                                </div>
+                              </div>
+
+                              <span
+                                className={`text-[10px] font-bold shrink-0 px-1.5 py-0.5 rounded-md ${
+                                  priceNum > 0
+                                    ? isSelected
+                                      ? 'text-red-700 dark:text-red-300 bg-red-100 dark:bg-red-900/50'
+                                      : 'text-stone-500 dark:text-stone-400 bg-stone-100 dark:bg-stone-800'
+                                    : 'text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40'
+                                }`}
+                              >
+                                {priceNum > 0 ? `+${formatRupiah(priceNum)}` : 'Termasuk'}
+                              </span>
+                            </button>
+                          )
+                        })}
+                      </div>
                     </div>
-                  </div>
-                )
+                  )
+                }
               )}
 
               {/* Quantity */}
@@ -1123,28 +1239,71 @@ export default function CreateAdminOrder() {
                   </button>
                 </div>
               </div>
+
+              {/* Live Price Summary Box in Modal */}
+              <div
+                className={`p-3.5 rounded-2xl border space-y-2 text-xs ${
+                  isDark ? 'border-[#60241E]/70 bg-[#1C0B09]' : 'border-stone-200 bg-stone-50'
+                }`}
+              >
+                <div className="flex justify-between text-stone-400">
+                  <span>Harga dasar menu:</span>
+                  <span className="font-semibold text-stone-700 dark:text-stone-200">
+                    {formatRupiah(configuringProduct.price)} / box
+                  </span>
+                </div>
+                <div className="flex justify-between text-stone-400">
+                  <span>Total addon dipilih:</span>
+                  <span className="font-semibold text-stone-700 dark:text-stone-200">
+                    {modalAddonsExtraPerUnit > 0
+                      ? `+${formatRupiah(modalAddonsExtraPerUnit)} (${tempSelectedAddons.length} addon)`
+                      : 'Rp 0 (Tanpa addon)'}
+                  </span>
+                </div>
+                <div className="flex justify-between text-stone-400">
+                  <span>Harga per box:</span>
+                  <span className="font-bold text-red-600 dark:text-red-400">
+                    {formatRupiah(modalUnitPrice)}
+                  </span>
+                </div>
+                <div className="pt-2 border-t border-stone-200 dark:border-[#60241E] flex justify-between items-center font-extrabold text-sm">
+                  <span>Subtotal ({tempQuantity} box):</span>
+                  <span className="text-red-600 dark:text-red-400 text-base">
+                    {formatRupiah(modalTotalPrice)}
+                  </span>
+                </div>
+              </div>
             </div>
 
             {/* Modal Footer */}
-            <div className="pt-3 border-t border-stone-200 dark:border-[#60241E] flex items-center justify-end gap-2">
-              <button
-                type="button"
-                onClick={() => setConfiguringProduct(null)}
-                className={`px-4 py-2 rounded-xl text-xs font-bold border transition cursor-pointer ${
-                  isDark
-                    ? 'border-[#60241E] bg-[#240E0C] text-stone-300'
-                    : 'border-stone-200 bg-stone-100 text-stone-700'
-                }`}
-              >
-                Batal
-              </button>
-              <button
-                type="button"
-                onClick={handleConfirmAddToCart}
-                className="px-5 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold shadow-xs transition cursor-pointer"
-              >
-                Tambahkan ke Pesanan
-              </button>
+            <div className="pt-3 border-t border-stone-200 dark:border-[#60241E] flex items-center justify-between gap-2">
+              <div className="text-[11px] text-stone-400 hidden sm:block">
+                {tempSelectedAddons.length > 0
+                  ? `${tempSelectedAddons.length} addon dipilih`
+                  : 'Belum ada addon dipilih'}
+              </div>
+
+              <div className="flex items-center gap-2 ml-auto">
+                <button
+                  type="button"
+                  onClick={() => setConfiguringProduct(null)}
+                  className={`px-4 py-2.5 rounded-xl text-xs font-bold border transition cursor-pointer ${
+                    isDark
+                      ? 'border-[#60241E] bg-[#240E0C] text-stone-300 hover:text-white'
+                      : 'border-stone-200 bg-stone-100 text-stone-700 hover:bg-stone-200'
+                  }`}
+                >
+                  Batal
+                </button>
+                <button
+                  type="button"
+                  onClick={handleConfirmAddToCart}
+                  className="px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold shadow-xs transition cursor-pointer flex items-center gap-1.5"
+                >
+                  <Plus size={14} />
+                  <span>Tambahkan ({formatRupiah(modalTotalPrice)})</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>

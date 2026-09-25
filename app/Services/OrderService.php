@@ -16,9 +16,9 @@ class OrderService
         protected KitchenCapacityService $capacityService
     ) {}
 
-    public function createOrder(array $data): Order
+    public function createOrder(array $data, bool $isAdmin = false): Order
     {
-        return DB::transaction(function () use ($data) {
+        return DB::transaction(function () use ($data, $isAdmin) {
             $items = collect($data['items']);
 
             // Validate kitchen capacity for event_date
@@ -111,16 +111,18 @@ class OrderService
                         $selectedInGroup = array_intersect($selectedAddonIds, $groupAddonIds);
                         $count = count($selectedInGroup);
 
-                        if ($count < $group->min_selection) {
-                            throw new RuntimeException(
-                                "Silakan pilih {$group->name} untuk {$product->name}."
-                            );
-                        }
+                        if (! $isAdmin) {
+                            if ($count < $group->min_selection) {
+                                throw new RuntimeException(
+                                    "Silakan pilih {$group->name} untuk {$product->name}."
+                                );
+                            }
 
-                        if ($count > $group->max_selection) {
-                            throw new RuntimeException(
-                                "Pilihan {$group->name} melebihi batas maksimal ({$group->max_selection}) untuk {$product->name}."
-                            );
+                            if ($count > $group->max_selection) {
+                                throw new RuntimeException(
+                                    "Pilihan {$group->name} melebihi batas maksimal ({$group->max_selection}) untuk {$product->name}."
+                                );
+                            }
                         }
 
                         foreach ($selectedInGroup as $selId) {

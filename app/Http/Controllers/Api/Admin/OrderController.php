@@ -27,7 +27,8 @@ class OrderController extends Controller
     {
         try {
             $order = $this->orderService->createOrder(
-                $request->validated()
+                $request->validated(),
+                isAdmin: true
             );
 
             return response()->json([
