@@ -1,7 +1,5 @@
 import { useEffect, useState } from 'react'
 import {
-  ChevronLeft,
-  ChevronRight,
   Edit3,
   FolderOpen,
   Plus,
@@ -21,6 +19,7 @@ import { AxiosError } from 'axios'
 import type { Category, CategoryForm } from '../../types/category'
 import { categoryService } from '../../services/category.services'
 import PageLoader from '../../components/ui/PageLoader'
+import Pagination from '../../components/ui/Pagination'
 import { useThemeStore } from '../../stores/theme.store'
 import useDebounce from '../../hooks/useDebounce'
 
@@ -496,47 +495,14 @@ export default function AdminCategories() {
             </div>
 
             {/* Pagination Controls */}
-            {data && data.last_page && data.last_page > 1 && (
-              <div className={`flex items-center justify-between border-t px-6 py-3.5 text-xs ${
-                isDark ? 'border-[#60241E]/60' : 'border-stone-100'
-              }`}>
-                <p className={isDark ? 'text-stone-400' : 'text-stone-500'}>
-                  Menampilkan <span className={`font-semibold ${isDark ? 'text-stone-200' : 'text-stone-800'}`}>{data.from ?? 0}</span>-
-                  <span className={`font-semibold ${isDark ? 'text-stone-200' : 'text-stone-800'}`}>{data.to ?? 0}</span> dari{' '}
-                  <span className={`font-semibold ${isDark ? 'text-stone-200' : 'text-stone-800'}`}>{data.total}</span> kategori
-                </p>
-
-                <div className="flex items-center gap-1.5">
-                  <button
-                    type="button"
-                    disabled={page === 1 || isFetching}
-                    onClick={() => setPage((c) => c - 1)}
-                    className={`flex h-8 w-8 items-center justify-center rounded-lg border transition disabled:opacity-40 ${
-                      isDark
-                        ? 'border-[#60241E] bg-[#1C0B09] text-stone-300 hover:bg-[#2D120F]'
-                        : 'border-stone-200 bg-white text-stone-600 hover:bg-stone-50'
-                    }`}
-                  >
-                    <ChevronLeft size={15} />
-                  </button>
-                  <span className="flex h-8 min-w-8 items-center justify-center rounded-lg bg-red-600 px-2.5 font-bold text-white">
-                    {page}
-                  </span>
-                  <button
-                    type="button"
-                    disabled={page >= data.last_page || isFetching}
-                    onClick={() => setPage((c) => c + 1)}
-                    className={`flex h-8 w-8 items-center justify-center rounded-lg border transition disabled:opacity-40 ${
-                      isDark
-                        ? 'border-[#60241E] bg-[#1C0B09] text-stone-300 hover:bg-[#2D120F]'
-                        : 'border-stone-200 bg-white text-stone-600 hover:bg-stone-50'
-                    }`}
-                  >
-                    <ChevronRight size={15} />
-                  </button>
-                </div>
-              </div>
-            )}
+            <Pagination
+              currentPage={page}
+              lastPage={data?.last_page ?? 1}
+              total={data?.total ?? 0}
+              onPageChange={setPage}
+              itemName="kategori"
+              disabled={isFetching}
+            />
           </div>
 
           {/* Mobile Responsive Cards View (block md:hidden) */}
@@ -609,41 +575,15 @@ export default function AdminCategories() {
             ))}
 
             {/* Mobile Pagination */}
-            {data && data.last_page && data.last_page > 1 && (
-              <div className={`flex items-center justify-between rounded-xl border p-3 text-xs ${
-                isDark ? 'border-[#60241E] bg-[#240E0C]' : 'border-stone-200/90 bg-white'
-              }`}>
-                <span className={isDark ? 'text-stone-400' : 'text-stone-500'}>
-                  Halaman {page} dari {data.last_page}
-                </span>
-                <div className="flex gap-1.5">
-                  <button
-                    type="button"
-                    disabled={page === 1 || isFetching}
-                    onClick={() => setPage((c) => c - 1)}
-                    className={`rounded-lg border px-3 py-1 font-semibold disabled:opacity-40 transition ${
-                      isDark
-                        ? 'border-[#60241E] bg-[#1C0B09] text-stone-300 hover:bg-[#2D120F]'
-                        : 'border-stone-200 text-stone-700 hover:bg-stone-50'
-                    }`}
-                  >
-                    Prev
-                  </button>
-                  <button
-                    type="button"
-                    disabled={page >= data.last_page || isFetching}
-                    onClick={() => setPage((c) => c + 1)}
-                    className={`rounded-lg border px-3 py-1 font-semibold disabled:opacity-40 transition ${
-                      isDark
-                        ? 'border-[#60241E] bg-[#1C0B09] text-stone-300 hover:bg-[#2D120F]'
-                        : 'border-stone-200 text-stone-700 hover:bg-stone-50'
-                    }`}
-                  >
-                    Next
-                  </button>
-                </div>
-              </div>
-            )}
+            <Pagination
+              currentPage={page}
+              lastPage={data?.last_page ?? 1}
+              total={data?.total ?? 0}
+              onPageChange={setPage}
+              itemName="kategori"
+              disabled={isFetching}
+              className="rounded-2xl border"
+            />
           </div>
         </div>
       )}

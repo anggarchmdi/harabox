@@ -16,6 +16,7 @@ import { toast } from 'sonner'
 import { testimonialService, type TestimonialFilters } from '../../services/testimonial.service'
 import type { Testimonial } from '../../types/testimonial'
 import PageLoader from '../../components/ui/PageLoader'
+import Pagination from '../../components/ui/Pagination'
 import { useThemeStore } from '../../stores/theme.store'
 import useDebounce from '../../hooks/useDebounce'
 
@@ -49,6 +50,7 @@ export default function AdminTestimonials() {
   // Filter params untuk service
   const queryParams: TestimonialFilters = {
     page,
+    per_page: 10,
     search: debouncedSearch.trim() || undefined,
     is_displayed:
       statusFilter === 'displayed'
@@ -486,43 +488,15 @@ export default function AdminTestimonials() {
         </div>
 
         {/* Pagination Controls */}
-        {data?.data && data.data.last_page > 1 && (
-          <div className={`flex items-center justify-between pt-2 border-t text-xs ${
-            isDark ? 'border-[#60241E]/60' : 'border-stone-100'
-          }`}>
-            <span className={isDark ? 'text-stone-400' : 'text-stone-500'}>
-              Menampilkan {data.data.from ?? 0} - {data.data.to ?? 0} dari {data.data.total} testimoni
-            </span>
-            <div className="flex items-center gap-1">
-              <button
-                type="button"
-                disabled={page <= 1}
-                onClick={() => setPage((p) => Math.max(p - 1, 1))}
-                className={`px-3 py-1.5 rounded-xl border font-bold disabled:opacity-40 disabled:pointer-events-none transition ${
-                  isDark
-                    ? 'border-[#60241E] bg-[#1C0B09] text-stone-300 hover:bg-[#2D120F]'
-                    : 'border-stone-200 bg-white text-stone-700 hover:bg-stone-50'
-                }`}
-              >
-                Sebelumnya
-              </button>
-              <span className={`px-2 font-bold ${isDark ? 'text-stone-200' : 'text-stone-800'}`}>
-                {page} / {data.data.last_page}
-              </span>
-              <button
-                type="button"
-                disabled={page >= data.data.last_page}
-                onClick={() => setPage((p) => Math.min(p + 1, data.data.last_page))}
-                className={`px-3 py-1.5 rounded-xl border font-bold disabled:opacity-40 disabled:pointer-events-none transition ${
-                  isDark
-                    ? 'border-[#60241E] bg-[#1C0B09] text-stone-300 hover:bg-[#2D120F]'
-                    : 'border-stone-200 bg-white text-stone-700 hover:bg-stone-50'
-                }`}
-              >
-                Berikutnya
-              </button>
-            </div>
-          </div>
+        {data?.data && (
+          <Pagination
+            currentPage={page}
+            lastPage={data.data.last_page}
+            total={data.data.total}
+            onPageChange={setPage}
+            itemName="testimoni"
+            className="rounded-b-2xl border-t mt-2"
+          />
         )}
       </div>
 

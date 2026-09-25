@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import {
@@ -37,6 +37,7 @@ import type { DashboardRecentOrder } from '../../types/dashboard'
 import type { OrderStatus } from '../../types/orders'
 import type { Product } from '../../types/products'
 import PageLoader from '../../components/ui/PageLoader'
+import Pagination from '../../components/ui/Pagination'
 import { useThemeStore } from '../../stores/theme.store'
 import useDebounce from '../../hooks/useDebounce'
 
@@ -227,6 +228,10 @@ export default function AdminDashboard() {
     }
   }
 
+  // Recent orders pagination state (maksimal 10 baris per halaman)
+  const [orderPage, setOrderPage] = useState<number>(1)
+  const recentOrdersPerPage = 10
+
   // Filtered recent orders
   const filteredRecentOrders = useMemo(() => {
     if (!data?.recent_orders) return []
@@ -244,6 +249,18 @@ export default function AdminDashboard() {
       return matchesStatus && matchesSearch
     })
   }, [data?.recent_orders, orderFilterStatus, debouncedOrderSearch])
+
+  // Reset page saat filter berubah
+  useEffect(() => {
+    setOrderPage(1)
+  }, [orderFilterStatus, debouncedOrderSearch])
+
+  const recentOrdersTotal = filteredRecentOrders.length
+  const recentOrdersLastPage = Math.ceil(recentOrdersTotal / recentOrdersPerPage) || 1
+  const paginatedRecentOrders = useMemo(() => {
+    const start = (orderPage - 1) * recentOrdersPerPage
+    return filteredRecentOrders.slice(start, start + recentOrdersPerPage)
+  }, [filteredRecentOrders, orderPage])
 
   // 7-day Revenue Chart calculations
   const revenueChart = useMemo(() => {
@@ -837,8 +854,8 @@ export default function AdminDashboard() {
             </thead>
 
             <tbody className={`divide-y text-xs ${isDark ? 'divide-[#60241E]/50' : 'divide-stone-100'}`}>
-              {filteredRecentOrders.length > 0 ? (
-                filteredRecentOrders.map((order) => {
+              {paginatedRecentOrders.length > 0 ? (
+                paginatedRecentOrders.map((order) => {
                   const invoiceUrl = generateDashboardWhatsAppInvoice(order)
                   const cleanPhone = order.customers_phone.replace(/[^0-9]/g, '')
                   const waChatUrl = `https://wa.me/${cleanPhone.startsWith('0') ? '62' + cleanPhone.slice(1) : cleanPhone}`
@@ -978,8 +995,8 @@ export default function AdminDashboard() {
 
         {/* Mobile Responsive Order Cards (< md) */}
         <div className={`block md:hidden divide-y p-4 space-y-4 ${isDark ? 'divide-[#60241E]/50' : 'divide-stone-100'}`}>
-          {filteredRecentOrders.length > 0 ? (
-            filteredRecentOrders.map((order) => {
+          {paginatedRecentOrders.length > 0 ? (
+            paginatedRecentOrders.map((order) => {
               const invoiceUrl = generateDashboardWhatsAppInvoice(order)
               const cleanPhone = order.customers_phone.replace(/[^0-9]/g, '')
               const waChatUrl = `https://wa.me/${cleanPhone.startsWith('0') ? '62' + cleanPhone.slice(1) : cleanPhone}`
@@ -1076,6 +1093,15 @@ export default function AdminDashboard() {
             </div>
           )}
         </div>
+
+        {/* Pagination Footer Pesanan Masuk Terbaru (Maksimal 10 Baris) */}
+        <Pagination
+          currentPage={orderPage}
+          lastPage={recentOrdersLastPage}
+          total={recentOrdersTotal}
+          onPageChange={setOrderPage}
+          itemName="pesanan masuk"
+        />
       </div>
 
       {/* =====================================================
@@ -1309,10 +1335,21 @@ export default function AdminDashboard() {
 ====================================================== */
 function ProductMonitoringSection() {
   const isDark = useThemeStore((state) => state.theme === 'dark')
+  const [productPage, setProductPage] = useState(1)
+  const productPerPage = 10
+
   const { data: products, isLoading } = useQuery({
     queryKey: ['dashboard-products'],
     queryFn: productService.getAll,
   })
+
+  const productTotal = products?.length ?? 0
+  const productLastPage = Math.ceil(productTotal / productPerPage) || 1
+  const paginatedProducts = useMemo(() => {
+    if (!products) return []
+    const start = (productPage - 1) * productPerPage
+    return products.slice(start, start + productPerPage)
+  }, [products, productPage])
 
   return (
     <div className={`rounded-2xl border p-5 sm:p-6 shadow-2xs space-y-4 sm:space-y-5 ${
@@ -1329,7 +1366,7 @@ function ProductMonitoringSection() {
             </h2>
           </div>
           <p className={`mt-0.5 text-xs ${isDark ? 'text-amber-100/70' : 'text-stone-500'}`}>
-            Katalog katering aktif yang saat ini tampil dan dapat langsung dipesan oleh pelanggan di website.
+            Katalog katering aktif yang saat ini tampil dan dapat langsung dipesan oleh pelanggan di website (maks. 10 per halaman).
           </p>
         </div>
 
@@ -1364,72 +1401,84 @@ function ProductMonitoringSection() {
             <div key={n} className={`h-20 rounded-xl animate-pulse ${isDark ? 'bg-[#2D120F]' : 'bg-stone-100'}`} />
           ))}
         </div>
-      ) : products && products.length > 0 ? (
-        <div className="grid gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-4 pt-1">
-          {products.map((product) => {
-            const displayImage = getProductDisplayImage(product)
-            const minOrder = product.minimum_order || 10
+      ) : paginatedProducts.length > 0 ? (
+        <>
+          <div className="grid gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-4 pt-1">
+            {paginatedProducts.map((product) => {
+              const displayImage = getProductDisplayImage(product)
+              const minOrder = product.minimum_order || 10
 
-            return (
-              <div
-                key={product.id}
-                className={`group relative flex items-center gap-3 rounded-xl border p-3 transition-all ${
-                  isDark
-                    ? 'border-[#60241E] bg-[#1C0B09]/80 hover:bg-[#2D120F] hover:border-[#803028]'
-                    : 'border-stone-200/80 bg-stone-50/60 hover:bg-white hover:border-stone-300 hover:shadow-2xs'
-                }`}
-              >
-                {/* Thumbnail */}
-                <div className={`h-14 w-14 shrink-0 overflow-hidden rounded-lg relative ${isDark ? 'bg-[#2D120F]' : 'bg-stone-200'}`}>
-                  <img
-                    src={displayImage}
-                    alt={product.name}
-                    className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                  />
-                </div>
-
-                {/* Details */}
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-1.5">
-                    <span className="inline-block rounded bg-emerald-500/20 text-emerald-400 px-1.5 py-0.2 text-[9px] font-bold">
-                      Aktif
-                    </span>
-                    {product.category && (
-                      <span className={`text-[10px] truncate ${isDark ? 'text-amber-100/60' : 'text-stone-400'}`}>
-                        {product.category.name}
-                      </span>
-                    )}
+              return (
+                <div
+                  key={product.id}
+                  className={`group relative flex items-center gap-3 rounded-xl border p-3 transition-all ${
+                    isDark
+                      ? 'border-[#60241E] bg-[#1C0B09]/80 hover:bg-[#2D120F] hover:border-[#803028]'
+                      : 'border-stone-200/80 bg-stone-50/60 hover:bg-white hover:border-stone-300 hover:shadow-2xs'
+                  }`}
+                >
+                  {/* Thumbnail */}
+                  <div className={`h-14 w-14 shrink-0 overflow-hidden rounded-lg relative ${isDark ? 'bg-[#2D120F]' : 'bg-stone-200'}`}>
+                    <img
+                      src={displayImage}
+                      alt={product.name}
+                      className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
                   </div>
 
-                  <h4 className={`font-bold text-xs truncate mt-0.5 ${isDark ? 'text-white' : 'text-stone-950'}`} title={product.name}>
-                    {product.name}
-                  </h4>
+                  {/* Details */}
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-1.5">
+                      <span className="inline-block rounded bg-emerald-500/20 text-emerald-400 px-1.5 py-0.2 text-[9px] font-bold">
+                        Aktif
+                      </span>
+                      {product.category && (
+                        <span className={`text-[10px] truncate ${isDark ? 'text-amber-100/60' : 'text-stone-400'}`}>
+                          {product.category.name}
+                        </span>
+                      )}
+                    </div>
 
-                  <p className={`text-xs font-bold font-mono mt-0.5 ${isDark ? 'text-amber-200' : 'text-stone-950'}`}>
-                    {formatRupiah(product.price)}
-                  </p>
+                    <h4 className={`font-bold text-xs truncate mt-0.5 ${isDark ? 'text-white' : 'text-stone-950'}`} title={product.name}>
+                      {product.name}
+                    </h4>
 
-                  <p className={`text-[10px] ${isDark ? 'text-amber-100/60' : 'text-stone-400'}`}>
-                    Min. {minOrder} porsi
-                  </p>
+                    <p className={`text-xs font-bold font-mono mt-0.5 ${isDark ? 'text-amber-200' : 'text-stone-950'}`}>
+                      {formatRupiah(product.price)}
+                    </p>
+
+                    <p className={`text-[10px] ${isDark ? 'text-amber-100/60' : 'text-stone-400'}`}>
+                      Min. {minOrder} porsi
+                    </p>
+                  </div>
+
+                  {/* Quick Edit Icon Link */}
+                  <Link
+                    to={`/admin/products/${product.id}/edit`}
+                    className={`opacity-0 group-hover:opacity-100 transition-opacity p-1.5 rounded-lg border shadow-2xs shrink-0 ${
+                      isDark
+                        ? 'bg-[#240E0C] border-[#60241E] text-stone-300 hover:text-white hover:bg-[#381612]'
+                        : 'bg-white border-stone-200 text-stone-600 hover:text-stone-950 hover:bg-stone-50'
+                    }`}
+                    title="Edit produk ini"
+                  >
+                    <Edit size={13} />
+                  </Link>
                 </div>
+              )
+            })}
+          </div>
 
-                {/* Quick Edit Icon Link */}
-                <Link
-                  to={`/admin/products/${product.id}/edit`}
-                  className={`opacity-0 group-hover:opacity-100 transition-opacity p-1.5 rounded-lg border shadow-2xs shrink-0 ${
-                    isDark
-                      ? 'bg-[#240E0C] border-[#60241E] text-stone-300 hover:text-white hover:bg-[#381612]'
-                      : 'bg-white border-stone-200 text-stone-600 hover:text-stone-950 hover:bg-stone-50'
-                  }`}
-                  title="Edit produk ini"
-                >
-                  <Edit size={13} />
-                </Link>
-              </div>
-            )
-          })}
-        </div>
+          {/* Pagination Footer Menu Produk */}
+          <Pagination
+            currentPage={productPage}
+            lastPage={productLastPage}
+            total={productTotal}
+            onPageChange={setProductPage}
+            itemName="produk menu"
+            className="rounded-xl border border-dashed mt-2"
+          />
+        </>
       ) : (
         <div className={`py-8 text-center text-xs ${isDark ? 'text-amber-100/60' : 'text-stone-400'}`}>
           Belum ada produk aktif yang tampil di menu.

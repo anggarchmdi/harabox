@@ -7,8 +7,6 @@ import {
 } from '@tanstack/react-query'
 import {
   Search,
-  ChevronLeft,
-  ChevronRight,
   Plus,
   RotateCcw,
   X,
@@ -19,6 +17,7 @@ import { categoryService } from '../../../services/category.services'
 import type { Product } from '../../../types/products'
 import ProductTable from '../../../components/admin/products/ProductTable'
 import PageLoader from '../../../components/ui/PageLoader'
+import Pagination from '../../../components/ui/Pagination'
 import { useThemeStore } from '../../../stores/theme.store'
 import useDebounce from '../../../hooks/useDebounce'
 
@@ -166,8 +165,6 @@ export default function Products() {
   const currentPage = productResponse?.current_page ?? 1
   const lastPage = productResponse?.last_page ?? 1
   const total = productResponse?.total ?? 0
-  const from = productResponse?.from ?? 0
-  const to = productResponse?.to ?? 0
 
   const handleEdit = (product: Product) => {
     navigate(`/admin/products/${product.id}/edit`)
@@ -348,52 +345,14 @@ export default function Products() {
           />
 
           {/* Pagination */}
-          {total > 0 && lastPage > 1 && (
-            <div className={`flex flex-col sm:flex-row items-center justify-between gap-3 pt-2 text-xs ${
-              isDark ? 'text-amber-100/70' : 'text-stone-500'
-            }`}>
-              <p>
-                Menampilkan{' '}
-                <span className={`font-bold ${isDark ? 'text-white' : 'text-stone-900'}`}>{from}</span> -{' '}
-                <span className={`font-bold ${isDark ? 'text-white' : 'text-stone-900'}`}>{to}</span> dari{' '}
-                <span className={`font-bold ${isDark ? 'text-white' : 'text-stone-900'}`}>{total}</span> produk
-              </p>
-
-              <div className="flex items-center gap-1.5">
-                <button
-                  type="button"
-                  disabled={currentPage <= 1}
-                  onClick={() => setPage((p) => Math.max(1, p - 1))}
-                  className={`flex h-8 w-8 items-center justify-center rounded-lg border transition disabled:opacity-40 ${
-                    isDark
-                      ? 'border-[#60241E] text-stone-300 hover:bg-[#2D120F]'
-                      : 'border-stone-200 text-stone-600 hover:bg-stone-50'
-                  }`}
-                  aria-label="Halaman Sebelumnya"
-                >
-                  <ChevronLeft size={15} />
-                </button>
-
-                <span className={`px-3 font-semibold ${isDark ? 'text-stone-200' : 'text-stone-800'}`}>
-                  {currentPage} / {lastPage}
-                </span>
-
-                <button
-                  type="button"
-                  disabled={currentPage >= lastPage}
-                  onClick={() => setPage((p) => Math.min(lastPage, p + 1))}
-                  className={`flex h-8 w-8 items-center justify-center rounded-lg border transition disabled:opacity-40 ${
-                    isDark
-                      ? 'border-[#60241E] text-stone-300 hover:bg-[#2D120F]'
-                      : 'border-stone-200 text-stone-600 hover:bg-stone-50'
-                  }`}
-                  aria-label="Halaman Selanjutnya"
-                >
-                  <ChevronRight size={15} />
-                </button>
-              </div>
-            </div>
-          )}
+          <Pagination
+            currentPage={currentPage}
+            lastPage={lastPage}
+            total={total}
+            onPageChange={setPage}
+            itemName="produk katering"
+            className="rounded-2xl mt-4"
+          />
         </>
       )}
     </div>

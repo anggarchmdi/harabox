@@ -4,8 +4,6 @@ import {
   Calendar,
   CheckCircle2,
   ChefHat,
-  ChevronLeft,
-  ChevronRight,
   Clock,
   Coins,
   FileSpreadsheet,
@@ -39,6 +37,7 @@ import PrintOrderModal from '../../components/admin/orders/PrintOrderModal'
 import OrderStatusBadge from '../../components/admin/orders/OrderStatusBadge'
 import PaymentStatusBadge from '../../components/admin/orders/PaymentStatusBadge'
 import PageLoader from '../../components/ui/PageLoader'
+import Pagination from '../../components/ui/Pagination'
 import useDebounce from '../../hooks/useDebounce'
 
 function formatDate(date: string) {
@@ -192,7 +191,7 @@ export default function AdminOrders() {
     queryFn: () =>
       ordersService.getAll({
         page,
-        per_page: 15,
+        per_page: 10,
         status: selectedStatus || undefined,
         payment_status: selectedPaymentStatus || undefined,
         search: debouncedSearch.trim() || undefined,
@@ -632,78 +631,15 @@ export default function AdminOrders() {
           />
 
           {/* Pagination Controls */}
-          {pagination && pagination.last_page > 1 && (
-            <div
-              className={`flex flex-col sm:flex-row items-center justify-between gap-3 pt-2 text-xs ${
-                isDark ? 'text-stone-400' : 'text-stone-500'
-              }`}
-            >
-              <p>
-                Menampilkan{' '}
-                <span
-                  className={`font-bold ${
-                    isDark ? 'text-white' : 'text-stone-900'
-                  }`}
-                >
-                  {pagination.from ?? 0}
-                </span>{' '}
-                -{' '}
-                <span
-                  className={`font-bold ${
-                    isDark ? 'text-white' : 'text-stone-900'
-                  }`}
-                >
-                  {pagination.to ?? 0}
-                </span>{' '}
-                dari{' '}
-                <span
-                  className={`font-bold ${
-                    isDark ? 'text-white' : 'text-stone-900'
-                  }`}
-                >
-                  {pagination.total}
-                </span>{' '}
-                pesanan
-              </p>
-
-              <div className="flex items-center gap-1.5">
-                <button
-                  type="button"
-                  disabled={!pagination.prev_page_url}
-                  onClick={() => setPage((p) => Math.max(1, p - 1))}
-                  className={`flex h-8 w-8 items-center justify-center rounded-lg border transition disabled:opacity-40 cursor-pointer ${
-                    isDark
-                      ? 'border-[#60241E] text-stone-300 hover:bg-[#2D120F]'
-                      : 'border-stone-200 text-stone-600 hover:bg-stone-50'
-                  }`}
-                  aria-label="Halaman Sebelumnya"
-                >
-                  <ChevronLeft size={15} />
-                </button>
-
-                <span
-                  className={`px-3 font-semibold ${
-                    isDark ? 'text-stone-200' : 'text-stone-800'
-                  }`}
-                >
-                  {pagination.current_page} / {pagination.last_page}
-                </span>
-
-                <button
-                  type="button"
-                  disabled={!pagination.next_page_url}
-                  onClick={() => setPage((p) => p + 1)}
-                  className={`flex h-8 w-8 items-center justify-center rounded-lg border transition disabled:opacity-40 cursor-pointer ${
-                    isDark
-                      ? 'border-[#60241E] text-stone-300 hover:bg-[#2D120F]'
-                      : 'border-stone-200 text-stone-600 hover:bg-stone-50'
-                  }`}
-                  aria-label="Halaman Selanjutnya"
-                >
-                  <ChevronRight size={15} />
-                </button>
-              </div>
-            </div>
+          {pagination && (
+            <Pagination
+              currentPage={pagination.current_page}
+              lastPage={pagination.last_page}
+              total={pagination.total}
+              onPageChange={setPage}
+              itemName="pesanan masuk"
+              className="rounded-2xl mt-4"
+            />
           )}
         </>
       )}
