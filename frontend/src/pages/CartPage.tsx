@@ -497,7 +497,7 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                             <div className="min-w-0 pr-1">
                               <Link
                                 to={`/menu/${item.product_slug}`}
-                                className={`text-xs sm:text-base font-dhaksinarga tracking-wide font-black transition line-clamp-2 leading-snug ${
+                                className={`text-xs sm:text-base font-poppins tracking-wide font-bold transition line-clamp-2 leading-snug ${
                                   isDark ? 'text-white hover:text-[#F59E0B]' : 'text-[#2B120E] hover:text-[#D97706]'
                                 }`}
                               >
@@ -648,7 +648,7 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                   isDark ? 'border-[#60241E] text-white' : 'border-[#E6DACD] text-[#2B120E]'
                 }`}>
                   <span>Ringkasan Pesanan</span>
-                  <span className={`rounded-full border px-2.5 py-0.5 text-xs font-bold ${
+                  <span className={`rounded-full border px-2.5 py-0.5 text-xs font-poppins ${
                     isDark ? 'bg-[#2D120F] border-[#60241E] text-amber-300' : 'bg-amber-100 border-amber-300 text-amber-900'
                   }`}>
                     {selectedDistinctCount} Menu Terpilih
@@ -687,7 +687,7 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                       <div className="flex items-start gap-2">
                         <Clock size={15} className={`shrink-0 mt-0.5 ${isDark ? 'text-[#F59E0B]' : 'text-[#D97706]'}`} />
                         <div className="text-[11px] leading-snug">
-                          <p className={`font-bold font-dhaksinarga tracking-wide ${isDark ? 'text-amber-300' : 'text-[#B45309]'}`}>
+                          <p className={`font-bold font-poppins tracking-wide ${isDark ? 'text-amber-300' : 'text-[#B45309]'}`}>
                             Batas Waktu Pemesanan (H-{selectedMaxLeadDays})
                           </p>
                           <p className={`mt-0.5 ${isDark ? 'text-amber-100/80' : 'text-[#6B423A]'}`}>
@@ -720,7 +720,7 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                   type="button"
                   onClick={handleOpenCheckout}
                   disabled={selectedDistinctCount === 0}
-                  className="hidden lg:inline-flex w-full items-center justify-center gap-2.5 rounded-2xl bg-gradient-to-r from-[#F59E0B] via-[#E77B49] to-[#F59E0B] px-6 py-4 text-sm font-dhaksinarga tracking-wide font-black text-[#1C0B09] shadow-lg shadow-[#F59E0B]/20 transition hover:brightness-110 hover:scale-[1.01] active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none cursor-pointer"
+                  className="hidden lg:inline-flex w-full items-center justify-center gap-2.5 rounded-2xl bg-gradient-to-r from-[#F59E0B] via-[#E77B49] to-[#F59E0B] px-6 py-4 text-sm font-poppins tracking-wide font-black text-[#1C0B09] shadow-lg shadow-[#F59E0B]/20 transition hover:brightness-110 hover:scale-[1.01] active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none cursor-pointer"
                 >
                   <MessageCircle size={20} />
                   <span>
