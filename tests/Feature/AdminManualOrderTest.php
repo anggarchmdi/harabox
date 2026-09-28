@@ -208,4 +208,42 @@ class AdminManualOrderTest extends TestCase
             'price' => 5000,
         ]);
     }
+
+    public function test_admin_manual_order_bypasses_lead_time_restriction(): void
+    {
+        Sanctum::actingAs($this->admin);
+
+        $category = Category::firstOrCreate(['slug' => 'cat-manual-lead-time'], ['name' => 'Cat Manual Lead Time']);
+        $product = Product::create([
+            'category_id' => $category->id,
+            'name' => 'Nasi Box H-3 Min 10',
+            'slug' => 'nasi-box-h3-'.uniqid(),
+            'price' => 25000,
+            'minimum_order' => 10,
+            'lead_time_days' => 3,
+            'addons_enabled' => false,
+            'is_active' => true,
+        ]);
+
+        $payload = [
+            'customers_name' => 'Pelanggan Walk-in Hari H',
+            'customers_phone' => '081234567899',
+            'event_date' => now()->format('Y-m-d'),
+            'delivery_address' => 'Ambil langsung di resto',
+            'items' => [
+                [
+                    'product_id' => $product->id,
+                    'quantity' => 10,
+                ],
+            ],
+        ];
+
+        $response = $this->postJson('/api/v1/admin/orders', $payload);
+
+        $response->assertStatus(201)
+            ->assertJson([
+                'success' => true,
+                'message' => 'Pesanan manual berhasil dibuat',
+            ]);
+    }
 }

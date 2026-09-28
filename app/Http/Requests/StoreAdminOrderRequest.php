@@ -52,4 +52,13 @@ class StoreAdminOrderRequest extends StoreOrderRequest
             ],
         ]);
     }
+
+    /**
+     * Configure the validator instance.
+     * Admin manual orders do not enforce lead time (H-3) restrictions.
+     */
+    public function withValidator($validator): void
+    {
+        // Intentionally empty to bypass lead time (H-3) validation on offline/admin orders.
+    }
 }

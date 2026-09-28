@@ -74,7 +74,7 @@ class OrderService
                     );
                 }
 
-                if (($product->lead_time_days ?? 0) > 0) {
+                if (! $isAdmin && ($product->lead_time_days ?? 0) > 0) {
                     $minAllowedDate = now()->startOfDay()->addDays($product->lead_time_days);
                     $eventDate = Carbon::parse($data['event_date'])->startOfDay();
                     if ($eventDate->lt($minAllowedDate)) {
