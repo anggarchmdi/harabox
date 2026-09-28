@@ -496,7 +496,7 @@ export default function OrderTable({
                           type="button"
                           onClick={() => onPrint(order)}
                           className="inline-flex items-center gap-1 rounded-lg bg-red-600 px-2.5 py-1 text-xs font-semibold text-white shadow-2xs hover:bg-red-700 transition cursor-pointer"
-                          title="Cetak Nota Kasir / Slip Dapur / Invoice"
+                          title="Cetak Slip Dapur / Invoice"
                         >
                           <Printer size={13} />
                           <span>Cetak Nota</span>

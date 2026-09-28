@@ -1223,7 +1223,7 @@ export default function AdminOrders() {
                   type="button"
                   onClick={() => setPrintingOrder(selectedOrder)}
                   className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold shadow-xs transition cursor-pointer"
-                  title="Cetak Struk Kasir / Slip Dapur / Invoice Resmi"
+                  title="Cetak Slip Dapur / Invoice Resmi"
                 >
                   <Printer size={14} />
                   <span>Cetak Nota / Slip</span>
@@ -1244,7 +1244,7 @@ export default function AdminOrders() {
         </div>
       )}
 
-      {/* Print Order Modal (Struk Thermal, Slip Dapur, Invoice Resmi) */}
+      {/* Print Order Modal (Slip Dapur, Invoice Resmi) */}
       <PrintOrderModal
         order={printingOrder}
         isOpen={!!printingOrder}

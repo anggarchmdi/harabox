@@ -2,7 +2,6 @@ import { useState, useRef } from 'react'
 import {
   Printer,
   X,
-  Receipt,
   ChefHat,
   FileText,
   Copy,
@@ -18,8 +17,7 @@ interface PrintOrderModalProps {
   onClose: () => void
 }
 
-type PrintTemplate = 'thermal' | 'kitchen' | 'invoice'
-type PaperWidth = '58mm' | '80mm'
+type PrintTemplate = 'kitchen' | 'invoice'
 
 function formatRupiah(value: string | number) {
   return `Rp ${Number(value || 0).toLocaleString('id-ID')}`
@@ -68,8 +66,7 @@ export default function PrintOrderModal({
   onClose,
 }: PrintOrderModalProps) {
   const isDark = useThemeStore((state) => state.theme === 'dark')
-  const [template, setTemplate] = useState<PrintTemplate>('thermal')
-  const [paperWidth, setPaperWidth] = useState<PaperWidth>('58mm')
+  const [template, setTemplate] = useState<PrintTemplate>('kitchen')
   const [copied, setCopied] = useState(false)
   const iframeRef = useRef<HTMLIFrameElement | null>(null)
 
@@ -200,23 +197,12 @@ Instagram: @pawonhara
   const generatePrintHtml = () => {
     const isKitchen = template === 'kitchen'
     const isInvoice = template === 'invoice'
-    const isThermal = template === 'thermal'
 
-    const receiptWidthCss = isThermal
-      ? paperWidth === '58mm'
-        ? 'width: 54mm; max-width: 54mm;'
-        : 'width: 76mm; max-width: 76mm;'
-      : isKitchen
-        ? 'width: 76mm; max-width: 76mm;'
-        : 'width: 100%; max-width: 210mm;' // A4
+    const receiptWidthCss = isKitchen
+      ? 'width: 76mm; max-width: 76mm;'
+      : 'width: 100%; max-width: 210mm;' // A4
 
-    const fontSize = isThermal
-      ? paperWidth === '58mm'
-        ? '10px'
-        : '12px'
-      : isKitchen
-        ? '12px'
-        : '13px'
+    const fontSize = isKitchen ? '12px' : '13px'
 
     let contentHtml = ''
 
@@ -308,7 +294,7 @@ Instagram: @pawonhara
           Dicetak: ${formatDateTime(new Date().toISOString())}
         </div>
       `
-    } else if (isInvoice) {
+    } else {
       // INVOICE RESMI STANDAR A4 / FORMAL
       contentHtml = `
         <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #000; padding-bottom: 12px;">
@@ -460,143 +446,6 @@ Instagram: @pawonhara
           </div>
         </div>
       `
-    } else {
-      // NOTA STRUK THERMAL STANDAR (58mm / 80mm)
-      contentHtml = `
-        <div class="header">
-          <div class="title" style="font-size: 16px; font-weight: 900; letter-spacing: 0.5px;">PAWON HARA</div>
-          <div style="font-size: 10px; margin-top: 1px;">Nasi Box & Katering Yogyakarta</div>
-          <div style="font-size: 10px;">WA: 0896-6974-3193</div>
-        </div>
-        <div class="divider-double"></div>
-
-        <div class="info-row">
-          <span>No. Nota:</span>
-          <span style="font-weight: bold;">${order.order_code}</span>
-        </div>
-        <div class="info-row">
-          <span>Tgl Pesan:</span>
-          <span>${formatDateTime(order.created_at)}</span>
-        </div>
-        <div class="info-row">
-          <span>Pemesan:</span>
-          <span><strong>${order.customers_name}</strong></span>
-        </div>
-        <div class="info-row">
-          <span>WhatsApp:</span>
-          <span>${order.customers_phone}</span>
-        </div>
-
-        <div class="divider"></div>
-        <div class="highlight-box">
-          <div style="font-size: 9px; font-weight: bold; text-transform: uppercase;">Jadwal Pengantaran Acara:</div>
-          <div style="font-size: 12px; font-weight: 900; margin-top: 1px;">
-            ${formatShortDate(order.event_date)} (${order.event_time ? `${order.event_time} WIB` : 'Siang'})
-          </div>
-        </div>
-
-        <div class="info-row" style="margin-top: 4px;">
-          <span>Alamat:</span>
-          <span style="text-align: right; max-width: 60%;">${order.delivery_address || '-'}</span>
-        </div>
-
-        <div class="divider-double"></div>
-        <div style="font-size: 10px; font-weight: 900; text-transform: uppercase; margin-bottom: 4px;">
-          RINCIAN MENU
-        </div>
-
-        ${(order.items || [])
-          .map((item) => {
-            const addonsPrice = (item.addons || []).reduce(
-              (sum, a) => sum + Number(a.price || 0),
-              0
-            )
-            const unitPrice = Number(item.price) + addonsPrice
-
-            return `
-            <div class="thermal-item">
-              <div style="font-weight: bold; font-size: 11px;">${item.item_name}</div>
-              <div style="display: flex; justify-content: space-between; font-size: 10px;">
-                <span>${item.quantity} x @${Number(unitPrice).toLocaleString('id-ID')}</span>
-                <span style="font-weight: bold;">${formatRupiah(item.subtotal)}</span>
-              </div>
-              ${
-                item.addons && item.addons.length > 0
-                  ? `
-                <div style="padding-left: 4px; font-size: 9px; color: #333;">
-                  ${item.addons
-                    .map(
-                      (a) => `
-                    <div>+ ${a.addon_name} (+${formatRupiah(a.price)})</div>
-                  `
-                    )
-                    .join('')}
-                </div>
-              `
-                  : ''
-              }
-            </div>
-          `
-          })
-          .join('')}
-
-        <div class="divider"></div>
-        <div class="total-row">
-          <span>Subtotal Menu:</span>
-          <span>${formatRupiah(subtotal)}</span>
-        </div>
-        <div class="total-row">
-          <span>Ongkos Kirim:</span>
-          <span>${formatRupiah(deliveryFee)}</span>
-        </div>
-        <div class="divider"></div>
-        <div class="total-row" style="font-size: 13px; font-weight: 900;">
-          <span>TOTAL:</span>
-          <span>${formatRupiah(total)}</span>
-        </div>
-        <div class="divider"></div>
-
-        <div class="total-row" style="font-weight: bold;">
-          <span>Status Bayar:</span>
-          <span>${paymentStatusText}</span>
-        </div>
-        <div class="total-row">
-          <span>Dibayar:</span>
-          <span>${formatRupiah(paidAmount)}</span>
-        </div>
-        ${
-          remaining > 0
-            ? `
-          <div class="total-row" style="font-weight: bold; color: #000;">
-            <span>Sisa Tagihan:</span>
-            <span>${formatRupiah(remaining)}</span>
-          </div>
-        `
-            : ''
-        }
-        <div class="total-row">
-          <span>Metode:</span>
-          <span>${order.payment_method || 'Transfer'}</span>
-        </div>
-
-        ${
-          order.notes
-            ? `
-          <div class="divider"></div>
-          <div style="font-size: 9px; font-style: italic;">
-            <strong>Catatan:</strong> ${order.notes}
-          </div>
-        `
-            : ''
-        }
-
-        <div class="divider-double"></div>
-        <div class="footer">
-          <div>Terima kasih atas pesanan Anda!</div>
-          <div style="margin-top: 2px;">Pawon Hara - Dari Pawon Ke Meja Anda</div>
-          <div>Instagram: @pawonhara</div>
-        </div>
-      `
     }
 
     return `
@@ -604,7 +453,7 @@ Instagram: @pawonhara
       <html>
       <head>
         <meta charset="utf-8">
-        <title>${isKitchen ? 'Slip_Dapur' : 'Nota'}_${order.order_code}</title>
+        <title>${isKitchen ? 'Slip_Dapur' : 'Invoice'}_${order.order_code}</title>
         <style>
           @page {
             margin: ${isInvoice ? '10mm' : '2mm'};
@@ -662,9 +511,6 @@ Instagram: @pawonhara
             margin-bottom: 8px;
             padding-bottom: 6px;
             border-bottom: 1px dashed #ccc;
-          }
-          .thermal-item {
-            margin-bottom: 5px;
           }
           .checkbox-box {
             font-family: monospace;
@@ -761,19 +607,6 @@ Instagram: @pawonhara
           <div className="flex items-center gap-1.5 p-1 rounded-xl border border-stone-200 dark:border-[#60241E] bg-white dark:bg-[#1C0B09]">
             <button
               type="button"
-              onClick={() => setTemplate('thermal')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
-                template === 'thermal'
-                  ? 'bg-red-600 text-white shadow-xs'
-                  : 'text-stone-500 hover:text-stone-900 dark:text-stone-400 dark:hover:text-white'
-              }`}
-            >
-              <Receipt size={13} />
-              <span>Struk Thermal (Kasir)</span>
-            </button>
-
-            <button
-              type="button"
               onClick={() => setTemplate('kitchen')}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
                 template === 'kitchen'
@@ -798,39 +631,6 @@ Instagram: @pawonhara
               <span>Invoice Resmi (A4)</span>
             </button>
           </div>
-
-          {/* Thermal Paper Width Selector */}
-          {template === 'thermal' && (
-            <div className="flex items-center gap-1.5">
-              <span className="text-[11px] font-semibold text-stone-400">
-                Lebar Kertas:
-              </span>
-              <div className="inline-flex rounded-lg border border-stone-200 dark:border-[#60241E] p-0.5 bg-white dark:bg-[#1C0B09]">
-                <button
-                  type="button"
-                  onClick={() => setPaperWidth('58mm')}
-                  className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition cursor-pointer ${
-                    paperWidth === '58mm'
-                      ? 'bg-red-600 text-white'
-                      : 'text-stone-500 hover:text-stone-800 dark:text-stone-400'
-                  }`}
-                >
-                  58mm (Kecil)
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setPaperWidth('80mm')}
-                  className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition cursor-pointer ${
-                    paperWidth === '80mm'
-                      ? 'bg-red-600 text-white'
-                      : 'text-stone-500 hover:text-stone-800 dark:text-stone-400'
-                  }`}
-                >
-                  80mm (Standar)
-                </button>
-              </div>
-            </div>
-          )}
         </div>
 
         {/* Live Preview Paper Container */}
@@ -839,9 +639,7 @@ Instagram: @pawonhara
             className={`bg-white text-black shadow-lg border border-stone-300 rounded-lg p-5 font-mono text-xs leading-relaxed select-text transition-all ${
               template === 'invoice'
                 ? 'w-full max-w-xl text-[12px]'
-                : paperWidth === '58mm'
-                  ? 'w-[280px] text-[11px]'
-                  : 'w-[360px] text-[12px]'
+                : 'w-[360px] text-[12px]'
             }`}
             style={{
               fontFamily:
@@ -929,7 +727,7 @@ Instagram: @pawonhara
                   </div>
                 </div>
               </div>
-            ) : template === 'invoice' ? (
+            ) : (
               <div className="space-y-4">
                 <div className="flex justify-between items-start border-b-2 border-black pb-3">
                   <div>
@@ -1024,112 +822,6 @@ Instagram: @pawonhara
                   </div>
                 </div>
               </div>
-            ) : (
-              // THERMAL RECEIPT PREVIEW (58mm / 80mm)
-              <div className="space-y-2">
-                <div className="text-center font-bold">
-                  <p className="text-sm font-extrabold tracking-wide">PAWON HARA</p>
-                  <p className="text-[10px]">Nasi Box & Katering Yogyakarta</p>
-                  <p className="text-[10px]">WA: 0896-6974-3193</p>
-                </div>
-                <div className="border-t-2 border-dashed border-black" />
-
-                <div className="space-y-0.5 text-[11px]">
-                  <div className="flex justify-between">
-                    <span>No. Nota:</span>
-                    <span className="font-bold">{order.order_code}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Tgl Order:</span>
-                    <span>{formatShortDate(order.created_at)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Pemesan:</span>
-                    <span className="font-bold">{order.customers_name}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>WhatsApp:</span>
-                    <span>{order.customers_phone}</span>
-                  </div>
-                </div>
-
-                <div className="border border-black p-1.5 text-center bg-stone-50 text-[10px]">
-                  <p className="font-bold uppercase text-[9px]">Jadwal Acara:</p>
-                  <p className="font-black text-xs">
-                    {formatShortDate(order.event_date)} (
-                    {order.event_time ? `${order.event_time} WIB` : 'Siang'})
-                  </p>
-                </div>
-
-                <div className="border-t border-dashed border-black" />
-                <p className="font-bold text-[10px] uppercase">Rincian Menu:</p>
-
-                <div className="space-y-1.5">
-                  {(order.items || []).map((item, idx) => (
-                    <div key={idx} className="text-[11px]">
-                      <p className="font-bold">{item.item_name}</p>
-                      <div className="flex justify-between text-[10px]">
-                        <span>
-                          {item.quantity} x @{formatRupiah(item.price)}
-                        </span>
-                        <span className="font-bold">{formatRupiah(item.subtotal)}</span>
-                      </div>
-                      {item.addons && item.addons.length > 0 && (
-                        <div className="pl-1 text-[9px] text-stone-700">
-                          {item.addons.map((a, aIdx) => (
-                            <p key={aIdx}>
-                              + {a.addon_name} (+{formatRupiah(a.price)})
-                            </p>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-
-                <div className="border-t border-dashed border-black" />
-                <div className="space-y-0.5 text-[11px]">
-                  <div className="flex justify-between">
-                    <span>Subtotal:</span>
-                    <span>{formatRupiah(subtotal)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Ongkir:</span>
-                    <span>{formatRupiah(deliveryFee)}</span>
-                  </div>
-                  <div className="flex justify-between font-black text-xs border-t border-black pt-1">
-                    <span>TOTAL:</span>
-                    <span>{formatRupiah(total)}</span>
-                  </div>
-                  <div className="flex justify-between pt-1">
-                    <span>Status:</span>
-                    <span className="font-bold">{paymentStatusText}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Dibayar:</span>
-                    <span>{formatRupiah(paidAmount)}</span>
-                  </div>
-                  {remaining > 0 && (
-                    <div className="flex justify-between font-bold">
-                      <span>Sisa:</span>
-                      <span>{formatRupiah(remaining)}</span>
-                    </div>
-                  )}
-                </div>
-
-                {order.notes && (
-                  <div className="border-t border-dashed border-black pt-1 text-[9px]">
-                    <span className="font-bold">Ket: </span>
-                    <span className="italic">{order.notes}</span>
-                  </div>
-                )}
-
-                <div className="border-t-2 border-dashed border-black pt-2 text-center text-[9px]">
-                  <p>Terima kasih atas pesanan Anda!</p>
-                  <p>Pawon Hara - Dari Pawon Ke Meja Anda</p>
-                  <p>IG: @pawonhara</p>
-                </div>
-              </div>
             )}
           </div>
         </div>
@@ -1137,11 +829,9 @@ Instagram: @pawonhara
         {/* Modal Actions Footer */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-5 py-4 border-t border-stone-200 dark:border-[#60241E]/80 shrink-0">
           <div className="text-xs text-stone-400">
-            {template === 'thermal'
-              ? `Format Struk Kasir (${paperWidth}) • Font Monospace Jelas & Rapi`
-              : template === 'kitchen'
-                ? 'Format Tiket Dapur • Dilengkapi Checkbox Porsi & Addon'
-                : 'Format Invoice Resmi • Ukuran A4 dengan Tanda Tangan'}
+            {template === 'kitchen'
+              ? 'Format Tiket Dapur • Dilengkapi Checkbox Porsi & Addon'
+              : 'Format Invoice Resmi • Ukuran A4 dengan Tanda Tangan'}
           </div>
 
           <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
