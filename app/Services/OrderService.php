@@ -13,12 +13,13 @@ use RuntimeException;
 class OrderService
 {
     public function __construct(
-        protected KitchenCapacityService $capacityService
+        protected KitchenCapacityService $capacityService,
+        protected WebPushService $webPushService
     ) {}
 
     public function createOrder(array $data, bool $isAdmin = false): Order
     {
-        return DB::transaction(function () use ($data, $isAdmin) {
+        $order = DB::transaction(function () use ($data, $isAdmin) {
             $items = collect($data['items']);
 
             // Validate kitchen capacity for event_date
@@ -211,6 +212,16 @@ class OrderService
 
             return $order;
         });
+
+        if (! $isAdmin) {
+            try {
+                $this->webPushService->sendOrderNotification($order);
+            } catch (\Throwable $e) {
+                report($e);
+            }
+        }
+
+        return $order;
     }
 
     private function generateOrderCode(): string

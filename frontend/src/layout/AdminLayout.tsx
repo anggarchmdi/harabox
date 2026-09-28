@@ -1,8 +1,9 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import {
+  Bell,
   Boxes,
   ChevronDown,
   ChevronLeft,
@@ -29,6 +30,13 @@ import { useThemeStore } from '../stores/theme.store'
 import { dashboardService } from '../services/dashboard.service'
 import LogoProfile from '../assets/PawonHara.webp'
 import PageLoader from '../components/ui/PageLoader'
+import {
+  registerServiceWorker,
+  showForegroundOrBackgroundNotification,
+  getCurrentPushSubscription,
+} from '../services/pwa.service'
+import { showDynamicIslandToast } from '../components/ui/AppToaster'
+import NotificationSettingsModal from '../components/admin/NotificationSettingsModal'
 
 interface MenuItem {
   label: string
@@ -115,11 +123,45 @@ export default function AdminLayout() {
   const { data: dashboardData } = useQuery({
     queryKey: ['dashboard'],
     queryFn: dashboardService.get,
-    refetchInterval: 30_000,
+    refetchInterval: 20_000,
   })
 
   const pendingOrdersCount = dashboardData?.summary?.pending_orders ?? 0
   const activeProductsCount = dashboardData?.summary?.active_products ?? 0
+
+  const [notificationModalOpen, setNotificationModalOpen] = useState(false)
+  const [isPushActive, setIsPushActive] = useState(false)
+  const previousOrdersCountRef = useRef<number | null>(null)
+
+  // Register service worker on mount & check push subscription status
+  useEffect(() => {
+    registerServiceWorker()
+    getCurrentPushSubscription().then((sub) => {
+      setIsPushActive(Boolean(sub))
+    })
+  }, [])
+
+  // Incoming order chime & notifications on polling update
+  useEffect(() => {
+    if (dashboardData?.summary?.pending_orders !== undefined) {
+      const currentCount = dashboardData.summary.pending_orders
+      if (previousOrdersCountRef.current !== null && currentCount > previousOrdersCountRef.current) {
+        const diff = currentCount - previousOrdersCountRef.current
+        showForegroundOrBackgroundNotification('🔔 Pesanan Baru Masuk!', {
+          body: `Ada ${diff} pesanan baru yang menunggu konfirmasi dapur Pawon Hara.`,
+          tag: 'new-incoming-order',
+        })
+        showDynamicIslandToast({
+          title: '🔔 Pesanan Baru Masuk!',
+          message: `Ada ${diff} pesanan baru menunggu konfirmasi dapur.`,
+          type: 'order',
+          actionLabel: 'Lihat',
+          onAction: () => navigate('/admin/orders'),
+        })
+      }
+      previousOrdersCountRef.current = currentCount
+    }
+  }, [dashboardData?.summary?.pending_orders, navigate])
 
   // Tutup mobile drawer saat berpindah halaman
   useEffect(() => {
@@ -752,6 +794,34 @@ export default function AdminLayout() {
               </Link>
             )}
 
+            {/* Notification Bell Button */}
+            <button
+              type="button"
+              onClick={() => setNotificationModalOpen(true)}
+              aria-label="Pengaturan Notifikasi Pesanan"
+              title="Notifikasi Pesanan (Web Push & Suara Bel)"
+              className={`group relative flex h-10 w-10 items-center justify-center rounded-xl border transition-all duration-200 cursor-pointer shadow-2xs ${
+                isDark
+                  ? 'border-[#60241E] bg-[#240E0C] text-amber-400 hover:border-amber-400 hover:bg-[#2D120F]'
+                  : 'border-stone-200 bg-white text-amber-600 hover:border-amber-500 hover:bg-[#FAF0E4]'
+              }`}
+            >
+              <Bell size={18} className="transition-transform duration-200 group-hover:scale-110" />
+              {/* Active Indicator Dot */}
+              <span className="absolute top-2 right-2 flex h-2.5 w-2.5">
+                <span
+                  className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
+                    isPushActive ? 'bg-emerald-400' : 'bg-amber-400'
+                  }`}
+                />
+                <span
+                  className={`relative inline-flex rounded-full h-2.5 w-2.5 ${
+                    isPushActive ? 'bg-emerald-500' : 'bg-amber-500'
+                  }`}
+                />
+              </span>
+            </button>
+
             {/* Theme Toggle Button */}
             <button
               type="button"
@@ -911,6 +981,16 @@ export default function AdminLayout() {
           <Outlet />
         </main>
       </div>
+
+      {/* Notification Settings Modal */}
+      <NotificationSettingsModal
+        isOpen={notificationModalOpen}
+        onClose={() => {
+          setNotificationModalOpen(false)
+          getCurrentPushSubscription().then((sub) => setIsPushActive(Boolean(sub)))
+        }}
+        isDark={isDark}
+      />
     </div>
   )
 }

@@ -1,7 +1,7 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
-import { Toaster } from 'sonner'
+import AppToaster from './components/ui/AppToaster'
 import App from './App'
 import 'aos/dist/aos.css'
 import './index.css'
@@ -12,7 +12,7 @@ createRoot(document.getElementById('root')!).render(
     <BrowserRouter>
     <QueryProvider>
       <App />
-      <Toaster position="top-right" richColors />
+      <AppToaster />
     </QueryProvider>
     </BrowserRouter>
   </StrictMode>,

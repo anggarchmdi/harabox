@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\Admin\DashboardController;
 use App\Http\Controllers\Api\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Api\Admin\OrderRecapController;
 use App\Http\Controllers\Api\Admin\ProductController as AdminProductController;
+use App\Http\Controllers\Api\Admin\PushNotificationController;
 use App\Http\Controllers\Api\Admin\SettingController as AdminSettingController;
 use App\Http\Controllers\Api\Admin\TestimonialController as AdminTestimonialController;
 use App\Http\Controllers\Api\CategoryController;
@@ -179,6 +180,13 @@ Route::prefix('v1')->group(function () {
             Route::patch('/testimonials/{testimonial}/toggle', [AdminTestimonialController::class, 'toggle']);
             Route::put('/testimonials/{testimonial}', [AdminTestimonialController::class, 'update']);
             Route::delete('/testimonials/{testimonial}', [AdminTestimonialController::class, 'destroy']);
+
+            // Web Push Notifications
+            Route::get('/push/vapid-key', [PushNotificationController::class, 'getVapidKey']);
+            Route::post('/push/subscribe', [PushNotificationController::class, 'subscribe']);
+            Route::post('/push/unsubscribe', [PushNotificationController::class, 'unsubscribe']);
+            Route::post('/push/test', [PushNotificationController::class, 'testPush']);
+            Route::get('/push/status', [PushNotificationController::class, 'status']);
 
         });
 
