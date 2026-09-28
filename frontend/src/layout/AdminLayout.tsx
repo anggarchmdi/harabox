@@ -21,6 +21,7 @@ import {
   SlidersHorizontal,
   Sun,
   Tags,
+  Users,
   X,
 } from 'lucide-react'
 
@@ -44,6 +45,7 @@ interface MenuItem {
   icon: typeof LayoutDashboard
   badgeKey?: 'pending_orders' | 'active_products'
   end?: boolean
+  superAdminOnly?: boolean
 }
 
 const mainMenus: MenuItem[] = [
@@ -86,6 +88,12 @@ const mainMenus: MenuItem[] = [
     label: 'Kapasitas & Pengaturan',
     to: '/admin/settings',
     icon: SlidersHorizontal,
+  },
+  {
+    label: 'Kelola Admin',
+    to: '/admin/users',
+    icon: Users,
+    superAdminOnly: true,
   },
 ]
 
@@ -355,7 +363,9 @@ export default function AdminLayout() {
             )}
 
             <nav className="space-y-1">
-              {mainMenus.map((menu) => {
+              {mainMenus
+                .filter((menu) => !menu.superAdminOnly || user?.role === 'super_admin')
+                .map((menu) => {
                 const Icon = menu.icon
                 const isPendingBadge = menu.badgeKey === 'pending_orders' && pendingOrdersCount > 0
                 const isActiveProductBadge = menu.badgeKey === 'active_products' && activeProductsCount > 0
@@ -615,7 +625,9 @@ export default function AdminLayout() {
                 Menu Utama
               </p>
               <nav className="space-y-1">
-                {mainMenus.map((menu) => {
+                {mainMenus
+                  .filter((menu) => !menu.superAdminOnly || user?.role === 'super_admin')
+                  .map((menu) => {
                   const Icon = menu.icon
                   const isPendingBadge = menu.badgeKey === 'pending_orders' && pendingOrdersCount > 0
 
@@ -915,17 +927,36 @@ export default function AdminLayout() {
                     </p>
                     <div
                       className={`mt-2 flex items-center gap-1.5 text-[10px] font-semibold rounded-md px-2 py-0.5 ${
-                        isDark
-                          ? 'text-emerald-400 bg-emerald-950/40 border border-emerald-800/50'
-                          : 'text-emerald-700 bg-emerald-50 border border-emerald-200/60'
+                        user?.role === 'super_admin'
+                          ? isDark
+                            ? 'text-amber-400 bg-amber-950/40 border border-amber-800/50'
+                            : 'text-amber-700 bg-amber-50 border border-amber-200/60'
+                          : isDark
+                            ? 'text-emerald-400 bg-emerald-950/40 border border-emerald-800/50'
+                            : 'text-emerald-700 bg-emerald-50 border border-emerald-200/60'
                       }`}
                     >
                       <ShieldCheck size={12} />
-                      <span>Hak Akses Super Admin</span>
+                      <span>{user?.role === 'super_admin' ? 'Hak Akses Super Admin' : 'Hak Akses Admin Staf'}</span>
                     </div>
                   </div>
 
                   <div className="p-1.5 space-y-0.5">
+                    {user?.role === 'super_admin' && (
+                      <Link
+                        to="/admin/users"
+                        onClick={() => setProfileOpen(false)}
+                        className={`flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-medium transition ${
+                          isDark
+                            ? 'text-amber-300 hover:bg-[#2D120F] hover:text-white'
+                            : 'text-amber-800 hover:bg-stone-100 hover:text-stone-950'
+                        }`}
+                      >
+                        <Users size={14} className="text-amber-400" />
+                        <span>Kelola Akun Admin</span>
+                      </Link>
+                    )}
+
                     <Link
                       to="/admin"
                       onClick={() => setProfileOpen(false)}

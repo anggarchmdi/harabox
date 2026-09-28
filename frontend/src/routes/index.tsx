@@ -17,6 +17,7 @@ import CreateProduct from '../pages/admin/products/CreateProduct'
 import EditProduct from '../pages/admin/products/EditProducts'
 import AdminTestimonials from '../pages/admin/AdminTestimonials'
 import AdminSettings from '../pages/admin/AdminSettings'
+import AdminUsers from '../pages/admin/users/AdminUsers'
 
 // layout
 import AdminLayout from '../layout/AdminLayout'
@@ -76,6 +77,9 @@ export default function AppRoutes() {
 
           {/* settings & capacity */}
           <Route path="settings" element={<AdminSettings />} />
+
+          {/* user / admin management (super admin) */}
+          <Route path="users" element={<AdminUsers />} />
 
         </Route>
       </Route>

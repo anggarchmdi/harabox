@@ -16,7 +16,10 @@ class PushNotificationTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->admin = User::first() ?? User::factory()->create();
+        $this->admin = User::factory()->create([
+            'role' => 'admin',
+            'is_active' => true,
+        ]);
     }
 
     public function test_guest_cannot_access_push_endpoints(): void

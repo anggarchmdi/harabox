@@ -2,7 +2,7 @@
   "name": "Pawon Hara - Katering & Nasi Box",
   "short_name": "Pawon Hara",
   "description": "Aplikasi Pemesanan & Manajemen Katering Pawon Hara",
-  "start_url": "/admin",
+  "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "orientation": "any",

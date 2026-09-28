@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Api\Admin\PushNotificationController;
 use App\Http\Controllers\Api\Admin\SettingController as AdminSettingController;
 use App\Http\Controllers\Api\Admin\TestimonialController as AdminTestimonialController;
+use App\Http\Controllers\Api\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\ProductController;
@@ -187,6 +188,17 @@ Route::prefix('v1')->group(function () {
             Route::post('/push/unsubscribe', [PushNotificationController::class, 'unsubscribe']);
             Route::post('/push/test', [PushNotificationController::class, 'testPush']);
             Route::get('/push/status', [PushNotificationController::class, 'status']);
+
+            // User / Admin Account Management (Super Admin only)
+            Route::middleware('super_admin')->prefix('users')->group(function () {
+                Route::get('/', [AdminUserController::class, 'index']);
+                Route::post('/', [AdminUserController::class, 'store']);
+                Route::get('/{user}', [AdminUserController::class, 'show']);
+                Route::put('/{user}', [AdminUserController::class, 'update']);
+                Route::delete('/{user}', [AdminUserController::class, 'destroy']);
+                Route::patch('/{user}/toggle-status', [AdminUserController::class, 'toggleStatus']);
+                Route::patch('/{user}/reset-password', [AdminUserController::class, 'resetPassword']);
+            });
 
         });
 
