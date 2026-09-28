@@ -575,8 +575,9 @@ export default function AdminLayout() {
               }`}
             >
               <div className="flex items-center gap-3">
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#60241E] via-[#95271D] to-[#E77B49] text-amber-300 shadow-md ring-2 ring-[#F59E0B]/30">
-                  <span className="font-dhaksinarga text-base font-bold tracking-wider">PH</span>
+                <div className="flex items-center justify-center rounded-xl  shadow-md ring-[#F59E0B]/30">
+                  {/* <span className="font-dhaksinarga text-base font-bold tracking-wider">PsH</span */}
+                  <img src={LogoProfile} className='w-10 h-10' alt="" />
                 </div>
                 <div className="flex flex-col">
                   <span
@@ -756,7 +757,7 @@ export default function AdminLayout() {
             </button>
             <div>
               <div
-                className={`flex items-center gap-1.5 text-[11px] font-medium ${
+                className={`flex hidden md:flex items-center gap-1.5 text-[11px] font-medium ${
                   isDark ? 'text-amber-200/50' : 'text-stone-400'
                 }`}
               >
@@ -767,7 +768,7 @@ export default function AdminLayout() {
                 </span>
               </div>
               <h2
-                className={`text-base sm:text-lg font-bold tracking-tight ${
+                className={`text-base hidden md:flex font-bold tracking-tight ${
                   isDark ? 'text-white' : 'text-stone-950'
                 }`}
               >
@@ -877,11 +878,11 @@ export default function AdminLayout() {
                 </div>
 
                 <div
-                  className={`flex h-8 w-8 items-center justify-center rounded-lg border overflow-hidden ${
-                    isDark ? 'bg-[#1C0B09] border-[#60241E]' : 'bg-stone-100 border-stone-200'
+                  className={`flex h-8 w-8 items-center justify-center overflow-hidden ${
+                    isDark ? '' : ''
                   }`}
                 >
-                  <img src={LogoProfile} className="h-6 w-6 object-cover" alt="Profile" />
+                  <img src={LogoProfile} className="h-8 w-8 object-cover" alt="Profile" />
                 </div>
 
                 <ChevronDown
