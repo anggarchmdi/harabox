@@ -14,7 +14,6 @@ import {
   ShieldCheck,
   ShoppingBag,
   ShoppingCart,
-  Sparkles,
   User,
   X,
 } from 'lucide-react'
