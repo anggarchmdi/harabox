@@ -24,6 +24,7 @@ import { ordersService } from '../services/orders.service'
 import { settingsService } from '../services/settings.service'
 import { getImageUrl } from '../utils/image'
 import PageLoader from '../components/ui/PageLoader'
+import { TimeInput24 } from '../components/ui/TimeInput24'
 
 // Fallback images
 import BentoKatsuImg from '../assets/nasibox/bento-katsu-b.webp'
@@ -882,7 +883,7 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
               <div className={`rounded-2xl border p-3.5 space-y-2 text-xs w-full max-w-full overflow-hidden ${
                 isDark ? 'border-[#60241E] bg-[#1C0B09]' : 'border-[#E6DACD] bg-white'
               }`}>
-                <p className={`font-dhaksinarga tracking-wide font-bold uppercase text-[11px] ${
+                <p className={`font-poppins tracking-wide font-bold uppercase text-[11px] ${
                   isDark ? 'text-amber-300' : 'text-[#B45309]'
                 }`}>
                   Daftar Menu yang Dipesan:
@@ -907,7 +908,7 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                 <div className={`border-t pt-2 flex justify-between items-baseline gap-2 font-bold min-w-0 ${
                   isDark ? 'border-[#60241E] text-white' : 'border-[#E6DACD] text-[#2B120E]'
                 }`}>
-                  <span className="font-dhaksinarga tracking-wide truncate">Total ({selectedDistinctCount} Menu):</span>
+                  <span className="font-poppins tracking-wide truncate">Total ({selectedDistinctCount} Menu):</span>
                   <span className="text-[#F59E0B] font-poppins tracking-wide font-black text-base shrink-0">
                     Rp {grandTotal.toLocaleString('id-ID')}
                   </span>
@@ -999,21 +1000,12 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                   }`}>
                     Jam Acara (Kira-kira)
                   </label>
-                  <div className="relative">
-                    <Clock size={16} className={`absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none ${
-                      isDark ? 'text-amber-400' : 'text-[#D97706]'
-                    }`} />
-                    <input
-                      type="time"
-                      value={eventTime}
-                      onChange={(e) => setEventTime(e.target.value)}
-                      className={`w-full max-w-full min-w-0 h-11 rounded-xl border pl-10 pr-3 text-base sm:text-sm font-medium outline-none transition ${
-                        isDark
-                          ? 'border-[#60241E] bg-[#1C0B09] text-white focus:border-[#F59E0B] focus:ring-2 focus:ring-[#F59E0B]/20'
-                          : 'border-[#E6DACD] bg-white text-[#2B120E] focus:border-[#D97706] focus:ring-2 focus:ring-[#D97706]/20'
-                      }`}
-                    />
-                  </div>
+                  <TimeInput24
+                    value={eventTime}
+                    onChange={setEventTime}
+                    isDark={isDark}
+                    placeholder="Contoh: 11:30"
+                  />
                 </div>
               </div>
 
@@ -1138,7 +1130,7 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                     isDateFull ||
                     isExceedingCapacity
                   }
-                  className="inline-flex items-center justify-center gap-2 px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm font-dhaksinarga tracking-wide font-black transition bg-gradient-to-r from-[#F59E0B] via-[#E77B49] to-[#F59E0B] text-[#1C0B09] shadow-lg shadow-[#F59E0B]/20 hover:brightness-110 active:scale-[0.99] disabled:bg-[#2D120F] disabled:text-stone-500 disabled:border disabled:border-[#60241E] disabled:cursor-not-allowed disabled:shadow-none cursor-pointer min-w-0 shrink"
+                  className="inline-flex items-center justify-center gap-2 px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm font-poppins tracking-wide font-black transition bg-gradient-to-r from-[#F59E0B] via-[#E77B49] to-[#F59E0B] text-[#1C0B09] shadow-lg shadow-[#F59E0B]/20 hover:brightness-110 active:scale-[0.99] disabled:bg-[#2D120F] disabled:text-stone-500 disabled:border disabled:border-[#60241E] disabled:cursor-not-allowed disabled:shadow-none cursor-pointer min-w-0 shrink"
                 >
                   {isSubmitting ? (
                     <span>Memproses...</span>

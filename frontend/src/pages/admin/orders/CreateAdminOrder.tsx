@@ -26,6 +26,7 @@ import { categoryService } from '../../../services/category.services'
 import { ordersService } from '../../../services/orders.service'
 import { useThemeStore } from '../../../stores/theme.store'
 import { getImageUrl } from '../../../utils/image'
+import { TimeInput24 } from '../../../components/ui/TimeInput24'
 
 function formatRupiah(value: string | number) {
   return new Intl.NumberFormat('id-ID', {
@@ -59,12 +60,10 @@ export default function CreateAdminOrder() {
 
   // Form Fields
   const now = new Date()
-  const tomorrow = new Date()
-  tomorrow.setDate(now.getDate() + 1)
 
   const [customerName, setCustomerName] = useState('')
   const [customerPhone, setCustomerPhone] = useState('')
-  const [eventDate, setEventDate] = useState(toDateInputValue(tomorrow))
+  const [eventDate, setEventDate] = useState(toDateInputValue(now))
   const [eventTime, setEventTime] = useState('11:00')
   const [deliveryAddress, setDeliveryAddress] = useState('')
   const [deliveryFee, setDeliveryFee] = useState<number>(10000)
@@ -449,6 +448,7 @@ export default function CreateAdminOrder() {
                     <input
                       type="date"
                       required
+                      min={toDateInputValue(now)}
                       value={eventDate}
                       onChange={(e) => setEventDate(e.target.value)}
                       className={`w-full rounded-xl border px-3.5 py-2.5 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-red-500/20 transition ${
@@ -469,19 +469,12 @@ export default function CreateAdminOrder() {
                   >
                     Waktu Acara (Jam)
                   </label>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      placeholder="Contoh: 11:30"
-                      value={eventTime}
-                      onChange={(e) => setEventTime(e.target.value)}
-                      className={`w-full rounded-xl border px-3.5 py-2.5 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-red-500/20 transition ${
-                        isDark
-                          ? 'border-[#60241E] bg-[#1C0B09] text-white focus:border-red-600'
-                          : 'border-stone-200 bg-stone-50 text-stone-900 focus:border-red-600'
-                      }`}
-                    />
-                  </div>
+                  <TimeInput24
+                    value={eventTime}
+                    onChange={setEventTime}
+                    isDark={isDark}
+                    placeholder="Contoh: 11:30"
+                  />
                 </div>
 
                 {/* Delivery Address */}

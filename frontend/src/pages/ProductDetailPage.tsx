@@ -20,6 +20,7 @@ import {
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'sonner'
 import PageLoader from '../components/ui/PageLoader'
+import { TimeInput24 } from '../components/ui/TimeInput24'
 import { productService } from '../services/products.service'
 import { ordersService } from '../services/orders.service'
 import { settingsService } from '../services/settings.service'
@@ -1393,22 +1394,12 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                   >
                     Jam Acara (Kira-kira)
                   </label>
-                  <div className="relative">
-                    <Clock
-                      size={16}
-                      className={`absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none ${isDark ? 'text-amber-400' : 'text-[#D97706]'
-                        }`}
-                    />
-                    <input
-                      type="time"
-                      value={eventTime}
-                      onChange={(e) => setEventTime(e.target.value)}
-                      className={`w-full max-w-full min-w-0 h-11 rounded-xl border pl-10 pr-3 text-base sm:text-sm font-medium outline-none transition ${isDark
-                        ? 'border-[#60241E] bg-[#1C0B09] text-white focus:border-[#F59E0B] focus:ring-2 focus:ring-[#F59E0B]/20'
-                        : 'border-[#E6DACD] bg-white text-[#2B120E] focus:border-[#D97706] focus:ring-2 focus:ring-[#D97706]/20'
-                        }`}
-                    />
-                  </div>
+                  <TimeInput24
+                    value={eventTime}
+                    onChange={setEventTime}
+                    isDark={isDark}
+                    placeholder="Contoh: 11:30"
+                  />
                 </div>
               </div>
 
