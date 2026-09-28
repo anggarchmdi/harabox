@@ -114,9 +114,6 @@ export default function ProductDetailPage() {
     refetchOnMount: 'always',
   })
 
-  // Quantity Mode (Kelipatan 10 vs Satuan)
-  type PortionMode = 'kelipatan10' | 'satuan'
-  const [portionMode, setPortionMode] = useState<PortionMode>('kelipatan10')
   const [quantity, setQuantity] = useState<number>(10)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -191,9 +188,6 @@ export default function ProductDetailPage() {
     if (product) {
       const initialQty = minOrder < 10 ? minOrder : 10
       setQuantity(initialQty)
-      if (minOrder < 10) {
-        setPortionMode('satuan')
-      }
 
       if (product.addons_enabled && product.addon_groups && product.addon_groups.length > 0) {
         const initial: Record<number, number[]> = {}
@@ -211,14 +205,12 @@ export default function ProductDetailPage() {
     }
   }, [product, minOrder])
 
-  const step = portionMode === 'kelipatan10' ? 10 : 1
-
   const handleDecrease = () => {
-    setQuantity((prev) => Math.max(minOrder, prev - step))
+    setQuantity((prev) => Math.max(minOrder, prev - 1))
   }
 
   const handleIncrease = () => {
-    setQuantity((prev) => prev + step)
+    setQuantity((prev) => prev + 1)
   }
 
   const handleQuantityInput = (val: string) => {
@@ -233,17 +225,6 @@ export default function ProductDetailPage() {
   const handleQuantityBlur = () => {
     if (quantity < minOrder) {
       setQuantity(minOrder)
-    } else if (portionMode === 'kelipatan10') {
-      const rounded = Math.round(quantity / 10) * 10
-      setQuantity(Math.max(minOrder, rounded || 10))
-    }
-  }
-
-  const handleSwitchMode = (mode: PortionMode) => {
-    setPortionMode(mode)
-    if (mode === 'kelipatan10') {
-      const rounded = Math.max(minOrder, Math.round(quantity / 10) * 10 || 10)
-      setQuantity(rounded)
     }
   }
 
@@ -390,8 +371,8 @@ export default function ProductDetailPage() {
       quantity,
       minimum_order: minOrder,
       lead_time_days: leadTimeDays,
-      step,
-      portion_mode: portionMode,
+      step: 1,
+      portion_mode: 'satuan',
       addons: addonsForCart,
     })
 
@@ -917,50 +898,18 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
               className={`rounded-3xl border p-5 sm:p-6 shadow-xl space-y-4 ${isDark ? 'border-[#60241E] bg-[#240E0C]' : 'border-[#E6DACD] bg-white'
                 }`}
             >
-              {/* Header & Mode Switcher */}
+              {/* Header */}
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b pb-4">
                 <div>
                   <h3
                     className={`text-sm font-poppins tracking-wide font-black uppercase flex items-center gap-2 ${isDark ? 'text-white' : 'text-[#2B120E]'
                       }`}
                   >
-                    {/* <ShoppingBag size={16} className={isDark ? 'text-[#F59E0B]' : 'text-[#D97706]'} /> */}
                     <span>Jumlah Porsi Pesanan</span>
                   </h3>
                   <p className={`text-xs mt-0.5 ${isDark ? 'text-amber-100/70' : 'text-[#6B423A]'}`}>
                     Minimal pemesanan: <strong className="text-[#F59E0B]">{minOrder} porsi</strong>
                   </p>
-                </div>
-
-                {/* Mode Switcher */}
-                <div
-                  className={`inline-flex items-center rounded-xl p-1 border self-start sm:self-auto shadow-inner ${isDark ? 'bg-[#1C0B09] border-[#60241E]' : 'bg-[#FAF5EE] border-[#E6DACD]'
-                    }`}
-                >
-                  <button
-                    type="button"
-                    onClick={() => handleSwitchMode('kelipatan10')}
-                    className={`rounded-lg px-3 py-1.5 text-xs transition-all cursor-pointer ${portionMode === 'kelipatan10'
-                      ? 'bg-[#F59E0B] text-[#1C0B09] font-black shadow-sm'
-                      : isDark
-                        ? 'text-amber-100/70 hover:text-white font-semibold'
-                        : 'text-[#6B423A] hover:text-[#2B120E] font-semibold'
-                      }`}
-                  >
-                    Kelipatan 10
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleSwitchMode('satuan')}
-                    className={`rounded-lg px-3 py-1.5 text-xs transition-all cursor-pointer ${portionMode === 'satuan'
-                      ? 'bg-[#F59E0B] text-[#1C0B09] font-black shadow-sm'
-                      : isDark
-                        ? 'text-amber-100/70 hover:text-white font-semibold'
-                        : 'text-[#6B423A] hover:text-[#2B120E] font-semibold'
-                      }`}
-                  >
-                    Satuan (+1)
-                  </button>
                 </div>
               </div>
 
@@ -1006,7 +955,7 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                       ? 'border-[#60241E] bg-[#2D120F] text-white hover:bg-[#3B1814]'
                       : 'border-[#E6DACD] bg-white text-[#2B120E] hover:bg-[#FAF5EE]'
                       }`}
-                    title={`Kurangi ${step} porsi`}
+                    title="Kurangi 1 porsi"
                   >
                     <Minus size={15} strokeWidth={2.5} />
                   </button>
@@ -1015,7 +964,7 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                     <input
                       type="number"
                       value={quantity}
-                      step={step}
+                      step={1}
                       min={minOrder}
                       onChange={(e) => handleQuantityInput(e.target.value)}
                       onBlur={handleQuantityBlur}
@@ -1034,7 +983,7 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                     type="button"
                     onClick={handleIncrease}
                     className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-r from-[#F59E0B] to-[#E77B49] text-[#1C0B09] shadow-sm transition hover:brightness-110 active:scale-95 cursor-pointer"
-                    title={`Tambah ${step} porsi`}
+                    title="Tambah 1 porsi"
                   >
                     <Plus size={15} strokeWidth={2.5} />
                   </button>

@@ -510,11 +510,6 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                                 }`}>
                                   Min. {item.minimum_order} Porsi
                                 </span>
-                                <span className={`inline-flex items-center rounded-md px-1.5 py-0.5 text-[10px] sm:text-[11px] font-semibold border ${
-                                  isDark ? 'bg-[#2D120F] text-amber-300 border-[#F59E0B]/40' : 'bg-amber-50 text-amber-900 border-amber-200'
-                                }`}>
-                                  {item.portion_mode === 'kelipatan10' ? 'Kelipatan 10' : 'Bebas Satuan'}
-                                </span>
                               </div>
                             </div>
 
@@ -573,6 +568,33 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                         </div>
                       ) : null}
 
+                      {/* Pilihan Cepat */}
+                      <div className="mt-3 flex flex-wrap items-center gap-1.5 sm:ml-9">
+                        <span className={`text-[10px] sm:text-[11px] font-semibold mr-1 ${
+                          isDark ? 'text-amber-200/60' : 'text-[#8C6B62]'
+                        }`}>
+                          Pilihan Cepat:
+                        </span>
+                        {[10, 20, 30, 50, 100, 200]
+                          .filter((count) => count >= item.minimum_order)
+                          .map((count) => (
+                            <button
+                              key={count}
+                              type="button"
+                              onClick={() => updateQuantity(item.id, count)}
+                              className={`rounded-lg px-2 py-0.5 text-[10px] sm:text-[11px] font-bold border transition cursor-pointer ${
+                                item.quantity === count
+                                  ? 'border-transparent bg-gradient-to-r from-[#F59E0B] to-[#E77B49] text-[#1C0B09] font-black shadow-xs'
+                                  : isDark
+                                    ? 'border-[#60241E] bg-[#1C0B09] text-amber-200/70 hover:bg-[#3B1814] hover:text-white'
+                                    : 'border-[#E6DACD] bg-[#FAF5EE] text-[#5C3831] hover:bg-white hover:text-[#2B120E]'
+                              }`}
+                            >
+                              {count}
+                            </button>
+                          ))}
+                      </div>
+
                       {/* Bottom Section: Stepper & Subtotal */}
                       <div className={`mt-3 pt-3 border-t flex items-center justify-between gap-2 sm:ml-9 ${
                         isDark ? 'border-[#60241E]/80' : 'border-[#E6DACD]'
@@ -602,7 +624,7 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                             className={`flex h-7.5 w-7.5 sm:h-8 sm:w-8 items-center justify-center rounded-lg transition active:scale-95 disabled:cursor-not-allowed disabled:opacity-35 cursor-pointer ${
                               isDark ? 'bg-[#2D120F] text-stone-300 hover:bg-[#3B1814] hover:text-white' : 'bg-white text-[#2B120E] hover:bg-[#F5EDE4] hover:text-[#2B120E]'
                             }`}
-                            title={`Kurangi porsi (minimal ${item.minimum_order})`}
+                            title={`Kurangi 1 porsi (minimal ${item.minimum_order})`}
                           >
                             <Minus size={12} strokeWidth={2.5} />
                           </button>
@@ -611,7 +633,7 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                             <input
                               type="number"
                               value={item.quantity}
-                              step={item.step}
+                              step={1}
                               min={item.minimum_order}
                               onChange={(e) =>
                                 updateQuantity(item.id, parseInt(e.target.value, 10) || item.minimum_order)
@@ -627,7 +649,7 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                             type="button"
                             onClick={() => stepQuantity(item.id, 'increase')}
                             className="flex h-7.5 w-7.5 sm:h-8 sm:w-8 items-center justify-center rounded-lg bg-gradient-to-r from-[#F59E0B] to-[#E77B49] text-[#1C0B09] font-bold transition hover:brightness-110 active:scale-95 cursor-pointer"
-                            title="Tambah porsi"
+                            title="Tambah 1 porsi"
                           >
                             <Plus size={12} strokeWidth={2.5} />
                           </button>

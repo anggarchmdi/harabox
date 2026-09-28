@@ -83,8 +83,8 @@ export const useCartStore = create<CartState>()(
         const addonPricePerUnit = addons.reduce((sum, a) => sum + (Number(a.price) || 0), 0)
         const unitPrice = Number(input.base_price) + addonPricePerUnit
         const leadTime = input.lead_time_days ?? 3
-        const portionMode = input.portion_mode ?? 'kelipatan10'
-        const step = input.step ?? (portionMode === 'kelipatan10' ? 10 : 1)
+        const portionMode = input.portion_mode ?? 'satuan'
+        const step = 1
 
         set((state) => {
           const existingIndex = state.items.findIndex((item) => item.id === id)
@@ -159,7 +159,7 @@ export const useCartStore = create<CartState>()(
         set((state) => ({
           items: state.items.map((item) => {
             if (item.id !== id) return item
-            const stepVal = item.step || (item.portion_mode === 'kelipatan10' ? 10 : 1)
+            const stepVal = 1
             let newQty = direction === 'increase' ? item.quantity + stepVal : item.quantity - stepVal
             if (newQty < item.minimum_order) {
               newQty = item.minimum_order
