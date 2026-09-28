@@ -192,7 +192,7 @@ export default function CaraPesan() {
                       <div className="flex items-center gap-2">
                         <Icon size={18} className={isDark ? 'text-[#F59E0B]' : 'text-[#D97706]'} />
                         <h3
-                          className={`text-xl font-dhaksinarga tracking-wide ${
+                          className={`text-xl font-poppins font-bold tracking-wide ${
                             isDark ? 'text-white' : 'text-[#2B120E]'
                           }`}
                         >
@@ -391,7 +391,7 @@ export default function CaraPesan() {
                 }`}
               >
                 <h4
-                  className={`font-dhaksinarga tracking-wide text-base ${
+                  className={`font-poppins font-bold tracking-wide text-base ${
                     isDark ? 'text-white' : 'text-[#2B120E]'
                   }`}
                 >

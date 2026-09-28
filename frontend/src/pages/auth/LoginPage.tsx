@@ -307,7 +307,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="group flex h-11 sm:h-12 w-full items-center justify-center gap-2 rounded-xl transform active:scale-98 bg-gradient-to-r from-[#F59E0B] via-[#E77B49] to-[#F59E0B] px-5 text-sm font-dhaksinarga tracking-wide font-black text-[#1C0B09] shadow-lg shadow-[#F59E0B]/20 transition duration-300 hover:brightness-110 focus:outline-none focus:ring-2 focus:ring-[#F59E0B]/40 disabled:cursor-not-allowed disabled:opacity-60 cursor-pointer"
+                className="group flex h-11 sm:h-12 w-full items-center justify-center gap-2 rounded-xl transform active:scale-98 bg-gradient-to-r from-[#F59E0B] via-[#E77B49] to-[#F59E0B] px-5 text-sm font-poppins tracking-wide font-black text-[#1C0B09] shadow-lg shadow-[#F59E0B]/20 transition duration-300 hover:brightness-110 focus:outline-none focus:ring-2 focus:ring-[#F59E0B]/40 disabled:cursor-not-allowed disabled:opacity-60 cursor-pointer"
               >
                 {loading ? (
                   <>

@@ -343,7 +343,7 @@ export default function TestimonialPage() {
                   : 'bg-[#FAF5EE] border-[#E6DACD] text-[#8C4320]'
               }`}>
                 <Sparkles size={14} className="text-[#F59E0B]" />
-                <span className="font-dhaksinarga tracking-widest text-xs">DIPERCAYA 250+ KANTOR & KELUARGA</span>
+                <span className="font-poppins tracking-widest text-xs">DIPERCAYA 250+ KANTOR & KELUARGA</span>
               </div>
 
               <h1 className={`text-3xl sm:text-4xl lg:text-5xl font-dhaksinarga tracking-wide font-black leading-[1.15] ${
@@ -366,7 +366,7 @@ export default function TestimonialPage() {
             <div className="flex flex-wrap items-center gap-3 shrink-0">
               <button
                 onClick={scrollToForm}
-                className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-gradient-to-r from-[#F59E0B] via-[#E77B49] to-[#F59E0B] text-[#1C0B09] font-dhaksinarga tracking-wide font-black text-xs sm:text-sm shadow-lg shadow-[#F59E0B]/20 transition hover:brightness-110 active:scale-95 cursor-pointer"
+                className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-gradient-to-r from-[#F59E0B] via-[#E77B49] to-[#F59E0B] text-[#1C0B09] font-poppins tracking-wide font-black text-xs sm:text-sm shadow-lg shadow-[#F59E0B]/20 transition hover:brightness-110 active:scale-95 cursor-pointer"
               >
                 <Edit3 size={16} />
                 <span>Tulis Ulasan Anda</span>
@@ -449,7 +449,6 @@ export default function TestimonialPage() {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <span className="flex h-2.5 w-2.5 rounded-full bg-[#F59E0B] animate-pulse" />
                 <h2 className={`text-xl sm:text-2xl font-dhaksinarga tracking-wide font-black ${
                   isDark ? 'text-white' : 'text-[#2B120E]'
                 }`}>
@@ -895,7 +894,7 @@ export default function TestimonialPage() {
                   <div className="relative z-10 space-y-2">
                     <div className="inline-flex items-center gap-2 rounded-full bg-black/30 backdrop-blur-md px-3.5 py-1 text-xs font-black text-amber-300 border border-amber-400/30 mb-2">
                       <Heart size={14} className="fill-amber-300" />
-                      <span className="font-dhaksinarga tracking-widest text-xs">SUARA PELANGGAN PAWON HARA</span>
+                      <span className="font-poppins tracking-widest text-xs">SUARA PELANGGAN PAWON HARA</span>
                     </div>
                     <h2 className="text-2xl sm:text-3xl font-dhaksinarga tracking-wide font-black text-white">
                       Beri Penilaian & Ulasan Pesanan
@@ -1072,7 +1071,7 @@ export default function TestimonialPage() {
                       }`}>
                         <div className="flex items-center gap-2">
                           <ShoppingBag size={18} className="text-[#F59E0B]" />
-                          <h3 className={`text-xs font-dhaksinarga tracking-wide font-black uppercase ${
+                          <h3 className={`text-xs font-poppins tracking-wide font-black uppercase ${
                             isDark ? 'text-amber-300' : 'text-[#8C4320]'
                           }`}>
                             Punya Nomor Pesanan Pawon Hara?
@@ -1084,7 +1083,7 @@ export default function TestimonialPage() {
                           Masukkan nomor pesanan Anda (contoh: <strong>PH-202609-0001</strong>) agar data nama, produk yang dipesan, dan jumlah porsi terisi otomatis seperti di Shopee.
                         </p>
 
-                        <div className="flex items-center gap-2">
+                        <div className="flex flex-col md:flex-row items-center gap-2 ">
                           <input
                             type="text"
                             value={orderLookupInput}
@@ -1106,7 +1105,7 @@ export default function TestimonialPage() {
                             type="button"
                             disabled={isCheckingOrder || !orderLookupInput.trim()}
                             onClick={() => lookupOrder(orderLookupInput)}
-                            className="rounded-xl bg-gradient-to-r from-[#F59E0B] to-[#E77B49] hover:brightness-110 disabled:opacity-50 px-4 py-2.5 text-xs font-dhaksinarga tracking-wide font-black text-[#1C0B09] transition shadow-md cursor-pointer shrink-0"
+                            className="rounded-xl bg-gradient-to-r from-[#F59E0B] to-[#E77B49] hover:brightness-110 disabled:opacity-50 px-4 py-2.5 text-xs font-poppins tracking-wide font-black text-[#1C0B09] transition shadow-md cursor-pointer shrink-0"
                           >
                             {isCheckingOrder ? 'Memuat...' : 'Muat Pesanan'}
                           </button>
@@ -1189,7 +1188,7 @@ export default function TestimonialPage() {
                   <div className={`rounded-2xl border p-5 sm:p-6 text-center space-y-2 ${
                     isDark ? 'bg-[#1C0B09] border-[#60241E]' : 'bg-[#FAF5EE] border-[#E6DACD]'
                   }`}>
-                    <label className={`block text-xs font-black uppercase tracking-wider font-dhaksinarga ${
+                    <label className={`block text-xs font-black uppercase tracking-wider font-poppins ${
                       isDark ? 'text-amber-300/80' : 'text-[#8C4320]'
                     }`}>
                       Penilaian Keseluruhan (Bintang) *
@@ -1209,7 +1208,7 @@ export default function TestimonialPage() {
                             aria-label={`Beri nilai ${starValue} bintang`}
                           >
                             <Star
-                              size={38}
+                              size={30}
                               className={`transition-all duration-200 ${
                                 isFilled
                                   ? 'text-amber-400 fill-amber-400 drop-shadow-sm scale-110'
@@ -1223,7 +1222,7 @@ export default function TestimonialPage() {
                       })}
                     </div>
 
-                    <div className={`text-xs sm:text-sm font-dhaksinarga tracking-wide font-black ${
+                    <div className={`text-xs sm:text-sm font-poppins tracking-wide font-black ${
                       isDark ? 'text-white' : 'text-[#2B120E]'
                     }`}>
                       {activeRatingDesc.title} —{' '}
@@ -1252,7 +1251,7 @@ export default function TestimonialPage() {
                       maxLength={1000}
                       value={message}
                       onChange={(e) => setMessage(e.target.value)}
-                      placeholder="Ceritakan kepuasan Anda mengenai kelezatan bento, porsi, ketepatan pengantaran, atau respon admin Pawon Hara..."
+                      placeholder="Ceritakan kepuasan Anda....."
                       className={`w-full rounded-2xl border px-4 py-3 text-sm focus:border-[#F59E0B] focus:outline-none focus:ring-2 focus:ring-[#F59E0B]/20 transition resize-y ${
                         isDark
                           ? 'border-[#60241E] bg-[#1C0B09] text-white placeholder-stone-500'
@@ -1292,7 +1291,7 @@ export default function TestimonialPage() {
                     <button
                       type="submit"
                       disabled={isSubmitting}
-                      className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#F59E0B] via-[#E77B49] to-[#F59E0B] hover:brightness-110 active:scale-[0.99] px-6 py-4 text-sm font-dhaksinarga tracking-wide font-black text-[#1C0B09] transition shadow-lg shadow-[#F59E0B]/20 disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
+                      className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#F59E0B] via-[#E77B49] to-[#F59E0B] hover:brightness-110 active:scale-[0.99] px-6 py-4 text-sm font-poppins tracking-wide font-black text-[#1C0B09] transition shadow-lg shadow-[#F59E0B]/20 disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
                     >
                       {isSubmitting ? (
                         <span className="inline-flex items-center gap-2">

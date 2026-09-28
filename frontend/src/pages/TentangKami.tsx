@@ -416,7 +416,7 @@ export default function TentangKami() {
                   </div>
 
                   <h3
-                    className={`mt-6 text-lg font-dhaksinarga tracking-wide transition-colors ${
+                    className={`mt-6 text-lg font-poppins font-bold tracking-wide transition-colors ${
                       isDark ? 'text-white group-hover:text-[#F59E0B]' : 'text-[#2B120E] group-hover:text-[#D97706]'
                     }`}
                   >

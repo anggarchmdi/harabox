@@ -693,7 +693,7 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
               <div className="p-5 sm:p-7">
                 <div className="border-b pb-4">
                   <h1
-                    className={`text-2xl sm:text-3xl font-dhaksinarga tracking-wide font-black ${isDark ? 'text-white' : 'text-[#2B120E]'
+                    className={`text-2xl sm:text-3xl font-poppins  tracking-wide font-bold ${isDark ? 'text-white' : 'text-[#2B120E]'
                       }`}
                   >
                     {product.name}
@@ -759,9 +759,9 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
               <div className="space-y-4">
                 <div className="flex items-center justify-between px-1">
                   <div className="flex items-center gap-2">
-                    <Sparkles size={16} className={isDark ? 'text-[#F59E0B]' : 'text-[#D97706]'} />
+                    {/* <Sparkles size={16} className={isDark ? 'text-[#F59E0B]' : 'text-[#D97706]'} /> */}
                     <h2
-                      className={`text-sm font-dhaksinarga tracking-wide font-black uppercase ${isDark ? 'text-white' : 'text-[#2B120E]'
+                      className={`text-sm font-poppins tracking-wide font-black uppercase ${isDark ? 'text-white' : 'text-[#2B120E]'
                         }`}
                     >
                       Pilihan Variasi & Add-on
@@ -922,10 +922,10 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b pb-4">
                 <div>
                   <h3
-                    className={`text-sm font-dhaksinarga tracking-wide font-black uppercase flex items-center gap-2 ${isDark ? 'text-white' : 'text-[#2B120E]'
+                    className={`text-sm font-poppins tracking-wide font-black uppercase flex items-center gap-2 ${isDark ? 'text-white' : 'text-[#2B120E]'
                       }`}
                   >
-                    <ShoppingBag size={16} className={isDark ? 'text-[#F59E0B]' : 'text-[#D97706]'} />
+                    {/* <ShoppingBag size={16} className={isDark ? 'text-[#F59E0B]' : 'text-[#D97706]'} /> */}
                     <span>Jumlah Porsi Pesanan</span>
                   </h3>
                   <p className={`text-xs mt-0.5 ${isDark ? 'text-amber-100/70' : 'text-[#6B423A]'}`}>
@@ -1060,7 +1060,7 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
               >
                 <span>Ringkasan Pesanan</span>
                 <span
-                  className={`rounded-full border px-2.5 py-0.5 text-xs font-bold ${isDark
+                  className={`rounded-full font-poppins border px-2.5 py-0.5 text-xs font-bold ${isDark
                     ? 'bg-[#2D120F] border-[#60241E] text-amber-300'
                     : 'bg-amber-100 border-amber-300 text-amber-900'
                     }`}
@@ -1137,7 +1137,7 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                       />
                       <div className="text-[11px] leading-snug">
                         <p
-                          className={`font-bold font-dhaksinarga tracking-wide ${isDark ? 'text-amber-300' : 'text-[#B45309]'
+                          className={`font-bold font-poppins tracking-wide ${isDark ? 'text-amber-300' : 'text-[#B45309]'
                             }`}
                         >
                           Batas Waktu Pemesanan (H-{leadTimeDays})
@@ -1157,7 +1157,7 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                 >
                   <div>
                     <p
-                      className={`text-xs font-dhaksinarga tracking-wide uppercase font-bold ${isDark ? 'text-white' : 'text-[#2B120E]'
+                      className={`text-xs font-poppins tracking-wide uppercase font-bold ${isDark ? 'text-white' : 'text-[#2B120E]'
                         }`}
                     >
                       Total Estimasi
@@ -1177,7 +1177,7 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                 <button
                   type="button"
                   onClick={handleOpenOrderModal}
-                  className="w-full inline-flex items-center justify-center gap-2.5 rounded-2xl bg-gradient-to-r from-[#F59E0B] via-[#E77B49] to-[#F59E0B] px-6 py-4 text-sm font-dhaksinarga tracking-wide font-black text-[#1C0B09] shadow-lg shadow-[#F59E0B]/20 transition hover:brightness-110 active:scale-[0.99] cursor-pointer"
+                  className="w-full inline-flex items-center justify-center gap-2.5 rounded-2xl bg-gradient-to-r from-[#F59E0B] via-[#E77B49] to-[#F59E0B] px-6 py-4 text-sm font-poppins tracking-wide font-black text-[#1C0B09] shadow-lg shadow-[#F59E0B]/20 transition hover:brightness-110 active:scale-[0.99] cursor-pointer"
                 >
                   <MessageCircle size={20} />
                   <span>Pesan Sekarang</span>
@@ -1336,7 +1336,7 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                   className={`border-t pt-2 flex justify-between items-baseline gap-2 font-bold min-w-0 ${isDark ? 'border-[#60241E] text-white' : 'border-[#E6DACD] text-[#2B120E]'
                     }`}
                 >
-                  <span className="font-dhaksinarga tracking-wide truncate">
+                  <span className="font-poppins tracking-wide truncate">
                     Total Estimasi ({quantity} Porsi):
                   </span>
                   <span className="text-[#F59E0B] font-poppins tracking-wide font-black text-base shrink-0">
@@ -1593,7 +1593,7 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                     isDateFull ||
                     isExceedingCapacity
                   }
-                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-dhaksinarga tracking-wide font-black transition bg-gradient-to-r from-[#F59E0B] via-[#E77B49] to-[#F59E0B] text-[#1C0B09] shadow-lg shadow-[#F59E0B]/20 hover:brightness-110 active:scale-[0.99] disabled:bg-[#2D120F] disabled:text-stone-500 disabled:border disabled:border-[#60241E] disabled:cursor-not-allowed disabled:shadow-none cursor-pointer min-w-0 shrink"
+                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-poppins tracking-wide font-black transition bg-gradient-to-r from-[#F59E0B] via-[#E77B49] to-[#F59E0B] text-[#1C0B09] shadow-lg shadow-[#F59E0B]/20 hover:brightness-110 active:scale-[0.99] disabled:bg-[#2D120F] disabled:text-stone-500 disabled:border disabled:border-[#60241E] disabled:cursor-not-allowed disabled:shadow-none cursor-pointer min-w-0 shrink"
                 >
                   {isSubmitting ? (
                     <span>Memproses...</span>

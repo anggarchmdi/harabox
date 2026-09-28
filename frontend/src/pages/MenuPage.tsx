@@ -752,7 +752,7 @@ export default function MenuPage() {
 
                     {/* Product Name in Dhaksinarga */}
                     <h3
-                      className={`text-lg sm:text-xl font-dhaksinarga tracking-wide leading-snug transition-colors line-clamp-1 ${
+                      className={`text-lg sm:text-xl font-poppins font-bold tracking-wide leading-snug transition-colors line-clamp-1 ${
                         isDark ? 'text-white group-hover:text-[#F59E0B]' : 'text-[#2B120E] group-hover:text-[#D97706]'
                       }`}
                     >

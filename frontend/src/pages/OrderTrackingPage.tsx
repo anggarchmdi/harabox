@@ -394,7 +394,7 @@ export default function OrderTrackingPage() {
               isDark ? 'border-[#60241E] bg-[#2D120F] text-amber-400' : 'border-[#E6DACD] bg-[#FAF5EE] text-[#D97706]'
             }`}>
               <Sparkles size={13} className={isDark ? 'text-[#F59E0B] animate-spin' : 'text-[#D97706] animate-spin'} style={{ animationDuration: '8s' }} />
-              <span className="font-dhaksinarga tracking-widest text-xs">PELACAKAN STATUS REAL-TIME</span>
+              <span className="font-poppins tracking-widest text-xs">PELACAKAN STATUS REAL-TIME</span>
             </div>
 
             <h1 className={`text-2xl sm:text-3xl lg:text-4xl font-dhaksinarga tracking-wide font-black ${
@@ -453,7 +453,7 @@ export default function OrderTrackingPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#F59E0B] via-[#E77B49] to-[#F59E0B] px-7 py-3.5 text-xs sm:text-sm font-dhaksinarga tracking-wide font-black text-[#1C0B09] shadow-lg shadow-[#F59E0B]/20 transition duration-300 hover:brightness-110 active:scale-95 disabled:opacity-50 cursor-pointer"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#F59E0B] via-[#E77B49] to-[#F59E0B] px-7 py-3.5 text-xs sm:text-sm font-poppins font-bold tracking-wide font-black text-[#1C0B09] shadow-lg shadow-[#F59E0B]/20 transition duration-300 hover:brightness-110 active:scale-95 disabled:opacity-50 cursor-pointer"
               >
                 {loading ? (
                   <>
@@ -1294,7 +1294,7 @@ export default function OrderTrackingPage() {
           </div>
         )}
 
-        {/* Print Order Modal (Struk Thermal, Slip Dapur, Invoice) */}
+        {/* Print Order Modal (Slip Dapur, Invoice) */}
         <PrintOrderModal
           order={order}
           isOpen={isPrintModalOpen}
