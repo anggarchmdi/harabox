@@ -124,10 +124,12 @@ class ProductController extends Controller
         $product = Product::create($data);
 
         if (! $product->addons_enabled) {
-            $this->syncProductPackageAddons($product, []);
-        } elseif ($request->has('addons')) {
+            $this->syncProductCustomizations($product, [], [], []);
+        } elseif ($request->has('custom_nasi') || $request->has('custom_sayur') || $request->has('addons')) {
+            $customNasi = $request->input('custom_nasi', []);
+            $customSayur = $request->input('custom_sayur', []);
             $addonsData = $request->input('addons', []);
-            $this->syncProductPackageAddons($product, $addonsData);
+            $this->syncProductCustomizations($product, $customNasi, $customSayur, $addonsData);
         } elseif ($request->has('addon_group_ids')) {
             $syncData = [];
             foreach ($request->input('addon_group_ids', []) as $index => $groupId) {
@@ -211,10 +213,12 @@ class ProductController extends Controller
         $product->update($data);
 
         if (! $product->addons_enabled) {
-            $this->syncProductPackageAddons($product, []);
-        } elseif ($request->has('addons')) {
+            $this->syncProductCustomizations($product, [], [], []);
+        } elseif ($request->has('custom_nasi') || $request->has('custom_sayur') || $request->has('addons')) {
+            $customNasi = $request->input('custom_nasi', []);
+            $customSayur = $request->input('custom_sayur', []);
             $addonsData = $request->input('addons', []);
-            $this->syncProductPackageAddons($product, $addonsData);
+            $this->syncProductCustomizations($product, $customNasi, $customSayur, $addonsData);
         } elseif ($request->has('addon_group_ids')) {
             $syncData = [];
             foreach ($request->input('addon_group_ids', []) as $index => $groupId) {
@@ -258,51 +262,133 @@ class ProductController extends Controller
 
     private function syncProductPackageAddons(Product $product, array $addonsData): void
     {
-        if (empty($addonsData)) {
-            $addonGroup = $product->addonGroups()->first();
-            if ($addonGroup) {
-                $addonGroup->addons()->delete();
-                $product->addonGroups()->detach($addonGroup->id);
-                $addonGroup->delete();
+        $this->syncProductCustomizations($product, [], [], $addonsData);
+    }
+
+    private function syncProductCustomizations(
+        Product $product,
+        array $customNasi,
+        array $customSayur,
+        array $addonsData
+    ): void {
+        $existingGroups = $product->addonGroups()->with('addons')->get();
+
+        $findGroup = function (string $type) use ($existingGroups) {
+            return $existingGroups->first(function ($group) use ($type) {
+                $name = strtolower($group->name);
+                if ($type === 'nasi') {
+                    return str_contains($name, 'nasi');
+                }
+                if ($type === 'sayur') {
+                    return str_contains($name, 'sayur');
+                }
+                if ($type === 'tambahan') {
+                    return str_contains($name, 'tambahan') || str_contains($name, 'addon') || (! str_contains($name, 'nasi') && ! str_contains($name, 'sayur'));
+                }
+
+                return false;
+            });
+        };
+
+        $nasiGroup = $findGroup('nasi');
+        $sayurGroup = $findGroup('sayur');
+        $tambahanGroup = $findGroup('tambahan');
+
+        $cleanNasi = array_values(array_filter($customNasi, fn ($item) => ! empty(trim($item['name'] ?? ''))));
+        $cleanSayur = array_values(array_filter($customSayur, fn ($item) => ! empty(trim($item['name'] ?? ''))));
+        $cleanAddons = array_values(array_filter($addonsData, fn ($item) => ! empty(trim($item['name'] ?? ''))));
+
+        $this->syncSingleGroup(
+            $product,
+            $nasiGroup,
+            'Pilihan Nasi',
+            'Pilih variasi nasi untuk paket '.$product->name,
+            true,
+            1,
+            1,
+            1,
+            $cleanNasi
+        );
+
+        $this->syncSingleGroup(
+            $product,
+            $sayurGroup,
+            'Pilihan Sayur',
+            'Pilih variasi sayur untuk paket '.$product->name,
+            true,
+            1,
+            1,
+            2,
+            $cleanSayur
+        );
+
+        $this->syncSingleGroup(
+            $product,
+            $tambahanGroup,
+            'Pilihan Tambahan',
+            'Pilihan kustomisasi / add-on tambahan untuk paket '.$product->name,
+            false,
+            0,
+            max(15, count($cleanAddons)),
+            3,
+            $cleanAddons
+        );
+
+        $product->updateQuietly([
+            'custom_nasi' => empty($cleanNasi) ? null : $cleanNasi,
+            'custom_sayur' => empty($cleanSayur) ? null : $cleanSayur,
+        ]);
+    }
+
+    private function syncSingleGroup(
+        Product $product,
+        ?AddonGroup $group,
+        string $groupName,
+        string $description,
+        bool $isRequired,
+        int $minSelection,
+        int $maxSelection,
+        int $sortOrder,
+        array $items
+    ): void {
+        if (empty($items)) {
+            if ($group) {
+                $group->addons()->delete();
+                $product->addonGroups()->detach($group->id);
+                $group->delete();
             }
 
             return;
         }
 
-        $allGroups = $product->addonGroups()->get();
-        $addonGroup = $allGroups->first();
-        $maxSelect = max(15, count($addonsData));
-
-        if (! $addonGroup) {
-            $addonGroup = AddonGroup::create([
-                'name' => 'Pilihan Tambahan '.$product->name,
-                'description' => 'Pilihan kustomisasi untuk paket '.$product->name,
-                'is_required' => false,
-                'min_selection' => 0,
-                'max_selection' => $maxSelect,
+        if (! $group) {
+            $group = AddonGroup::create([
+                'name' => $groupName,
+                'description' => $description,
+                'is_required' => $isRequired,
+                'min_selection' => $minSelection,
+                'max_selection' => $maxSelection,
                 'is_active' => true,
             ]);
-            $product->addonGroups()->attach($addonGroup->id, ['sort_order' => 1]);
+            $product->addonGroups()->attach($group->id, ['sort_order' => $sortOrder]);
         } else {
-            $addonGroup->update([
-                'name' => 'Pilihan Tambahan '.$product->name,
-                'max_selection' => $maxSelect,
+            $group->update([
+                'name' => $groupName,
+                'description' => $description,
+                'is_required' => $isRequired,
+                'min_selection' => $minSelection,
+                'max_selection' => $maxSelection,
+                'is_active' => true,
             ]);
-            if ($allGroups->count() > 1) {
-                $otherGroupIds = $allGroups->skip(1)->pluck('id')->all();
-                $product->addonGroups()->detach($otherGroupIds);
-            }
+            $product->addonGroups()->updateExistingPivot($group->id, ['sort_order' => $sortOrder]);
         }
 
         $keptIds = [];
-        foreach ($addonsData as $item) {
-            if (empty($item['name'])) {
-                continue;
-            }
+        foreach ($items as $item) {
             $addonId = $item['id'] ?? null;
             $addon = null;
             if ($addonId) {
-                $addon = Addon::where('addon_group_id', $addonGroup->id)->find($addonId);
+                $addon = Addon::where('addon_group_id', $group->id)->find($addonId);
             }
             if ($addon) {
                 $addon->update([
@@ -312,7 +398,7 @@ class ProductController extends Controller
                 ]);
             } else {
                 $addon = Addon::create([
-                    'addon_group_id' => $addonGroup->id,
+                    'addon_group_id' => $group->id,
                     'name' => trim($item['name']),
                     'slug' => Str::slug($item['name']).'-'.uniqid(),
                     'price' => (float) ($item['price'] ?? 0),
@@ -322,7 +408,7 @@ class ProductController extends Controller
             $keptIds[] = $addon->id;
         }
 
-        Addon::where('addon_group_id', $addonGroup->id)
+        Addon::where('addon_group_id', $group->id)
             ->whereNotIn('id', $keptIds)
             ->delete();
     }

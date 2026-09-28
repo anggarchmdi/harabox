@@ -20,6 +20,8 @@ class Product extends Model
         'minimum_order',
         'lead_time_days',
         'addons_enabled',
+        'custom_nasi',
+        'custom_sayur',
         'image',
         'is_active',
     ];
@@ -29,6 +31,8 @@ class Product extends Model
         'minimum_order' => 'integer',
         'lead_time_days' => 'integer',
         'addons_enabled' => 'boolean',
+        'custom_nasi' => 'array',
+        'custom_sayur' => 'array',
         'is_active' => 'boolean',
     ];
 

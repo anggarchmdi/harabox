@@ -18,6 +18,8 @@ export interface Product {
   addons_enabled?: boolean
   image?: string | null
   is_active: boolean
+  custom_nasi?: ProductPackageAddon[] | null
+  custom_sayur?: ProductPackageAddon[] | null
   category?: ProductCategory | null
   addon_groups?: AddonGroup[]
   addonGroups?: AddonGroup[]
@@ -39,6 +41,8 @@ export interface CreateProductRequest {
   lead_time_days?: number
   addons_enabled?: boolean
   addon_group_ids?: number[]
+  custom_nasi?: ProductPackageAddon[]
+  custom_sayur?: ProductPackageAddon[]
   addons?: ProductPackageAddon[]
   image?: File | null
   is_active: boolean
@@ -53,6 +57,8 @@ export interface UpdateProductRequest {
   lead_time_days?: number
   addons_enabled?: boolean
   addon_group_ids?: number[]
+  custom_nasi?: ProductPackageAddon[]
+  custom_sayur?: ProductPackageAddon[]
   addons?: ProductPackageAddon[]
   image?: File | null
   is_active?: boolean

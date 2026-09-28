@@ -194,6 +194,14 @@ export const productService = {
       })
     }
 
+    if (data.custom_nasi !== undefined) {
+      formData.append('custom_nasi', JSON.stringify(data.custom_nasi))
+    }
+
+    if (data.custom_sayur !== undefined) {
+      formData.append('custom_sayur', JSON.stringify(data.custom_sayur))
+    }
+
     if (data.addons !== undefined) {
       formData.append('addons', JSON.stringify(data.addons))
     }
@@ -263,6 +271,14 @@ export const productService = {
       data.addon_group_ids.forEach((gid) => {
         formData.append('addon_group_ids[]', String(gid))
       })
+    }
+
+    if (data.custom_nasi !== undefined) {
+      formData.append('custom_nasi', JSON.stringify(data.custom_nasi))
+    }
+
+    if (data.custom_sayur !== undefined) {
+      formData.append('custom_sayur', JSON.stringify(data.custom_sayur))
     }
 
     if (data.addons !== undefined) {

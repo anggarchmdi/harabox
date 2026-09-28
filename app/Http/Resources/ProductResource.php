@@ -19,6 +19,8 @@ class ProductResource extends JsonResource
             'minimum_order' => (int) $this->minimum_order,
             'lead_time_days' => (int) ($this->lead_time_days ?? 3),
             'addons_enabled' => (bool) $this->addons_enabled,
+            'custom_nasi' => $this->custom_nasi,
+            'custom_sayur' => $this->custom_sayur,
             'image' => $this->image,
             'is_active' => (bool) $this->is_active,
             'category' => $this->whenLoaded('category', function () {

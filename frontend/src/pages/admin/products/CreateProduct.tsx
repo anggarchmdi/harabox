@@ -26,14 +26,33 @@ interface PackageAddonItem {
   price: string
 }
 
+const NASI_PRESETS = [
+  { label: '+ Nasi Putih (+Rp 0)', name: 'Nasi Putih', price: '0' },
+  { label: '+ Nasi Kuning (+Rp 2.000)', name: 'Nasi Kuning', price: '2000' },
+  { label: '+ Nasi Uduk (+Rp 2.000)', name: 'Nasi Uduk', price: '2000' },
+  { label: '+ Nasi Liwet (+Rp 3.000)', name: 'Nasi Liwet', price: '3000' },
+  { label: '+ Nasi Daun Jeruk (+Rp 3.000)', name: 'Nasi Daun Jeruk', price: '3000' },
+  { label: '+ Nasi Merah (+Rp 3.000)', name: 'Nasi Merah', price: '3000' },
+]
+
+const SAYUR_PRESETS = [
+  { label: '+ Sayur Capcay (+Rp 0)', name: 'Sayur Capcay', price: '0' },
+  { label: '+ Sayur Asem (+Rp 0)', name: 'Sayur Asem', price: '0' },
+  { label: '+ Cah Kangkung (+Rp 0)', name: 'Cah Kangkung', price: '0' },
+  { label: '+ Tumis Buncis Jagung (+Rp 0)', name: 'Tumis Buncis Jagung', price: '0' },
+  { label: '+ Urap Sayur (+Rp 2.000)', name: 'Urap Sayur Segar', price: '2000' },
+  { label: '+ Orek Tempe (+Rp 0)', name: 'Orek Tempe Manis Gurih', price: '0' },
+  { label: '+ Lalapan Segar (+Rp 0)', name: 'Lalapan Segar', price: '0' },
+]
+
 const ADDON_PRESETS = [
-  { label: '+ Tambah Nasi (+Rp 2.000)', name: 'Tambah Nasi', price: '2000' },
-  { label: '+ Nasi Kuning (+Rp 3.000)', name: 'Nasi Kuning', price: '3000' },
-  { label: '+ Nasi Uduk (+Rp 3.000)', name: 'Nasi Uduk', price: '3000' },
   { label: '+ Telur Balado (+Rp 4.000)', name: 'Telur Balado', price: '4000' },
-  { label: '+ Sambal Bawang (+Rp 1.500)', name: 'Sambal Bawang Extra', price: '1500' },
-  { label: '+ Tahu Tempe (+Rp 2.500)', name: 'Tahu & Tempe Bacem', price: '2500' },
+  { label: '+ Tahu Tempe Bacem (+Rp 2.500)', name: 'Tahu & Tempe Bacem', price: '2500' },
+  { label: '+ Sambal Bawang Extra (+Rp 1.500)', name: 'Sambal Bawang Extra', price: '1500' },
+  { label: '+ Sambal Matah (+Rp 2.000)', name: 'Sambal Matah', price: '2000' },
+  { label: '+ Kerupuk Udang (+Rp 1.000)', name: 'Kerupuk Udang', price: '1000' },
   { label: '+ Es Teh Manis (+Rp 3.000)', name: 'Es Teh Manis', price: '3000' },
+  { label: '+ Air Mineral (+Rp 3.000)', name: 'Air Mineral Kemasan', price: '3000' },
 ]
 
 export default function CreateProduct() {
@@ -64,19 +83,61 @@ export default function CreateProduct() {
     is_active: true,
   })
 
-  const [packageAddons, setPackageAddons] = useState<PackageAddonItem[]>([
-    { name: 'Tambah Nasi', price: '2000' },
-    { name: 'Nasi Kuning', price: '3000' },
+  // 1. Custom Nasi
+  const [customNasi, setCustomNasi] = useState<PackageAddonItem[]>([
+    { name: 'Nasi Putih', price: '0' },
+    { name: 'Nasi Kuning', price: '2000' },
   ])
 
+  // 2. Custom Sayur
+  const [customSayur, setCustomSayur] = useState<PackageAddonItem[]>([
+    { name: 'Sayur Capcay', price: '0' },
+    { name: 'Tumis Buncis Jagung', price: '0' },
+  ])
+
+  // 3. Add-on Tambahan Lainnya
+  const [packageAddons, setPackageAddons] = useState<PackageAddonItem[]>([
+    { name: 'Telur Balado', price: '4000' },
+    { name: 'Sambal Bawang Extra', price: '1500' },
+  ])
+
+  // Handlers Nasi
+  const handleAddNasiRow = (presetName = '', presetPrice = '0') => {
+    setCustomNasi((prev) => [...prev, { name: presetName, price: presetPrice }])
+  }
+  const handleRemoveNasiRow = (index: number) => {
+    setCustomNasi((prev) => prev.filter((_, i) => i !== index))
+  }
+  const handleNasiFieldChange = (index: number, field: 'name' | 'price', value: string) => {
+    setCustomNasi((prev) => {
+      const updated = [...prev]
+      updated[index] = { ...updated[index], [field]: value }
+      return updated
+    })
+  }
+
+  // Handlers Sayur
+  const handleAddSayurRow = (presetName = '', presetPrice = '0') => {
+    setCustomSayur((prev) => [...prev, { name: presetName, price: presetPrice }])
+  }
+  const handleRemoveSayurRow = (index: number) => {
+    setCustomSayur((prev) => prev.filter((_, i) => i !== index))
+  }
+  const handleSayurFieldChange = (index: number, field: 'name' | 'price', value: string) => {
+    setCustomSayur((prev) => {
+      const updated = [...prev]
+      updated[index] = { ...updated[index], [field]: value }
+      return updated
+    })
+  }
+
+  // Handlers Addon
   const handleAddAddonRow = (presetName = '', presetPrice = '0') => {
     setPackageAddons((prev) => [...prev, { name: presetName, price: presetPrice }])
   }
-
   const handleRemoveAddonRow = (index: number) => {
     setPackageAddons((prev) => prev.filter((_, i) => i !== index))
   }
-
   const handleAddonFieldChange = (index: number, field: 'name' | 'price', value: string) => {
     setPackageAddons((prev) => {
       const updated = [...prev]
@@ -159,6 +220,28 @@ export default function CreateProduct() {
     try {
       setLoading(true)
 
+      const validNasi = form.addons_enabled
+        ? customNasi
+          .filter((a) => a.name.trim().length > 0)
+          .map((a) => ({
+            id: a.id,
+            name: a.name.trim(),
+            price: Math.max(0, Number(a.price) || 0),
+            is_active: true,
+          }))
+        : []
+
+      const validSayur = form.addons_enabled
+        ? customSayur
+          .filter((a) => a.name.trim().length > 0)
+          .map((a) => ({
+            id: a.id,
+            name: a.name.trim(),
+            price: Math.max(0, Number(a.price) || 0),
+            is_active: true,
+          }))
+        : []
+
       const validAddons = form.addons_enabled
         ? packageAddons
           .filter((a) => a.name.trim().length > 0)
@@ -178,6 +261,8 @@ export default function CreateProduct() {
         minimum_order: Math.max(1, Number(form.minimum_order) || 1),
         lead_time_days: Math.max(0, Number(form.lead_time_days) || 0),
         addons_enabled: form.addons_enabled,
+        custom_nasi: validNasi,
+        custom_sayur: validSayur,
         addons: validAddons,
         image: form.image,
         is_active: form.is_active,
@@ -500,72 +585,358 @@ export default function CreateProduct() {
             </div>
 
             {form.addons_enabled ? (
-              <div className="mt-5 space-y-4">
+              <div className="mt-5 space-y-6">
                 {/* Info alert */}
                 <div className={`flex items-start gap-2.5 rounded-xl border p-3.5 text-xs ${
                   isDark ? 'border-blue-900/60 bg-blue-950/40 text-blue-200' : 'border-blue-100 bg-blue-50/70 text-blue-900'
                 }`}>
                   <Info size={16} className={`${isDark ? 'text-blue-400' : 'text-blue-600'} shrink-0 mt-0.5`} />
                   <div>
-                    <span className="font-bold">Sistem Harga 1 Paket:</span> Harga add-on di bawah adalah penambahan per porsi. Jika pelanggan memesan 100 porsi dan memilih <em>Tambah Nasi (+Rp 2.000)</em>, sistem otomatis menghitung tambahan Rp 2.000 × 100 = Rp 200.000.
+                    <span className="font-bold">Sistem Kustomisasi Terpisah:</span> Pilihan kustomisasi di bawah dipisah menjadi <strong>Kolom Pilihan Nasi</strong>, <strong>Kolom Pilihan Sayur</strong>, dan <strong>Pilihan Add-on Tambahan</strong>. Harga tambahan di bawah adalah penambahan per porsi box.
                   </div>
                 </div>
 
-                {/* Preset Chips */}
-                <div>
-                  <label className={`text-xs font-semibold block mb-1.5 ${isDark ? 'text-amber-100/80' : 'text-stone-700'}`}>
-                    Klik Cepat untuk Tambah Pilihan Populer:
-                  </label>
-                  <div className="flex flex-wrap gap-1.5">
-                    {ADDON_PRESETS.map((preset, idx) => (
-                      <button
-                        key={idx}
-                        type="button"
-                        onClick={() => handleAddAddonRow(preset.name, preset.price)}
-                        className={`inline-flex items-center gap-1 rounded-lg border px-2.5 py-1 text-xs font-medium transition active:scale-95 ${
-                          isDark
-                            ? 'border-[#60241E] bg-[#1C0B09] text-amber-100/90 hover:border-[#803028] hover:bg-[#2D120F]'
-                            : 'border-stone-200 bg-stone-50 text-stone-700 hover:border-red-500 hover:bg-red-50 hover:text-red-700'
-                        }`}
-                      >
-                        <Plus size={12} className={isDark ? 'text-amber-200/60' : 'text-stone-400'} />
-                        {preset.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
+                {/* ======================================================== */}
+                {/* 1. KOLOM KUSTOMISASI NASI */}
+                {/* ======================================================== */}
+                <div className={`rounded-2xl border p-4 sm:p-5 space-y-3.5 transition ${
+                  isDark ? 'border-amber-900/60 bg-[#1C0B09]/90' : 'border-amber-200 bg-amber-50/30'
+                }`}>
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-amber-500/20 pb-3">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h4 className={`text-xs sm:text-sm font-bold ${isDark ? 'text-amber-300' : 'text-amber-900'}`}>
+                          1. Kolom Pilihan Nasi (Custom Nasi)
+                        </h4>
+                        <span className="rounded-full px-2 py-0.5 text-[10px] font-bold bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30">
+                          Wajib Pilih 1
+                        </span>
+                      </div>
+                      <p className={`text-[11px] mt-0.5 ${isDark ? 'text-amber-100/70' : 'text-amber-800/80'}`}>
+                        Pelanggan akan memilih 1 jenis nasi untuk menu ini (misal: Nasi Putih Rp 0, Nasi Kuning +Rp 2.000).
+                      </p>
+                    </div>
 
-                {/* Addon Items List */}
-                <div className="space-y-2 pt-2">
-                  <div className="flex items-center justify-between">
-                    <label className={`text-xs font-bold uppercase tracking-wider ${isDark ? 'text-amber-100/70' : 'text-stone-600'}`}>
-                      Daftar Pilihan Add-on / Variasi Paket ({packageAddons.length})
-                    </label>
                     <button
                       type="button"
-                      onClick={() => handleAddAddonRow('', '0')}
-                      className={`inline-flex items-center gap-1 text-xs font-bold ${isDark ? 'text-red-400 hover:text-red-300' : 'text-red-600 hover:text-red-700'}`}
+                      onClick={() => handleAddNasiRow('', '0')}
+                      className="inline-flex items-center gap-1 text-xs font-bold text-amber-600 dark:text-amber-400 hover:underline shrink-0"
                     >
                       <Plus size={14} />
-                      Tambah Pilihan Baru
+                      Tambah Pilihan Nasi
                     </button>
                   </div>
 
-                  {packageAddons.length === 0 ? (
-                    <div className={`rounded-xl border border-dashed p-6 text-center text-xs ${
-                      isDark ? 'border-[#60241E] bg-[#1C0B09] text-amber-100/60' : 'border-stone-200 bg-stone-50 text-stone-500'
-                    }`}>
-                      Belum ada pilihan add-on untuk paket ini. Silakan klik salah satu tombol pilihan populer di atas atau tombol "Tambah Pilihan Baru".
+                  {/* Preset Chips Nasi */}
+                  <div>
+                    <label className={`text-[11px] font-semibold block mb-1.5 ${isDark ? 'text-amber-100/80' : 'text-stone-700'}`}>
+                      Klik Cepat Pilihan Nasi Populer:
+                    </label>
+                    <div className="flex flex-wrap gap-1.5">
+                      {NASI_PRESETS.map((preset, idx) => (
+                        <button
+                          key={idx}
+                          type="button"
+                          onClick={() => handleAddNasiRow(preset.name, preset.price)}
+                          className={`inline-flex items-center gap-1 rounded-lg border px-2.5 py-1 text-xs font-medium transition active:scale-95 ${
+                            isDark
+                              ? 'border-[#60241E] bg-[#240E0C] text-amber-100 hover:border-amber-500 hover:bg-[#2D120F]'
+                              : 'border-stone-200 bg-white text-stone-700 hover:border-amber-500 hover:bg-amber-50 hover:text-amber-900'
+                          }`}
+                        >
+                          <Plus size={12} className={isDark ? 'text-amber-300' : 'text-stone-400'} />
+                          {preset.label}
+                        </button>
+                      ))}
                     </div>
-                  ) : (
-                    <div className="space-y-2">
-                      {packageAddons.map((addon, index) => (
+                  </div>
+
+                  {/* List Nasi */}
+                  <div className="space-y-2 pt-1">
+                    {customNasi.length === 0 ? (
+                      <div className={`rounded-xl border border-dashed p-4 text-center text-xs ${
+                        isDark ? 'border-[#60241E] text-amber-100/60' : 'border-amber-200 bg-white/60 text-stone-500'
+                      }`}>
+                        Belum ada pilihan nasi. Silakan klik pilihan populer di atas atau tombol "Tambah Pilihan Nasi".
+                      </div>
+                    ) : (
+                      customNasi.map((nasi, index) => (
                         <div
                           key={index}
                           className={`flex flex-col sm:flex-row items-stretch sm:items-center gap-2 rounded-xl border p-2.5 transition ${
                             isDark
-                              ? 'border-[#60241E] bg-[#1C0B09]/80 focus-within:border-[#F59E0B] focus-within:bg-[#1C0B09]'
-                              : 'border-stone-200 bg-stone-50/60 focus-within:border-red-500 focus-within:bg-white'
+                              ? 'border-[#60241E] bg-[#240E0C] focus-within:border-amber-500'
+                              : 'border-stone-200 bg-white focus-within:border-amber-500'
+                          }`}
+                        >
+                          <div className="flex items-center gap-2 flex-1">
+                            <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-[11px] font-bold ${
+                              isDark ? 'bg-[#2D120F] text-amber-200' : 'bg-amber-100 text-amber-800'
+                            }`}>
+                              {index + 1}
+                            </span>
+                            <input
+                              type="text"
+                              value={nasi.name}
+                              onChange={(e) => handleNasiFieldChange(index, 'name', e.target.value)}
+                              placeholder="Nama Pilihan Nasi (misal: Nasi Putih / Nasi Kuning)"
+                              className={`w-full rounded-lg border px-3 py-2 text-xs sm:text-sm font-semibold outline-none transition ${
+                                isDark
+                                  ? 'border-[#60241E] bg-[#1C0B09] text-white placeholder:font-normal placeholder:text-stone-500 focus:border-amber-500'
+                                  : 'border-stone-200 bg-stone-50/50 text-stone-900 placeholder:font-normal placeholder:text-stone-400 focus:border-amber-500 focus:bg-white'
+                              }`}
+                            />
+                          </div>
+
+                          <div className="flex items-center gap-2">
+                            <div className="relative w-36 sm:w-40">
+                              <span className={`pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[11px] font-bold ${
+                                isDark ? 'text-amber-100/60' : 'text-stone-500'
+                              }`}>
+                                +Rp
+                              </span>
+                              <input
+                                type="number"
+                                min="0"
+                                step="500"
+                                value={nasi.price}
+                                onChange={(e) => handleNasiFieldChange(index, 'price', e.target.value)}
+                                placeholder="0"
+                                className={`w-full rounded-lg border pl-10 pr-3 py-2 text-xs sm:text-sm font-semibold outline-none transition ${
+                                  isDark
+                                    ? 'border-[#60241E] bg-[#1C0B09] text-white focus:border-amber-500'
+                                    : 'border-stone-200 bg-stone-50/50 text-stone-900 focus:border-amber-500 focus:bg-white'
+                                }`}
+                              />
+                            </div>
+
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveNasiRow(index)}
+                              className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border transition ${
+                                isDark
+                                  ? 'border-[#60241E] bg-[#1C0B09] text-stone-400 hover:border-red-800 hover:text-red-400'
+                                  : 'border-stone-200 bg-white text-stone-400 hover:border-red-200 hover:bg-red-50 hover:text-red-600'
+                              }`}
+                              title="Hapus baris pilihan nasi ini"
+                            >
+                              <Trash2 size={15} />
+                            </button>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+
+                {/* ======================================================== */}
+                {/* 2. KOLOM KUSTOMISASI SAYUR */}
+                {/* ======================================================== */}
+                <div className={`rounded-2xl border p-4 sm:p-5 space-y-3.5 transition ${
+                  isDark ? 'border-emerald-900/60 bg-[#0E1C15]/70' : 'border-emerald-200 bg-emerald-50/30'
+                }`}>
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-emerald-500/20 pb-3">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h4 className={`text-xs sm:text-sm font-bold ${isDark ? 'text-emerald-300' : 'text-emerald-900'}`}>
+                          2. Kolom Pilihan Sayur (Custom Sayur)
+                        </h4>
+                        <span className="rounded-full px-2 py-0.5 text-[10px] font-bold bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30">
+                          Wajib Pilih 1
+                        </span>
+                      </div>
+                      <p className={`text-[11px] mt-0.5 ${isDark ? 'text-emerald-100/70' : 'text-emerald-800/80'}`}>
+                        Pelanggan akan memilih 1 jenis olahan sayur untuk menu ini (misal: Sayur Capcay Rp 0, Sayur Asem Rp 0).
+                      </p>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => handleAddSayurRow('', '0')}
+                      className="inline-flex items-center gap-1 text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:underline shrink-0"
+                    >
+                      <Plus size={14} />
+                      Tambah Pilihan Sayur
+                    </button>
+                  </div>
+
+                  {/* Preset Chips Sayur */}
+                  <div>
+                    <label className={`text-[11px] font-semibold block mb-1.5 ${isDark ? 'text-emerald-100/80' : 'text-stone-700'}`}>
+                      Klik Cepat Pilihan Sayur Populer:
+                    </label>
+                    <div className="flex flex-wrap gap-1.5">
+                      {SAYUR_PRESETS.map((preset, idx) => (
+                        <button
+                          key={idx}
+                          type="button"
+                          onClick={() => handleAddSayurRow(preset.name, preset.price)}
+                          className={`inline-flex items-center gap-1 rounded-lg border px-2.5 py-1 text-xs font-medium transition active:scale-95 ${
+                            isDark
+                              ? 'border-emerald-900/60 bg-[#14261D] text-emerald-100 hover:border-emerald-500 hover:bg-[#1C362A]'
+                              : 'border-stone-200 bg-white text-stone-700 hover:border-emerald-500 hover:bg-emerald-50 hover:text-emerald-900'
+                          }`}
+                        >
+                          <Plus size={12} className={isDark ? 'text-emerald-300' : 'text-stone-400'} />
+                          {preset.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* List Sayur */}
+                  <div className="space-y-2 pt-1">
+                    {customSayur.length === 0 ? (
+                      <div className={`rounded-xl border border-dashed p-4 text-center text-xs ${
+                        isDark ? 'border-emerald-900/60 text-emerald-100/60' : 'border-emerald-200 bg-white/60 text-stone-500'
+                      }`}>
+                        Belum ada pilihan sayur. Silakan klik pilihan populer di atas atau tombol "Tambah Pilihan Sayur".
+                      </div>
+                    ) : (
+                      customSayur.map((sayur, index) => (
+                        <div
+                          key={index}
+                          className={`flex flex-col sm:flex-row items-stretch sm:items-center gap-2 rounded-xl border p-2.5 transition ${
+                            isDark
+                              ? 'border-[#60241E] bg-[#1C0B09] focus-within:border-emerald-500'
+                              : 'border-stone-200 bg-white focus-within:border-emerald-500'
+                          }`}
+                        >
+                          <div className="flex items-center gap-2 flex-1">
+                            <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-[11px] font-bold ${
+                              isDark ? 'bg-emerald-950/60 text-emerald-300' : 'bg-emerald-100 text-emerald-800'
+                            }`}>
+                              {index + 1}
+                            </span>
+                            <input
+                              type="text"
+                              value={sayur.name}
+                              onChange={(e) => handleSayurFieldChange(index, 'name', e.target.value)}
+                              placeholder="Nama Pilihan Sayur (misal: Sayur Capcay / Sayur Asem)"
+                              className={`w-full rounded-lg border px-3 py-2 text-xs sm:text-sm font-semibold outline-none transition ${
+                                isDark
+                                  ? 'border-[#60241E] bg-[#240E0C] text-white placeholder:font-normal placeholder:text-stone-500 focus:border-emerald-500'
+                                  : 'border-stone-200 bg-stone-50/50 text-stone-900 placeholder:font-normal placeholder:text-stone-400 focus:border-emerald-500 focus:bg-white'
+                              }`}
+                            />
+                          </div>
+
+                          <div className="flex items-center gap-2">
+                            <div className="relative w-36 sm:w-40">
+                              <span className={`pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[11px] font-bold ${
+                                isDark ? 'text-amber-100/60' : 'text-stone-500'
+                              }`}>
+                                +Rp
+                              </span>
+                              <input
+                                type="number"
+                                min="0"
+                                step="500"
+                                value={sayur.price}
+                                onChange={(e) => handleSayurFieldChange(index, 'price', e.target.value)}
+                                placeholder="0"
+                                className={`w-full rounded-lg border pl-10 pr-3 py-2 text-xs sm:text-sm font-semibold outline-none transition ${
+                                  isDark
+                                    ? 'border-[#60241E] bg-[#240E0C] text-white focus:border-emerald-500'
+                                    : 'border-stone-200 bg-stone-50/50 text-stone-900 focus:border-emerald-500 focus:bg-white'
+                                }`}
+                              />
+                            </div>
+
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveSayurRow(index)}
+                              className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border transition ${
+                                isDark
+                                  ? 'border-[#60241E] bg-[#240E0C] text-stone-400 hover:border-red-800 hover:text-red-400'
+                                  : 'border-stone-200 bg-white text-stone-400 hover:border-red-200 hover:bg-red-50 hover:text-red-600'
+                              }`}
+                              title="Hapus baris pilihan sayur ini"
+                            >
+                              <Trash2 size={15} />
+                            </button>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+
+                {/* ======================================================== */}
+                {/* 3. KOLOM ADDON / TAMBAHAN LAINNYA */}
+                {/* ======================================================== */}
+                <div className={`rounded-2xl border p-4 sm:p-5 space-y-3.5 transition ${
+                  isDark ? 'border-rose-900/60 bg-[#240E0C]/90' : 'border-stone-200 bg-stone-50/60'
+                }`}>
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b pb-3 border-stone-200 dark:border-[#60241E]/60">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h4 className={`text-xs sm:text-sm font-bold ${isDark ? 'text-white' : 'text-stone-900'}`}>
+                          3. Pilihan Tambahan / Add-on Lainnya (Dipertahankan)
+                        </h4>
+                        <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold border ${
+                          isDark ? 'bg-stone-800 border-stone-700 text-stone-300' : 'bg-stone-200/80 border-stone-300 text-stone-600'
+                        }`}>
+                          Opsional Bebas Pilih
+                        </span>
+                      </div>
+                      <p className={`text-[11px] mt-0.5 ${isDark ? 'text-amber-100/70' : 'text-stone-500'}`}>
+                        Menu pelengkap tambahan (lauk ekstra, sambal, kerupuk, minuman, dll.) yang tidak ada di pilihan nasi dan sayur.
+                      </p>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => handleAddAddonRow('', '0')}
+                      className={`inline-flex items-center gap-1 text-xs font-bold shrink-0 ${
+                        isDark ? 'text-red-400 hover:text-red-300' : 'text-red-600 hover:text-red-700'
+                      }`}
+                    >
+                      <Plus size={14} />
+                      Tambah Pilihan Add-on
+                    </button>
+                  </div>
+
+                  {/* Preset Chips Addons */}
+                  <div>
+                    <label className={`text-[11px] font-semibold block mb-1.5 ${isDark ? 'text-amber-100/80' : 'text-stone-700'}`}>
+                      Klik Cepat Add-on Populer:
+                    </label>
+                    <div className="flex flex-wrap gap-1.5">
+                      {ADDON_PRESETS.map((preset, idx) => (
+                        <button
+                          key={idx}
+                          type="button"
+                          onClick={() => handleAddAddonRow(preset.name, preset.price)}
+                          className={`inline-flex items-center gap-1 rounded-lg border px-2.5 py-1 text-xs font-medium transition active:scale-95 ${
+                            isDark
+                              ? 'border-[#60241E] bg-[#1C0B09] text-amber-100 hover:border-red-500 hover:bg-[#2D120F]'
+                              : 'border-stone-200 bg-white text-stone-700 hover:border-red-500 hover:bg-red-50 hover:text-red-700'
+                          }`}
+                        >
+                          <Plus size={12} className={isDark ? 'text-amber-200/60' : 'text-stone-400'} />
+                          {preset.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* List Addons */}
+                  <div className="space-y-2 pt-1">
+                    {packageAddons.length === 0 ? (
+                      <div className={`rounded-xl border border-dashed p-4 text-center text-xs ${
+                        isDark ? 'border-[#60241E] bg-[#1C0B09] text-amber-100/60' : 'border-stone-200 bg-white text-stone-500'
+                      }`}>
+                        Belum ada add-on tambahan di daftar ini. Silakan klik pilihan populer di atas atau tombol "Tambah Pilihan Add-on".
+                      </div>
+                    ) : (
+                      packageAddons.map((addon, index) => (
+                        <div
+                          key={index}
+                          className={`flex flex-col sm:flex-row items-stretch sm:items-center gap-2 rounded-xl border p-2.5 transition ${
+                            isDark
+                              ? 'border-[#60241E] bg-[#1C0B09]/80 focus-within:border-red-500 focus-within:bg-[#1C0B09]'
+                              : 'border-stone-200 bg-white focus-within:border-red-500'
                           }`}
                         >
                           <div className="flex items-center gap-2 flex-1">
@@ -578,11 +949,11 @@ export default function CreateProduct() {
                               type="text"
                               value={addon.name}
                               onChange={(e) => handleAddonFieldChange(index, 'name', e.target.value)}
-                              placeholder="Nama Pilihan (contoh: Nasi Kuning / Telur Balado)"
+                              placeholder="Nama Tambahan (misal: Telur Balado / Sambal Matah)"
                               className={`w-full rounded-lg border px-3 py-2 text-xs sm:text-sm font-semibold outline-none transition ${
                                 isDark
-                                  ? 'border-[#60241E] bg-[#240E0C] text-white placeholder:font-normal placeholder:text-stone-500 focus:border-[#F59E0B] focus:ring-1 focus:ring-[#F59E0B]'
-                                  : 'border-stone-200 bg-white text-stone-900 placeholder:font-normal placeholder:text-stone-400 focus:border-red-600 focus:ring-1 focus:ring-red-600'
+                                  ? 'border-[#60241E] bg-[#240E0C] text-white placeholder:font-normal placeholder:text-stone-500 focus:border-red-600'
+                                  : 'border-stone-200 bg-stone-50/50 text-stone-900 placeholder:font-normal placeholder:text-stone-400 focus:border-red-600 focus:bg-white'
                               }`}
                             />
                           </div>
@@ -603,8 +974,8 @@ export default function CreateProduct() {
                                 placeholder="0"
                                 className={`w-full rounded-lg border pl-10 pr-3 py-2 text-xs sm:text-sm font-semibold outline-none transition ${
                                   isDark
-                                    ? 'border-[#60241E] bg-[#240E0C] text-white placeholder:font-normal placeholder:text-stone-500 focus:border-[#F59E0B] focus:ring-1 focus:ring-[#F59E0B]'
-                                    : 'border-stone-200 bg-white text-stone-900 placeholder:font-normal placeholder:text-stone-400 focus:border-red-600 focus:ring-1 focus:ring-red-600'
+                                    ? 'border-[#60241E] bg-[#240E0C] text-white focus:border-red-600'
+                                    : 'border-stone-200 bg-stone-50/50 text-stone-900 focus:border-red-600 focus:bg-white'
                                 }`}
                               />
                             </div>
@@ -614,18 +985,18 @@ export default function CreateProduct() {
                               onClick={() => handleRemoveAddonRow(index)}
                               className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border transition ${
                                 isDark
-                                  ? 'border-[#60241E] bg-[#240E0C] text-stone-400 hover:border-red-800 hover:bg-red-950/40 hover:text-red-400'
+                                  ? 'border-[#60241E] bg-[#240E0C] text-stone-400 hover:border-red-800 hover:text-red-400'
                                   : 'border-stone-200 bg-white text-stone-400 hover:border-red-200 hover:bg-red-50 hover:text-red-600'
                               }`}
-                              title="Hapus baris ini"
+                              title="Hapus baris add-on ini"
                             >
                               <Trash2 size={15} />
                             </button>
                           </div>
                         </div>
-                      ))}
-                    </div>
-                  )}
+                      ))
+                    )}
+                  </div>
                 </div>
               </div>
             ) : (
