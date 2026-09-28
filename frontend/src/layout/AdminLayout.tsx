@@ -28,6 +28,7 @@ import { useAuthStore } from '../stores/auth.store'
 import { useThemeStore } from '../stores/theme.store'
 import { dashboardService } from '../services/dashboard.service'
 import LogoProfile from '../assets/PawonHara.webp'
+import PageLoader from '../components/ui/PageLoader'
 
 interface MenuItem {
   label: string
@@ -88,7 +89,9 @@ export default function AdminLayout() {
   const { theme, toggleTheme } = useThemeStore()
   const isDark = theme === 'dark'
 
-  const [loading, setLoading] = useState(false)
+  const [isLoggingOut, setIsLoggingOut] = useState(false)
+  const [logoutText, setLogoutText] = useState('Mengakhiri Sesi...')
+  const [logoutSubtext, setLogoutSubtext] = useState('Membersihkan kredensial & mengamankan akun admin...')
   const [profileOpen, setProfileOpen] = useState(false)
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false)
 
@@ -141,16 +144,36 @@ export default function AdminLayout() {
   }, [location.pathname])
 
   const handleLogout = async () => {
+    if (isLoggingOut) return
+
     try {
-      setLoading(true)
-      await authService.logout()
-    } catch {
-      // Tetap logout dari frontend jika network error
+      setIsLoggingOut(true)
+      setProfileOpen(false)
+      setMobileSidebarOpen(false)
+      setLogoutText('Mengakhiri Sesi...')
+      setLogoutSubtext('Membersihkan kredensial & mengamankan akun admin...')
+
+      const textTimer = setTimeout(() => {
+        setLogoutText('Mengalihkan ke Gerbang Masuk...')
+        setLogoutSubtext('Sampai jumpa kembali di Pawon Hara!')
+      }, 1000)
+
+      // Jeda minimum 2 detik agar animasi loader tradisional Kendil Gerabah tampil anggun dan mantap
+      const minDelay = new Promise((resolve) => setTimeout(resolve, 2000))
+
+      try {
+        await authService.logout()
+      } catch {
+        // Tetap lanjutkan logout jika network error
+      }
+
+      await minDelay
+      clearTimeout(textTimer)
     } finally {
       logout()
       toast.success('Berhasil logout dari panel admin.')
       navigate('/hc-admin', { replace: true })
-      setLoading(false)
+      setIsLoggingOut(false)
     }
   }
 
@@ -162,6 +185,14 @@ export default function AdminLayout() {
           : 'bg-[#FBF7F2] text-stone-900 selection:bg-[#F59E0B] selection:text-[#2B120E]'
       }`}
     >
+      {/* Animasi Loader Tradisional Kendil Saat Logout */}
+      <PageLoader
+        isLoading={isLoggingOut}
+        text={logoutText}
+        subtext={logoutSubtext}
+        minDuration={1800}
+        theme={isDark ? 'dark' : 'light'}
+      />
       {/* =====================================================
           DESKTOP SIDEBAR (EXPAND / COLLAPSE)
       ====================================================== */}
@@ -633,14 +664,15 @@ export default function AdminLayout() {
               <button
                 type="button"
                 onClick={handleLogout}
-                className={`flex w-full items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-xs font-bold transition ${
+                disabled={isLoggingOut}
+                className={`flex w-full items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-xs font-bold transition disabled:opacity-50 cursor-pointer ${
                   isDark
                     ? 'bg-[#1C0B09] border border-[#60241E] text-red-400 hover:bg-red-950/30'
                     : 'bg-stone-100 text-red-600 hover:bg-red-50'
                 }`}
               >
                 <LogOut size={16} />
-                <span>Logout Keluar</span>
+                <span>{isLoggingOut ? 'Sedang Logout...' : 'Logout Keluar'}</span>
               </button>
             </div>
           </aside>
@@ -859,13 +891,13 @@ export default function AdminLayout() {
                     <button
                       type="button"
                       onClick={handleLogout}
-                      disabled={loading}
+                      disabled={isLoggingOut}
                       className={`flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-semibold text-red-500 transition disabled:opacity-50 cursor-pointer ${
                         isDark ? 'hover:bg-red-950/30' : 'hover:bg-red-50'
                       }`}
                     >
                       <LogOut size={14} />
-                      <span>{loading ? 'Sedang Logout...' : 'Logout Keluar'}</span>
+                      <span>{isLoggingOut ? 'Sedang Logout...' : 'Logout Keluar'}</span>
                     </button>
                   </div>
                 </div>
