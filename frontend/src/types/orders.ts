@@ -89,6 +89,21 @@ export interface UpdateOrderPaymentPayload {
   payment_note?: string
 }
 
+export type PaymentProofType = 'dp' | 'pelunasan'
+
+export interface OrderPaymentProof {
+  id: number
+  order_id: number
+  payment_type: PaymentProofType
+  drive_file_id: string
+  drive_file_name: string
+  drive_file_url: string
+  drive_web_view_link?: string | null
+  uploaded_at: string
+  created_at?: string
+  updated_at?: string
+}
+
 export interface Order {
   id: number
   order_code: string
@@ -118,6 +133,7 @@ export interface Order {
 
   items?: OrderItem[]
   addons?: OrderAddon[]
+  payment_proofs?: OrderPaymentProof[]
 }
 
 export interface OrderPagination {

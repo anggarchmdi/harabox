@@ -47,4 +47,9 @@ class Order extends Model
     {
         return $this->hasMany(OrderAddon::class);
     }
+
+    public function paymentProofs(): HasMany
+    {
+        return $this->hasMany(OrderPaymentProof::class);
+    }
 }

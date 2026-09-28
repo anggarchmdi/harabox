@@ -55,7 +55,7 @@ class OrderController extends Controller
         );
 
         $query = Order::query()
-            ->with(['items.product', 'items.addons', 'addons.addon'])
+            ->with(['items.product', 'items.addons', 'addons.addon', 'paymentProofs'])
             ->latest();
 
         if ($status = $request->query('status')) {
@@ -92,6 +92,7 @@ class OrderController extends Controller
             'items.product',
             'items.addons',
             'addons.addon',
+            'paymentProofs',
         ]);
 
         return response()->json([
@@ -140,7 +141,7 @@ class OrderController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Order status updated successfully',
-            'data' => $order->fresh(['items.product', 'items.addons', 'addons.addon']),
+            'data' => $order->fresh(['items.product', 'items.addons', 'addons.addon', 'paymentProofs']),
         ]);
     }
 
@@ -175,7 +176,7 @@ class OrderController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Catatan pembayaran berhasil diperbarui',
-            'data' => $order->fresh(['items.product', 'items.addons', 'addons.addon']),
+            'data' => $order->fresh(['items.product', 'items.addons', 'addons.addon', 'paymentProofs']),
         ]);
     }
 }

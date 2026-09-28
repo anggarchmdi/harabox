@@ -12,6 +12,7 @@ import type {
   CreateAdminOrderPayload,
   OrderRecapResponse,
   OrderRecapParams,
+  OrderPaymentProof,
 } from '../types/orders'
 
 export interface OrderFilters {
@@ -228,5 +229,39 @@ export const ordersService = {
     link.click()
     document.body.removeChild(link)
     window.URL.revokeObjectURL(url)
+  },
+
+  async uploadPaymentProof(
+    orderId: number,
+    formData: FormData,
+  ): Promise<OrderPaymentProof> {
+    const response = await api.post<{
+      success: boolean
+      message: string
+      data: OrderPaymentProof
+    }>(`/admin/orders/${orderId}/payment-proof`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
+    return response.data.data
+  },
+
+  async getPaymentProofs(
+    orderId: number,
+  ): Promise<OrderPaymentProof[]> {
+    const response = await api.get<{
+      success: boolean
+      message: string
+      data: OrderPaymentProof[]
+    }>(`/admin/orders/${orderId}/payment-proofs`)
+    return response.data.data
+  },
+
+  async deletePaymentProof(
+    orderId: number,
+    proofId: number,
+  ): Promise<void> {
+    await api.delete(`/admin/orders/${orderId}/payment-proofs/${proofId}`)
   },
 }

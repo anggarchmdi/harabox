@@ -30,3 +30,6 @@ harabox_db
 .claude
 claude.md
 AGENTS.md
+/storage/app/google/*
+!/storage/app/google/.gitignore
+credentials.json

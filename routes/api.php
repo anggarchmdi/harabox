@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\Admin\AuthController;
 use App\Http\Controllers\Api\Admin\CategoryController as AdminCategoryController;
 use App\Http\Controllers\Api\Admin\DashboardController;
 use App\Http\Controllers\Api\Admin\OrderController as AdminOrderController;
+use App\Http\Controllers\Api\Admin\OrderPaymentProofController;
 use App\Http\Controllers\Api\Admin\OrderRecapController;
 use App\Http\Controllers\Api\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Api\Admin\PushNotificationController;
@@ -173,6 +174,22 @@ Route::prefix('v1')->group(function () {
             Route::patch('/orders/{order}/payment', [
                 AdminOrderController::class,
                 'updatePayment',
+            ]);
+
+            // Payment Proofs (Google Drive)
+            Route::get('/orders/{order}/payment-proofs', [
+                OrderPaymentProofController::class,
+                'index',
+            ]);
+
+            Route::post('/orders/{order}/payment-proof', [
+                OrderPaymentProofController::class,
+                'store',
+            ]);
+
+            Route::delete('/orders/{order}/payment-proofs/{paymentProof}', [
+                OrderPaymentProofController::class,
+                'destroy',
             ]);
 
             // Testimonials (Admin)

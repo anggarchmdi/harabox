@@ -36,6 +36,7 @@ import OrderTable, {
 import PrintOrderModal from '../../components/admin/orders/PrintOrderModal'
 import OrderStatusBadge from '../../components/admin/orders/OrderStatusBadge'
 import PaymentStatusBadge from '../../components/admin/orders/PaymentStatusBadge'
+import PaymentProofSection from '../../components/admin/orders/PaymentProofSection'
 import PageLoader from '../../components/ui/PageLoader'
 import Pagination from '../../components/ui/Pagination'
 import useDebounce from '../../hooks/useDebounce'
@@ -977,6 +978,16 @@ export default function AdminOrders() {
                   </div>
                 </div>
               </div>
+
+              {/* Bukti Transfer (Google Drive) */}
+              <PaymentProofSection
+                order={selectedOrder}
+                isDark={isDark}
+                onProofUpdated={(updatedProofs) => {
+                  setSelectedOrder((prev) => (prev ? { ...prev, payment_proofs: updatedProofs } : null))
+                  queryClient.invalidateQueries({ queryKey: ['admin-orders'] })
+                }}
+              />
 
               {/* Customer & Event Details */}
               <div className="grid gap-4 sm:grid-cols-2">
