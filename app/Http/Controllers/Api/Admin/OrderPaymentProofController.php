@@ -68,9 +68,11 @@ class OrderPaymentProofController extends Controller
                 'trace' => $e->getTraceAsString(),
             ]);
 
+            $message = $e->getMessage() ?: 'Gagal mengupload bukti transfer ke Google Drive. Silakan periksa konfigurasi server.';
+
             return response()->json([
                 'success' => false,
-                'message' => 'Gagal mengupload bukti transfer ke Google Drive. Silakan coba lagi.',
+                'message' => $message,
             ], 500);
         }
 
@@ -97,7 +99,7 @@ class OrderPaymentProofController extends Controller
 
             return response()->json([
                 'success' => false,
-                'message' => 'Gagal menyimpan catatan bukti transfer. File di Google Drive telah dibatalkan.',
+                'message' => 'Gagal menyimpan bukti transfer ke database: '.$e->getMessage(),
             ], 500);
         }
 

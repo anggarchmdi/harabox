@@ -12,6 +12,7 @@ export interface Product {
   name: string
   slug: string
   description?: string | null
+  package_items?: string[] | null
   price: string
   minimum_order: number
   lead_time_days?: number
@@ -36,6 +37,7 @@ export interface CreateProductRequest {
   category_id: number
   name: string
   description?: string
+  package_items?: string[]
   price: number
   minimum_order: number
   lead_time_days?: number
@@ -52,6 +54,7 @@ export interface UpdateProductRequest {
   category_id?: number
   name?: string
   description?: string
+  package_items?: string[]
   price?: number
   minimum_order?: number
   lead_time_days?: number

@@ -55,6 +55,20 @@ const ADDON_PRESETS = [
   { label: '+ Air Mineral (+Rp 3.000)', name: 'Air Mineral Kemasan', price: '3000' },
 ]
 
+const PACKAGE_ITEM_PRESETS = [
+  'Nasi Putih Pulen',
+  'Nasi Kuning Gurih',
+  'Ayam Bakar Madu',
+  'Ayam Goreng Lengkuas',
+  'Sambal Bawang Khas Pawon Hara',
+  'Sambal Terasi Segar',
+  'Lalapan Segar (Timun & Kemangi)',
+  'Tahu & Tempe Bacem',
+  'Kerupuk Udang Renyah',
+  'Air Mineral Cup',
+  'Sendok, Garpu & Tisu Steril',
+]
+
 export default function CreateProduct() {
   const isDark = useThemeStore((state) => state.theme === 'dark')
   const navigate = useNavigate()
@@ -100,6 +114,32 @@ export default function CreateProduct() {
     { name: 'Telur Balado', price: '4000' },
     { name: 'Sambal Bawang Extra', price: '1500' },
   ])
+
+  // 4. Daftar Isi Paket Bawaan (Termasuk dalam Paket)
+  const [packageItems, setPackageItems] = useState<string[]>([
+    'Nasi Putih Pulen',
+    'Lauk Utama',
+    'Sambal Khas Pawon Hara',
+    'Lalapan Segar',
+    'Kerupuk Udang',
+    'Sendok, Garpu & Tisu',
+  ])
+
+  const handleAddPackageItem = (itemText = '') => {
+    setPackageItems((prev) => [...prev, itemText])
+  }
+
+  const handleUpdatePackageItem = (index: number, val: string) => {
+    setPackageItems((prev) => {
+      const copy = [...prev]
+      copy[index] = val
+      return copy
+    })
+  }
+
+  const handleRemovePackageItem = (index: number) => {
+    setPackageItems((prev) => prev.filter((_, i) => i !== index))
+  }
 
   // Handlers Nasi
   const handleAddNasiRow = (presetName = '', presetPrice = '0') => {
@@ -253,10 +293,15 @@ export default function CreateProduct() {
           }))
         : []
 
+      const validPackageItems = packageItems
+        .map((item) => item.trim())
+        .filter((item) => item.length > 0)
+
       await productService.create({
         category_id: Number(form.category_id),
         name: form.name.trim(),
         description: form.description.trim(),
+        package_items: validPackageItems,
         price: Number(form.price),
         minimum_order: Math.max(1, Number(form.minimum_order) || 1),
         lead_time_days: Math.max(0, Number(form.lead_time_days) || 0),
@@ -533,7 +578,7 @@ export default function CreateProduct() {
                   value={form.description}
                   onChange={handleChange}
                   disabled={loading}
-                  rows={4}
+                  rows={3}
                   placeholder="Jelaskan isi paket, lauk pelengkap, rasa khas, atau catatan saji..."
                   className={`w-full resize-none rounded-xl border px-4 py-3 text-sm outline-none transition ${
                     isDark
@@ -541,6 +586,107 @@ export default function CreateProduct() {
                       : 'border-stone-200 bg-stone-50/50 text-stone-900 placeholder:text-stone-400 focus:border-red-600 focus:bg-white focus:ring-1 focus:ring-red-600'
                   }`}
                 />
+              </div>
+
+              {/* Package Items (Isi Paket Bawaan) */}
+              <div className="pt-2">
+                <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+                  <div>
+                    <label className={`block text-xs font-bold uppercase tracking-wider ${isDark ? 'text-amber-100/70' : 'text-stone-600'}`}>
+                      Daftar Isi Paket (Termasuk dalam Harga Dasar)
+                    </label>
+                    <p className={`text-xs mt-0.5 ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
+                      Rincian lauk, sayur, sambal, dan pelengkap yang didapatkan customer dalam 1 porsi boks.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleAddPackageItem('')}
+                    className={`inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-bold transition cursor-pointer ${
+                      isDark
+                        ? 'bg-[#3B1814] text-amber-300 hover:bg-[#4D1F1A] border border-[#60241E]'
+                        : 'bg-amber-50 text-amber-900 hover:bg-amber-100 border border-amber-200'
+                    }`}
+                  >
+                    <Plus size={13} />
+                    Tambah Item
+                  </button>
+                </div>
+
+                {/* Quick Presets */}
+                <div className="flex flex-wrap items-center gap-1.5 mb-3">
+                  <span className={`text-[11px] font-medium mr-1 ${isDark ? 'text-stone-500' : 'text-stone-400'}`}>
+                    Contoh cepat:
+                  </span>
+                  {PACKAGE_ITEM_PRESETS.map((preset) => {
+                    const isAdded = packageItems.includes(preset)
+                    return (
+                      <button
+                        key={preset}
+                        type="button"
+                        onClick={() => {
+                          if (!isAdded) handleAddPackageItem(preset)
+                        }}
+                        disabled={isAdded}
+                        className={`text-[11px] px-2 py-0.5 rounded-full border transition cursor-pointer ${
+                          isAdded
+                            ? isDark
+                              ? 'border-emerald-800/50 bg-emerald-950/20 text-emerald-400/60'
+                              : 'border-emerald-200 bg-emerald-50 text-emerald-600 opacity-60 cursor-not-allowed'
+                            : isDark
+                              ? 'border-[#60241E] bg-[#1C0B09] text-amber-200 hover:border-amber-400'
+                              : 'border-stone-200 bg-stone-50 text-stone-700 hover:border-amber-400 hover:bg-amber-50/50'
+                        }`}
+                      >
+                        {isAdded ? `✓ ${preset}` : `+ ${preset}`}
+                      </button>
+                    )
+                  })}
+                </div>
+
+                {/* Items Input List */}
+                <div className="space-y-2">
+                  {packageItems.map((item, index) => (
+                    <div key={index} className="flex items-center gap-2">
+                      <div className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-xs font-bold ${
+                        isDark ? 'bg-[#3B1814] text-amber-300' : 'bg-amber-100 text-amber-900'
+                      }`}>
+                        {index + 1}
+                      </div>
+                      <input
+                        type="text"
+                        value={item}
+                        onChange={(e) => handleUpdatePackageItem(index, e.target.value)}
+                        placeholder={`Contoh: Ayam Bakar Madu, Kerupuk Udang...`}
+                        className={`flex-1 rounded-xl border px-3 py-2 text-xs sm:text-sm outline-none transition ${
+                          isDark
+                            ? 'border-[#60241E] bg-[#1C0B09] text-white placeholder:text-stone-600 focus:border-[#F59E0B]'
+                            : 'border-stone-200 bg-stone-50/50 text-stone-900 placeholder:text-stone-400 focus:border-red-600 focus:bg-white'
+                        }`}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleRemovePackageItem(index)}
+                        className={`rounded-xl p-2 transition cursor-pointer ${
+                          isDark
+                            ? 'text-red-400 hover:bg-red-950/50'
+                            : 'text-stone-400 hover:bg-red-50 hover:text-red-600'
+                        }`}
+                        title="Hapus Item"
+                      >
+                        <Trash2 size={15} />
+                      </button>
+                    </div>
+                  ))}
+
+                  {packageItems.length === 0 && (
+                    <div className={`rounded-xl border border-dashed p-4 text-center text-xs ${
+                      isDark ? 'border-[#60241E] text-stone-500' : 'border-stone-200 text-stone-400'
+                    }`}>
+                      Belum ada rincian isi paket. Klik <strong>+ Tambah Item</strong> atau pilih contoh cepat di atas.
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>

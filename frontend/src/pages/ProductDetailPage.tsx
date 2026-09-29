@@ -15,6 +15,7 @@ import {
   ShoppingBag,
   ShoppingCart,
   User,
+  UtensilsCrossed,
   X,
 } from 'lucide-react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
@@ -732,6 +733,63 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                     </span>
                   </div>
                 </div>
+
+                {/* Daftar Isi Paket (Termasuk dalam Paket Dasar) */}
+                {product.package_items && product.package_items.length > 0 && (
+                  <div
+                    className={`mt-5 rounded-2xl border p-4 sm:p-5 transition-all ${
+                      isDark
+                        ? 'border-[#60241E]/90 bg-[#1F0C0A]'
+                        : 'border-[#E6DACD] bg-[#FAF5EE]/90'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between gap-2 mb-3 pb-2.5 border-b border-inherit">
+                      <div className="flex items-center gap-2">
+                        <div
+                          className={`flex h-6 w-6 items-center justify-center rounded-lg ${
+                            isDark
+                              ? 'bg-[#3B1814] text-[#F59E0B]'
+                              : 'bg-[#FAF0E4] text-[#D97706]'
+                          }`}
+                        >
+                          <UtensilsCrossed size={13} />
+                        </div>
+                        <h2
+                          className={`text-xs sm:text-sm font-bold tracking-wide uppercase font-poppins ${
+                            isDark ? 'text-white' : 'text-[#2B120E]'
+                          }`}
+                        >
+                          Sudah Termasuk Dalam Paket
+                        </h2>
+                      </div>
+                      <span
+                        className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${
+                          isDark
+                            ? 'border-emerald-500/30 bg-emerald-950/40 text-emerald-400'
+                            : 'border-emerald-200 bg-emerald-50 text-emerald-700'
+                        }`}
+                      >
+                        Harga Dasar
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-2.5">
+                      {product.package_items.map((item, idx) => (
+                        <div
+                          key={idx}
+                          className={`flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs sm:text-sm font-medium border transition-colors ${
+                            isDark
+                              ? 'border-[#60241E]/50 bg-[#2D120F]/60 text-amber-100/90'
+                              : 'border-[#E6DACD]/70 bg-white text-[#4A261F]'
+                          }`}
+                        >
+                          <CheckCircle2 size={15} className="text-emerald-500 shrink-0" />
+                          <span className="leading-snug">{item}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 

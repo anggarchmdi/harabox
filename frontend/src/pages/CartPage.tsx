@@ -437,7 +437,7 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                   <button
                     type="button"
                     onClick={removeSelected}
-                    className="inline-flex items-center gap-1 sm:gap-1.5 rounded-xl bg-red-950/60 border border-red-800/80 px-2.5 py-1 text-xs font-semibold text-red-300 hover:bg-red-900/60 hover:text-white transition cursor-pointer"
+                    className="inline-flex items-center gap-1 sm:gap-1.5 rounded-xl bg-red-700 border border-red-800/80 px-2.5 py-1 text-xs font-semibold text-white transform hover:scale-95 transition cursor-pointer"
                   >
                     <Trash2 size={13} />
                     <span className="hidden xs:inline">Hapus Terpilih</span>

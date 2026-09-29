@@ -16,6 +16,7 @@ class Product extends Model
         'name',
         'slug',
         'description',
+        'package_items',
         'price',
         'minimum_order',
         'lead_time_days',
@@ -27,6 +28,7 @@ class Product extends Model
     ];
 
     protected $casts = [
+        'package_items' => 'array',
         'price' => 'decimal:2',
         'minimum_order' => 'integer',
         'lead_time_days' => 'integer',

@@ -134,4 +134,66 @@ class AdminProductCustomizationTest extends TestCase
         $this->assertCount(2, $product->custom_sayur);
         $this->assertEquals('Capcay Seafood', $product->custom_sayur[1]['name']);
     }
+
+    public function test_admin_can_create_and_update_product_with_package_items(): void
+    {
+        Sanctum::actingAs($this->admin);
+
+        $category = Category::firstOrCreate(['slug' => 'cat-items-test'], ['name' => 'Items Test Cat']);
+
+        $packageItems = [
+            'Nasi Putih Pulen',
+            'Ayam Bakar Madu',
+            'Sambal Terasi Segar',
+            'Lalapan Timun & Kemangi',
+            'Kerupuk Udang',
+            'Sendok, Garpu & Tisu Higienis',
+        ];
+
+        $payload = [
+            'category_id' => $category->id,
+            'name' => 'Paket Komplit '.uniqid(),
+            'description' => 'Paket komplit siap santap dengan lauk lezat',
+            'package_items' => $packageItems,
+            'price' => 28000,
+            'minimum_order' => 10,
+            'lead_time_days' => 1,
+            'is_active' => true,
+        ];
+
+        $response = $this->postJson('/api/v1/admin/products', $payload);
+        $response->assertStatus(201);
+        $productId = $response->json('data.id');
+
+        $product = Product::findOrFail($productId);
+        $this->assertIsArray($product->package_items);
+        $this->assertCount(6, $product->package_items);
+        $this->assertEquals('Nasi Putih Pulen', $product->package_items[0]);
+        $this->assertEquals('Sendok, Garpu & Tisu Higienis', $product->package_items[5]);
+
+        // Test update package_items
+        $updatedItems = [
+            'Nasi Liwet Gurih',
+            'Ayam Goreng Lengkuas',
+            'Sambal Bawang',
+            'Alat Makan Lengkap',
+        ];
+
+        $updateResponse = $this->putJson("/api/v1/admin/products/{$product->id}", [
+            'name' => $product->name,
+            'price' => $product->price,
+            'minimum_order' => $product->minimum_order,
+            'package_items' => $updatedItems,
+        ]);
+
+        $updateResponse->assertStatus(200);
+        $product->refresh();
+        $this->assertCount(4, $product->package_items);
+        $this->assertEquals('Nasi Liwet Gurih', $product->package_items[0]);
+
+        // Test public API includes package_items via ProductResource
+        $publicResponse = $this->getJson("/api/v1/products/{$product->slug}");
+        $publicResponse->assertStatus(200);
+        $this->assertEquals($updatedItems, $publicResponse->json('data.package_items'));
+    }
 }

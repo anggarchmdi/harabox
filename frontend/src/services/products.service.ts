@@ -206,6 +206,10 @@ export const productService = {
       formData.append('addons', JSON.stringify(data.addons))
     }
 
+    if (data.package_items !== undefined) {
+      formData.append('package_items', JSON.stringify(data.package_items))
+    }
+
     const response =
       await api.post<ProductResponse>(
         '/admin/products',
@@ -283,6 +287,10 @@ export const productService = {
 
     if (data.addons !== undefined) {
       formData.append('addons', JSON.stringify(data.addons))
+    }
+
+    if (data.package_items !== undefined) {
+      formData.append('package_items', JSON.stringify(data.package_items))
     }
 
     if (data.image) {

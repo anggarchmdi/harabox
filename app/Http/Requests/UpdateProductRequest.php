@@ -34,6 +34,13 @@ class UpdateProductRequest extends FormRequest
                 $this->merge(['addons' => $decoded]);
             }
         }
+
+        if ($this->has('package_items') && is_string($this->package_items)) {
+            $decoded = json_decode($this->package_items, true);
+            if (is_array($decoded)) {
+                $this->merge(['package_items' => $decoded]);
+            }
+        }
     }
 
     public function rules(): array
@@ -41,6 +48,14 @@ class UpdateProductRequest extends FormRequest
         $product = $this->route('product');
 
         return [
+            'package_items' => [
+                'nullable',
+                'array',
+            ],
+            'package_items.*' => [
+                'string',
+                'max:255',
+            ],
             'custom_nasi' => [
                 'nullable',
                 'array',

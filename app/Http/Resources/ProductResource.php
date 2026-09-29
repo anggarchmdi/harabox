@@ -15,6 +15,7 @@ class ProductResource extends JsonResource
             'name' => $this->name,
             'slug' => $this->slug,
             'description' => $this->description,
+            'package_items' => $this->package_items ?? [],
             'price' => (string) $this->price,
             'minimum_order' => (int) $this->minimum_order,
             'lead_time_days' => (int) ($this->lead_time_days ?? 3),
