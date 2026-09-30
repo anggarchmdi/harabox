@@ -370,7 +370,7 @@ export default function HomePage() {
       ====================================================== */}
       <section
         className={`w-full h-[400px] xl:h-[600px] relative overflow-hidden select-none transition-colors duration-300 ${
-          isDark ? 'bg-[#1C0B09]' : 'bg-[#FBF7F2]'
+          isDark ? 'bg-[#1C0B09]' : 'bg-black'
         }`}
         onMouseEnter={() => setIsSlideHovered(true)}
         onMouseLeave={() => setIsSlideHovered(false)}
@@ -393,7 +393,7 @@ export default function HomePage() {
 
         {/* Ambient Top & Bottom Gradient Overlay for optimal contrast and seamless section blending */}
         <div
-          className={`absolute inset-0 z-10 pointer-events-none bg-gradient-to-t ${
+          className={`absolute inset-0 z-10 pointer-events-none${
             isDark
               ? ''
               : ''
@@ -412,8 +412,8 @@ export default function HomePage() {
                   backdrop-blur-xl transition-all duration-300
                   ${
                     isDark
-                      ? 'bg-[#1C0B09]/80 border border-[#60241E]/80 shadow-[0_12px_40px_rgba(0,0,0,0.6)] ring-1 ring-white/10'
-                      : 'bg-white/85 border border-[#E6DACD] shadow-[0_12px_36px_rgba(96,36,30,0.12)] ring-1 ring-[#8C4320]/10'
+                      ? 'bg-[#1C0B09]/85 border border-[#60241E]/80 shadow-[0_12px_40px_rgba(0,0,0,0.6)] ring-1 ring-white/10'
+                      : 'bg-white/5 border border-[#E6DACD] shadow-[0_12px_36px_rgba(96,36,30,0.12)] ring-1 ring-[#8C4320]/10'
                   }
                 `}
               >
@@ -422,19 +422,19 @@ export default function HomePage() {
                   {/* Left / Top Row (Mobile): Brand Pill & Integrated Slide Indicators */}
                   <div className="flex items-center justify-between gap-3 px-1 sm:px-2">
                     <div className="flex items-center gap-2">
-                      <div
+                      {/* <div
                         className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 sm:py-1 text-[11px] sm:text-xs font-black uppercase tracking-[0.14em] ${
                           isDark
                             ? 'bg-[#60241E]/80 border border-[#F59E0B]/40 text-amber-300'
                             : 'bg-[#FAF0E4] border border-[#D97706]/40 text-[#8C4320]'
                         }`}
-                      >
-                        <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#F59E0B] animate-pulse" />
-                        <span>Pawon Hara</span>
-                      </div>
-                      <span className={`text-[11px] sm:text-xs font-semibold ${isDark ? 'text-amber-100/70' : 'text-[#6B423A]'}`}>
-                        Nasi Box & Bento
-                      </span>
+                      > */}
+                        {/* <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#F59E0B] animate-pulse" /> */}
+                        {/* <span>Pawon Hara</span> */}
+                      {/* </div> */}
+                      {/* <span className={`text-[16px] font-dhaksinarga ${isDark ? 'text-amber-100/70' : 'text-white'}`}>
+                        Pawon Hara
+                      </span> */}
                     </div>
 
                     {/* Integrated Slide Progress Indicators */}
@@ -495,12 +495,12 @@ export default function HomePage() {
                         ${
                           isDark
                             ? 'bg-emerald-950/50 hover:bg-emerald-900/60 text-emerald-300 border-emerald-500/40 shadow-sm'
-                            : 'bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border-emerald-300/80 shadow-sm'
+                            : 'bg-emerald-500/10 border-emerald-300/80 shadow-sm'
                         }
                       `}
                     >
                       <MessageCircle size={15} className="shrink-0 text-emerald-400 group-hover:scale-110 transition-transform" />
-                      <span>WhatsApp</span>
+                      <span className='text-emerald-400'>WhatsApp</span>
                     </a>
                   </div>
 
