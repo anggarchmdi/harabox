@@ -111,6 +111,7 @@ export default function EditProduct() {
   // 2. Custom Sayur
   const [customSayur, setCustomSayur] = useState<PackageAddonItem[]>([])
   // 3. Add-on Tambahan Lainnya
+  const [addonExtraEnabled, setAddonExtraEnabled] = useState(false)
   const [packageAddons, setPackageAddons] = useState<PackageAddonItem[]>([])
   // 4. Daftar Isi Paket Bawaan
   const [packageItems, setPackageItems] = useState<string[]>([])
@@ -163,6 +164,7 @@ export default function EditProduct() {
 
   // Handlers Addon
   const handleAddAddonRow = (presetName = '', presetPrice = '0') => {
+    setAddonExtraEnabled(true)
     setPackageAddons((prev) => [...prev, { name: presetName, price: presetPrice }])
   }
   const handleRemoveAddonRow = (index: number) => {
@@ -285,14 +287,8 @@ export default function EditProduct() {
               ],
         )
 
-        setPackageAddons(
-          existingAddons.length > 0
-            ? existingAddons
-            : [
-                { name: 'Telur Balado', price: '4000' },
-                { name: 'Sambal Bawang Extra', price: '1500' },
-              ],
-        )
+        setAddonExtraEnabled(existingAddons.length > 0)
+        setPackageAddons(existingAddons)
 
         if (product.package_items && Array.isArray(product.package_items)) {
           setPackageItems(product.package_items)
@@ -421,7 +417,7 @@ export default function EditProduct() {
             }))
         : []
 
-      const validAddons = form.addons_enabled
+      const validAddons = (form.addons_enabled && addonExtraEnabled)
         ? packageAddons
             .filter((a) => a.name.trim().length > 0)
             .map((a) => ({
@@ -1184,135 +1180,185 @@ export default function EditProduct() {
                 <div className={`rounded-2xl border p-4 sm:p-5 space-y-3.5 transition ${
                   isDark ? 'border-rose-900/60 bg-[#240E0C]/90' : 'border-stone-200 bg-stone-50/60'
                 }`}>
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b pb-3 border-stone-200 dark:border-[#60241E]/60">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b pb-3 border-stone-200 dark:border-[#60241E]/60">
                     <div>
                       <div className="flex items-center gap-2">
                         <h4 className={`text-xs sm:text-sm font-bold ${isDark ? 'text-white' : 'text-stone-900'}`}>
-                          3. Pilihan Tambahan / Add-on Lainnya (Dipertahankan)
+                          3. Pilihan Tambahan / Add-on Lainnya
                         </h4>
-                        <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold border ${
-                          isDark ? 'bg-stone-800 border-stone-700 text-stone-300' : 'bg-stone-200/80 border-stone-300 text-stone-600'
+                        <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold border transition-colors ${
+                          addonExtraEnabled
+                            ? isDark ? 'bg-emerald-950/60 text-emerald-300 border-emerald-800' : 'bg-emerald-100 text-emerald-800 border-emerald-300'
+                            : isDark ? 'bg-stone-800 text-stone-400 border-stone-700' : 'bg-stone-200/80 text-stone-600 border-stone-300'
                         }`}>
-                          Opsional Bebas Pilih
+                          {addonExtraEnabled ? 'ON (Aktif)' : 'OFF (Nonaktif)'}
                         </span>
                       </div>
                       <p className={`text-[11px] mt-0.5 ${isDark ? 'text-amber-100/70' : 'text-stone-500'}`}>
-                        Menu pelengkap tambahan (lauk ekstra, sambal, kerupuk, minuman, dll.) yang tidak ada di pilihan nasi dan sayur.
+                        Menu pelengkap opsional (lauk ekstra, sambal, kerupuk, minuman, dll.) yang dapat dipilih bebas oleh pelanggan.
                       </p>
                     </div>
 
-                    <button
-                      type="button"
-                      onClick={() => handleAddAddonRow('', '0')}
-                      className={`inline-flex items-center gap-1 text-xs font-bold shrink-0 ${
-                        isDark ? 'text-red-400 hover:text-red-300' : 'text-red-600 hover:text-red-700'
-                      }`}
-                    >
-                      <Plus size={14} />
-                      Tambah Pilihan Add-on
-                    </button>
-                  </div>
-
-                  {/* Preset Chips Addons */}
-                  <div>
-                    <label className={`text-[11px] font-semibold block mb-1.5 ${isDark ? 'text-amber-100/80' : 'text-stone-700'}`}>
-                      Klik Cepat Add-on Populer:
-                    </label>
-                    <div className="flex flex-wrap gap-1.5">
-                      {ADDON_PRESETS.map((preset, idx) => (
+                    <div className="flex items-center gap-3 shrink-0">
+                      {addonExtraEnabled && (
                         <button
-                          key={idx}
                           type="button"
-                          onClick={() => handleAddAddonRow(preset.name, preset.price)}
-                          className={`inline-flex items-center gap-1 rounded-lg border px-2.5 py-1 text-xs font-medium transition active:scale-95 ${
-                            isDark
-                              ? 'border-[#60241E] bg-[#1C0B09] text-amber-100 hover:border-red-500 hover:bg-[#2D120F]'
-                              : 'border-stone-200 bg-white text-stone-700 hover:border-red-500 hover:bg-red-50 hover:text-red-700'
+                          onClick={() => handleAddAddonRow('', '0')}
+                          className={`inline-flex items-center gap-1 text-xs font-bold ${
+                            isDark ? 'text-red-400 hover:text-red-300' : 'text-red-600 hover:text-red-700'
                           }`}
                         >
-                          <Plus size={12} className={isDark ? 'text-amber-200/60' : 'text-stone-400'} />
-                          {preset.label}
+                          <Plus size={14} />
+                          Tambah Baris
                         </button>
-                      ))}
+                      )}
+
+                      {/* Toggle Switch Khusus Addon Nomor 3 */}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setAddonExtraEnabled((prev) => {
+                            const next = !prev
+                            if (next && packageAddons.length === 0) {
+                              setPackageAddons([
+                                { name: 'Telur Balado', price: '4000' },
+                                { name: 'Sambal Bawang Extra', price: '1500' },
+                              ])
+                            }
+                            return next
+                          })
+                        }}
+                        className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                          addonExtraEnabled
+                            ? 'bg-emerald-600'
+                            : isDark ? 'bg-[#381612]' : 'bg-stone-300'
+                        }`}
+                        role="switch"
+                        aria-checked={addonExtraEnabled}
+                        title={addonExtraEnabled ? 'Nonaktifkan Add-on Nomor 3' : 'Aktifkan Add-on Nomor 3'}
+                      >
+                        <span
+                          className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                            addonExtraEnabled ? 'translate-x-5' : 'translate-x-0'
+                          }`}
+                        />
+                      </button>
                     </div>
                   </div>
 
-                  {/* List Addons */}
-                  <div className="space-y-2 pt-1">
-                    {packageAddons.length === 0 ? (
-                      <div className={`rounded-xl border border-dashed p-4 text-center text-xs ${
-                        isDark ? 'border-[#60241E] bg-[#1C0B09] text-amber-100/60' : 'border-stone-200 bg-white text-stone-500'
-                      }`}>
-                        Belum ada add-on tambahan di daftar ini. Silakan klik pilihan populer di atas atau tombol "Tambah Pilihan Add-on".
-                      </div>
-                    ) : (
-                      packageAddons.map((addon, index) => (
-                        <div
-                          key={index}
-                          className={`flex flex-col sm:flex-row items-stretch sm:items-center gap-2 rounded-xl border p-2.5 transition ${
-                            isDark
-                              ? 'border-[#60241E] bg-[#1C0B09]/80 focus-within:border-red-500 focus-within:bg-[#1C0B09]'
-                              : 'border-stone-200 bg-white focus-within:border-red-500'
-                          }`}
-                        >
-                          <div className="flex items-center gap-2 flex-1">
-                            <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-[11px] font-bold ${
-                              isDark ? 'bg-[#2D120F] text-amber-200' : 'bg-stone-200 text-stone-600'
-                            }`}>
-                              {index + 1}
-                            </span>
-                            <input
-                              type="text"
-                              value={addon.name}
-                              onChange={(e) => handleAddonFieldChange(index, 'name', e.target.value)}
-                              placeholder="Nama Tambahan (misal: Telur Balado / Sambal Matah)"
-                              className={`w-full rounded-lg border px-3 py-2 text-xs sm:text-sm font-semibold outline-none transition ${
-                                isDark
-                                  ? 'border-[#60241E] bg-[#240E0C] text-white placeholder:font-normal placeholder:text-stone-500 focus:border-red-600'
-                                  : 'border-stone-200 bg-stone-50/50 text-stone-900 placeholder:font-normal placeholder:text-stone-400 focus:border-red-600 focus:bg-white'
-                              }`}
-                            />
-                          </div>
-
-                          <div className="flex items-center gap-2">
-                            <div className="relative w-36 sm:w-40">
-                              <span className={`pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[11px] font-bold ${
-                                isDark ? 'text-amber-100/60' : 'text-stone-500'
-                              }`}>
-                                +Rp
-                              </span>
-                              <input
-                                type="number"
-                                min="0"
-                                step="500"
-                                value={addon.price}
-                                onChange={(e) => handleAddonFieldChange(index, 'price', e.target.value)}
-                                placeholder="0"
-                                className={`w-full rounded-lg border pl-10 pr-3 py-2 text-xs sm:text-sm font-semibold outline-none transition ${
-                                  isDark
-                                    ? 'border-[#60241E] bg-[#240E0C] text-white focus:border-red-600'
-                                    : 'border-stone-200 bg-stone-50/50 text-stone-900 focus:border-red-600 focus:bg-white'
-                                }`}
-                              />
-                            </div>
-
+                  {addonExtraEnabled ? (
+                    <>
+                      {/* Preset Chips Addons */}
+                      <div>
+                        <label className={`text-[11px] font-semibold block mb-1.5 ${isDark ? 'text-amber-100/80' : 'text-stone-700'}`}>
+                          Klik Cepat Add-on Populer:
+                        </label>
+                        <div className="flex flex-wrap gap-1.5">
+                          {ADDON_PRESETS.map((preset, idx) => (
                             <button
+                              key={idx}
                               type="button"
-                              onClick={() => handleRemoveAddonRow(index)}
-                              className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border transition ${
+                              onClick={() => handleAddAddonRow(preset.name, preset.price)}
+                              className={`inline-flex items-center gap-1 rounded-lg border px-2.5 py-1 text-xs font-medium transition active:scale-95 ${
                                 isDark
-                                  ? 'border-[#60241E] bg-[#240E0C] text-stone-400 hover:border-red-800 hover:text-red-400'
-                                  : 'border-stone-200 bg-white text-stone-400 hover:border-red-200 hover:bg-red-50 hover:text-red-600'
+                                  ? 'border-[#60241E] bg-[#1C0B09] text-amber-100 hover:border-red-500 hover:bg-[#2D120F]'
+                                  : 'border-stone-200 bg-white text-stone-700 hover:border-red-500 hover:bg-red-50 hover:text-red-700'
                               }`}
-                              title="Hapus baris add-on ini"
                             >
-                              <Trash2 size={15} />
+                              <Plus size={12} className={isDark ? 'text-amber-200/60' : 'text-stone-400'} />
+                              {preset.label}
                             </button>
-                          </div>
+                          ))}
                         </div>
-                      ))
-                    )}
-                  </div>
+                      </div>
+
+                      {/* List Addons */}
+                      <div className="space-y-2 pt-1">
+                        {packageAddons.length === 0 ? (
+                          <div className={`rounded-xl border border-dashed p-4 text-center text-xs ${
+                            isDark ? 'border-[#60241E] bg-[#1C0B09] text-amber-100/60' : 'border-stone-200 bg-white text-stone-500'
+                          }`}>
+                            Belum ada add-on tambahan di daftar ini. Silakan klik pilihan populer di atas atau tombol "Tambah Baris". Jika disimpan dalam keadaan kosong, produk ini tidak akan memiliki add-on tambahan.
+                          </div>
+                        ) : (
+                          packageAddons.map((addon, index) => (
+                            <div
+                              key={index}
+                              className={`flex flex-col sm:flex-row items-stretch sm:items-center gap-2 rounded-xl border p-2.5 transition ${
+                                isDark
+                                  ? 'border-[#60241E] bg-[#1C0B09]/80 focus-within:border-red-500 focus-within:bg-[#1C0B09]'
+                                  : 'border-stone-200 bg-white focus-within:border-red-500'
+                              }`}
+                            >
+                              <div className="flex items-center gap-2 flex-1">
+                                <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-[11px] font-bold ${
+                                  isDark ? 'bg-[#2D120F] text-amber-200' : 'bg-stone-200 text-stone-600'
+                                }`}>
+                                  {index + 1}
+                                </span>
+                                <input
+                                  type="text"
+                                  value={addon.name}
+                                  onChange={(e) => handleAddonFieldChange(index, 'name', e.target.value)}
+                                  placeholder="Nama Tambahan (misal: Telur Balado / Sambal Matah)"
+                                  className={`w-full rounded-lg border px-3 py-2 text-xs sm:text-sm font-semibold outline-none transition ${
+                                    isDark
+                                      ? 'border-[#60241E] bg-[#240E0C] text-white placeholder:font-normal placeholder:text-stone-500 focus:border-red-600'
+                                      : 'border-stone-200 bg-stone-50/50 text-stone-900 placeholder:font-normal placeholder:text-stone-400 focus:border-red-600 focus:bg-white'
+                                  }`}
+                                />
+                              </div>
+
+                              <div className="flex items-center gap-2">
+                                <div className="relative w-36 sm:w-40">
+                                  <span className={`pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[11px] font-bold ${
+                                    isDark ? 'text-amber-100/60' : 'text-stone-500'
+                                  }`}>
+                                    +Rp
+                                  </span>
+                                  <input
+                                    type="number"
+                                    min="0"
+                                    step="500"
+                                    value={addon.price}
+                                    onChange={(e) => handleAddonFieldChange(index, 'price', e.target.value)}
+                                    placeholder="0"
+                                    className={`w-full rounded-lg border pl-10 pr-3 py-2 text-xs sm:text-sm font-semibold outline-none transition ${
+                                      isDark
+                                        ? 'border-[#60241E] bg-[#240E0C] text-white focus:border-red-600'
+                                        : 'border-stone-200 bg-stone-50/50 text-stone-900 focus:border-red-600 focus:bg-white'
+                                    }`}
+                                  />
+                                </div>
+
+                                <button
+                                  type="button"
+                                  onClick={() => handleRemoveAddonRow(index)}
+                                  className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border transition ${
+                                    isDark
+                                      ? 'border-[#60241E] bg-[#240E0C] text-stone-400 hover:border-red-800 hover:text-red-400'
+                                      : 'border-stone-200 bg-white text-stone-400 hover:border-red-200 hover:bg-red-50 hover:text-red-600'
+                                  }`}
+                                  title="Hapus baris add-on ini"
+                                >
+                                  <Trash2 size={15} />
+                                </button>
+                              </div>
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    </>
+                  ) : (
+                    <div className={`rounded-xl border border-dashed p-4 text-center text-xs ${
+                      isDark ? 'border-[#60241E]/80 bg-[#1C0B09]/50 text-stone-400' : 'border-stone-200 bg-white/70 text-stone-500'
+                    }`}>
+                      <p className="font-medium">Pilihan Add-on Tambahan (Nomor 3) dinonaktifkan.</p>
+                      <p className="mt-0.5 text-[11px] opacity-80">
+                        Menu ini tidak akan menampilkan pilihan tambahan. Klik tombol toggle switch di atas untuk mengaktifkannya.
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
             ) : (
