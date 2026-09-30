@@ -15,7 +15,6 @@ import {
   ArrowLeft,
   Copy,
   Check,
-  Printer,
   MessageCircle,
   RefreshCw,
   ShieldCheck,
@@ -37,7 +36,6 @@ import { useThemeStore } from '../stores/theme.store'
 import { getImageUrl } from '../utils/image'
 import PageLoader from '../components/ui/PageLoader'
 import PaymentStatusBadge from '../components/admin/orders/PaymentStatusBadge'
-import PrintOrderModal from '../components/admin/orders/PrintOrderModal'
 
 // Fallback images
 import BentoKatsuImg from '../assets/nasibox/bento-katsu-b.webp'
@@ -257,37 +255,43 @@ export default function OrderTrackingPage() {
   const [loading, setLoading] = useState(false)
   const [hasSearched, setHasSearched] = useState(false)
   const [copied, setCopied] = useState(false)
-  const [isPrintModalOpen, setIsPrintModalOpen] = useState(false)
 
   const fetchOrder = async (codeToFetch: string, phoneToVerify?: string) => {
     const cleanCode = codeToFetch.trim().toUpperCase()
+    const cleanPhone = phoneToVerify?.trim() || ''
+
     if (!cleanCode) {
       toast.error('Masukkan kode pesanan terlebih dahulu.')
+      return
+    }
+
+    if (!cleanPhone) {
+      toast.error('Masukkan nomor WhatsApp pemesan untuk verifikasi keamanan.')
       return
     }
 
     try {
       setLoading(true)
       setHasSearched(true)
-      const data = await ordersService.trackOrder(cleanCode, phoneToVerify?.trim() || undefined)
+      const data = await ordersService.trackOrder(cleanCode, cleanPhone)
       setOrder(data)
-      setSearchParams({ code: cleanCode, ...(phoneToVerify ? { phone: phoneToVerify.trim() } : {}) })
+      setSearchParams({ code: cleanCode, phone: cleanPhone })
     } catch (err: any) {
       console.error(err)
       setOrder(null)
-      const msg = err?.response?.data?.message || 'Pesanan tidak ditemukan. Periksa kembali kode pesanan Anda.'
+      const msg = err?.response?.data?.message || 'Pesanan tidak ditemukan. Periksa kembali kombinasi kode pesanan dan nomor WhatsApp Anda.'
       toast.error(msg)
     } finally {
       setLoading(false)
     }
   }
 
-  // Auto-search on mount if code param is present
+  // Auto-search on mount only if BOTH code and phone params are present
   useEffect(() => {
-    if (initialCode) {
+    if (initialCode && initialPhone) {
       fetchOrder(initialCode, initialPhone)
     }
-  }, [initialCode])
+  }, [initialCode, initialPhone])
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -302,12 +306,9 @@ export default function OrderTrackingPage() {
     setTimeout(() => setCopied(false), 2000)
   }
 
-  const handlePrint = () => {
-    setIsPrintModalOpen(true)
-  }
-
   const currentTheme = order ? STATUS_CONFIG[order.status] || STATUS_CONFIG.pending : STATUS_CONFIG.pending
   const currentStep = order ? currentTheme.stepIndex : 0
+
   const isCancelled = order?.status === 'cancelled'
 
   const progressPercentage = isCancelled
@@ -339,7 +340,7 @@ export default function OrderTrackingPage() {
     : 'https://wa.me/6289669743193'
 
   return (
-    <main className={`min-h-screen overflow-x-clip pt-24 sm:pt-28 pb-28 transition-colors duration-300 print:bg-white print:pt-0 print:pb-0 ${
+    <main className={`min-h-screen overflow-x-clip pt-24 sm:pt-28 pb-28 transition-colors duration-300 ${
       isDark
         ? 'bg-[#1C0B09] text-stone-100 selection:bg-[#F59E0B] selection:text-[#1C0B09]'
         : 'bg-[#FBF7F2] text-[#2B120E] selection:bg-[#F59E0B] selection:text-white'
@@ -353,8 +354,8 @@ export default function OrderTrackingPage() {
       />
 
       <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-        {/* Navigation & Header (Hidden in Print) */}
-        <div className="mb-6 flex flex-wrap items-center justify-between gap-3 print:hidden">
+        {/* Navigation & Header */}
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
           <Link
             to="/menu"
             className={`inline-flex items-center gap-2 rounded-xl px-3.5 py-2 text-xs sm:text-sm font-bold shadow-2xs transition ${
@@ -377,8 +378,8 @@ export default function OrderTrackingPage() {
           </div>
         </div>
 
-        {/* Hero Search Section (Hidden in Print) */}
-        <section className={`relative mb-8 overflow-hidden rounded-3xl border p-6 sm:p-8 shadow-xl print:hidden ${
+        {/* Hero Search Section */}
+        <section className={`relative mb-8 overflow-hidden rounded-3xl border p-6 sm:p-8 shadow-xl ${
           isDark ? 'border-[#60241E] bg-[#240E0C]' : 'border-[#E6DACD] bg-white'
         }`}>
           {/* Ambient background glow */}
@@ -430,7 +431,7 @@ export default function OrderTrackingPage() {
                 />
               </div>
 
-              <div className="relative sm:w-56">
+              <div className="relative sm:w-60">
                 <Phone
                   size={16}
                   className={`pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 ${
@@ -439,9 +440,10 @@ export default function OrderTrackingPage() {
                 />
                 <input
                   type="text"
+                  required
                   value={inputPhone}
                   onChange={(e) => setInputPhone(e.target.value)}
-                  placeholder="No. WA Pemesan (opsional)"
+                  placeholder="No. WA Pemesan (Wajib)"
                   className={`w-full rounded-2xl border pl-10 pr-4 py-3.5 text-xs sm:text-sm font-semibold outline-none transition ${
                     isDark
                       ? 'border-[#60241E] bg-[#1C0B09] text-white placeholder:font-normal placeholder:text-stone-500 focus:border-[#F59E0B] focus:ring-2 focus:ring-[#F59E0B]/20'
@@ -506,7 +508,7 @@ export default function OrderTrackingPage() {
                       <button
                         type="button"
                         onClick={handleCopyCode}
-                        className={`inline-flex items-center gap-1 rounded-lg border px-2 py-0.5 text-[11px] font-semibold shadow-2xs active:scale-95 transition print:hidden cursor-pointer ${
+                        className={`inline-flex items-center gap-1 rounded-lg border px-2 py-0.5 text-[11px] font-semibold shadow-2xs active:scale-95 transition cursor-pointer ${
                           isDark
                             ? 'border-[#60241E] bg-[#2D120F] text-amber-200 hover:bg-[#3B1814]'
                             : 'border-[#E6DACD] bg-[#FAF5EE] text-[#5C3831] hover:bg-[#F5EDE4]'
@@ -517,7 +519,7 @@ export default function OrderTrackingPage() {
                         <span>{copied ? 'Tersalin' : 'Salin'}</span>
                       </button>
                     </div>
-                    <h2 className={`mt-1 font-dhaksinarga text-2xl sm:text-3xl font-black tracking-wide ${
+                    <h2 className={`mt-1 font-poppins text-lg font-black tracking-wide ${
                       isDark ? 'text-white' : 'text-[#2B120E]'
                     }`}>
                       {order.order_code}
@@ -567,22 +569,8 @@ export default function OrderTrackingPage() {
                           }`}
                         />
                       </span>
-                      <span className="font-dhaksinarga tracking-wide">{currentTheme.title}</span>
+                      <span className="font-poppins tracking-wide">{currentTheme.title}</span>
                     </div>
-
-                    <button
-                      type="button"
-                      onClick={handlePrint}
-                      className={`inline-flex items-center gap-1.5 rounded-xl border px-3.5 py-2 text-xs font-semibold shadow-2xs transition print:hidden cursor-pointer ${
-                        isDark
-                          ? 'border-[#60241E] bg-[#2D120F] text-amber-200 hover:bg-[#3B1814] hover:text-white'
-                          : 'border-[#E6DACD] bg-[#FAF5EE] text-[#5C3831] hover:bg-[#F5EDE4] hover:text-[#2B120E]'
-                      }`}
-                      title="Cetak nota pesanan"
-                    >
-                      <Printer size={14} />
-                      <span>Cetak Nota</span>
-                    </button>
                   </div>
                 </div>
 
@@ -596,7 +584,7 @@ export default function OrderTrackingPage() {
                     <currentTheme.icon size={20} />
                   </div>
                   <div>
-                    <h3 className={`text-sm font-dhaksinarga tracking-wide font-bold ${
+                    <h3 className={`text-sm font-poppins tracking-wide font-bold ${
                       isDark ? 'text-white' : 'text-[#2B120E]'
                     }`}>{currentTheme.title}</h3>
                     <p className={`mt-0.5 text-xs leading-relaxed ${
@@ -697,19 +685,19 @@ export default function OrderTrackingPage() {
                                   Langkah {step.stepNum}
                                 </span>
                                 {isReviewStep && isOrderCompleted ? (
-                                  <span className="inline-flex items-center rounded-md px-1.5 py-0.2 text-[9px] font-black uppercase tracking-wider bg-[#F59E0B] text-[#1C0B09] animate-pulse font-dhaksinarga">
+                                  <span className="inline-flex items-center rounded-md px-1.5 py-0.2 text-[9px] font-black uppercase tracking-wider bg-[#F59E0B] text-[#1C0B09] animate-pulse font-poppins">
                                     Siap Diulas
                                   </span>
                                 ) : isCurrent ? (
                                   <span
-                                    className="inline-flex items-center rounded-md px-1.5 py-0.2 text-[9px] font-black uppercase tracking-wider bg-[#F59E0B] text-[#1C0B09] font-dhaksinarga"
+                                    className="inline-flex items-center rounded-md px-1.5 py-0.2 text-[9px] font-black uppercase tracking-wider bg-[#F59E0B] text-[#1C0B09] font-poppins"
                                   >
                                     Aktif
                                   </span>
                                 ) : null}
                               </div>
                               <h4
-                                className={`text-xs sm:text-sm font-dhaksinarga tracking-wide font-bold mt-0.5 ${
+                                className={`text-xs sm:text-sm font-poppins tracking-wide font-bold mt-0.5 ${
                                   isReviewStep && isOrderCompleted
                                     ? isDark ? 'text-[#F59E0B] font-black' : 'text-[#D97706] font-black'
                                     : isCurrent
@@ -746,7 +734,7 @@ export default function OrderTrackingPage() {
                             </div>
                             <div>
                               <div className="flex items-center gap-2">
-                                <span className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider font-dhaksinarga ${
+                                <span className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider font-poppins ${
                                   isDark
                                     ? 'bg-[#1C0B09] border-[#60241E] text-amber-300'
                                     : 'bg-white border-[#E6DACD] text-[#8C4320]'
@@ -757,7 +745,7 @@ export default function OrderTrackingPage() {
                                   • {order.order_code}
                                 </span>
                               </div>
-                              <h3 className={`text-base sm:text-lg font-dhaksinarga tracking-wide font-black mt-1 ${
+                              <h3 className={`text-base sm:text-lg font-poppins tracking-wide font-black mt-1 ${
                                 isDark ? 'text-white' : 'text-[#2B120E]'
                               }`}>
                                 Pesanan Telah Tiba! Bagaimana Rasa Hidangan Kami?
@@ -796,7 +784,7 @@ export default function OrderTrackingPage() {
 
                           <Link
                             to={`${testimonialBaseUrl}&rating=5`}
-                            className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-gradient-to-r from-[#F59E0B] via-[#E77B49] to-[#F59E0B] hover:brightness-110 text-[#1C0B09] font-dhaksinarga tracking-wide font-black text-xs sm:text-sm shadow-lg shadow-[#F59E0B]/20 transition active:scale-95 shrink-0 cursor-pointer"
+                            className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-gradient-to-r from-[#F59E0B] via-[#E77B49] to-[#F59E0B] hover:brightness-110 text-[#1C0B09] font-poppins tracking-wide font-black text-xs sm:text-sm shadow-lg shadow-[#F59E0B]/20 transition active:scale-95 shrink-0 cursor-pointer"
                           >
                             <MessageSquareQuote size={17} />
                             <span>Tulis Ulasan & Testimoni</span>
@@ -809,7 +797,7 @@ export default function OrderTrackingPage() {
                   <div className="mt-6 rounded-2xl border border-rose-800 bg-rose-950/60 p-4 sm:p-5 flex items-start gap-3.5 text-rose-200">
                     <XCircle size={24} className="shrink-0 text-rose-400 mt-0.5" />
                     <div>
-                      <h4 className="text-sm font-bold font-dhaksinarga tracking-wide">Pesanan Telah Dibatalkan</h4>
+                      <h4 className="text-sm font-bold font-poppins tracking-wide">Pesanan Telah Dibatalkan</h4>
                       <p className="mt-1 text-xs text-rose-300 leading-relaxed">
                         Pesanan ini berstatus batal di sistem kami. Jika ada perubahan atau ingin melakukan pemesanan ulang untuk jadwal acara baru, silakan hubungi admin kami melalui WhatsApp di bawah.
                       </p>
@@ -836,7 +824,7 @@ export default function OrderTrackingPage() {
                       <Calendar size={16} />
                     </div>
                     <div>
-                      <h3 className={`text-sm font-dhaksinarga tracking-wide font-bold ${
+                      <h3 className={`text-sm font-poppins tracking-wide font-bold ${
                         isDark ? 'text-white' : 'text-[#2B120E]'
                       }`}>Jadwal Acara & Pengantaran</h3>
                       <span className={`text-[11px] ${isDark ? 'text-amber-200/60' : 'text-[#6B423A]'}`}>Waktu pelaksanaan katering</span>
@@ -921,7 +909,7 @@ export default function OrderTrackingPage() {
                       <User size={16} />
                     </div>
                     <div>
-                      <h3 className={`text-sm font-dhaksinarga tracking-wide font-bold ${
+                      <h3 className={`text-sm font-poppins tracking-wide font-bold ${
                         isDark ? 'text-white' : 'text-[#2B120E]'
                       }`}>Data Pemesan</h3>
                       <span className={`text-[11px] ${isDark ? 'text-amber-200/60' : 'text-[#6B423A]'}`}>Kontak penerima pesanan</span>
@@ -956,8 +944,8 @@ export default function OrderTrackingPage() {
                   </div>
                 </div>
 
-                {/* Direct WhatsApp Action Card (Hidden in Print) */}
-                <div className={`rounded-3xl border p-6 shadow-xl print:hidden ${
+                {/* Direct WhatsApp Action Card */}
+                <div className={`rounded-3xl border p-6 shadow-xl ${
                   isDark
                     ? 'border-[#60241E] bg-gradient-to-br from-[#2D120F] to-[#1C0B09]'
                     : 'border-[#E6DACD] bg-gradient-to-br from-white to-[#FAF5EE]'
@@ -967,7 +955,7 @@ export default function OrderTrackingPage() {
                       <MessageCircle size={22} />
                     </div>
                     <div className="flex-1">
-                      <h4 className={`text-sm font-dhaksinarga tracking-wide font-bold ${
+                      <h4 className={`text-sm font-poppins tracking-wide font-bold ${
                         isDark ? 'text-white' : 'text-[#2B120E]'
                       }`}>
                         Butuh Bantuan atau Perubahan Menu?
@@ -1007,7 +995,7 @@ export default function OrderTrackingPage() {
                         <ShoppingBag size={16} />
                       </div>
                       <div>
-                        <h3 className={`text-sm font-dhaksinarga tracking-wide font-bold ${
+                        <h3 className={`text-sm font-poppins tracking-wide font-bold ${
                           isDark ? 'text-white' : 'text-[#2B120E]'
                         }`}>Rincian Paket Menu</h3>
                         <span className={`text-[11px] ${isDark ? 'text-amber-200/60' : 'text-[#6B423A]'}`}>
@@ -1043,7 +1031,7 @@ export default function OrderTrackingPage() {
 
                             <div className="flex-1 min-w-0">
                               <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-1">
-                                <h4 className={`text-xs sm:text-sm font-dhaksinarga tracking-wide font-bold ${
+                                <h4 className={`text-xs sm:text-sm font-poppins tracking-wide font-bold ${
                                   isDark ? 'text-white' : 'text-[#2B120E]'
                                 }`}>
                                   {item.item_name}
@@ -1131,8 +1119,8 @@ export default function OrderTrackingPage() {
                     <div className={`flex justify-between items-center border-t pt-3 text-base sm:text-lg font-black ${
                       isDark ? 'border-[#60241E] text-white' : 'border-[#E6DACD] text-[#2B120E]'
                     }`}>
-                      <span className="font-dhaksinarga tracking-wide">Total Pembayaran</span>
-                      <span className="font-dhaksinarga tracking-wide text-[#F59E0B] text-xl sm:text-2xl font-black">
+                      <span className="font-poppins tracking-wide">Total Pembayaran</span>
+                      <span className="font-poppins tracking-wide text-[#F59E0B] text-xl sm:text-2xl font-black">
                         {formatRupiah(order.total)}
                       </span>
                     </div>
@@ -1146,7 +1134,7 @@ export default function OrderTrackingPage() {
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="flex flex-wrap items-center justify-between gap-1.5">
-                              <span className="text-xs font-black uppercase tracking-wider text-emerald-300 font-dhaksinarga">
+                              <span className="text-xs font-black uppercase tracking-wider text-emerald-300 font-poppins">
                                 Pembayaran Lunas
                               </span>
                               <span className="text-xs font-mono font-black text-emerald-200 bg-emerald-900/60 px-2 py-0.5 rounded-md border border-emerald-700">
@@ -1170,7 +1158,7 @@ export default function OrderTrackingPage() {
                             </div>
                             <div className="flex-1 min-w-0">
                               <div className="flex flex-wrap items-center justify-between gap-1.5">
-                                <span className={`text-xs font-black uppercase tracking-wider font-dhaksinarga ${
+                                <span className={`text-xs font-black uppercase tracking-wider font-poppins ${
                                   isDark ? 'text-amber-300' : 'text-amber-900'
                                 }`}>
                                   DP / Uang Muka Masuk
@@ -1211,7 +1199,7 @@ export default function OrderTrackingPage() {
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="flex flex-wrap items-center justify-between gap-1.5">
-                              <span className={`text-xs font-bold uppercase tracking-wider font-dhaksinarga ${
+                              <span className={`text-xs font-bold uppercase tracking-wider font-poppins ${
                                 isDark ? 'text-amber-300' : 'text-[#2B120E]'
                               }`}>
                                 Status Pembayaran
@@ -1254,7 +1242,7 @@ export default function OrderTrackingPage() {
             }`}>
               <AlertCircle size={32} />
             </div>
-            <h3 className={`mt-4 text-lg font-dhaksinarga tracking-wide font-bold ${
+            <h3 className={`mt-4 text-lg font-poppins tracking-wide font-bold ${
               isDark ? 'text-white' : 'text-[#2B120E]'
             }`}>Pesanan Tidak Ditemukan</h3>
             <p className={`mt-1.5 text-xs leading-relaxed ${
@@ -1265,7 +1253,7 @@ export default function OrderTrackingPage() {
             <div className="mt-6 flex justify-center gap-3">
               <Link
                 to="/menu"
-                className="rounded-2xl bg-gradient-to-r from-[#F59E0B] to-[#E77B49] px-5 py-2.5 text-xs font-dhaksinarga tracking-wide font-black text-[#1C0B09] hover:brightness-110 transition shadow-xs"
+                className="rounded-2xl bg-gradient-to-r from-[#F59E0B] to-[#E77B49] px-5 py-2.5 text-xs font-poppins tracking-wide font-black text-[#1C0B09] hover:brightness-110 transition shadow-xs"
               >
                 Jelajahi Menu Katering
               </Link>
@@ -1281,7 +1269,7 @@ export default function OrderTrackingPage() {
             }`}>
               <FileText size={28} />
             </div>
-            <h3 className={`mt-4 text-base sm:text-lg font-dhaksinarga tracking-wide font-bold ${
+            <h3 className={`mt-4 text-base sm:text-lg font-poppins tracking-wide font-bold ${
               isDark ? 'text-white' : 'text-[#2B120E]'
             }`}>
               Cara Menemukan Kode Pesanan Anda
@@ -1293,13 +1281,6 @@ export default function OrderTrackingPage() {
             </p>
           </div>
         )}
-
-        {/* Print Order Modal (Slip Dapur, Invoice) */}
-        <PrintOrderModal
-          order={order}
-          isOpen={isPrintModalOpen}
-          onClose={() => setIsPrintModalOpen(false)}
-        />
       </div>
     </main>
   )

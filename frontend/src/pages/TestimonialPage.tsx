@@ -93,6 +93,7 @@ export default function TestimonialPage() {
   const [existingReview, setExistingReview] = useState<Testimonial | null>(null)
   const [orderError, setOrderError] = useState<string | null>(null)
   const [orderLookupInput, setOrderLookupInput] = useState('')
+  const [orderLookupPhone, setOrderLookupPhone] = useState('')
   const [isManualMode, setIsManualMode] = useState(false)
 
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -110,14 +111,24 @@ export default function TestimonialPage() {
   })
 
   // Function to lookup and verify order (auto-populating products like Shopee)
-  const lookupOrder = async (code: string) => {
-    const cleanCode = code.trim()
-    if (!cleanCode) return
+  const lookupOrder = async (code: string, phone: string) => {
+    const cleanCode = code.trim().toUpperCase()
+    const cleanPhone = phone.trim()
+
+    if (!cleanCode) {
+      setOrderError('Masukkan kode pesanan terlebih dahulu.')
+      return
+    }
+
+    if (!cleanPhone) {
+      setOrderError('Masukkan nomor WhatsApp pemesan untuk memverifikasi pesanan.')
+      return
+    }
 
     try {
       setIsCheckingOrder(true)
       setOrderError(null)
-      const res = await testimonialService.checkByOrder(cleanCode)
+      const res = await testimonialService.checkByOrder(cleanCode, cleanPhone)
 
       if (res.has_reviewed) {
         setHasReviewedAlready(true)
@@ -146,11 +157,12 @@ export default function TestimonialPage() {
         setHasReviewedAlready(false)
         setIsManualMode(false)
       } else {
-        setOrderError('Nomor pesanan tidak ditemukan. Mohon periksa kembali kode pesanan Anda.')
+        setOrderError('Nomor pesanan tidak ditemukan. Mohon periksa kembali kode pesanan dan nomor WhatsApp Anda.')
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Failed to lookup order for testimonial', err)
-      setOrderError('Gagal memuat data pesanan. Silakan periksa kembali kode pesanan Anda.')
+      const msg = err?.response?.data?.message || 'Gagal memuat data pesanan. Periksa kembali kombinasi kode pesanan dan nomor WhatsApp Anda.'
+      setOrderError(msg)
     } finally {
       setIsCheckingOrder(false)
     }
@@ -162,6 +174,7 @@ export default function TestimonialPage() {
     const paramQty = searchParams.get('qty') || searchParams.get('quantity')
     const paramInstitution = searchParams.get('institution')
     const paramOrder = searchParams.get('order') || searchParams.get('order_code')
+    const paramPhone = searchParams.get('phone')
     const paramRating = searchParams.get('rating')
 
     if (paramName) setName(paramName)
@@ -174,10 +187,16 @@ export default function TestimonialPage() {
       }
     }
 
+    if (paramPhone) {
+      setOrderLookupPhone(paramPhone)
+    }
+
     if (paramOrder) {
       setOrderCode(paramOrder)
       setOrderLookupInput(paramOrder)
-      lookupOrder(paramOrder)
+      if (paramPhone) {
+        lookupOrder(paramOrder, paramPhone)
+      }
     }
 
     // If redirected with order info, scroll smoothly to form
@@ -398,7 +417,7 @@ export default function TestimonialPage() {
               </div>
               <div>
                 <div className="flex items-baseline gap-1.5">
-                  <span className={`text-2xl sm:text-3xl font-dhaksinarga tracking-wide font-black ${
+                  <span className={`text-2xl sm:text-3xl font-poppins tracking-wide font-black ${
                     isDark ? 'text-white' : 'text-[#2B120E]'
                   }`}>4.9</span>
                   <span className={`text-xs font-bold ${isDark ? 'text-amber-300/70' : 'text-[#8C4320]'}`}>/ 5.0</span>
@@ -417,7 +436,7 @@ export default function TestimonialPage() {
                 <Package size={28} />
               </div>
               <div>
-                <span className={`text-2xl sm:text-3xl font-dhaksinarga tracking-wide font-black ${
+                <span className={`text-2xl sm:text-3xl font-poppins tracking-wide font-black ${
                   isDark ? 'text-white' : 'text-[#2B120E]'
                 }`}>15.000+</span>
                 <p className={`text-xs font-bold mt-0.5 ${isDark ? 'text-amber-100' : 'text-[#2B120E]'}`}>Box Nasi Terkirim</p>
@@ -434,7 +453,7 @@ export default function TestimonialPage() {
                 <ShieldCheck size={28} />
               </div>
               <div>
-                <span className="text-2xl sm:text-3xl font-dhaksinarga tracking-wide font-black text-emerald-500">99.8%</span>
+                <span className="text-2xl sm:text-3xl font-poppins tracking-wide font-black text-emerald-500">99.8%</span>
                 <p className={`text-xs font-bold mt-0.5 ${isDark ? 'text-amber-100' : 'text-[#2B120E]'}`}>Tepat Waktu Sebelum Acara</p>
                 <p className={`text-[11px] ${isDark ? 'text-amber-200/60' : 'text-[#6B423A]'}`}>Garansi kurir katering terpercaya</p>
               </div>
@@ -495,7 +514,7 @@ export default function TestimonialPage() {
               onClick={() => setActiveCategory('all')}
               className={`px-4 py-2 rounded-xl transition cursor-pointer whitespace-nowrap ${
                 activeCategory === 'all'
-                  ? 'bg-gradient-to-r from-[#F59E0B] to-[#E77B49] text-[#1C0B09] font-dhaksinarga font-bold shadow-md'
+                  ? 'bg-gradient-to-r from-[#F59E0B] to-[#E77B49] text-[#1C0B09] font-poppins font-bold shadow-md'
                   : isDark
                     ? 'bg-[#2D120F] border border-[#60241E] text-amber-200 hover:bg-[#3B1814] hover:text-white'
                     : 'bg-white border border-[#E6DACD] text-[#5C3831] hover:bg-[#FAF5EE] hover:text-[#2B120E]'
@@ -507,7 +526,7 @@ export default function TestimonialPage() {
               onClick={() => setActiveCategory('5star')}
               className={`px-4 py-2 rounded-xl transition cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
                 activeCategory === '5star'
-                  ? 'bg-gradient-to-r from-[#F59E0B] to-[#E77B49] text-[#1C0B09] font-dhaksinarga font-bold shadow-md'
+                  ? 'bg-gradient-to-r from-[#F59E0B] to-[#E77B49] text-[#1C0B09] font-poppins font-bold shadow-md'
                   : isDark
                     ? 'bg-[#2D120F] border border-[#60241E] text-amber-200 hover:bg-[#3B1814] hover:text-white'
                     : 'bg-white border border-[#E6DACD] text-[#5C3831] hover:bg-[#FAF5EE] hover:text-[#2B120E]'
@@ -520,7 +539,7 @@ export default function TestimonialPage() {
               onClick={() => setActiveCategory('office')}
               className={`px-4 py-2 rounded-xl transition cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
                 activeCategory === 'office'
-                  ? 'bg-gradient-to-r from-[#F59E0B] to-[#E77B49] text-[#1C0B09] font-dhaksinarga font-bold shadow-md'
+                  ? 'bg-gradient-to-r from-[#F59E0B] to-[#E77B49] text-[#1C0B09] font-poppins font-bold shadow-md'
                   : isDark
                     ? 'bg-[#2D120F] border border-[#60241E] text-amber-200 hover:bg-[#3B1814] hover:text-white'
                     : 'bg-white border border-[#E6DACD] text-[#5C3831] hover:bg-[#FAF5EE] hover:text-[#2B120E]'
@@ -533,7 +552,7 @@ export default function TestimonialPage() {
               onClick={() => setActiveCategory('large' as any)}
               className={`px-4 py-2 rounded-xl transition cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
                 activeCategory === ('large' as any)
-                  ? 'bg-gradient-to-r from-[#F59E0B] to-[#E77B49] text-[#1C0B09] font-dhaksinarga font-bold shadow-md'
+                  ? 'bg-gradient-to-r from-[#F59E0B] to-[#E77B49] text-[#1C0B09] font-poppins font-bold shadow-md'
                   : isDark
                     ? 'bg-[#2D120F] border border-[#60241E] text-amber-200 hover:bg-[#3B1814] hover:text-white'
                     : 'bg-white border border-[#E6DACD] text-[#5C3831] hover:bg-[#FAF5EE] hover:text-[#2B120E]'
@@ -578,7 +597,7 @@ export default function TestimonialPage() {
               }`}>
                 <MessageSquareQuote size={24} />
               </div>
-              <h3 className={`font-dhaksinarga tracking-wide text-base font-bold ${
+              <h3 className={`font-poppins tracking-wide text-base font-bold ${
                 isDark ? 'text-white' : 'text-[#2B120E]'
               }`}>Tidak ada ulasan yang cocok</h3>
               <p className={`text-xs ${isDark ? 'text-amber-100/70' : 'text-[#5C3831]'}`}>
@@ -612,12 +631,12 @@ export default function TestimonialPage() {
                       <div className="flex items-start justify-between gap-3">
                         <div className="flex items-center gap-3">
                           <div
-                            className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br ${gradient} text-white font-black text-sm shadow-xs font-dhaksinarga`}
+                            className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br ${gradient} text-white font-black text-sm shadow-xs font-poppins`}
                           >
                             {initials}
                           </div>
                           <div>
-                            <h3 className={`font-dhaksinarga tracking-wide font-black text-sm sm:text-base leading-tight ${
+                            <h3 className={`font-poppins tracking-wide font-black text-sm sm:text-base leading-tight ${
                               isDark ? 'text-white' : 'text-[#2B120E]'
                             }`}>
                               {item.name}
@@ -737,7 +756,7 @@ export default function TestimonialPage() {
                   <Sparkles size={13} /> Ulasan Berhasil Dikirim
                 </span>
 
-                <h2 className={`mt-4 text-2xl sm:text-3xl font-dhaksinarga tracking-wide font-black ${
+                <h2 className={`mt-4 text-2xl sm:text-3xl font-poppins tracking-wide font-black ${
                   isDark ? 'text-white' : 'text-[#2B120E]'
                 }`}>
                   Terima Kasih Banyak, Kak {name || orderData?.customers_name || 'Pelanggan Setia'}!
@@ -761,7 +780,7 @@ export default function TestimonialPage() {
                 }`}>
                   <Link
                     to="/"
-                    className="w-full sm:w-auto inline-flex items-center justify-center rounded-2xl bg-gradient-to-r from-[#F59E0B] via-[#E77B49] to-[#F59E0B] px-6 py-3.5 text-xs sm:text-sm font-dhaksinarga tracking-wide font-black text-[#1C0B09] hover:brightness-110 transition shadow-md"
+                    className="w-full sm:w-auto inline-flex items-center justify-center rounded-2xl bg-gradient-to-r from-[#F59E0B] via-[#E77B49] to-[#F59E0B] px-6 py-3.5 text-xs sm:text-sm font-poppins tracking-wide font-black text-[#1C0B09] hover:brightness-110 transition shadow-md"
                   >
                     Kembali ke Beranda
                   </Link>
@@ -795,7 +814,7 @@ export default function TestimonialPage() {
                     <BadgeCheck size={14} /> Pesanan Sudah Pernah Diulas
                   </span>
 
-                  <h2 className={`mt-4 text-2xl sm:text-3xl font-dhaksinarga tracking-wide font-black ${
+                  <h2 className={`mt-4 text-2xl sm:text-3xl font-poppins tracking-wide font-black ${
                     isDark ? 'text-white' : 'text-[#2B120E]'
                   }`}>
                     Terima Kasih, Kak {existingReview?.name || name || 'Pelanggan Setia'}!
@@ -866,7 +885,7 @@ export default function TestimonialPage() {
                 <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
                   <Link
                     to="/"
-                    className="w-full sm:w-auto inline-flex items-center justify-center rounded-2xl bg-gradient-to-r from-[#F59E0B] via-[#E77B49] to-[#F59E0B] px-6 py-3.5 text-xs sm:text-sm font-dhaksinarga tracking-wide font-black text-[#1C0B09] hover:brightness-110 transition shadow-md"
+                    className="w-full sm:w-auto inline-flex items-center justify-center rounded-2xl bg-gradient-to-r from-[#F59E0B] via-[#E77B49] to-[#F59E0B] px-6 py-3.5 text-xs sm:text-sm font-poppins tracking-wide font-black text-[#1C0B09] hover:brightness-110 transition shadow-md"
                   >
                     Kembali ke Beranda
                   </Link>
@@ -916,7 +935,7 @@ export default function TestimonialPage() {
                       isDark ? 'border-[#60241E] bg-[#1C0B09] text-amber-300' : 'border-[#E6DACD] bg-[#FAF5EE] text-[#8C4320]'
                     }`}>
                       <Loader2 size={20} className="animate-spin text-[#F59E0B]" />
-                      <span className="text-xs font-bold font-dhaksinarga">Memverifikasi pesanan & memuat menu Pawon Hara...</span>
+                      <span className="text-xs font-bold font-poppins">Memverifikasi pesanan & memuat menu Pawon Hara...</span>
                     </div>
                   )}
 
@@ -935,7 +954,7 @@ export default function TestimonialPage() {
                           </div>
                           <div>
                             <div className="flex items-center gap-2">
-                              <span className="text-xs font-black uppercase tracking-wider text-emerald-500 flex items-center gap-1 font-dhaksinarga">
+                              <span className="text-xs font-black uppercase tracking-wider text-emerald-500 flex items-center gap-1 font-poppins">
                                 <BadgeCheck size={14} className="text-emerald-500" />
                                 Pesanan Terverifikasi
                               </span>
@@ -963,6 +982,7 @@ export default function TestimonialPage() {
                             onClick={() => {
                               setOrderData(null)
                               setOrderLookupInput('')
+                              setOrderLookupPhone('')
                               setOrderCode('')
                               setIsManualMode(false)
                             }}
@@ -981,7 +1001,7 @@ export default function TestimonialPage() {
                         <div className={`flex items-center justify-between text-[11px] font-black uppercase tracking-wider ${
                           isDark ? 'text-amber-300' : 'text-[#8C4320]'
                         }`}>
-                          <span className="flex items-center gap-1.5 font-dhaksinarga">
+                          <span className="flex items-center gap-1.5 font-poppins">
                             <UtensilsCrossed size={13} className="text-[#F59E0B]" />
                             Produk Katering Yang Dipesan
                           </span>
@@ -1026,7 +1046,7 @@ export default function TestimonialPage() {
                                   </div>
 
                                   <div className="min-w-0">
-                                    <h4 className={`text-xs sm:text-sm font-dhaksinarga tracking-wide font-black truncate ${
+                                    <h4 className={`text-xs sm:text-sm font-poppins tracking-wide font-black truncate ${
                                       isDark ? 'text-white' : 'text-[#2B120E]'
                                     }`}>
                                       {item.item_name}
@@ -1080,16 +1100,27 @@ export default function TestimonialPage() {
                         <p className={`text-xs leading-relaxed ${
                           isDark ? 'text-amber-100/70' : 'text-[#5C3831]'
                         }`}>
-                          Masukkan nomor pesanan Anda (contoh: <strong>PH-202609-0001</strong>) agar data nama, produk yang dipesan, dan jumlah porsi terisi otomatis seperti di Shopee.
+                          Masukkan kode pesanan dan nomor WhatsApp pemesan agar data nama, produk yang dipesan, dan porsi terisi otomatis secara aman.
                         </p>
 
-                        <div className="flex flex-col md:flex-row items-center gap-2 ">
+                        <div className="flex flex-col sm:flex-row items-center gap-2">
                           <input
                             type="text"
                             value={orderLookupInput}
                             onChange={(e) => setOrderLookupInput(e.target.value.toUpperCase())}
-                            placeholder="Contoh: PH-2026-XXXX"
-                            className={`flex-1 rounded-xl border px-3.5 py-2.5 text-xs font-black uppercase tracking-wider focus:border-[#F59E0B] focus:outline-none focus:ring-2 focus:ring-[#F59E0B]/20 ${
+                            placeholder="Kode Pesanan (PH-2026-XXXX)"
+                            className={`flex-1 w-full rounded-xl border px-3.5 py-2.5 text-xs font-black uppercase tracking-wider focus:border-[#F59E0B] focus:outline-none focus:ring-2 focus:ring-[#F59E0B]/20 ${
+                              isDark
+                                ? 'border-[#60241E] bg-[#240E0C] text-white placeholder-stone-500'
+                                : 'border-[#E6DACD] bg-white text-[#2B120E] placeholder-[#8C6B64]'
+                            }`}
+                          />
+                          <input
+                            type="text"
+                            value={orderLookupPhone}
+                            onChange={(e) => setOrderLookupPhone(e.target.value)}
+                            placeholder="No. WA Pemesan (Wajib)"
+                            className={`w-full sm:w-52 rounded-xl border px-3.5 py-2.5 text-xs font-semibold focus:border-[#F59E0B] focus:outline-none focus:ring-2 focus:ring-[#F59E0B]/20 ${
                               isDark
                                 ? 'border-[#60241E] bg-[#240E0C] text-white placeholder-stone-500'
                                 : 'border-[#E6DACD] bg-white text-[#2B120E] placeholder-[#8C6B64]'
@@ -1097,15 +1128,15 @@ export default function TestimonialPage() {
                             onKeyDown={(e) => {
                               if (e.key === 'Enter') {
                                 e.preventDefault()
-                                lookupOrder(orderLookupInput)
+                                lookupOrder(orderLookupInput, orderLookupPhone)
                               }
                             }}
                           />
                           <button
                             type="button"
-                            disabled={isCheckingOrder || !orderLookupInput.trim()}
-                            onClick={() => lookupOrder(orderLookupInput)}
-                            className="rounded-xl bg-gradient-to-r from-[#F59E0B] to-[#E77B49] hover:brightness-110 disabled:opacity-50 px-4 py-2.5 text-xs font-poppins tracking-wide font-black text-[#1C0B09] transition shadow-md cursor-pointer shrink-0"
+                            disabled={isCheckingOrder || !orderLookupInput.trim() || !orderLookupPhone.trim()}
+                            onClick={() => lookupOrder(orderLookupInput, orderLookupPhone)}
+                            className="w-full sm:w-auto rounded-xl bg-gradient-to-r from-[#F59E0B] to-[#E77B49] hover:brightness-110 disabled:opacity-50 px-4 py-2.5 text-xs font-poppins tracking-wide font-black text-[#1C0B09] transition shadow-md cursor-pointer shrink-0"
                           >
                             {isCheckingOrder ? 'Memuat...' : 'Muat Pesanan'}
                           </button>
