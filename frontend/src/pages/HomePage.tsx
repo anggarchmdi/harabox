@@ -16,7 +16,6 @@ import {
   Truck,
   Users,
   ShoppingBasket,
-  SlidersHorizontal,
 } from 'lucide-react'
 
 import { productService } from '../services/products.service'
@@ -37,10 +36,12 @@ import NasiKuningPahaImg from '../assets/nasibox/nasi-kuning-paha-krispi-b.webp'
 import RamesBaladoImg from '../assets/nasibox/rames-balado-b.webp'
 import RamesPahaImg from '../assets/nasibox/rames-paha-b.webp'
 import EkonomisBaladoImg from '../assets/nasibox/ekonomis-balado-b.webp'
-import BannerMobile from '../assets/bannerss.webp'
 import DapurImg from '../assets/dapur.webp'
 import ProductImg from '../assets/product.webp'
 import PackingImg from '../assets/packing.webp'
+import HeroImg2 from '../assets/banner2.webp'
+import HeroImg3 from '../assets/banner3.webp'
+import HeroImg4 from '../assets/banner4.webp'
 
 // Curated fallback data untuk produk unggulan jika offline/loading
 interface CuratedProduct {
@@ -241,9 +242,46 @@ const faqs = [
   },
 ]
 
+const heroSlides = [
+  {
+    id: 1,
+    image: HeroImg,
+    alt: 'Pawon Hara Catering - Aneka Nasi Box & Bento Lezat',
+  },
+  {
+    id: 2,
+    image: HeroImg2,
+    alt: 'Dapur Higienis & Profesional Pawon Hara',
+  },
+  {
+    id: 3,
+    image: HeroImg3,
+    alt: 'Kemasan Rapi & Eksklusif Siap Santap',
+  },
+  {
+    id: 4,
+    image: HeroImg4,
+    alt: 'Kemasan Rapi & Eksklusif Siap Santap',
+  },
+]
+
 export default function HomePage() {
   const theme = useThemeStore((state) => state.theme)
   const isDark = theme === 'dark'
+
+  // Hero auto-slider state
+  const [currentSlide, setCurrentSlide] = useState(0)
+  const [isSlideHovered, setIsSlideHovered] = useState(false)
+
+  useEffect(() => {
+    if (isSlideHovered) return
+
+    const slideTimer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % heroSlides.length)
+    }, 5000)
+
+    return () => clearInterval(slideTimer)
+  }, [isSlideHovered])
 
   // State untuk kategori filter menu
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
@@ -328,30 +366,153 @@ export default function HomePage() {
       />
 
       {/* =====================================================
-          1. HERO BANNER & FLOATING RECOMMENDATION CARD (SUMMARY HOME)
+          1. HERO AUTO-SLIDER & ACTION BUTTONS OVERLAY LAYER
       ====================================================== */}
       <section
-        className={`w-full h-[400px] xl:h-[600px] relative transition-colors duration-300 ${
+        className={`w-full h-[400px] xl:h-[600px] relative overflow-hidden select-none transition-colors duration-300 ${
           isDark ? 'bg-[#1C0B09]' : 'bg-[#FBF7F2]'
         }`}
+        onMouseEnter={() => setIsSlideHovered(true)}
+        onMouseLeave={() => setIsSlideHovered(false)}
       >
-        <div className="flex justify-center items-center w-full h-full md:hidden bg-linear-to-l">
-          <img src={BannerMobile} className="w-full h-full object-cover object-bottom" alt="Pawon Hara Mobile Banner" />
-        </div>
+        {/* Slides */}
+        {heroSlides.map((slide, idx) => (
+          <div
+            key={slide.id}
+            className={`absolute inset-0 w-full h-full transition-opacity duration-1000 ease-in-out ${
+              idx === currentSlide ? 'opacity-100 z-0' : 'opacity-0 z-0 pointer-events-none'
+            }`}
+          >
+            <img
+              src={slide.image}
+              alt={slide.alt}
+              className="w-full h-full object-cover object-center"
+            />
+          </div>
+        ))}
+
+        {/* Ambient Top & Bottom Gradient Overlay for optimal contrast and seamless section blending */}
         <div
-          className={`w-full absolute hidden md:flex z-10 h-[600px] bg-gradient-to-t ${
+          className={`absolute inset-0 z-10 pointer-events-none bg-gradient-to-t ${
             isDark
-              ? 'from-black/20 via-transparent to-black/40'
-              : 'from-black/20 via-transparent to-black/30'
+              ? ''
+              : ''
           }`}
         />
-        <img
-          src={HeroImg}
-          alt="Pawon Hara Catering"
-          className="w-full h-full hidden md:flex object-cover"
-        />
 
-        {/* Floating Quick Order Card */}
+        {/* Action Buttons Overlay Layer (Premium Glassmorphism Dock) */}
+        <div className="absolute inset-0 z-20 flex flex-col justify-end pointer-events-none">
+          <div className="w-full bg-gradient-to-t from-black/85 via-black/40 to-transparent pt-12 pb-3 sm:pb-6 px-3 sm:px-8">
+            <div className="max-w-7xl mx-auto w-full pointer-events-auto">
+
+              {/* Floating Glassmorphism Action Capsule */}
+              <div
+                className={`
+                  w-full rounded-2xl sm:rounded-full p-2.5 sm:p-3
+                  backdrop-blur-xl transition-all duration-300
+                  ${
+                    isDark
+                      ? 'bg-[#1C0B09]/80 border border-[#60241E]/80 shadow-[0_12px_40px_rgba(0,0,0,0.6)] ring-1 ring-white/10'
+                      : 'bg-white/85 border border-[#E6DACD] shadow-[0_12px_36px_rgba(96,36,30,0.12)] ring-1 ring-[#8C4320]/10'
+                  }
+                `}
+              >
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-2.5 md:gap-4">
+
+                  {/* Left / Top Row (Mobile): Brand Pill & Integrated Slide Indicators */}
+                  <div className="flex items-center justify-between gap-3 px-1 sm:px-2">
+                    <div className="flex items-center gap-2">
+                      <div
+                        className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 sm:py-1 text-[11px] sm:text-xs font-black uppercase tracking-[0.14em] ${
+                          isDark
+                            ? 'bg-[#60241E]/80 border border-[#F59E0B]/40 text-amber-300'
+                            : 'bg-[#FAF0E4] border border-[#D97706]/40 text-[#8C4320]'
+                        }`}
+                      >
+                        <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#F59E0B] animate-pulse" />
+                        <span>Pawon Hara</span>
+                      </div>
+                      <span className={`text-[11px] sm:text-xs font-semibold ${isDark ? 'text-amber-100/70' : 'text-[#6B423A]'}`}>
+                        Nasi Box & Bento
+                      </span>
+                    </div>
+
+                    {/* Integrated Slide Progress Indicators */}
+                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/40 backdrop-blur-md border border-white/15 shadow-inner">
+                      {heroSlides.map((_, idx) => (
+                        <span
+                          key={idx}
+                          className={`h-1.5 rounded-full transition-all duration-500 ${
+                            idx === currentSlide
+                              ? 'w-5 sm:w-6 bg-gradient-to-r from-amber-400 to-[#F59E0B] shadow-[0_0_8px_rgba(245,158,11,0.8)]'
+                              : 'w-1.5 bg-white/35'
+                          }`}
+                        />
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Right / Bottom Row (Mobile): Two Action Buttons in 1 Clean Row */}
+                  <div className="grid grid-cols-2 md:flex items-center gap-2 sm:gap-2.5">
+                    {/* Primary Button */}
+                    <Link
+                      to="/menu#menu-list"
+                      className="
+                        group flex items-center justify-center gap-1.5 sm:gap-2
+                        rounded-xl sm:rounded-full
+                        bg-gradient-to-r from-[#F59E0B] via-amber-400 to-[#E77B49]
+                        hover:from-amber-400 hover:to-amber-500
+                        px-3.5 sm:px-6 py-2.5 sm:py-3
+                        text-xs sm:text-sm font-black text-[#1C0B09]
+                        shadow-md shadow-[#F59E0B]/30
+                        transition-all duration-300
+                        hover:-translate-y-0.5
+                        hover:shadow-lg hover:shadow-[#F59E0B]/40
+                        active:scale-95
+                        text-center whitespace-nowrap
+                      "
+                    >
+                      <ShoppingBag size={15} className="shrink-0 text-[#1C0B09]" />
+                      <span>Lihat Menu</span>
+                      <ArrowRight size={14} className="shrink-0 transition-transform group-hover:translate-x-0.5" />
+                    </Link>
+
+                    {/* Secondary Button */}
+                    <a
+                      href={whatsappUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`
+                        group flex items-center justify-center gap-1.5 sm:gap-2
+                        rounded-xl sm:rounded-full
+                        px-3 sm:px-5 py-2.5 sm:py-3
+                        text-xs sm:text-sm font-bold
+                        transition-all duration-300
+                        hover:-translate-y-0.5
+                        active:scale-95
+                        text-center whitespace-nowrap
+                        border backdrop-blur-md
+                        ${
+                          isDark
+                            ? 'bg-emerald-950/50 hover:bg-emerald-900/60 text-emerald-300 border-emerald-500/40 shadow-sm'
+                            : 'bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border-emerald-300/80 shadow-sm'
+                        }
+                      `}
+                    >
+                      <MessageCircle size={15} className="shrink-0 text-emerald-400 group-hover:scale-110 transition-transform" />
+                      <span>WhatsApp</span>
+                    </a>
+                  </div>
+
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        {/* Floating Quick Order Card (Temporarily hidden as requested) */}
+        {/*
         <div className="absolute z-20 w-full px-4 -translate-y-32 md:-translate-y-28 xl:-translate-y-32">
           <div
             data-aos="fade-up"
@@ -370,7 +531,6 @@ export default function HomePage() {
             `}
           >
             <div className="flex flex-col items-center justify-between gap-6 md:flex-row">
-              {/* Heading */}
               <div className="text-center md:text-left">
                 <div
                   className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-black uppercase tracking-[0.18em] shadow-2xs ${
@@ -399,7 +559,6 @@ export default function HomePage() {
                 </p>
               </div>
 
-              {/* CTA */}
               <Link
                 to="/menu#menu-list"
                 className="
@@ -421,7 +580,6 @@ export default function HomePage() {
               </Link>
             </div>
 
-            {/* Quick Info */}
             <div
               className={`mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 border-t pt-5 md:justify-start ${
                 isDark ? 'border-[#60241E]/80' : 'border-[#EFE5D8]'
@@ -456,12 +614,41 @@ export default function HomePage() {
             </div>
           </div>
         </div>
+        */}
       </section>
+
+      {/* =====================================================
+          QUICK VALUE HIGHLIGHTS STRIP (BRIDGING HERO & TRUST PILLARS)
+      ====================================================== */}
+      <div
+        className={`w-full border-b transition-colors duration-300 ${
+          isDark
+            ? 'bg-[#220B09] border-[#60241E]/50 text-amber-200/85'
+            : 'bg-[#F7F0E7] border-[#E6DACD] text-[#6B423A]'
+        }`}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-8 py-3 flex items-center justify-around sm:justify-center sm:gap-10 text-[11px] sm:text-xs font-bold">
+          <span className="flex items-center gap-1.5">
+            <ShoppingBasket className="h-3.5 w-3.5 text-[#F59E0B]" />
+            <span>Min. 10 Porsi</span>
+          </span>
+          <span className="h-3 w-px bg-current opacity-20" />
+          <span className="flex items-center gap-1.5">
+            <Truck className="h-3.5 w-3.5 text-[#F59E0B]" />
+            <span>Garansi Tepat Waktu</span>
+          </span>
+          <span className="h-3 w-px bg-current opacity-20" />
+          <span className="flex items-center gap-1.5">
+            <ShieldCheck className="h-3.5 w-3.5 text-emerald-500" />
+            <span>Higienis & Halal</span>
+          </span>
+        </div>
+      </div>
 
       {/* =====================================================
           2. TRUST PILLARS (STRIP 4 KEUNGGULAN)
       ====================================================== */}
-      <section className="pt-72 md:pt-80 xl:pt-44 pb-16 sm:pb-20 max-w-7xl mx-auto px-5 sm:px-8">
+      <section className="pt-6 sm:pt-10 pb-14 sm:pb-20 max-w-7xl mx-auto px-5 sm:px-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 transition transform duration-300">
           {trustPillars.map((pillar, idx) => {
             const Icon = pillar.icon
