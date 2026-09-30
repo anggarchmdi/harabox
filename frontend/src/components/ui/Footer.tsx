@@ -34,7 +34,7 @@ export default function Footer() {
                     Pawon Hara
                   </span>
                 </div>
-                <span className="text-[11px] italic font-bold uppercase tracking-widest text-[#E77B49] mt-0.5">
+                <span className="text-[11px] italic font-bold font-eagle-lake tracking-widest text-[#E77B49] mt-0.5">
                   By: Hara Chicken
                 </span>
               </div>
