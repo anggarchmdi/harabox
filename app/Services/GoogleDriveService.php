@@ -67,8 +67,8 @@ class GoogleDriveService
      *
      * Hierarchy:
      * Bukti Transfer (Root)
-     *  └── Nama Customer
-     *      └── Invoice / Order Code
+     *  └── Invoice / Order Code
+     *      └── Nama Customer
      *          └── DP / Pelunasan
      *              └── YYYY-MM-DD
      *                  └── bukti-transfer.webp (or bukti-transfer-<uniq>.webp)
@@ -84,19 +84,19 @@ class GoogleDriveService
 
         $service = $this->getDriveService();
 
-        // 1. Resolve & create Customer Folder
-        $customerName = trim((string) $order->customers_name);
-        if ($customerName === '') {
-            $customerName = 'Customer Tanpa Nama';
-        }
-        $customerFolderId = $this->findOrCreateFolder($customerName, $rootFolderId);
-
-        // 2. Resolve & create Invoice / Order Code Folder
+        // 1. Resolve & create Invoice / Order Code Folder
         $invoiceCode = trim((string) $order->order_code);
         if ($invoiceCode === '') {
             $invoiceCode = 'ORD-'.$order->id;
         }
-        $invoiceFolderId = $this->findOrCreateFolder($invoiceCode, $customerFolderId);
+        $invoiceFolderId = $this->findOrCreateFolder($invoiceCode, $rootFolderId);
+
+        // 2. Resolve & create Customer Folder
+        $customerName = trim((string) $order->customers_name);
+        if ($customerName === '') {
+            $customerName = 'Customer Tanpa Nama';
+        }
+        $customerFolderId = $this->findOrCreateFolder($customerName, $invoiceFolderId);
 
         // 3. Resolve & create Payment Type Folder (DP / Pelunasan)
         $paymentTypeFolderName = match (strtolower(trim($paymentType))) {
@@ -104,7 +104,7 @@ class GoogleDriveService
             'pelunasan' => 'Pelunasan',
             default => throw new RuntimeException("Tipe pembayaran '{$paymentType}' tidak valid. Hanya menerima 'dp' atau 'pelunasan'."),
         };
-        $paymentTypeFolderId = $this->findOrCreateFolder($paymentTypeFolderName, $invoiceFolderId);
+        $paymentTypeFolderId = $this->findOrCreateFolder($paymentTypeFolderName, $customerFolderId);
 
         // 4. Resolve & create Date Folder (YYYY-MM-DD in app timezone)
         $appTimezone = config('app.timezone', 'Asia/Jakarta');

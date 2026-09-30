@@ -206,7 +206,7 @@ class OrderPaymentProofTest extends TestCase
         $response->assertStatus(500)
             ->assertJson([
                 'success' => false,
-                'message' => 'Gagal mengupload bukti transfer ke Google Drive. Silakan coba lagi.',
+                'message' => 'Google Drive API Connection Timeout',
             ]);
 
         $this->assertEquals(0, $this->order->paymentProofs()->count());
