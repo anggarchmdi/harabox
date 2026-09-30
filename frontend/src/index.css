@@ -1,6 +1,15 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=Inter:wght@400;500;600;700&family=Lobster+Two:ital,wght@0,400;0,700;1,400;1,700&family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Eagle+Lake&display=swap');
 
 @import "tailwindcss";
+
+@font-face {
+  font-family: 'Eagle Lake';
+  src: url('/fonts/EagleLake-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
 
 @font-face {
   font-family: 'Dhaksinarga';
@@ -30,6 +39,7 @@
   --font-dhaksinarga-thuk: "Dhaksinarga Thuk", "Dhaksinarga", sans-serif;
   --font-brand: "Dhaksinarga", cursive;
   --font-poppins: "Poppins", sans-serif;
+  --font-eagle-lake: "Eagle Lake", serif;
 
   /* Pawon Hara Palette Tokens (60% Coklat, 30% Kuning, 10% Putih) */
   --color-pawon-espresso: #60241E;
@@ -39,6 +49,16 @@
   --color-pawon-gold: #F59E0B;
   --color-pawon-gold-light: #FEF3C7;
   --color-pawon-cream: #FDFBF7;
+}
+
+.eagle-lake-regular {
+  font-family: "Eagle Lake", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.font-eagle-lake {
+  font-family: "Eagle Lake", serif;
 }
 
 .font-dhaksinarga {
