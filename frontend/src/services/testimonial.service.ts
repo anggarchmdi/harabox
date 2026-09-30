@@ -32,9 +32,14 @@ export const testimonialService = {
   /**
    * Cek apakah pesanan tertentu sudah pernah diberi ulasan dan ambil data produk pesanan
    */
-  async checkByOrder(orderCode: string): Promise<CheckOrderTestimonialResponse> {
+  async checkByOrder(orderCode: string, phone: string): Promise<CheckOrderTestimonialResponse> {
+    const params = new URLSearchParams()
+    if (phone?.trim()) {
+      params.set('phone', phone.trim())
+    }
+    const query = params.toString() ? `?${params.toString()}` : ''
     const response = await api.get<CheckOrderTestimonialResponse>(
-      `/testimonials/check/${encodeURIComponent(orderCode)}`,
+      `/testimonials/check/${encodeURIComponent(orderCode.trim())}${query}`,
     )
 
     return response.data

@@ -1,9 +1,8 @@
 <?php
 
-use Google\Client;
-use Google\Service\Drive;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\URL;
 
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
@@ -23,23 +22,13 @@ Artisan::command('drive:auth', function () {
     }
 
     $redirectUri = url('/google-drive/callback');
-    $client = new Client;
-    $client->setClientId($clientId);
-    $client->setClientSecret($clientSecret);
-    $client->setRedirectUri($redirectUri);
-    $client->addScope(Drive::DRIVE);
-    $client->setAccessType('offline');
-    $client->setPrompt('consent');
+    $signedConnectUrl = URL::temporarySignedRoute('google-drive.connect', now()->addMinutes(30));
 
-    $authUrl = $client->createAuthUrl();
-
-    $this->info('=== Google Drive OAuth 2.0 Setup ===');
+    $this->info('=== Google Drive OAuth 2.0 Secure Setup ===');
     $this->line('1. Pastikan Authorized Redirect URI di Google Cloud Console adalah:');
     $this->comment("   {$redirectUri}");
-    $this->line('2. Buka URL ini di browser untuk login dengan akun Google Anda:');
-    $this->comment('   '.url('/google-drive/connect'));
-    $this->line('3. Atau buka URL otorisasi langsung:');
-    $this->comment("   {$authUrl}");
+    $this->line('2. Buka link bertanda tangan aman ini di browser (berlaku 30 menit):');
+    $this->comment("   {$signedConnectUrl}");
 
     return 0;
-})->purpose('Menampilkan link otorisasi OAuth 2.0 untuk Google Drive');
+})->purpose('Menampilkan link otorisasi OAuth 2.0 bertanda tangan aman untuk Google Drive');

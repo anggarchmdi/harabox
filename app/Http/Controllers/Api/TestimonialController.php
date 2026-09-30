@@ -7,6 +7,7 @@ use App\Http\Requests\StoreTestimonialRequest;
 use App\Models\Order;
 use App\Models\Testimonial;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class TestimonialController extends Controller
 {
@@ -39,7 +40,6 @@ class TestimonialController extends Controller
                 'rating' => $testimonial->rating,
                 'order_quantity' => $testimonial->order_quantity,
                 'message' => $testimonial->message,
-                'order_code' => $testimonial->order_code,
                 'ordered_items' => $orderedItems,
                 'created_at' => $testimonial->created_at,
             ];
@@ -55,16 +55,42 @@ class TestimonialController extends Controller
     /**
      * Check if a testimonial already exists for an order and return order details.
      */
-    public function checkByOrder(string $orderCode): JsonResponse
+    public function checkByOrder(Request $request, string $orderCode): JsonResponse
     {
-        $testimonial = Testimonial::where('order_code', $orderCode)->first();
+        $phoneInput = $request->query('phone');
+
+        // Phone number verification is mandatory to prevent random order code harvesting
+        if (empty($phoneInput)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Nomor WhatsApp pemesan wajib diisi untuk memverifikasi pesanan.',
+            ], 422);
+        }
+
         $order = Order::with('items.product')->where('order_code', $orderCode)->first();
+
+        $cleanInput = preg_replace('/[^0-9]/', '', (string) $phoneInput);
+        $cleanOrderPhone = $order ? preg_replace('/[^0-9]/', '', (string) $order->customers_phone) : '';
+
+        $phoneVerified = $order && (
+            $cleanInput === $cleanOrderPhone ||
+            (strlen($cleanInput) >= 4 && str_ends_with($cleanOrderPhone, $cleanInput))
+        );
+
+        if (! $order || ! $phoneVerified) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Kombinasi nomor pesanan dan nomor WhatsApp tidak cocok atau tidak ditemukan.',
+            ], 404);
+        }
+
+        $testimonial = Testimonial::where('order_code', $orderCode)->first();
 
         return response()->json([
             'success' => true,
             'has_reviewed' => (bool) $testimonial,
             'data' => $testimonial,
-            'order' => $order ? [
+            'order' => [
                 'order_code' => $order->order_code,
                 'customers_name' => $order->customers_name,
                 'status' => $order->status,
@@ -77,7 +103,7 @@ class TestimonialController extends Controller
                     'product_image' => $item->product?->image,
                     'product_name' => $item->product?->name ?? $item->item_name,
                 ]),
-            ] : null,
+            ],
         ]);
     }
 

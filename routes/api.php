@@ -18,6 +18,7 @@ use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\TestimonialController;
+use App\Http\Controllers\GoogleDriveOAuthController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
@@ -75,7 +76,7 @@ Route::prefix('v1')->group(function () {
             'login',
         ])->middleware('throttle:admin-login');
 
-        Route::middleware(['auth:sanctum', 'throttle:admin-api'])->group(function () {
+        Route::middleware(['auth:sanctum', 'active_admin', 'throttle:admin-api'])->group(function () {
 
             Route::get('/me', [
                 AuthController::class,
@@ -216,6 +217,10 @@ Route::prefix('v1')->group(function () {
                 Route::patch('/{user}/toggle-status', [AdminUserController::class, 'toggleStatus']);
                 Route::patch('/{user}/reset-password', [AdminUserController::class, 'resetPassword']);
             });
+
+            // Google Drive OAuth Setup (Super Admin only)
+            Route::get('/google-drive/auth-url', [GoogleDriveOAuthController::class, 'getAuthUrl'])
+                ->middleware('super_admin');
 
         });
 

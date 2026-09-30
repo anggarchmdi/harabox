@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\EnsureActiveAdmin;
 use App\Http\Middleware\EnsureSuperAdmin;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
@@ -18,6 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->redirectGuestsTo(fn ($request) => null);
         $middleware->alias([
             'super_admin' => EnsureSuperAdmin::class,
+            'active_admin' => EnsureActiveAdmin::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

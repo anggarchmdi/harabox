@@ -44,6 +44,16 @@ class OrderController extends Controller
         Request $request,
         string $orderCode
     ): JsonResponse {
+        $phoneInput = $request->query('phone');
+
+        // Phone number is strictly required to prevent order code brute-forcing / enumeration
+        if (empty($phoneInput)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Nomor WhatsApp pemesan wajib diisi untuk verifikasi pelacakan pesanan.',
+            ], 422);
+        }
+
         $order = Order::with([
             'items.product',
             'items.addons',
@@ -52,39 +62,20 @@ class OrderController extends Controller
             ->where('order_code', $orderCode)
             ->first();
 
-        if (! $order) {
+        $cleanInput = preg_replace('/[^0-9]/', '', (string) $phoneInput);
+        $cleanOrderPhone = $order ? preg_replace('/[^0-9]/', '', (string) $order->customers_phone) : '';
+
+        $phoneVerified = $order && (
+            $cleanInput === $cleanOrderPhone ||
+            (strlen($cleanInput) >= 4 && str_ends_with($cleanOrderPhone, $cleanInput))
+        );
+
+        // Anti-enumeration: return identical 404 message whether order does not exist or phone does not match
+        if (! $order || ! $phoneVerified) {
             return response()->json([
                 'success' => false,
-                'message' => 'Pesanan dengan kode tersebut tidak ditemukan.',
+                'message' => 'Kombinasi kode pesanan dan nomor WhatsApp tidak cocok atau tidak ditemukan.',
             ], 404);
-        }
-
-        // Optional phone verification check
-        $phoneInput = $request->query('phone');
-        $phoneVerified = false;
-
-        if ($phoneInput) {
-            $cleanInput = preg_replace('/[^0-9]/', '', (string) $phoneInput);
-            $cleanOrderPhone = preg_replace('/[^0-9]/', '', (string) $order->customers_phone);
-
-            if (
-                $cleanInput === $cleanOrderPhone ||
-                (strlen($cleanInput) >= 4 && str_ends_with($cleanOrderPhone, $cleanInput))
-            ) {
-                $phoneVerified = true;
-            } else {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Nomor telepon tidak cocok dengan data pemesan.',
-                ], 422);
-            }
-        }
-
-        // Mask phone for privacy if not verified
-        if (! $phoneVerified && strlen($order->customers_phone) >= 7) {
-            $prefix = substr($order->customers_phone, 0, 4);
-            $suffix = substr($order->customers_phone, -3);
-            $order->customers_phone = $prefix.'****'.$suffix;
         }
 
         return response()->json([

@@ -508,9 +508,15 @@ class OrderFlowTest extends TestCase
         $createRes->assertStatus(201);
         $orderCode = $createRes->json('data.order_code');
 
-        // Track without phone (phone is masked)
+        // Track without phone must fail with 422
         $trackRes = $this->getJson("/api/v1/orders/{$orderCode}");
-        $trackRes->assertStatus(200)
+        $trackRes->assertStatus(422)
+            ->assertJsonPath('success', false)
+            ->assertJsonPath('message', 'Nomor WhatsApp pemesan wajib diisi untuk verifikasi pelacakan pesanan.');
+
+        // Track with valid phone succeeds with 200
+        $validTrackRes = $this->getJson("/api/v1/orders/{$orderCode}?phone=081298765432");
+        $validTrackRes->assertStatus(200)
             ->assertJson([
                 'success' => true,
                 'data' => [
@@ -519,10 +525,10 @@ class OrderFlowTest extends TestCase
                     'status' => 'pending',
                 ],
             ])
-            ->assertJsonPath('data.customers_phone', '0812****432');
+            ->assertJsonPath('data.customers_phone', '081298765432');
 
-        $this->assertCount(1, $trackRes->json('data.items'));
-        $this->assertEquals('Paket Tracking Test', $trackRes->json('data.items.0.item_name'));
+        $this->assertCount(1, $validTrackRes->json('data.items'));
+        $this->assertEquals('Paket Tracking Test', $validTrackRes->json('data.items.0.item_name'));
     }
 
     public function test_customer_can_track_order_with_phone_verification(): void
@@ -555,19 +561,19 @@ class OrderFlowTest extends TestCase
         $createRes = $this->postJson('/api/v1/orders', $payload);
         $orderCode = $createRes->json('data.order_code');
 
-        // Valid phone matching returns unmasked phone
+        // Valid phone matching returns 200
         $trackRes = $this->getJson("/api/v1/orders/{$orderCode}?phone=085712345678");
         $trackRes->assertStatus(200)
             ->assertJsonPath('data.customers_phone', '085712345678');
 
-        // Invalid phone returns 422
+        // Invalid phone returns 404 anti-enumeration
         $invalidRes = $this->getJson("/api/v1/orders/{$orderCode}?phone=089999999999");
-        $invalidRes->assertStatus(422);
+        $invalidRes->assertStatus(404);
     }
 
     public function test_tracking_nonexistent_order_returns_404(): void
     {
-        $res = $this->getJson('/api/v1/orders/HB-20260915-NONEXISTENT');
+        $res = $this->getJson('/api/v1/orders/HB-20260915-NONEXISTENT?phone=081234567890');
         $res->assertStatus(404)
             ->assertJson([
                 'success' => false,

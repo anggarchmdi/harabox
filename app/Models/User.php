@@ -19,6 +19,11 @@ class User extends Authenticatable
         'is_active',
     ];
 
+    protected $attributes = [
+        'role' => 'admin',
+        'is_active' => true,
+    ];
+
     protected $hidden = [
         'password',
         'remember_token',
@@ -46,6 +51,6 @@ class User extends Authenticatable
      */
     public function isActive(): bool
     {
-        return (bool) $this->is_active;
+        return (bool) ($this->is_active ?? true);
     }
 }

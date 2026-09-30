@@ -204,8 +204,24 @@ class TestimonialTest extends TestCase
 
     public function test_can_check_if_order_has_been_reviewed(): void
     {
-        $orderCodeNotReviewed = 'HB-NOT-REVIEWED-99';
-        $res1 = $this->getJson("/api/v1/testimonials/check/{$orderCodeNotReviewed}");
+        $orderNotReviewed = Order::create([
+            'order_code' => 'HB-NOT-REVIEWED-99',
+            'customers_name' => 'Doni Salmanan',
+            'customers_phone' => '081234567890',
+            'event_date' => now()->toDateString(),
+            'delivery_address' => 'Jl. Mawar No 1',
+            'subtotal' => 100000,
+            'delivery_fee' => 0,
+            'total' => 100000,
+            'status' => 'completed',
+        ]);
+
+        // Missing phone returns 422
+        $noPhoneRes = $this->getJson("/api/v1/testimonials/check/{$orderNotReviewed->order_code}");
+        $noPhoneRes->assertStatus(422);
+
+        // Valid phone returns has_reviewed: false
+        $res1 = $this->getJson("/api/v1/testimonials/check/{$orderNotReviewed->order_code}?phone=081234567890");
         $res1->assertOk()
             ->assertJson([
                 'success' => true,
@@ -213,13 +229,24 @@ class TestimonialTest extends TestCase
                 'data' => null,
             ]);
 
-        $orderCodeReviewed = 'HB-REVIEWED-88';
+        $orderReviewed = Order::create([
+            'order_code' => 'HB-REVIEWED-88',
+            'customers_name' => 'Rina Nose',
+            'customers_phone' => '081333444555',
+            'event_date' => now()->toDateString(),
+            'delivery_address' => 'Jl. Melati No 2',
+            'subtotal' => 100000,
+            'delivery_fee' => 0,
+            'total' => 100000,
+            'status' => 'completed',
+        ]);
+
         $testimonial = Testimonial::factory()->create([
-            'order_code' => $orderCodeReviewed,
+            'order_code' => $orderReviewed->order_code,
             'name' => 'Rina Nose',
         ]);
 
-        $res2 = $this->getJson("/api/v1/testimonials/check/{$orderCodeReviewed}");
+        $res2 = $this->getJson("/api/v1/testimonials/check/{$orderReviewed->order_code}?phone=081333444555");
         $res2->assertOk()
             ->assertJson([
                 'success' => true,
@@ -227,7 +254,7 @@ class TestimonialTest extends TestCase
                 'data' => [
                     'id' => $testimonial->id,
                     'name' => 'Rina Nose',
-                    'order_code' => $orderCodeReviewed,
+                    'order_code' => $orderReviewed->order_code,
                 ],
             ]);
     }
@@ -253,7 +280,7 @@ class TestimonialTest extends TestCase
             'subtotal' => 1500000,
         ]);
 
-        $response = $this->getJson('/api/v1/testimonials/check/HB-CHECK-ITEMS-01');
+        $response = $this->getJson('/api/v1/testimonials/check/HB-CHECK-ITEMS-01?phone=081299998888');
         $response->assertOk()
             ->assertJson([
                 'success' => true,
