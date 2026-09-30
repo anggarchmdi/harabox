@@ -413,7 +413,7 @@ export default function HomePage() {
                   ${
                     isDark
                       ? 'bg-[#1C0B09]/85 border border-[#60241E]/80 shadow-[0_12px_40px_rgba(0,0,0,0.6)] ring-1 ring-white/10'
-                      : 'bg-white/5 border border-[#E6DACD] shadow-[0_12px_36px_rgba(96,36,30,0.12)] ring-1 ring-[#8C4320]/10'
+                      : 'bg-white/85 border border-[#E6DACD] shadow-[0_12px_36px_rgba(96,36,30,0.12)] ring-1 ring-[#8C4320]/10'
                   }
                 `}
               >
