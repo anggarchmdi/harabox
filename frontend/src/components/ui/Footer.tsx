@@ -35,7 +35,7 @@ export default function Footer() {
                   </span>
                 </div>
                 <span className="text-[11px] italic font-bold uppercase tracking-widest text-[#E77B49] mt-0.5">
-                  Dari Pawon Ke Meja Anda
+                  By: Hara Chicken
                 </span>
               </div>
             </Link>
