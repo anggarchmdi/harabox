@@ -371,7 +371,7 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
               <p className={`text-xs sm:text-sm mt-0.5 ${
                 isDark ? 'text-amber-100/70' : 'text-[#5C3831]'
               }`}>
-                Pilih paket katering Anda dan pesan langsung ke WhatsApp Admin Pawon Hara
+                Pilih menu khas nusantara Pawon Hara
               </p>
             </div>
           </div>
@@ -713,9 +713,9 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                           <p className={`font-bold font-poppins tracking-wide ${isDark ? 'text-amber-300' : 'text-[#B45309]'}`}>
                             Batas Waktu Pemesanan (H-{selectedMaxLeadDays})
                           </p>
-                          <p className={`mt-0.5 ${isDark ? 'text-amber-100/80' : 'text-[#6B423A]'}`}>
+                          {/* <p className={`mt-0.5 ${isDark ? 'text-amber-100/80' : 'text-[#6B423A]'}`}>
                             Pemesanan kombinasi menu ini minimal dilakukan H-{selectedMaxLeadDays} sebelum acara.
-                          </p>
+                          </p> */}
                         </div>
                       </div>
                     </div>

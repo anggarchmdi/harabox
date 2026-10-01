@@ -214,7 +214,7 @@ export default function MenuPage() {
         }`}
       >
         <div
-          className={`text-center max-w-md rounded-3xl p-8 border shadow-xl ${
+          className={`text-center max-w-md rounded-3xl p-8  border shadow-xl ${
             isDark
               ? 'bg-[#2D120F] border-[#60241E]'
               : 'bg-white border-[#E6DACD]'
@@ -269,7 +269,7 @@ export default function MenuPage() {
           LUXURY CHOCOLATE & GOLD HERO SECTION
       ====================================================== */}
       <section
-        className={`relative overflow-hidden border-b pt-24 pb-6 sm:pt-36 sm:pb-16 lg:pt-40 lg:pb-20 transition-colors duration-300 ${
+        className={`relative overflow-hidden border-b pt-24 pb-6 sm:pt-36 sm:pb-16 lg:pt-20 lg:pb-20 transition-colors duration-300 ${
           isDark
             ? 'border-[#60241E]/80 bg-gradient-to-b from-[#1C0B09] via-[#240E0C] to-[#1C0B09]'
             : 'border-[#E6DACD] bg-gradient-to-b from-[#FAF4ED] via-[#F5EDE4] to-[#FBF7F2]'
@@ -283,12 +283,12 @@ export default function MenuPage() {
               : 'bg-gradient-to-b from-[#E77B49]/15 to-transparent'
           }`}
         />
-        <div className="pointer-events-none absolute -left-20 top-20 h-72 w-72 rounded-full bg-[#F59E0B]/10 blur-3xl" />
+        <div className="pointer-events-none absolute -left-20 top-16 h-72 w-72 rounded-full bg-[#F59E0B]/10 blur-3xl" />
 
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col items-center text-center">
             {/* Elegant luxury pill badge */}
-            <div
+            {/* <div
               data-aos="fade-down"
               data-aos-duration="600"
               className={`inline-flex items-center gap-1.5 sm:gap-2 rounded-full border px-3 sm:px-4 py-1 sm:py-1.5 text-[10px] sm:text-[11px] font-extrabold uppercase tracking-[0.2em] sm:tracking-[0.25em] shadow-sm backdrop-blur transition-all duration-300 ${
@@ -299,7 +299,7 @@ export default function MenuPage() {
             >
               <Sparkles size={12} className={isDark ? 'text-[#F59E0B]' : 'text-[#D97706]'} />
               Pawon Hara Gourmet Catering
-            </div>
+            </div> */}
 
             {/* Main Headline in Dhaksinarga */}
             <h1
@@ -310,9 +310,9 @@ export default function MenuPage() {
                 isDark ? 'text-white' : 'text-[#2B120E]'
               }`}
             >
-              Pilihan Menu Katering Istimewa
+                Dapurnya Rasa Nusantara
               <span className="block text-[#F59E0B] font-dhaksinarga text-2xl sm:text-4xl lg:text-6xl mt-1">
-                untuk setiap momen berharga.
+                Untuk semua acara
               </span>
             </h1>
 
@@ -325,8 +325,7 @@ export default function MenuPage() {
                 isDark ? 'text-amber-100/75' : 'text-[#6B423A]'
               }`}
             >
-              Sajian katering nasi box premium dengan cita rasa gurih meresap, higienis,
-              dan dikemas eksklusif siap santap untuk melengkapi rapat kantor, syukuran, hingga gathering berskala besar.
+              Sajian menu khas nusantara yang nikmat, mulai tasyakuran hingga rapat
             </p>
 
             {/* Luxury Trust Indicators Pills */}
@@ -829,7 +828,7 @@ export default function MenuPage() {
       {/* =====================================================
           LUXURY CHOCOLATE CONSULTATION BANNER (BOTTOM)
       ====================================================== */}
-      <section className="mx-auto max-w-7xl px-6 pb-24 lg:px-8">
+      {/* <section className="mx-auto max-w-7xl px-6 pb-24 lg:px-8">
         <div
           data-aos="fade-up"
           data-aos-duration="700"
@@ -916,6 +915,59 @@ export default function MenuPage() {
               >
                 Pelajari Cara Pemesanan
               </Link>
+            </div>
+          </div>
+        </div>
+      </section> */}
+
+         <section
+        className={`py-16 sm:py-20 transition-colors duration-300 ${
+          isDark ? 'bg-[#1C0B09]' : 'bg-[#FBF7F2]'
+        }`}
+      >
+        <div className="mx-auto max-w-7xl px-5 sm:px-8">
+          <div
+            data-aos="zoom-in"
+            data-aos-duration="650"
+            className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-r from-[#42140F] via-[#60241E] to-[#95271D] border-2 border-[#E77B49]/40 p-8 sm:p-14 lg:p-16 text-white shadow-2xl shadow-black/60"
+          >
+            {/* Background Accent Rings */}
+            <div className="absolute -right-16 -top-16 h-72 w-72 rounded-full bg-[#E77B49]/20 blur-3xl" />
+            <div className="absolute -left-16 -bottom-16 h-72 w-72 rounded-full bg-[#F59E0B]/20 blur-3xl" />
+
+            <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-8 text-center lg:text-left">
+              <div className="max-w-7xl">
+                {/* <span className="rounded-full bg-[#1C0B09]/60 border border-[#F59E0B]/40 px-3.5 py-1 text-xs font-black uppercase tracking-wider text-amber-300">
+                  Siap untuk Acaramu?
+                </span> */}
+                <h2 className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-dhaksinarga tracking-wide leading-tight text-white">
+                  Menemani semua acara,<span className="text-[#F59E0B]"> Pawon Hara </span>Dapurnya rasa Nusantara
+
+                </h2>
+                {/* <p className="mt-3 text-sm sm:text-base text-amber-100/85 leading-relaxed">
+                  Pesan katering nasi box favorit sekarang juga. Dapatkan rekomendasi menu terbaik
+                  dan penawaran istimewa untuk acara Anda.
+                </p> */}
+              </div>
+
+              <div className="flex flex-wrap items-center justify-center gap-4 shrink-0">
+                {/* <Link
+                  to="/menu"
+                  className="rounded-2xl bg-gradient-to-r from-[#F59E0B] via-amber-400 to-[#E77B49] hover:from-amber-400 hover:to-amber-500 text-[#1C0B09] font-black px-8 py-4 text-sm shadow-xl shadow-[#F59E0B]/30 transition hover:scale-105 active:scale-95"
+                >
+                  Pesan Sekarang
+                </Link> */}
+
+                <a
+                  href="https://wa.me/6289669743193?text=Halo%20Pawon%20Hara,%20saya%20ingin%20konsultasi%20pesanan%20katering%20nasi%20box%20untuk%20acara%20saya."
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-2xl bg-[#2D120F] hover:bg-[#3B1814] text-white border border-[#E77B49]/50 font-black px-7 py-4 text-sm shadow-xl transition hover:scale-105 active:scale-95"
+                >
+                  <MessageCircle size={18} className="text-[#F59E0B]" />
+                  <span>Chat WhatsApp</span>
+                </a>
+              </div>
             </div>
           </div>
         </div>

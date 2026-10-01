@@ -368,14 +368,14 @@ export default function OrderTrackingPage() {
             <span>Kembali ke Menu Katering</span>
           </Link>
 
-          <div className={`flex items-center gap-2 rounded-full px-3.5 py-1.5 text-xs font-semibold shadow-2xs border ${
+          {/* <div className={`flex items-center gap-2 rounded-full px-3.5 py-1.5 text-xs font-semibold shadow-2xs border ${
             isDark
               ? 'border-[#60241E] bg-[#2D120F] text-amber-300'
               : 'border-[#E6DACD] bg-white text-[#5C3831]'
           }`}>
             <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
             <span>Live Tracker Pawon Hara</span>
-          </div>
+          </div> */}
         </div>
 
         {/* Hero Search Section */}
@@ -391,22 +391,22 @@ export default function OrderTrackingPage() {
           }`} />
 
           <div className="relative mx-auto max-w-2xl text-center">
-            <div className={`inline-flex items-center gap-2 rounded-full border px-3.5 py-1 text-xs font-bold mb-3 shadow-2xs ${
+            {/* <div className={`inline-flex items-center gap-2 rounded-full border px-3.5 py-1 text-xs font-bold mb-3 shadow-2xs ${
               isDark ? 'border-[#60241E] bg-[#2D120F] text-amber-400' : 'border-[#E6DACD] bg-[#FAF5EE] text-[#D97706]'
             }`}>
               <Sparkles size={13} className={isDark ? 'text-[#F59E0B] animate-spin' : 'text-[#D97706] animate-spin'} style={{ animationDuration: '8s' }} />
               <span className="font-poppins tracking-widest text-xs">PELACAKAN STATUS REAL-TIME</span>
-            </div>
+            </div> */}
 
             <h1 className={`text-2xl sm:text-3xl lg:text-4xl font-dhaksinarga tracking-wide font-black ${
               isDark ? 'text-white' : 'text-[#2B120E]'
             }`}>
-              Lacak Status Pesanan Katering
+              Cek status pesanan
             </h1>
             <p className={`mt-2 text-xs sm:text-sm leading-relaxed ${
               isDark ? 'text-amber-100/70' : 'text-[#5C3831]'
             }`}>
-              Pantau persiapan dapur katering, konfirmasi slot, dan jadwal pengiriman pesanan Anda dari Pawon Hara secara transparan.
+                Melacak pesanan bisa menggunakan kode pesanan atau nomor WA yang terdaftar
             </p>
 
             {/* Search Input Form */}
@@ -1277,7 +1277,7 @@ export default function OrderTrackingPage() {
             <p className={`mt-2 text-xs leading-relaxed ${
               isDark ? 'text-amber-100/70' : 'text-[#5C3831]'
             }`}>
-              Kode pesanan unik diterbitkan otomatis saat Anda menyelesaikan pesanan di keranjang belanja, serta tercantum pada pesan WhatsApp admin katering Pawon Hara. Masukkan kode di kolom pencarian di atas untuk melihat live tracking statusnya.
+                Kode pesanan bisa panjenengan lihat pada pesan Whatsapp Pawon Hara
             </p>
           </div>
         )}

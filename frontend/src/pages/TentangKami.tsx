@@ -27,25 +27,25 @@ const values = [
     icon: Utensils,
     title: 'Cita Rasa Gurih Meresap',
     description:
-      'Setiap menu diolah menggunakan racikan bumbu rempah pilihan dan ayam berkualitas segar, menghasilkan cita rasa gurih yang meresap hingga ke serat terdalam.',
+      'Setiap menu khas Pawon Hara diolah menggunakan racikan bumbu nusantara pilihan',
   },
   {
     icon: ShieldCheck,
     title: '100% Halal & Higienis',
     description:
-      'Dapur katering kami menerapkan standar kebersihan yang ketat, sertifikasi halal, dan pengemasan bento/box higienis siap santap.',
+      'Dapur Pawon Hara menerapkan standar kebersihan untuk menyajikan menu higienis',
   },
   {
     icon: Clock,
     title: 'Pengantaran Disiplin & Tepat Waktu',
     description:
-      'Kami mengerti betapa krusialnya jadwal makan pada acara Anda. Armada pengantaran kami memastikan pesanan tiba hangat sebelum acara dimulai.',
+      'Pawon Hara siap mengantarkan pesanan tepat waktu hingga sampai di tangan panjenengan',
   },
   {
     icon: HeartHandshake,
     title: 'Pelayanan Ramah & Invoice Resmi',
     description:
-      'Dari konsultasi porsi, kustomisasi menu, hingga penerbitan invoice resmi untuk kebutuhan administrasi perusahaan, tim kami melayani dengan sigap.',
+      'Segala pertanyaan yang hendak diajukan akan diterima dan ditanggapi oleh Admin Pawon Hara',
   },
 ]
 
@@ -143,7 +143,7 @@ function StatCounter({
 }
 
 const highlights = [
-  'Solusi katering praktis untuk seminar, meeting kantor, gathering, syukuran, dan pengajian.',
+  'Solusi konsumsi semua acara, tasyakuran, meeting kantor',
   'Pilihan porsi fleksibel dengan sistem kelipatan 10 porsi (mulai dari minimal 10 porsi).',
   'Pengemasan bento box eksklusif, rapi, lengkap dengan alat makan dan tisu berkualitas.',
   'Dukungan invoice resmi dan sistem pencatatan order digital yang terpantau.',
@@ -198,8 +198,8 @@ export default function TentangKami() {
       {/* Header */}
       <Summary
         eyebrow="TENTANG PAWON HARA"
-        title="Lebih Dari Sekadar Katering Nasi Box"
-        description="Menyajikan kelezatan otentik khas Nusantara, higienitas terjaga, dan pelayanan yang dapat diandalkan untuk menyempurnakan setiap pertemuan penting Anda."
+        title="Dapurnya Rasa Nusantara Untuk semua acara"
+        description="Menyajikan kenikmatan otentik khas Nusantara untuk menyempurnakan setiap agenda dan momen penting"
       />
 
       {/* =====================================================
@@ -225,12 +225,12 @@ export default function TentangKami() {
                 isDark ? 'text-white' : 'text-[#2B120E]'
               }`}
             >
-              Menghadirkan Makanan Lezat, Menghubungkan Momen Berharga.
+              Menyajikan menu nikmat khas nusantara untuk semua acara
             </h2>
 
             <p className={`text-sm sm:text-base leading-relaxed ${isDark ? 'text-amber-100/75' : 'text-[#6B423A]'}`}>
-              Pawon Hara berawal dari keyakinan sederhana: bahwa makanan yang lezat, higienis,
-              dan tiba tepat waktu adalah kunci utama keberhasilan setiap acara kumpul bersama.
+              Pawon dalam budaya Jawa berarti dapur – namun bukan sekadar dapur secara fisik. Dalam budaya Jawa pawon adalah jantung rumah; tempat ibu memasak dengan penuh cinta untuk keluarga besar. Tempat yang penuh dengan aroma khas. Pawon menjadi simbol kehangatan, kelekatan, dan kepercayaan. Berangkat dari simbol tersebut, Pawon Hara mengunci kenikmatan, higienistas, dan ketepatan waktu sajian untuk semua agenda dan momen penting.
+
             </p>
 
             <p className={`text-sm sm:text-base leading-relaxed ${isDark ? 'text-amber-100/75' : 'text-[#6B423A]'}`}>
@@ -467,7 +467,7 @@ export default function TentangKami() {
                 }`}
               >
                 <Users size={13} className={isDark ? 'text-[#F59E0B]' : 'text-[#D97706]'} />
-                Partner Katering Terpercaya
+                Partner Konsumsi Acara Terpercaya
               </div>
 
               <h2
@@ -475,12 +475,11 @@ export default function TentangKami() {
                   isDark ? 'text-white' : 'text-[#2B120E]'
                 }`}
               >
-                Dirancang Agar Urusan Konsumsi Menjadi Sangat Mudah
+                Dibuat untuk semua urusan konsumsi, panjenengan
               </h2>
 
               <p className={`mt-5 text-sm sm:text-base leading-relaxed ${isDark ? 'text-amber-100/75' : 'text-[#5C3831]'}`}>
-                Anda tidak perlu bingung menghitung anggaran atau mencemaskan rasa makanan yang tidak konsisten.
-                Cukup pilih menu favorit di website, tentukan jumlah porsi kelipatan 10, dan kami urus selebihnya.
+                Tidak perlu bingung menentukan menu ketika memiliki kondisi tertentu, konsultasikan saya ke WA Admin pawon Hara
               </p>
 
               <div className="mt-8 flex items-center gap-4">
@@ -488,7 +487,7 @@ export default function TentangKami() {
                   to="/menu"
                   className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-[#F59E0B] to-[#E77B49] px-6 py-3.5 text-xs font-black text-[#1C0B09] shadow-md shadow-[#F59E0B]/20 transition hover:scale-105"
                 >
-                  Jelajahi Pilihan Menu
+                  Jelajahi Menu
                   <ArrowRight size={15} />
                 </Link>
 

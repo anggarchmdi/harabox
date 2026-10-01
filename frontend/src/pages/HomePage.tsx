@@ -170,28 +170,28 @@ const occasions = [
     icon: Users,
     title: 'Meeting & Acara Kantor',
     tag: 'Bisnis & Formal',
-    text: 'Sajian praktis, rapi, dan higienis yang menjaga kesan profesional untuk tamu perusahaan dan rekan kerja.',
+    text: 'Sajian khas nusantara praktis dan higienis untuk setiap agenda perusahaan',
     textColor: 'text-[#95271D]',
   },
   {
     icon: CalendarDays,
     title: 'Syukuran & Acara Keluarga',
     tag: 'Hangat & Akrab',
-    text: 'Hidangan kaya rasa yang disukai semua generasi dari anak-anak hingga kakek-nenek, bebas repot masak di dapur.',
+    text: 'Hidangan cita rasa nusantara yang menghangatkan semua anggota keluarga.',
     textColor: 'text-[#E77B49]',
   },
   {
     icon: ShoppingBag,
     title: 'Gathering & Komunitas',
     tag: 'Skala Besar',
-    text: 'Kapasitas produksi hingga ratusan box dengan kualitas rasa dan temperatur yang tetap terjaga sampai dibagikan.',
+    text: 'Menu khas nusantara untuk memenuhi semua kapasitas kebutuhan konsumsi acara besar.',
     textColor: 'text-[#60241E]',
   },
   {
     icon: MapPin,
     title: 'Pengajian & Momen Spesial',
     tag: 'Halal & Berkah',
-    text: 'Dikemas rapat dan bersih, mudah dibawa pulang oleh para tamu, siap santap dengan kelengkapan alat makan.',
+    text: 'Kenikmatan nusantara yang akan menemani momen penting dan spesial',
     textColor: 'text-[#B34A44]',
   },
 ]
@@ -223,22 +223,22 @@ const faqs = [
   {
     question: 'Berapa minimal pemesanan nasi box di Pawon Hara?',
     answer:
-      'Minimal pemesanan sangat terjangkau, yaitu mulai dari 10 box untuk menu reguler. Untuk pesanan dalam jumlah besar (di atas 100 box), kami sarankan konfirmasi minimal H-2 agar tim dapur Pawon Hara dapat menjadwalkan dengan optimal.',
+      'Minimal porsi pemesanannya mulai di 10 nasi box hingga lebih 500 box.',
   },
   {
     question: 'Berapa hari sebelumnya saya harus memesan?',
     answer:
-      'Untuk pesanan reguler (10 - 50 box), pemesanan dapat dilakukan H-1 sebelum jam 17.00 WIB. Untuk pesanan skala besar (> 100 box), disarankan H-2 atau H-3 agar pilihan menu dan kustomisasi dapat disiapkan maksimal.',
+      'Waktu pemesanan maksimal H-1 acara. Namun, Kami sarankan konfirmasi minimal H-2 agar Kami dapat menjadwalkan dengan optimal.',
   },
   {
     question: 'Apakah bisa kustomisasi menu atau request lauk khusus?',
     answer:
-      'Tentu saja bisa! Anda dapat berkonsultasi dengan admin WhatsApp Pawon Hara untuk menyesuaikan lauk, tingkat kepedasan sambal, atau request buah/puding tambahan sesuai anggaran acara Anda.',
+      'Tentu saja bisa! Panjenengan, bisa langsung memilih sajian nasi dan sayurnya langsung atau berkonsultasi langsung dengan admin WhatsApp Pawon Hara.',
   },
   {
     question: 'Bagaimana metode pembayaran dan pengantarannya?',
     answer:
-      'Pembayaran dapat dilakukan melalui transfer bank resmi (BCA/Mandiri). Pesanan akan diantar langsung oleh kurir katering kami tepat waktu sesuai jam yang disepakati.',
+      'Pembayaran dapat dilakukan melalui transfer bank resmi (BCA Syariah). Pesanan akan langsung tepat waktu.',
   },
 ]
 
@@ -473,8 +473,8 @@ export default function HomePage() {
                       "
                     >
                       <ShoppingBag size={15} className="shrink-0 text-[#1C0B09]" />
-                      <span>Lihat Menu</span>
-                      <ArrowRight size={14} className="shrink-0 transition-transform group-hover:translate-x-0.5" />
+                      <span>Monggo, Pinarak Kang!</span>
+                      {/* <ArrowRight size={14} className="shrink-0 transition-transform group-hover:translate-x-0.5" /> */}
                     </Link>
 
                     {/* Secondary Button */}
@@ -720,14 +720,14 @@ export default function HomePage() {
                   isDark ? 'text-white' : 'text-[#2B120E]'
                 }`}
               >
-                Menu Katering <span className="text-[#F59E0B]">Paling Laris</span>
+                Menu Khas <span className="text-[#F59E0B]">Pawon Hara</span>
               </h2>
               <p
                 className={`mt-2 text-sm sm:text-base max-w-xl ${
                   isDark ? 'text-amber-100/70' : 'text-[#6B423A]'
                 }`}
               >
-                Dibuat segar setiap hari dengan bahan berkualitas tinggi dan bumbu racikan khas Pawon Hara.
+                Menu khas yang dibuat dengan penuh cita rasa nusantara
               </p>
             </div>
 
@@ -891,7 +891,7 @@ export default function HomePage() {
           {/* Bottom Callout */}
           <div
             data-aos="fade-up"
-            className={`mt-12 rounded-3xl p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 text-center sm:text-left ${
+            className={`mt-12 rounded-3xl p-6 sm:p-4 flex flex-col sm:flex-row items-center justify-between gap-6 text-center sm:text-left ${
               isDark
                 ? 'border-2 border-[#B34A44]/40 bg-gradient-to-br from-[#2D120F] via-[#381612] to-[#451B17] text-white shadow-xl'
                 : 'border-2 border-[#E77B49]/40 bg-gradient-to-br from-[#FAF3EA] via-[#F4E9DC] to-[#EFE1D1] text-[#2B120E] shadow-lg'
@@ -903,15 +903,15 @@ export default function HomePage() {
                   isDark ? 'text-white' : 'text-[#2B120E]'
                 }`}
               >
-                Punya Kebutuhan Menu atau Anggaran Khusus?
-              </h4>
-              <p
+                Bingung dengan kebutuhan menu dan biaya khusus?
+=              </h4>
+              {/* <p
                 className={`text-xs sm:text-sm mt-1 ${
                   isDark ? 'text-amber-100/75' : 'text-[#5C3831]'
                 }`}
               >
                 Kami siap membantu menyesuaikan lauk, snack box, atau buah pelengkap sesuai kebutuhan acara Anda
-              </p>
+              </p> */}
             </div>
             <a
               href={whatsappUrl}
@@ -936,7 +936,7 @@ export default function HomePage() {
       >
         <div className="mx-auto max-w-7xl px-5 sm:px-8">
           {/* Heading */}
-          <div data-aos="fade-up" className="mb-10 max-w-2xl">
+          <div data-aos="fade-up" className="mb-10 max-w-5xl">
             <span
               className={`text-xs font-black uppercase tracking-[0.2em] ${
                 isDark ? 'text-[#F59E0B]' : 'text-[#B45309]'
@@ -946,12 +946,12 @@ export default function HomePage() {
             </span>
 
             <h2
-              className={`mt-3 text-3xl font-dhaksinarga leading-tight tracking-wide sm:text-4xl lg:text-5xl ${
+              className={`mt-3 text-3xl font-dhaksinarga leading-tight flex flex-col tracking-wide sm:text-4xl lg:text-[3rem] ${
                 isDark ? 'text-white' : 'text-[#2B120E]'
               }`}
             >
-              Bukan sekadar nasi box
-              <span className="text-[#F59E0B]"> Kami hadirkan kelezatan khas Nusantara</span>
+             Bukan hanya nasi box,
+              <span className="text-[#F59E0B]"> Pawon Hara menghadirkan kenikmatan khas nusantara</span>
             </h2>
 
             <p
@@ -959,8 +959,8 @@ export default function HomePage() {
                 isDark ? 'text-amber-100/70' : 'text-[#6B423A]'
               }`}
             >
-              Dari meeting kantor sampai acara keluarga, Pawon Hara menyiapkan
-              hidangan yang lezat, higienis, dan berkesan untuk setiap momen penting Anda.
+              Dari meeting kantor sampai acara keluarga,
+              Menu khas Nusantara kami akan menemani setiap momen penting
             </p>
           </div>
 
@@ -988,11 +988,10 @@ export default function HomePage() {
                 </span>
 
                 <h3 className="mt-2 max-w-md text-2xl font-dhaksinarga leading-tight tracking-wide text-white sm:text-3xl">
-                  Hidangan siap, acara jadi tenang
+                    Pawon Hara Dapurnya Rasa Nusantara
                 </h3>
-
                 <p className="mt-2 max-w-sm text-sm leading-relaxed text-amber-100/80">
-                  Kami urus makanannya, kamu fokus menikmati acaranya
+                Kami sedia untuk acara keluarga sampai meja meeting, panjenengan sedaya
                 </p>
               </div>
             </div>
@@ -1122,15 +1121,16 @@ export default function HomePage() {
                 isDark ? 'text-white' : 'text-[#2B120E]'
               }`}
             >
-              Solusi Katering untuk <span className="text-[#F59E0B]">Setiap Acara</span>
+              Sedia menu khas Nusantara
+                <span className="text-[#F59E0B]"> Untuk semua acara</span>
             </h2>
-            <p
+            {/* <p
               className={`mt-2 text-sm sm:text-base ${
                 isDark ? 'text-amber-100/70' : 'text-[#6B423A]'
               }`}
             >
               Dari kebutuhan formal perkantoran hingga kehangatan momen keluarga besar.
-            </p>
+            </p> */}
           </div>
 
           <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -1230,22 +1230,22 @@ export default function HomePage() {
               {
                 step: '01',
                 title: 'Pilih Menu & Porsi',
-                desc: 'Tentukan menu katering favorit sesuai selera dan sesuaikan jumlah box dengan kebutuhan tamu.',
+                desc: 'Pilih menu khas nusantara kami sesuai selera dan jumlah kebutuhan, panjenengan',
               },
               {
                 step: '02',
                 title: 'Jadwal & Lokasi',
-                desc: 'Tentukan tanggal acara, jam tiba yang diharapkan, dan alamat pengantaran lengkap.',
+                desc: 'Pilih tanggal dan jam menu diantarkan. Jangan lupa dilengkapi dengan alamat tujuan',
               },
               {
                 step: '03',
                 title: 'Konfirmasi Invoice',
-                desc: 'Tim kami akan memproses dan mengirimkan rincian invoice resmi ke WhatsApp Anda.',
+                desc: 'Mangga, konfirmasi pesanan melalui kontak Whatsapp Pawon Hara',
               },
               {
                 step: '04',
                 title: 'Pesanan Diantar Hangat',
-                desc: 'Dapur menyiapkan hidangan segar dan kurir mengantar tepat waktu sebelum acara dimulai.',
+                desc: 'Pawon Hara segera mengantarkan pesanan tepat waktu',
               },
             ].map((item, idx) => (
               <div
@@ -1303,14 +1303,14 @@ export default function HomePage() {
                 isDark ? 'text-white' : 'text-[#2B120E]'
               }`}
             >
-              Kata Mereka yang Sudah Menikmati Sajian Kami
+                Matur nuwun
             </h2>
             <p
               className={`mt-2 text-sm sm:text-base ${
                 isDark ? 'text-amber-100/70' : 'text-[#6B423A]'
               }`}
             >
-              Ratusan perusahaan, komunitas, dan keluarga telah mempercayakan konsumsi acara kepada Pawon Hara.
+              atas testimoni dan kepercayaan perusahaan, komunitas, dan keluarga pada Pawon Hara
             </p>
           </div>
 
@@ -1431,16 +1431,17 @@ export default function HomePage() {
 
             <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-8 text-center lg:text-left">
               <div className="max-w-2xl">
-                <span className="rounded-full bg-[#1C0B09]/60 border border-[#F59E0B]/40 px-3.5 py-1 text-xs font-black uppercase tracking-wider text-amber-300">
+                {/* <span className="rounded-full bg-[#1C0B09]/60 border border-[#F59E0B]/40 px-3.5 py-1 text-xs font-black uppercase tracking-wider text-amber-300">
                   Siap untuk Acaramu?
-                </span>
+                </span> */}
                 <h2 className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-dhaksinarga tracking-wide leading-tight text-white">
-                  Biar Urusan Makanan Lezat, <span className="text-[#F59E0B]">Pawon Hara</span> yang Siapkan!
+                  Menemani semua acara,<span className="text-[#F59E0B]"> Pawon Hara</span> Dapurnya rasa Nusantara
+
                 </h2>
-                <p className="mt-3 text-sm sm:text-base text-amber-100/85 leading-relaxed">
+                {/* <p className="mt-3 text-sm sm:text-base text-amber-100/85 leading-relaxed">
                   Pesan katering nasi box favorit sekarang juga. Dapatkan rekomendasi menu terbaik
                   dan penawaran istimewa untuk acara Anda.
-                </p>
+                </p> */}
               </div>
 
               <div className="flex flex-wrap items-center justify-center gap-4 shrink-0">

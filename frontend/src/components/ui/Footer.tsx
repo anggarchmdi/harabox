@@ -41,8 +41,7 @@ export default function Footer() {
             </Link>
 
             <p className={`max-w-md text-sm leading-relaxed ${isDark ? 'text-stone-300' : 'text-[#5C3831]'}`}>
-              Sajian nasi box dan bento lezat kaya bumbu meresap untuk berbagai kebutuhan acara.
-              Mulai dari syukuran keluarga, meeting kantor, gathering komunitas, hingga pesanan katering skala besar.
+                Sajian menu khas nusantara untuk semua acara. Pawon Hara Dapurnya Rasa Nusantara
             </p>
           </div>
 
