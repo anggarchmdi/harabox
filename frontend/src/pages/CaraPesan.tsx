@@ -455,7 +455,7 @@ export default function CaraPesan() {
               </Link>
 
               <a
-                href="https://wa.me/6289669743193?text=Halo%20Pawon%20Hara,%20saya%20ingin%20tanya%20cara%20pemesanan%20katering."
+                href="https://wa.me/6281122225520?text=Halo%20Pawon%20Hara,%20saya%20ingin%20tanya%20cara%20pemesanan%20katering."
                 target="_blank"
                 rel="noopener noreferrer"
                 className={`inline-flex items-center justify-center gap-2 rounded-2xl border px-6 py-3.5 text-xs font-bold transition ${

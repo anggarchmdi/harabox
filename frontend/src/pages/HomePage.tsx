@@ -346,7 +346,7 @@ export default function HomePage() {
   }, [])
 
   const whatsappUrl =
-    'https://wa.me/6289669743193?text=' +
+    'https://wa.me/6281122225520?text=' +
     encodeURIComponent('Halo Pawon Hara, saya ingin konsultasi pemesanan katering nasi box untuk acara saya.')
 
   return (

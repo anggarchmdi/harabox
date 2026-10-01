@@ -399,7 +399,7 @@ export default function LoginPage() {
               </button>
 
               <a
-                href="https://wa.me/6289669743193?text=Halo%20Admin%20Pawon%20Hara,%20saya%20membutuhkan%20bantuan%20reset%20kata%20sandi%20portal%20admin."
+                href="https://wa.me/6281122225520?text=Halo%20Admin%20Pawon%20Hara,%20saya%20membutuhkan%20bantuan%20reset%20kata%20sandi%20portal%20admin."
                 target="_blank"
                 rel="noreferrer"
                 className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-[#F59E0B] to-[#E77B49] py-2.5 text-xs font-bold text-[#1C0B09] shadow-md transition-all hover:brightness-110"

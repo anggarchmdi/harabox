@@ -97,7 +97,7 @@ export default function Footer() {
               </div>
 
               <a
-                href="https://wa.me/6289669743193"
+                href="https://wa.me/6281122225520"
                 target="_blank"
                 rel="noopener noreferrer"
                 className={`flex items-center gap-3 transition ${
@@ -134,7 +134,7 @@ export default function Footer() {
               Catering & Bento Box Yogyakarta
             </span>
             <a
-              href="https://wa.me/6289669743193"
+              href="https://wa.me/6281122225520"
               target="_blank"
               rel="noopener noreferrer"
               className={`transition ${isDark ? 'text-stone-400 hover:text-[#F59E0B]' : 'text-[#7A5B52] hover:text-[#B45309]'}`}

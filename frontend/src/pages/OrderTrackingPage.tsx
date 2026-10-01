@@ -330,14 +330,14 @@ export default function OrderTrackingPage() {
     : '/testimoni'
 
   const waAskAdminUrl = order
-    ? `https://wa.me/6289669743193?text=${encodeURIComponent(
+    ? `https://wa.me/6281122225520?text=${encodeURIComponent(
         `Halo Admin Pawon Hara, saya ingin menanyakan perkembangan pesanan katering saya:\n\n` +
           `• *No. Pesanan:* ${order.order_code}\n` +
           `• *Nama Pemesan:* ${order.customers_name}\n` +
           `• *Tanggal Acara:* ${formatDateIndo(order.event_date)}\n\n` +
           `Bisa dibantu cek status terbarunya? Terima kasih!`,
       )}`
-    : 'https://wa.me/6289669743193'
+    : 'https://wa.me/6281122225520'
 
   return (
     <main className={`min-h-screen overflow-x-clip pt-24 sm:pt-28 pb-28 transition-colors duration-300 ${

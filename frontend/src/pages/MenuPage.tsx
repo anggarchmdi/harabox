@@ -896,7 +896,7 @@ export default function MenuPage() {
               className="flex flex-col gap-3 lg:items-end"
             >
               <a
-                href="https://wa.me/6289669743193?text=Halo%20Pawon%20Hara,%20saya%20ingin%20konsultasi%20pesanan%20katering%20nasi%20box%20untuk%20acara%20saya."
+                href="https://wa.me/6281122225520?text=Halo%20Pawon%20Hara,%20saya%20ingin%20konsultasi%20pesanan%20katering%20nasi%20box%20untuk%20acara%20saya."
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center gap-2.5 rounded-2xl bg-gradient-to-r from-[#F59E0B] via-amber-400 to-[#E77B49] px-8 py-4 text-sm font-black text-[#1C0B09] shadow-xl shadow-[#F59E0B]/25 transition-all hover:scale-[1.02] active:scale-[0.98]"
@@ -959,7 +959,7 @@ export default function MenuPage() {
                 </Link> */}
 
                 <a
-                  href="https://wa.me/6289669743193?text=Halo%20Pawon%20Hara,%20saya%20ingin%20konsultasi%20pesanan%20katering%20nasi%20box%20untuk%20acara%20saya."
+                  href="https://wa.me/6281122225520?text=Halo%20Pawon%20Hara,%20saya%20ingin%20konsultasi%20pesanan%20katering%20nasi%20box%20untuk%20acara%20saya."
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 rounded-2xl bg-[#2D120F] hover:bg-[#3B1814] text-white border border-[#E77B49]/50 font-black px-7 py-4 text-sm shadow-xl transition hover:scale-105 active:scale-95"

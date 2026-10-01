@@ -300,7 +300,7 @@ ${notes.trim() ? `- Catatan Khusus: *${notes.trim()}*\n` : ''}
 
 Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
 
-      const waUrl = `https://wa.me/6289669743193?text=${encodeURIComponent(waText)}`
+      const waUrl = `https://wa.me/6281122225520?text=${encodeURIComponent(waText)}`
 
       setIsModalOpen(false)
       window.open(waUrl, '_blank')
