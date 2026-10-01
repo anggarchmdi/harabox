@@ -5,7 +5,7 @@ import AOS from 'aos'
 import {
   ArrowRight,
   ArrowUpDown,
-  CheckCircle2,
+//   CheckCircle2,
   ChevronDown,
   Clock,
   Flame,
@@ -13,7 +13,7 @@ import {
   Search,
   ShieldCheck,
   ShoppingBag,
-  Sparkles,
+//   Sparkles,
   Star,
   X,
 } from 'lucide-react'
