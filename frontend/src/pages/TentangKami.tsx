@@ -221,7 +221,7 @@ export default function TentangKami() {
             </div>
 
             <h2
-              className={`text-3xl font-dhaksinarga tracking-wide sm:text-5xl leading-tight ${
+              className={`text-3xl font-poppins font-bold tracking-wide sm:text-5xl leading-tight ${
                 isDark ? 'text-white' : 'text-[#2B120E]'
               }`}
             >
@@ -385,7 +385,7 @@ export default function TentangKami() {
             Prinsip & Nilai Kami
           </p>
           <h2
-            className={`mt-3 text-3xl font-dhaksinarga tracking-wide sm:text-5xl ${
+            className={`mt-3 text-3xl font-poppins font-bold tracking-wide sm:text-5xl ${
               isDark ? 'text-white' : 'text-[#2B120E]'
             }`}
           >
@@ -471,7 +471,7 @@ export default function TentangKami() {
               </div>
 
               <h2
-                className={`mt-4 text-3xl font-dhaksinarga tracking-wide sm:text-5xl leading-tight ${
+                className={`mt-4 text-3xl font-poppins font-bold tracking-wide sm:text-5xl leading-tight ${
                   isDark ? 'text-white' : 'text-[#2B120E]'
                 }`}
               >
@@ -556,7 +556,7 @@ export default function TentangKami() {
               </div>
 
               <h2
-                className={`mt-4 text-3xl font-dhaksinarga tracking-wide sm:text-4xl lg:text-5xl leading-tight ${
+                className={`mt-4 text-3xl font-poppins font-bold tracking-wide sm:text-4xl lg:text-5xl leading-tight ${
                   isDark ? 'text-white' : 'text-[#2B120E]'
                 }`}
               >

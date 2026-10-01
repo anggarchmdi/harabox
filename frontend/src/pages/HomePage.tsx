@@ -473,7 +473,7 @@ export default function HomePage() {
                       "
                     >
                       <ShoppingBag size={15} className="shrink-0 text-[#1C0B09]" />
-                      <span>Monggo, Pinarak Kang!</span>
+                      <span>Monggo, Pinarak</span>
                       {/* <ArrowRight size={14} className="shrink-0 transition-transform group-hover:translate-x-0.5" /> */}
                     </Link>
 
@@ -716,7 +716,7 @@ export default function HomePage() {
                 Pilihan Favorit
               </span>
               <h2
-                className={`mt-3 text-3xl sm:text-4xl lg:text-5xl font-dhaksinarga tracking-wide ${
+                className={`mt-3 text-3xl sm:text-4xl lg:text-5xl font-poppins font-bold tracking-wide ${
                   isDark ? 'text-white' : 'text-[#2B120E]'
                 }`}
               >
@@ -899,12 +899,12 @@ export default function HomePage() {
           >
             <div>
               <h4
-                className={`text-lg sm:text-xl font-dhaksinarga tracking-wide ${
-                  isDark ? 'text-white' : 'text-[#2B120E]'
+                className={`text-lg sm:text-xl font-poppins font-black  tracking-wide ${
+                  isDark ? 'text-[#F59E0B]' : 'text-[#2B120E]'
                 }`}
               >
                 Bingung dengan kebutuhan menu dan biaya khusus?
-=              </h4>
+              </h4>
               {/* <p
                 className={`text-xs sm:text-sm mt-1 ${
                   isDark ? 'text-amber-100/75' : 'text-[#5C3831]'
@@ -929,14 +929,14 @@ export default function HomePage() {
       {/* =====================================================
           4. BENTO GRID: KENAPA MEMILIH PAWON HARA?
       ====================================================== */}
-      <section
+      {/* <section
         className={`py-20 sm:py-28 transition-colors duration-300 ${
           isDark ? 'bg-[#1C0B09] text-white' : 'bg-[#FBF7F2] text-[#2B120E]'
         }`}
       >
         <div className="mx-auto max-w-7xl px-5 sm:px-8">
           {/* Heading */}
-          <div data-aos="fade-up" className="mb-10 max-w-5xl">
+          {/* <div data-aos="fade-up" className="mb-10 max-w-5xl">
             <span
               className={`text-xs font-black uppercase tracking-[0.2em] ${
                 isDark ? 'text-[#F59E0B]' : 'text-[#B45309]'
@@ -946,7 +946,7 @@ export default function HomePage() {
             </span>
 
             <h2
-              className={`mt-3 text-3xl font-dhaksinarga leading-tight flex flex-col tracking-wide sm:text-4xl lg:text-[3rem] ${
+              className={`mt-3 text-3xl font-poppins font-bold leading-tight flex flex-col tracking-wide sm:text-4xl lg:text-[3rem] ${
                 isDark ? 'text-white' : 'text-[#2B120E]'
               }`}
             >
@@ -962,11 +962,11 @@ export default function HomePage() {
               Dari meeting kantor sampai acara keluarga,
               Menu khas Nusantara kami akan menemani setiap momen penting
             </p>
-          </div>
+          </div> */}
 
           {/* Gallery */}
-          <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
-            {/* Main Photo */}
+          {/* <div className="grid grid-cols-1 gap-4 lg:grid-cols-12"> */}
+            {/* Main Photo
             <div
               data-aos="fade-right"
               className={`group relative overflow-hidden rounded-[2rem] lg:col-span-7 border shadow-xl ${
@@ -994,10 +994,10 @@ export default function HomePage() {
                 Kami sedia untuk acara keluarga sampai meja meeting, panjenengan sedaya
                 </p>
               </div>
-            </div>
+            </div> */}
 
             {/* Supporting Photos */}
-            <div className="grid gap-4 sm:grid-cols-2 lg:col-span-5 lg:grid-cols-1">
+            {/* <div className="grid gap-4 sm:grid-cols-2 lg:col-span-5 lg:grid-cols-1">
               <div
                 data-aos="fade-left"
                 data-aos-delay="100"
@@ -1053,7 +1053,7 @@ export default function HomePage() {
           </div>
 
           {/* Bottom Info */}
-          <div
+          {/* <div
             data-aos="fade-up"
             data-aos-delay="200"
             className={`mt-6 flex flex-col gap-5 border-t pt-6 sm:flex-row sm:items-center sm:justify-between ${
@@ -1079,8 +1079,8 @@ export default function HomePage() {
                 <span className="h-1.5 w-1.5 rounded-full bg-[#F59E0B]" />
                 Area Yogyakarta & Sekitarnya
               </span>
-            </div>
-
+            </div> */}
+{/*
             <Link
               to="/tentang-kami"
               className={`group inline-flex items-center gap-2 text-sm font-black transition ${
@@ -1095,7 +1095,7 @@ export default function HomePage() {
             </Link>
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* =====================================================
           5. SOLUSI KATERING APAPUN ACARANYA (OCCASIONS)
@@ -1117,7 +1117,7 @@ export default function HomePage() {
               Fleksibel & Serbaguna
             </span>
             <h2
-              className={`mt-3 text-3xl sm:text-4xl lg:text-5xl font-dhaksinarga tracking-wide ${
+              className={`mt-3 text-3xl sm:text-4xl lg:text-5xl font-poppins font-bold tracking-wide ${
                 isDark ? 'text-white' : 'text-[#2B120E]'
               }`}
             >
@@ -1207,7 +1207,7 @@ export default function HomePage() {
                 Cara Pemesanan
               </span>
               <h2
-                className={`mt-3 text-3xl sm:text-4xl lg:text-5xl font-dhaksinarga tracking-wide ${
+                className={`mt-3 text-3xl sm:text-4xl lg:text-5xl font-poppins font-bold tracking-wide ${
                   isDark ? 'text-white' : 'text-[#2B120E]'
                 }`}
               >
@@ -1340,7 +1340,7 @@ export default function HomePage() {
               Bantuan & FAQ
             </span>
             <h2
-              className={`mt-3 text-3xl sm:text-4xl font-dhaksinarga tracking-wide ${
+              className={`mt-3 text-3xl sm:text-4xl font-poppins font-bold tracking-wide ${
                 isDark ? 'text-white' : 'text-[#2B120E]'
               }`}
             >
@@ -1434,7 +1434,7 @@ export default function HomePage() {
                 {/* <span className="rounded-full bg-[#1C0B09]/60 border border-[#F59E0B]/40 px-3.5 py-1 text-xs font-black uppercase tracking-wider text-amber-300">
                   Siap untuk Acaramu?
                 </span> */}
-                <h2 className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-dhaksinarga tracking-wide leading-tight text-white">
+                <h2 className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-poppins font-bold tracking-wide leading-tight text-white">
                   Menemani semua acara,<span className="text-[#F59E0B]"> Pawon Hara</span> Dapurnya rasa Nusantara
 
                 </h2>

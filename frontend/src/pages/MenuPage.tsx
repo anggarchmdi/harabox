@@ -228,7 +228,7 @@ export default function MenuPage() {
             <ShoppingBag size={24} />
           </div>
           <h1
-            className={`mt-4 text-2xl font-dhaksinarga tracking-wide ${
+            className={`mt-4 text-2xl font-poppins tracking-wide ${
               isDark ? 'text-white' : 'text-[#2B120E]'
             }`}
           >
@@ -628,7 +628,7 @@ export default function MenuPage() {
               <Search size={22} />
             </div>
             <h3
-              className={`mt-3 text-lg sm:text-xl font-dhaksinarga tracking-wide ${
+              className={`mt-3 text-lg sm:text-xl font-poppins font-bold tracking-wide ${
                 isDark ? 'text-white' : 'text-[#2B120E]'
               }`}
             >
@@ -940,7 +940,7 @@ export default function MenuPage() {
                 {/* <span className="rounded-full bg-[#1C0B09]/60 border border-[#F59E0B]/40 px-3.5 py-1 text-xs font-black uppercase tracking-wider text-amber-300">
                   Siap untuk Acaramu?
                 </span> */}
-                <h2 className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-dhaksinarga tracking-wide leading-tight text-white">
+                <h2 className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-poppins font-bold tracking-wide leading-tight text-white">
                   Menemani semua acara,<span className="text-[#F59E0B]"> Pawon Hara </span>Dapurnya rasa Nusantara
 
                 </h2>

@@ -430,7 +430,7 @@ export default function Navbar() {
                   <div className="flex items-center justify-between">
                     <span
                       className={`
-                        font-dhaksinarga tracking-wide text-md
+                        font-poppins tracking-wide text-md
                         transition-all duration-300
                         ${isActive
                           ? 'font-bold text-[#F59E0B]'
@@ -485,7 +485,7 @@ export default function Navbar() {
                     <ShoppingCart size={22} className={isActive ? 'text-[#F59E0B]' : isDark ? 'text-stone-300' : 'text-[#5C3831]'} />
                     <span
                       className={`
-                        font-dhaksinarga tracking-wide text-md
+                        font-poppins tracking-wide text-md
                         transition-all duration-300
                         ${isActive
                           ? 'font-bold text-[#F59E0B]'

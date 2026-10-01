@@ -365,7 +365,7 @@ export default function TestimonialPage() {
                 <span className="font-poppins tracking-widest text-xs">DIPERCAYA 250+ KANTOR & KELUARGA</span>
               </div>
 
-              <h1 className={`text-3xl sm:text-4xl lg:text-5xl font-dhaksinarga tracking-wide font-black leading-[1.15] ${
+              <h1 className={`text-3xl sm:text-4xl lg:text-5xl font-poppins tracking-wide font-black leading-[1.15] ${
                 isDark ? 'text-white' : 'text-[#2B120E]'
               }`}>
                 Cerita Rasa & Kepuasan Pelanggan{' '}
@@ -468,7 +468,7 @@ export default function TestimonialPage() {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <h2 className={`text-xl sm:text-2xl font-dhaksinarga tracking-wide font-black ${
+                <h2 className={`text-xl sm:text-2xl font-poppins tracking-wide font-black ${
                   isDark ? 'text-white' : 'text-[#2B120E]'
                 }`}>
                   Ulasan Asli Pelanggan Pawon Hara
@@ -915,7 +915,7 @@ export default function TestimonialPage() {
                       <Heart size={14} className="fill-amber-300" />
                       <span className="font-poppins tracking-widest text-xs">SUARA PELANGGAN PAWON HARA</span>
                     </div>
-                    <h2 className="text-2xl sm:text-3xl font-dhaksinarga tracking-wide font-black text-white">
+                    <h2 className="text-2xl sm:text-3xl font-poppins tracking-wide font-black text-white">
                       Beri Penilaian & Ulasan Pesanan
                     </h2>
                     <p className="text-xs sm:text-sm text-amber-100/80 max-w-xl leading-relaxed">

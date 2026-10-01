@@ -145,7 +145,7 @@ export default function CaraPesan() {
           </div>
 
           <h2
-            className={`mt-4 text-3xl font-dhaksinarga tracking-wide sm:text-5xl ${
+            className={`mt-4 text-3xl font-poppins font-bold tracking-wide sm:text-5xl ${
               isDark ? 'text-white' : 'text-[#2B120E]'
             }`}
           >
@@ -225,14 +225,14 @@ export default function CaraPesan() {
       {/* =====================================================
           WHATSAPP INVOICE PREVIEW SECTION
       ====================================================== */}
-      <section
+      {/* <section
         className={`border-t py-20 lg:py-28 overflow-hidden transition-colors duration-300 ${
           isDark ? 'border-[#60241E]/80 bg-[#200B09]' : 'border-[#E0D2C2] bg-[#EFE5D8]'
         }`}
       >
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="grid gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
-            {/* Left Info */}
+
             <div data-aos="fade-right" className="space-y-5">
               <div
                 className={`inline-flex items-center gap-2 rounded-full border px-3.5 py-1 text-[11px] font-extrabold uppercase tracking-wider ${
@@ -291,7 +291,7 @@ export default function CaraPesan() {
               </div>
             </div>
 
-            {/* Right Mockup Card of WhatsApp Invoice */}
+
             <div
               data-aos="fade-left"
               data-aos-delay="150"
@@ -347,7 +347,7 @@ export default function CaraPesan() {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* =====================================================
           PRO TIPS SECTION
@@ -371,7 +371,7 @@ export default function CaraPesan() {
           </div>
 
           <h2
-            className={`mt-2 text-2xl sm:text-3xl font-dhaksinarga tracking-wide ${
+            className={`mt-2 text-2xl sm:text-3xl font-poppins font-bold tracking-wide ${
               isDark ? 'text-white' : 'text-[#2B120E]'
             }`}
           >
@@ -433,7 +433,7 @@ export default function CaraPesan() {
               </div>
 
               <h2
-                className={`mt-4 text-3xl font-dhaksinarga tracking-wide sm:text-4xl lg:text-5xl leading-tight ${
+                className={`mt-4 text-3xl font-poppins font-bold tracking-wide sm:text-4xl lg:text-5xl leading-tight ${
                   isDark ? 'text-white' : 'text-[#2B120E]'
                 }`}
               >
