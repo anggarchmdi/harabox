@@ -153,7 +153,7 @@ Dicetak     : ${formatDateTime(new Date().toISOString())}
 
     return `PAWON HARA
 Nasi Box & Katering Yogyakarta
-WA: 0896-6974-3193
+WA: 0811-2222-5520
 ${doubleLine}
 No. Nota    : ${order.order_code}
 Tgl Order   : ${formatDateTime(order.created_at)}
@@ -301,7 +301,7 @@ Instagram: @pawonhara
           <div>
             <div style="font-size: 22px; font-weight: 900; letter-spacing: 0.5px;">PAWON HARA</div>
             <div style="font-size: 11px; color: #444; margin-top: 2px;">Katering & Nasi Box Istimewa Yogyakarta</div>
-            <div style="font-size: 11px; color: #444;">WhatsApp: 0896-6974-3193 | Instagram: @pawonhara</div>
+            <div style="font-size: 11px; color: #444;">WhatsApp: 0811-2222-5520 | Instagram: @pawonhara</div>
           </div>
           <div style="text-align: right;">
             <div style="font-size: 18px; font-weight: 900; text-transform: uppercase;">INVOICE TAGIHAN</div>
@@ -733,7 +733,7 @@ Instagram: @pawonhara
                   <div>
                     <h4 className="text-xl font-black tracking-tight">PAWON HARA</h4>
                     <p className="text-[11px] text-stone-600">Nasi Box & Katering Yogyakarta</p>
-                    <p className="text-[10px] text-stone-600">WA: 0896-6974-3193 | @pawonhara</p>
+                    <p className="text-[10px] text-stone-600">WA: 0811-2222-5520 | @pawonhara</p>
                   </div>
                   <div className="text-right">
                     <p className="text-sm font-black uppercase">INVOICE PESANAN</p>

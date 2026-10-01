@@ -105,7 +105,7 @@ export default function Footer() {
                 }`}
               >
                 <MessageCircle size={17} className="text-[#E77B49] shrink-0" />
-                <span>+62 896-6974-3193 (WhatsApp Admin)</span>
+                <span>+62 811-2222-5520 (WhatsApp Admin)</span>
               </a>
 
               <a
