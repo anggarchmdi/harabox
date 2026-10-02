@@ -1299,7 +1299,7 @@ export default function HomePage() {
               Ulasan Nyata
             </span>
             <h2
-              className={`mt-3 text-3xl sm:text-4xl font-dhaksinarga tracking-wide ${
+              className={`mt-3 text-3xl sm:text-4xl font-bold font-poppins tracking-wide ${
                 isDark ? 'text-white' : 'text-[#2B120E]'
               }`}
             >

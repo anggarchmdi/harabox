@@ -344,12 +344,12 @@ function GununganWayangIllustration({ isLight }: { isLight: boolean }) {
 
           {/* 1. Siluet Daun Utama Gunungan / Kayon Jawa Klasik */}
           <path
-            d="M 90 12 
-               C 98 32, 126 58, 142 84 
-               C 158 110, 156 142, 144 165 
-               C 134 182, 116 190, 90 192 
-               C 64 190, 46 182, 36 165 
-               C 24 142, 22 110, 38 84 
+            d="M 90 12
+               C 98 32, 126 58, 142 84
+               C 158 110, 156 142, 144 165
+               C 134 182, 116 190, 90 192
+               C 64 190, 46 182, 36 165
+               C 24 142, 22 110, 38 84
                C 54 58, 82 32, 90 12 Z"
             fill="url(#kayon-body)"
             stroke={strokeLine}
@@ -359,12 +359,12 @@ function GununganWayangIllustration({ isLight }: { isLight: boolean }) {
 
           {/* Bingkai Ukiran Dalam Gunungan */}
           <path
-            d="M 90 24 
-               C 96 42, 120 65, 134 88 
-               C 148 112, 146 138, 136 158 
-               C 126 174, 110 180, 90 182 
-               C 70 180, 54 174, 44 158 
-               C 34 138, 32 112, 46 88 
+            d="M 90 24
+               C 96 42, 120 65, 134 88
+               C 148 112, 146 138, 136 158
+               C 126 174, 110 180, 90 182
+               C 70 180, 54 174, 44 158
+               C 34 138, 32 112, 46 88
                C 60 65, 84 42, 90 24 Z"
             fill="none"
             stroke={goldPrimary}
@@ -550,10 +550,10 @@ function KendilGerabahIllustration({ isLight }: { isLight: boolean }) {
 
         {/* 2. Badan Kendil Gerabah (Belly of the Earthenware Pot) */}
         <path
-          d="M 52 74 
-             C 32 94, 30 134, 56 148 
-             C 74 158, 116 158, 134 148 
-             C 160 134, 158 94, 138 74 
+          d="M 52 74
+             C 32 94, 30 134, 56 148
+             C 74 158, 116 158, 134 148
+             C 160 134, 158 94, 138 74
              Z"
           fill="url(#clay-gradient)"
           stroke={potDarkClay}
@@ -687,8 +687,8 @@ function PadmaKeratonIllustration({ isLight }: { isLight: boolean }) {
         {angles.map((angle) => (
           <g key={`outer-petal-${angle}`} transform={`rotate(${angle} 100 100)`}>
             <path
-              d="M 100 18 
-                 C 114 42, 122 74, 100 92 
+              d="M 100 18
+                 C 114 42, 122 74, 100 92
                  C 78 74, 86 42, 100 18 Z"
               fill={petalFill}
               stroke={petalStroke}
@@ -713,8 +713,8 @@ function PadmaKeratonIllustration({ isLight }: { isLight: boolean }) {
         {angles.map((angle) => (
           <g key={`inner-petal-${angle}`} transform={`rotate(${angle + 22.5} 100 100)`}>
             <path
-              d="M 100 36 
-                 C 110 52, 116 76, 100 88 
+              d="M 100 36
+                 C 110 52, 116 76, 100 88
                  C 84 76, 90 52, 100 36 Z"
               fill={innerPetalFill}
               stroke="#F59E0B"
@@ -860,7 +860,7 @@ export default function TraditionalLoader({
               className={`inline-flex items-center gap-1.5 text-[11px] font-black uppercase tracking-[0.25em] ${eyebrowColor}`}
             >
               <span className="text-xs opacity-75">❧</span>
-              <span className="font-dhaksinarga tracking-widest text-xs">PAWON HARA</span>
+              <span className="font-poppins tracking-widest text-xs">PAWON HARA</span>
               <span className="text-xs opacity-75">☙</span>
             </div>
           )}
@@ -868,7 +868,7 @@ export default function TraditionalLoader({
           {/* Judul Status Utama (Font Dhaksinarga Khas Aksara Jawa) */}
           {text && (
             <h4
-              className={`mt-2 font-dhaksinarga tracking-wide font-black ${sizeConfig.fontSize} ${textColor}`}
+              className={`mt-2 font-poppins tracking-wide font-black ${sizeConfig.fontSize} ${textColor}`}
             >
               {text}
             </h4>

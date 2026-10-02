@@ -398,7 +398,7 @@ export default function OrderTrackingPage() {
               <span className="font-poppins tracking-widest text-xs">PELACAKAN STATUS REAL-TIME</span>
             </div> */}
 
-            <h1 className={`text-2xl sm:text-3xl lg:text-4xl font-dhaksinarga tracking-wide font-black ${
+            <h1 className={`text-2xl sm:text-3xl lg:text-4xl font-poppins tracking-wide font-black ${
               isDark ? 'text-white' : 'text-[#2B120E]'
             }`}>
               Cek status pesanan
