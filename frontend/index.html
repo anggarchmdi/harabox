@@ -1,40 +1,193 @@
 <!doctype html>
-<html lang="en" class="light" data-theme="light">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/webp" href="/favicon.webp" />
-    <link rel="manifest" href="/manifest.webmanifest" />
-    <meta name="theme-color" content="#1C0B09" />
-    <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="apple-mobile-web-app-title" content="Pawon Hara" />
-    <link rel="apple-touch-icon" href="/favicon.webp" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=Eagle+Lake&display=swap" rel="stylesheet" />
-    <title>Pawon Hara | Katering & Nasi Box Istimewa</title>
-    <script>
-      (function() {
-        try {
-          var saved = localStorage.getItem('pawon_hara_theme');
-          var theme = (saved === 'dark' || saved === 'light') ? saved : 'light';
-          var root = document.documentElement;
-          root.classList.remove('light', 'dark');
-          root.classList.add(theme);
-          root.setAttribute('data-theme', theme);
-          if (theme === 'dark') {
-            root.style.backgroundColor = '#1C0B09';
-          } else {
-            root.style.backgroundColor = '#FBF7F2';
+<html lang="id" class="light" data-theme="light">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/webp" href="/favicon.webp" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <meta name="theme-color" content="#1C0B09" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Pawon Hara" />
+  <link rel="apple-touch-icon" href="/favicon.webp" />
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+
+  <!-- SEO Primary Meta Tags -->
+  <title>Pawon Hara | Nasi Box & Katering Jogja - Higienis, Murah & Enak</title>
+  <meta name="title" content="Pawon Hara | Nasi Box & Katering Jogja - Higienis, Murah & Enak" />
+  <meta name="description"
+    content="Pawon Hara melayani pesanan nasi box, bento box, dan katering di Jogja untuk kebutuhan kantor, rapat, gathering, syukuran, dan berbagai acara. Higienis, halal, dan harga terjangkau." />
+  <meta name="keywords"
+  content="nasi box jogja, nasi box yogyakarta, nasi kotak jogja, nasi kotak yogyakarta,catering jogja, catering yogyakarta,katering jogja,katering yogyakarta,jasa catering jogja,jasa katering jogja,
+    jasa catering yogyakarta, jasa katering yogyakarta, pesan nasi box jogja, pesan nasi box yogyakarta, pesan nasi kotak jogja, pesan nasi kotak yogyakarta, nasi box terdekat, catering terdekat jogja,
+    katering terdekat jogja, nasi box murah jogja, nasi box enak jogja, nasi box premium jogja, nasi box halal jogja, nasi box higienis jogja, nasi box untuk acara jogja, nasi box untuk kantor jogja, nasi box rapat jogja,
+    nasi box meeting jogja, nasi box gathering jogja, nasi box acara jogja, nasi box syukuran jogja, nasi box hajatan jogja, nasi box pengajian jogja, nasi box seminar jogja, nasi box kantor jogja, catering kantor jogja,
+    catering rapat jogja, catering meeting jogja, catering acara jogja, catering gathering jogja, catering seminar jogja, katering kantor jogja, katering rapat jogja, katering acara jogja, katering gathering jogja, katering seminar jogja,
+    snack box jogja, snack box yogyakarta, pesan snack box jogja, snack box murah jogja, nasi rames jogja, nasi rames yogyakarta, paket rames jogja, nasi ayam jogja, nasi ayam box jogja, nasi kuning jogja, nasi daun jeruk jogja, prasmanan jogja,
+    catering prasmanan jogja, menu nasi box jogja, menu catering jogja, menu katering jogja, harga nasi box jogja, harga nasi box yogyakarta, harga nasi box sleman, harga nasi box bantul, harga catering jogja, harga katering jogja, pawon hara,
+    pawon hara jogja, pawon hara yogyakarta, nasi box hara, catering pawon hara, katering pawon hara, nasi box sleman, nasi kotak sleman, catering sleman, katering sleman, jasa catering sleman, jasa katering sleman, nasi box terdekat sleman, nasi box murah sleman,
+    nasi box enak sleman, nasi box premium sleman, nasi box kantor sleman, nasi box rapat sleman, nasi box acara sleman, catering kantor sleman, catering rapat sleman, catering acara sleman, snack box sleman, nasi rames sleman, prasmanan sleman, harga nasi box sleman,
+    harga catering sleman, nasi box godean, catering godean, nasi box gamping, catering gamping, nasi box condongcatur, catering condongcatur, nasi box kaliurang, catering kaliurang, nasi box jakal,catering jakal, nasi box jalan kaliurang, catering jalan kaliurang,
+    nasi box palagan, catering palagan, nasi box monjali, catering monjali, nasi box berbah, catering berbah, nasi box maguwo, catering maguwo, nasi box tajem, catering tajem, nasi box seyegan, catering seyegan, nasi box prambanan, catering prambanan, nasi box sleman yogyakarta,
+    nasi box bantul, nasi kotak bantul, catering bantul, katering bantul, jasa catering bantul, jasa katering bantul, nasi box terdekat bantul, nasi box murah bantul, nasi box enak bantul, nasi box premium bantul, nasi box kantor bantul, nasi box rapat bantul, nasi box acara bantul,
+    catering kantor bantul, catering rapat bantul, catering acara bantul, snack box bantul, nasi rames bantul, prasmanan bantul, harga nasi box bantul, harga catering bantul, nasi box banguntapan, catering banguntapan, nasi box kotagede, catering kotagede, nasi box pleret, catering pleret,
+    nasi box bantul kota, catering bantul kota, nasi box niten, catering niten, nasi box kota yogyakarta, nasi kotak kota yogyakarta, catering kota yogyakarta, katering kota yogyakarta, nasi box jogja kota, catering jogja kota, nasi box dekat saya jogja, catering dekat saya jogja,
+    nasi box kotagede, catering kotagede, nasi box mantrijeron, catering mantrijeron, nasi box blok o, catering blok o, nasi box UAD, catering UAD, nasi box UAD Sorogenen, catering UAD Sorogenen, nasi box UGM, catering UGM, nasi box UMY, catering UMY, nasi box UNY, catering UNY,
+    nasi box UIN Sunan Kalijaga, catering UIN Sunan Kalijaga, menu nasi box, menu nasi box jogja, menu nasi box sleman, menu nasi box bantul, menu nasi box yogyakarta, menu catering jogja, menu katering jogja, menu catering sleman, menu catering bantul, menu nasi rames, menu nasi ayam,
+    menu nasi kuning, menu tradisional jogja, menu bumbu rempah, nasi box bumbu rempah, nasi box tradisional, catering makanan tradisional jogja, harga nasi box, harga nasi box jogja, harga nasi box sleman, harga nasi box bantul, harga nasi box yogyakarta, harga nasi rames, harga catering jogja, harga katering jogja" />
+  <meta name="author" content="Pawon Hara" />
+  <link rel="canonical" href="https://pawonhara.com/" />
+
+  <!-- Google Search Console Verification Meta Tag -->
+  <!-- Ganti nilai content di bawah ini dengan kode verifikasi dari Google Search Console -->
+  <meta name="google-site-verification" content="69gi_CKTBOGsdxA1WYd5ofmgJrSyhhhiqhy8nyvp1uE" />
+
+  <!-- Geo Local SEO Tags (Yogyakarta, Indonesia) -->
+  <meta name="geo.region" content="ID-YO" />
+  <meta name="geo.placename" content="Yogyakarta" />
+  <meta name="geo.position" content="-7.797068;110.3796294" />
+  <meta name="ICBM" content="-7.7410091, 110.3796294" />
+
+  <!-- Open Graph / Facebook / WhatsApp -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Pawon Hara" />
+  <meta property="og:title" content="Pawon Hara | Nasi Box & Katering Jogja" />
+  <meta property="og:description"
+    content="Pesan nasi box, bento, dan katering lezat di Jogja untuk kantor, rapat, dan acara keluarga. Pilihan menu higienis, halal, dan ramah anggaran." />
+  <meta property="og:url" content="https://pawonhara.com/" />
+  <meta property="og:image" content="https://pawonhara.com/og-image.jpg" />
+  <meta property="og:image:secure_url" content="https://pawonhara.com/og-image.jpg" />
+  <meta property="og:image:type" content="image/jpeg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Pawon Hara - Nasi Box & Katering Jogja" />
+  <meta property="og:locale" content="id_ID" />
+
+  <!-- Twitter / X -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Pawon Hara | Nasi Box & Katering Jogja" />
+  <meta name="twitter:description"
+    content="Pesan nasi box dan katering lezat di Jogja untuk berbagai kebutuhan acara. Menu higienis dan terjangkau." />
+  <meta name="twitter:image" content="https://pawonhara.com/og-image.jpg" />
+  <meta name="twitter:image:alt" content="Pawon Hara Nasi Box Jogja" />
+
+  <!-- JSON-LD Structured Data: LocalBusiness & CateringService -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "CateringService",
+        "@id": "https://pawonhara.com/#catering",
+        "name": "Pawon Hara",
+        "alternateName": "Pawon Hara Katering Jogja",
+        "url": "https://pawonhara.com/",
+        "logo": "https://pawonhara.com/PawonHara.webp",
+        "image": "https://pawonhara.com/og-image.jpg",
+        "description": "Pawon Hara adalah penyedia layanan nasi box, bento box, dan katering terpercaya di Yogyakarta untuk acara kantor, syukuran, gathering, dan pernikahan.",
+        "telephone": "+6281122225520",
+        "email": "pawonhara@gmail.com",
+        "priceRange": "Rp 15.000 - Rp 35.000",
+        "servesCuisine": ["Indonesian", "Nasi Box", "Katering"],
+        "currenciesAccepted": "IDR",
+        "paymentAccepted": "Bank Transfer, Cash",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Yogyakarta",
+          "addressRegion": "Daerah Istimewa Yogyakarta",
+          "addressCountry": "ID"
+        },
+        "geo": {
+          "@type": "GeoCoordinates",
+          "latitude": -7.7410091,
+          "longitude": 110.3796294
+        },
+        "areaServed": [
+          {
+            "@type": "AdministrativeArea",
+            "name": "Daerah Istimewa Yogyakarta"
+          },
+          {
+            "@type": "City",
+            "name": "Yogyakarta"
+          },
+          {
+            "@type": "AdministrativeArea",
+            "name": "Sleman"
+          },
+          {
+            "@type": "AdministrativeArea",
+            "name": "Bantul"
           }
-        } catch (e) {}
-      })();
-    </script>
-  </head>
-  <body class="bg-[#FBF7F2] text-[#2B120E] font-sans antialiased selection:bg-[#F59E0B] selection:text-[#2B120E]">
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+        ],
+        "openingHoursSpecification": [
+          {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": [
+              "Monday",
+              "Tuesday",
+              "Wednesday",
+              "Thursday",
+              "Friday",
+              "Saturday",
+              "Sunday"
+            ],
+            "opens": "07:00",
+            "closes": "20:00"
+          }
+        ]
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://pawonhara.com/#website",
+        "url": "https://pawonhara.com/",
+        "name": "Pawon Hara",
+        "description": "Pesan Nasi Box & Katering Jogja Terpercaya",
+        "publisher": {
+          "@id": "https://pawonhara.com/#catering"
+        },
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "https://pawonhara.com/menu?search={search_term_string}",
+          "query-input": "required name=search_term_string"
+        }
+      }
+    ]
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="dns-prefetch" href="//fonts.googleapis.com" />
+  <link rel="dns-prefetch" href="//fonts.gstatic.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=Eagle+Lake&display=swap"
+    rel="stylesheet" />
+
+  <script>
+    (function () {
+      try {
+        var saved = localStorage.getItem('pawon_hara_theme');
+        var theme = (saved === 'dark' || saved === 'light') ? saved : 'light';
+        var root = document.documentElement;
+        root.classList.remove('light', 'dark');
+        root.classList.add(theme);
+        root.setAttribute('data-theme', theme);
+        if (theme === 'dark') {
+          root.style.backgroundColor = '#1C0B09';
+        } else {
+          root.style.backgroundColor = '#FBF7F2';
+        }
+      } catch (e) { }
+    })();
+  </script>
+</head>
+
+<body class="bg-[#FBF7F2] text-[#2B120E] font-sans antialiased selection:bg-[#F59E0B] selection:text-[#2B120E]">
+  <div id="root"></div>
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+
 </html>
