@@ -31,6 +31,7 @@ import { testimonialService } from '../services/testimonial.service'
 import { getImageUrl } from '../utils/image'
 import type { OrderReviewDetail, Testimonial } from '../types/testimonial'
 import { useThemeStore } from '../stores/theme.store'
+import { useSEO } from '../hooks/useSEO'
 
 const ratingDescriptions: Record<number, { title: string; subtitle: string }> = {
   5: { title: 'Luar Biasa!', subtitle: 'Sangat puas dengan rasa ayam, bento box, dan ketepatan pengantaran.' },
@@ -72,6 +73,15 @@ function formatDateIndo(dateStr?: string): string {
 }
 
 export default function TestimonialPage() {
+  useSEO({
+    title: 'Testimoni Pelanggan | Pawon Hara Katering Jogja',
+    description:
+      'Lihat ulasan dan pengalaman nyata pelanggan yang telah mempercayakan nasi box, bento, dan katering acara mereka kepada Pawon Hara Jogja.',
+    canonical: '/testimoni',
+    keywords:
+      'testimoni katering jogja, ulasan pawon hara, review nasi box jogja, catering kantor terpercaya jogja',
+  })
+
   const theme = useThemeStore((s) => s.theme)
   const isDark = theme === 'dark'
   const [searchParams] = useSearchParams()

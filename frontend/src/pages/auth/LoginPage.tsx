@@ -21,10 +21,16 @@ import { useAuthStore } from '../../stores/auth.store'
 import type { ApiErrorResponse } from '../../types/api'
 import TraditionalLoader from '../../components/ui/TraditionalLoader'
 import PawonHaraImg from '../../assets/PawonHara.webp'
+import { useSEO } from '../../hooks/useSEO'
 
 const REMEMBERED_EMAIL_KEY = 'harabox_remember_email'
 
 export default function LoginPage() {
+  useSEO({
+    title: 'Login Admin | Pawon Hara',
+    noindex: true,
+  })
+
   const navigate = useNavigate()
   const login = useAuthStore((state) => state.login)
 

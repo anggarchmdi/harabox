@@ -16,6 +16,7 @@ import AOS from 'aos'
 import Summary from '../components/ui/Summary'
 import PageLoader from '../components/ui/PageLoader'
 import { useThemeStore } from '../stores/theme.store'
+import { useSEO } from '../hooks/useSEO'
 
 const steps = [
   {
@@ -76,6 +77,15 @@ const proTips = [
 ]
 
 export default function CaraPesan() {
+  useSEO({
+    title: 'Cara Pesan Nasi Box & Katering Jogja | Pawon Hara',
+    description:
+      'Panduan alur pemesanan nasi box dan katering di Pawon Hara Jogja. Mudah, cepat, transparan, dan invoice resmi terkirim langsung ke WhatsApp Anda.',
+    canonical: '/cara-pesan',
+    keywords:
+      'cara pesan katering jogja, pesan nasi box online jogja, alur pemesanan pawon hara, catering nasi kotak jogja',
+  })
+
   const theme = useThemeStore((state) => state.theme)
   const isDark = theme === 'dark'
 

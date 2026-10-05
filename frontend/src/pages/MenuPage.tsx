@@ -25,6 +25,7 @@ import PageLoader from '../components/ui/PageLoader'
 import ProductCardSkeleton from '../components/ui/ProductCardSkeleton'
 import { useThemeStore } from '../stores/theme.store'
 import useDebounce from '../hooks/useDebounce'
+import { useSEO } from '../hooks/useSEO'
 
 // Aset lokal untuk smart fallback beresolusi tinggi & menggugah selera
 import BentoKatsuImg from '../assets/nasibox/bento-katsu-b.webp'
@@ -77,6 +78,15 @@ function getProductDisplayImage(item: Product): string {
 type SortOption = 'default' | 'price-asc' | 'price-desc' | 'min-order' | 'name-asc'
 
 export default function MenuPage() {
+  useSEO({
+    title: 'Daftar Menu Nasi Box & Katering Jogja | Pawon Hara',
+    description:
+      'Pilihan lengkap menu paket nasi box, bento box, prasmanan, dan katering Pawon Hara di Yogyakarta. Cita rasa istimewa dengan harga terjangkau mulai dari Rp 16.000.',
+    canonical: '/menu',
+    keywords:
+      'menu nasi box jogja, daftar harga katering jogja, bento box jogja, nasi ayam krispi jogja, nasi kuning jogja, catering murah yogyakarta',
+  })
+
   const theme = useThemeStore((state) => state.theme)
   const isDark = theme === 'dark'
 

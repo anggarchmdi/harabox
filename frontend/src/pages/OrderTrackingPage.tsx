@@ -34,6 +34,7 @@ import type { Order, OrderStatus } from '../types/orders'
 import { ordersService } from '../services/orders.service'
 import { useThemeStore } from '../stores/theme.store'
 import { getImageUrl } from '../utils/image'
+import { useSEO } from '../hooks/useSEO'
 import PageLoader from '../components/ui/PageLoader'
 import PaymentStatusBadge from '../components/admin/orders/PaymentStatusBadge'
 
@@ -248,6 +249,16 @@ export default function OrderTrackingPage() {
 
   const initialCode = routeOrderCode || searchParams.get('code') || ''
   const initialPhone = searchParams.get('phone') || ''
+
+  useSEO({
+    title: initialCode
+      ? `Lacak Pesanan ${initialCode} | Pawon Hara`
+      : 'Lacak Status Pesanan Nasi Box & Katering | Pawon Hara Jogja',
+    description:
+      'Cek dan pantau progres status pemrosesan dapur, persiapan hidangan, dan jadwal pengiriman pesanan katering Pawon Hara Jogja secara real-time.',
+    canonical: '/cek-pesanan',
+    noindex: Boolean(initialCode),
+  })
 
   const [inputCode, setInputCode] = useState(initialCode)
   const [inputPhone, setInputPhone] = useState(initialPhone)

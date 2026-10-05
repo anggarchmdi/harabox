@@ -28,6 +28,7 @@ import {
 import { authService } from '../services/auth.service'
 import { useAuthStore } from '../stores/auth.store'
 import { useThemeStore } from '../stores/theme.store'
+import { useSEO } from '../hooks/useSEO'
 import { dashboardService } from '../services/dashboard.service'
 import LogoProfile from '../assets/PawonHara.webp'
 import PageLoader from '../components/ui/PageLoader'
@@ -98,6 +99,11 @@ const mainMenus: MenuItem[] = [
 ]
 
 export default function AdminLayout() {
+  useSEO({
+    title: 'Admin Panel | Pawon Hara',
+    noindex: true,
+  })
+
   const navigate = useNavigate()
   const location = useLocation()
   const user = useAuthStore((state) => state.user)

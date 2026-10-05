@@ -1,7 +1,14 @@
 import { Link } from 'react-router-dom'
 import { useThemeStore } from '../stores/theme.store'
+import { useSEO } from '../hooks/useSEO'
 
 export default function NotFound() {
+  useSEO({
+    title: '404 Halaman Tidak Ditemukan | Pawon Hara',
+    description: 'Halaman yang Anda tuju tidak ditemukan di Pawon Hara.',
+    noindex: true,
+  })
+
   const theme = useThemeStore((state) => state.theme)
   const isDark = theme === 'dark'
 

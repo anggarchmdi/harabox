@@ -28,6 +28,7 @@ import { settingsService } from '../services/settings.service'
 import { getImageUrl } from '../utils/image'
 import { useCartStore, type CartItemAddon } from '../stores/cart.store'
 import { useThemeStore } from '../stores/theme.store'
+import { useSEO } from '../hooks/useSEO'
 import type { Product } from '../types/products'
 import type { AddonGroup } from '../types/addon'
 
@@ -114,6 +115,56 @@ export default function ProductDetailPage() {
     enabled: Boolean(slug),
     staleTime: 0,
     refetchOnMount: 'always',
+  })
+
+  const seoDisplayImage = product ? getProductDisplayImage(product) : undefined
+  const productImageUrl = seoDisplayImage
+    ? seoDisplayImage.startsWith('http')
+      ? seoDisplayImage
+      : `https://pawonhara.com${seoDisplayImage}`
+    : 'https://pawonhara.com/og-image.jpg'
+
+  const productSchema = useMemo(() => {
+    if (!product) return undefined
+    return {
+      '@context': 'https://schema.org/',
+      '@type': 'Product',
+      name: product.name,
+      image: [productImageUrl],
+      description: product.description || `Pesan paket ${product.name} lezat dari Pawon Hara Katering Jogja.`,
+      sku: `PH-${product.id}`,
+      brand: {
+        '@type': 'Brand',
+        name: 'Pawon Hara',
+      },
+      offers: {
+        '@type': 'Offer',
+        url: `https://pawonhara.com/menu/${slug}`,
+        priceCurrency: 'IDR',
+        price: product.price,
+        priceValidUntil: '2027-12-31',
+        itemCondition: 'https://schema.org/NewCondition',
+        availability: product.is_active ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+        seller: {
+          '@type': 'Organization',
+          name: 'Pawon Hara',
+        },
+      },
+    }
+  }, [product, productImageUrl, slug])
+
+  useSEO({
+    title: product ? `${product.name} | Pawon Hara Nasi Box Jogja` : 'Detail Menu | Pawon Hara',
+    description: product?.description
+      ? `${product.description} Pesan sekarang di Pawon Hara Jogja dengan harga Rp ${Number(product.price).toLocaleString('id-ID')}.`
+      : 'Pesan paket katering dan nasi box lezat dari Pawon Hara Jogja.',
+    canonical: `/menu/${slug}`,
+    ogImage: productImageUrl,
+    ogType: 'product',
+    keywords: product
+      ? `${product.name}, pesan ${product.name}, nasi box jogja, catering jogja, pawon hara`
+      : undefined,
+    schema: productSchema,
   })
 
   const [quantity, setQuantity] = useState<number>(10)

@@ -21,6 +21,7 @@ import PageLoader from '../components/ui/PageLoader'
 import BentoKatsuImg from '../assets/nasibox/bento-katsu-b.webp'
 import RamesBaladoImg from '../assets/nasibox/rames-balado-b.webp'
 import { useThemeStore } from '../stores/theme.store'
+import { useSEO } from '../hooks/useSEO'
 
 const values = [
   {
@@ -150,6 +151,15 @@ const highlights = [
 ]
 
 export default function TentangKami() {
+  useSEO({
+    title: 'Tentang Kami | Pawon Hara Katering & Nasi Box Jogja',
+    description:
+      'Mengenal Pawon Hara, layanan katering dan bento box di Yogyakarta dengan dedikasi cita rasa nusantara otentik, 100% halal, higienis, dan pengantaran tepat waktu.',
+    canonical: '/tentang-kami',
+    keywords:
+      'tentang pawon hara, profil katering jogja, catering halal jogja, dapur katering yogyakarta',
+  })
+
   const theme = useThemeStore((state) => state.theme)
   const isDark = theme === 'dark'
 

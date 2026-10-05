@@ -25,6 +25,7 @@ import PageLoader from '../components/ui/PageLoader'
 import ProductCardSkeleton from '../components/ui/ProductCardSkeleton'
 import TestimonialSlider from '../components/home/TestimonialSlider'
 import { useThemeStore } from '../stores/theme.store'
+import { useSEO } from '../hooks/useSEO'
 
 import HeroImg from '../assets/bannerss.webp'
 import BentoKatsuImg from '../assets/nasibox/bento-katsu-b.webp'
@@ -266,6 +267,13 @@ const heroSlides = [
 ]
 
 export default function HomePage() {
+  useSEO({
+    title: 'Pawon Hara | Nasi Box & Katering Jogja - Higienis, Murah & Enak',
+    description:
+      'Pawon Hara melayani pesanan nasi box, bento box, dan katering di Jogja untuk kebutuhan kantor, rapat, gathering, syukuran, dan berbagai acara. Higienis, halal, dan harga terjangkau.',
+    canonical: '/',
+  })
+
   const theme = useThemeStore((state) => state.theme)
   const isDark = theme === 'dark'
 

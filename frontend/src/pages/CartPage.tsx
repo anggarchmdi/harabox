@@ -20,6 +20,7 @@ import { toast } from 'sonner'
 import { useQuery } from '@tanstack/react-query'
 import { useThemeStore } from '../stores/theme.store'
 import { useCartStore } from '../stores/cart.store'
+import { useSEO } from '../hooks/useSEO'
 import { ordersService } from '../services/orders.service'
 import { settingsService } from '../services/settings.service'
 import { getImageUrl } from '../utils/image'
@@ -71,6 +72,13 @@ function formatMinDateLabel(dateStr: string): string {
 }
 
 export default function CartPage() {
+  useSEO({
+    title: 'Keranjang Pesanan | Pawon Hara Jogja',
+    description: 'Rincian keranjang pesanan katering dan nasi box Pawon Hara Jogja.',
+    canonical: '/cart',
+    noindex: true,
+  })
+
   const navigate = useNavigate()
   const theme = useThemeStore((state) => state.theme)
   const isDark = theme === 'dark'
