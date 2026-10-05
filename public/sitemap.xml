@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  <!-- Halaman Utama (Homepage) -->
+  <url>
+    <loc>https://pawonhara.com/</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://pawonhara.com/og-image.jpg</image:loc>
+      <image:title>Pawon Hara | Nasi Box &amp; Katering Jogja</image:title>
+      <image:caption>Nasi box dan katering lezat, higienis, dan terjangkau di Yogyakarta</image:caption>
+    </image:image>
+  </url>
+
+  <!-- Halaman Menu & Katalog -->
+  <url>
+    <loc>https://pawonhara.com/menu</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+    <!-- Main Pages -->
+    <url>
+        <loc>https://pawonhara.com/</loc>
+    </url>
+
+    <url>
+        <loc>https://pawonhara.com/menu</loc>
+    </url>
+
+    <url>
+        <loc>https://pawonhara.com/tentang-kami</loc>
+    </url>
+
+    <url>
+        <loc>https://pawonhara.com/cara-pesan</loc>
+    </url>
+
+    <url>
+        <loc>https://pawonhara.com/testimoni</loc>
+    </url>
+
+    <url>
+        <loc>https://pawonhara.com/cek-pesanan</loc>
+    </url>
+
+    <!-- Products -->
+   <url>
+        <loc>https://pawonhara.com/menu/paket-ayam-lengkuas-reguler</loc>
+    </url>
+
+    <url>
+        <loc>https://pawonhara.com/menu/paket-ayam-lengkuas-premium</loc>
+    </url>
+
+    <url>
+        <loc>https://pawonhara.com/menu/paket-ayam-bakar-rempah-reguler</loc>
+    </url>
+
+    <url>
+        <loc>https://pawonhara.com/menu/paket-ayam-bakar-rempah</loc>
+    </url>
+
+    <url>
+        <loc>https://pawonhara.com/menu/paket-nasi-kuning</loc>
+    </url>
+
+    <url>
+        <loc>https://pawonhara.com/menu/paket-nasi-kuning-premium</loc>
+    </url>
+
+    <url>
+        <loc>https://pawonhara.com/menu/paket-bento-reguler</loc>
+    </url>
+
+    <url>
+        <loc>https://pawonhara.com/menu/paket-bento-premium</loc>
+    </url>
+
+    <url>
+        <loc>https://pawonhara.com/menu/paket-krispi-bakar-reguler</loc>
+    </url>
+
+    <url>
+        <loc>https://pawonhara.com/menu/paket-krispi-bakar-premium</loc>
+    </url>
+
+    <url>
+        <loc>https://pawonhara.com/menu/paket-balado-reguler</loc>
+    </url>
+
+    <url>
+        <loc>https://pawonhara.com/menu/paket-balado-premium</loc>
+    </url>
+
+    <url>
+        <loc>https://pawonhara.com/menu/paket-rames-reguler</loc>
+    </url>
+
+    <url>
+        <loc>https://pawonhara.com/menu/paket-rames-premium</loc>
+    </url>
+
+</urlset>
+  <!-- Halaman Profil & Informasi -->
+  <url>
+    <loc>https://pawonhara.com/tentang-kami</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://pawonhara.com/cara-pesan</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://pawonhara.com/testimoni</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://pawonhara.com/cek-pesanan</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <!-- Halaman Detail Produk & Paket Unggulan -->
+  <url>
+        <loc>https://pawonhara.com/menu/paket-ayam-lengkuas-reguler</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+        <loc>https://pawonhara.com/menu/paket-ayam-lengkuas-premium</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+        <loc>https://pawonhara.com/menu/paket-ayam-bakar-rempah-reguler</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+        <loc>https://pawonhara.com/menu/paket-ayam-bakar-rempah</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+        <loc>https://pawonhara.com/menu/paket-nasi-kuning</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+        <loc>https://pawonhara.com/menu/paket-bento-reguler</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+        <loc>https://pawonhara.com/menu/paket-bento-premium</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+        <loc>https://pawonhara.com/menu/paket-krispi-bakar-reguler</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+        <loc>https://pawonhara.com/menu/paket-krispi-bakar-premium</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+        <loc>https://pawonhara.com/menu/paket-balado-reguler</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+        <loc>https://pawonhara.com/menu/paket-balado-premium</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+        <loc>https://pawonhara.com/menu/paket-rames-reguler</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+        <loc>https://pawonhara.com/menu/paket-rames-premium</loc>
+    <lastmod>2026-10-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+</urlset>
