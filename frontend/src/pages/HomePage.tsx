@@ -820,25 +820,50 @@ export default function HomePage() {
                     }`}
                   >
                     {/* Image Container */}
-                    <div className="relative aspect-[4/3] w-full overflow-hidden bg-[#1A0A08]">
+                    <div
+                      className={`relative aspect-[4/3] w-full overflow-hidden transition-colors ${
+                        isDark
+                          ? 'bg-gradient-to-br from-[#2D120F] via-[#240E0C] to-[#1C0B09]'
+                          : 'bg-gradient-to-br from-[#FAF5EE] via-[#F4ECE1] to-[#EAE0D3]'
+                      }`}
+                    >
                       <img
                         src={imageSrc}
                         alt={name}
-                        className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
+                        className="h-full w-full object-cover transition duration-700 group-hover:scale-105 drop-shadow-md"
                       />
 
+                      {/* Harmonized subtle overlay */}
+                      {isDark ? (
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#1C0B09]/75 via-transparent to-transparent pointer-events-none" />
+                      ) : (
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#2B120E]/15 via-transparent to-transparent pointer-events-none" />
+                      )}
+
                       {/* Badge Pojok Kiri */}
-                      <div className="absolute left-4 top-4 rounded-full bg-[#F59E0B] px-3 py-1 text-[11px] font-black text-[#1C0B09] shadow-md">
+                      <div className="absolute left-3.5 top-3.5 rounded-full bg-[#F59E0B] px-3 py-1 text-[11px] font-black text-[#1C0B09] shadow-md">
                         {badgeLabel}
                       </div>
 
                       {/* Minimum Order Tag */}
-                      <div className="absolute bottom-3 left-3 rounded-xl bg-black/75 backdrop-blur-md px-2.5 py-1 text-[11px] font-bold text-amber-200">
+                      <div
+                        className={`absolute bottom-3 left-3 rounded-xl px-2.5 py-1 text-[11px] font-bold shadow-md backdrop-blur-md ${
+                          isDark
+                            ? 'bg-[#1C0B09]/85 text-amber-200 border border-[#60241E]/70'
+                            : 'bg-white/95 text-[#5C3831] border border-[#E6DACD]'
+                        }`}
+                      >
                         Min. {minOrder} Box
                       </div>
 
                       {/* Rating Pill */}
-                      <div className="absolute top-4 right-4 flex items-center gap-1.5 rounded-full bg-[#1A0A08] border border-[#F59E0B]/30 px-2.5 py-1 text-[11px] font-black text-[#F59E0B] shadow-md">
+                      <div
+                        className={`absolute top-3.5 right-3.5 flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-black shadow-md backdrop-blur-md ${
+                          isDark
+                            ? 'bg-[#1C0B09]/90 border border-[#60241E] text-[#F59E0B]'
+                            : 'bg-white/95 border border-[#E6DACD] text-[#8C3A00]'
+                        }`}
+                      >
                         <Star size={12} className="fill-[#F59E0B] text-[#F59E0B]" />
                         <span>4.9</span>
                       </div>

@@ -679,19 +679,35 @@ export default function MenuPage() {
                   }`}
                 >
                   {/* Image Container with Floating Badges */}
-                  <div className="relative aspect-[4/3] overflow-hidden bg-[#1A0A08]">
+                  <div
+                    className={`relative aspect-[4/3] overflow-hidden transition-colors ${
+                      isDark
+                        ? 'bg-gradient-to-br from-[#2D120F] via-[#240E0C] to-[#1C0B09]'
+                        : 'bg-gradient-to-br from-[#FAF5EE] via-[#F4ECE1] to-[#EAE0D3]'
+                    }`}
+                  >
                     <img
                       src={displayImage}
                       alt={item.name}
                       loading="lazy"
-                      className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-108"
+                      className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-108 drop-shadow-md"
                     />
 
                     {/* Gradient Soft Shadow */}
-                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#1C0B09]/80 via-black/20 to-transparent" />
+                    {isDark ? (
+                      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#1C0B09]/80 via-transparent to-transparent" />
+                    ) : (
+                      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#2B120E]/20 via-transparent to-transparent" />
+                    )}
 
                     {/* Top Left: Minimum Order Badge */}
-                    <div className="absolute left-3.5 top-3.5 flex items-center gap-1.5 rounded-full border border-[#F59E0B]/40 bg-[#1C0B09]/90 px-3 py-1.5 text-[11px] font-black text-amber-300 shadow-md backdrop-blur-md transition-transform duration-300 group-hover:scale-105">
+                    <div
+                      className={`absolute left-3.5 top-3.5 flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-black shadow-md backdrop-blur-md transition-transform duration-300 group-hover:scale-105 ${
+                        isDark
+                          ? 'border border-[#F59E0B]/40 bg-[#1C0B09]/90 text-amber-300'
+                          : 'border border-[#E6DACD] bg-white/95 text-[#8C3A00]'
+                      }`}
+                    >
                       <ShoppingBag size={13} className="text-[#F59E0B]" />
                       <span>Min. {minOrder} Porsi</span>
                     </div>
@@ -703,19 +719,37 @@ export default function MenuPage() {
                         <span>Best Seller</span>
                       </div>
                     ) : (
-                      <div className="absolute right-3.5 top-3.5 flex items-center gap-1 rounded-full bg-[#1C0B09]/90 backdrop-blur-md border border-[#60241E] px-2.5 py-1 text-[11px] font-black text-[#F59E0B] shadow-md transition-transform duration-300 group-hover:scale-105">
+                      <div
+                        className={`absolute right-3.5 top-3.5 flex items-center gap-1 rounded-full backdrop-blur-md px-2.5 py-1 text-[11px] font-black shadow-md transition-transform duration-300 group-hover:scale-105 ${
+                          isDark
+                            ? 'bg-[#1C0B09]/90 border border-[#60241E] text-[#F59E0B]'
+                            : 'bg-white/95 border border-[#E6DACD] text-[#8C3A00]'
+                        }`}
+                      >
                         <Star size={12} className="fill-[#F59E0B]" />
                         <span>4.9</span>
                       </div>
                     )}
 
                     {/* Bottom overlay preview: kelipatan 10 */}
-                    <div className="absolute bottom-3 left-3.5 right-3.5 flex items-center justify-between text-[11px] text-white/95 font-semibold drop-shadow">
-                      <span className="flex items-center gap-1.5 bg-[#1C0B09]/80 backdrop-blur-md px-2.5 py-0.5 rounded-full border border-[#60241E]/70 text-amber-200">
+                    <div className="absolute bottom-3 left-3.5 right-3.5 flex items-center justify-between text-[11px] font-semibold drop-shadow">
+                      <span
+                        className={`flex items-center gap-1.5 backdrop-blur-md px-2.5 py-0.5 rounded-full border ${
+                          isDark
+                            ? 'bg-[#1C0B09]/80 border-[#60241E]/70 text-amber-200'
+                            : 'bg-white/95 border-[#E6DACD] text-[#5C3831]'
+                        }`}
+                      >
                         <span className="h-1.5 w-1.5 rounded-full bg-[#F59E0B] animate-pulse" />
                         Kelipatan 10 Porsi
                       </span>
-                      <span className="text-[10px] font-bold text-amber-300 bg-[#1C0B09]/80 backdrop-blur-md px-2 py-0.5 rounded-full border border-[#60241E]/70">
+                      <span
+                        className={`text-[10px] font-bold backdrop-blur-md px-2 py-0.5 rounded-full border ${
+                          isDark
+                            ? 'bg-[#1C0B09]/80 border-[#60241E]/70 text-amber-300'
+                            : 'bg-white/95 border-[#E6DACD] text-[#8C3A00]'
+                        }`}
+                      >
                         Siap Santap
                       </span>
                     </div>

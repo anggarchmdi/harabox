@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import {
   AlertCircle,
@@ -17,6 +17,10 @@ import {
   User,
   UtensilsCrossed,
   X,
+  Maximize2,
+  ZoomIn,
+  ZoomOut,
+  RotateCcw,
 } from 'lucide-react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'sonner'
@@ -169,6 +173,7 @@ export default function ProductDetailPage() {
 
   const [quantity, setQuantity] = useState<number>(10)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isImageLightboxOpen, setIsImageLightboxOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   // Addon selection state: { [groupId: number]: number[] (addonIds) }
@@ -210,7 +215,7 @@ export default function ProductDetailPage() {
   )
 
   useEffect(() => {
-    if (isModalOpen) {
+    if (isModalOpen || isImageLightboxOpen) {
       const scrollY = window.scrollY
       document.body.style.position = 'fixed'
       document.body.style.top = `-${scrollY}px`
@@ -224,7 +229,138 @@ export default function ProductDetailPage() {
         window.scrollTo(0, scrollY)
       }
     }
-  }, [isModalOpen])
+  }, [isModalOpen, isImageLightboxOpen])
+
+  // Image Lightbox Zoom & Pan State
+  const [zoomScale, setZoomScale] = useState(1)
+  const [panPosition, setPanPosition] = useState({ x: 0, y: 0 })
+  const [isDragging, setIsDragging] = useState(false)
+  const dragStartRef = useRef({ x: 0, y: 0, startPanX: 0, startPanY: 0 })
+
+  const handleZoomIn = () => {
+    setZoomScale((prev) => Math.min(3, Number((prev + 0.5).toFixed(2))))
+  }
+
+  const handleZoomOut = () => {
+    setZoomScale((prev) => {
+      const next = Math.max(1, Number((prev - 0.5).toFixed(2)))
+      if (next === 1) setPanPosition({ x: 0, y: 0 })
+      return next
+    })
+  }
+
+  const handleResetZoom = () => {
+    setZoomScale(1)
+    setPanPosition({ x: 0, y: 0 })
+    setIsDragging(false)
+  }
+
+  const closeImageLightbox = () => {
+    setIsImageLightboxOpen(false)
+    handleResetZoom()
+  }
+
+  useEffect(() => {
+    if (!isImageLightboxOpen) {
+      handleResetZoom()
+    }
+  }, [isImageLightboxOpen])
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        closeImageLightbox()
+      } else if (isImageLightboxOpen) {
+        if (e.key === '+' || e.key === '=') {
+          handleZoomIn()
+        } else if (e.key === '-' || e.key === '_') {
+          handleZoomOut()
+        } else if (e.key === '0') {
+          handleResetZoom()
+        }
+      }
+    }
+    if (isImageLightboxOpen) {
+      window.addEventListener('keydown', handleKeyDown)
+      return () => window.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [isImageLightboxOpen])
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (zoomScale <= 1) return
+    e.preventDefault()
+    setIsDragging(true)
+    dragStartRef.current = {
+      x: e.clientX,
+      y: e.clientY,
+      startPanX: panPosition.x,
+      startPanY: panPosition.y,
+    }
+  }
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging || zoomScale <= 1) return
+    e.preventDefault()
+    const dx = e.clientX - dragStartRef.current.x
+    const dy = e.clientY - dragStartRef.current.y
+    const maxPan = 240 * (zoomScale - 1)
+    setPanPosition({
+      x: Math.max(-maxPan, Math.min(maxPan, dragStartRef.current.startPanX + dx)),
+      y: Math.max(-maxPan, Math.min(maxPan, dragStartRef.current.startPanY + dy)),
+    })
+  }
+
+  const handleMouseUp = () => {
+    setIsDragging(false)
+  }
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (zoomScale <= 1 || e.touches.length !== 1) return
+    setIsDragging(true)
+    dragStartRef.current = {
+      x: e.touches[0].clientX,
+      y: e.touches[0].clientY,
+      startPanX: panPosition.x,
+      startPanY: panPosition.y,
+    }
+  }
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isDragging || zoomScale <= 1) return
+    const dx = e.touches[0].clientX - dragStartRef.current.x
+    const dy = e.touches[0].clientY - dragStartRef.current.y
+    const maxPan = 240 * (zoomScale - 1)
+    setPanPosition({
+      x: Math.max(-maxPan, Math.min(maxPan, dragStartRef.current.startPanX + dx)),
+      y: Math.max(-maxPan, Math.min(maxPan, dragStartRef.current.startPanY + dy)),
+    })
+  }
+
+  const handleTouchEnd = () => {
+    setIsDragging(false)
+  }
+
+  const handleWheel = (e: React.WheelEvent) => {
+    e.preventDefault()
+    if (e.deltaY < 0) {
+      setZoomScale((prev) => Math.min(3, Number((prev + 0.25).toFixed(2))))
+    } else if (e.deltaY > 0) {
+      setZoomScale((prev) => {
+        const next = Math.max(1, Number((prev - 0.25).toFixed(2)))
+        if (next === 1) setPanPosition({ x: 0, y: 0 })
+        return next
+      })
+    }
+  }
+
+  const handleDoubleClick = () => {
+    if (zoomScale > 1) {
+      handleResetZoom()
+    } else {
+      setZoomScale(2)
+      setPanPosition({ x: 0, y: 0 })
+    }
+  }
 
   const handleEventDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value
@@ -619,7 +755,7 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
             Menu
           </p>
           <h1
-            className={`mt-3 text-2xl font-dhaksinarga tracking-wide ${isDark ? 'text-white' : 'text-[#2B120E]'
+            className={`mt-3 text-2xl font-poppins tracking-wide ${isDark ? 'text-white' : 'text-[#2B120E]'
               }`}
           >
             Menu Tidak Ditemukan
@@ -693,32 +829,75 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                 }`}
             >
               {/* Product Hero Image */}
-              <div className="relative aspect-[16/10] sm:aspect-[16/9] w-full overflow-hidden bg-[#1A0A08]">
+              <div
+                role="button"
+                tabIndex={0}
+                onClick={() => setIsImageLightboxOpen(true)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault()
+                    setIsImageLightboxOpen(true)
+                  }
+                }}
+                title="Klik untuk memperbesar foto menu"
+                className={`group relative aspect-[16/10] sm:aspect-[16/9] w-full overflow-hidden cursor-pointer select-none transition-colors ${isDark
+                  ? 'bg-gradient-to-br from-[#2D120F] via-[#240E0C] to-[#1C0B09]'
+                  : 'bg-gradient-to-br from-[#FAF5EE] via-[#F4ECE1] to-[#EAE0D3]'
+                  }`}
+              >
                 <img
                   src={displayImage}
                   alt={product.name}
-                  className="h-full w-full object-cover transition-transform duration-700 hover:scale-105"
+                  className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105 drop-shadow-md"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#1C0B09]/85 via-black/20 to-transparent pointer-events-none" />
+
+                {/* Harmonized subtle overlay */}
+                {isDark ? (
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#1C0B09]/80 via-black/15 to-transparent pointer-events-none" />
+                ) : (
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#2B120E]/20 via-transparent to-transparent pointer-events-none" />
+                )}
 
                 {/* Min Order Badge */}
-                <div className="absolute left-4 top-4 flex items-center gap-1.5 rounded-full bg-[#1C0B09]/90 border border-[#F59E0B]/40 px-3.5 py-1.5 text-xs font-black text-amber-300 shadow-md backdrop-blur">
+                <div
+                  className={`absolute left-3.5 top-3.5 sm:left-4 sm:top-4 flex items-center gap-1.5 rounded-full px-3 py-1.5 sm:px-3.5 text-xs font-black shadow-md backdrop-blur-md transition-transform duration-300 group-hover:scale-105 ${isDark
+                    ? 'bg-[#1C0B09]/90 border border-[#F59E0B]/40 text-amber-300'
+                    : 'bg-white/95 border border-[#E6DACD] text-[#8C3A00]'
+                    }`}
+                >
                   <ShoppingBag size={13} className="text-[#F59E0B]" />
                   <span>Min. {minOrder} Porsi</span>
                 </div>
 
                 {/* Lead Time Badge */}
                 {leadTimeDays > 0 && (
-                  <div className="absolute right-4 top-4 flex items-center gap-1.5 rounded-full bg-[#F59E0B] px-3 py-1.5 text-xs font-black text-[#1C0B09] shadow-md backdrop-blur">
+                  <div className="absolute right-3.5 top-3.5 sm:right-4 sm:top-4 flex items-center gap-1.5 rounded-full bg-[#F59E0B] px-3 py-1.5 text-xs font-black text-[#1C0B09] shadow-md backdrop-blur transition-transform duration-300 group-hover:scale-105">
                     <Clock size={13} />
                     <span>Pesan H-{leadTimeDays}</span>
                   </div>
                 )}
 
                 {/* Satisfaction Tag */}
-                <div className="absolute bottom-4 left-4 flex items-center gap-2 rounded-full bg-[#1C0B09]/85 border border-[#60241E]/70 px-3 py-1 text-xs font-bold text-white shadow-md backdrop-blur-md">
+                <div
+                  className={`absolute bottom-3.5 left-3.5 sm:bottom-4 sm:left-4 flex items-center gap-1.5 sm:gap-2 rounded-full px-3 py-1 text-xs font-bold shadow-md backdrop-blur-md ${isDark
+                    ? 'bg-[#1C0B09]/85 border border-[#60241E]/70 text-white'
+                    : 'bg-white/95 border border-[#E6DACD] text-[#2B120E]'
+                    }`}
+                >
                   <span className="text-[#F59E0B]">★ 4.9</span>
-                  <span>Favorit Katering Pawon Hara</span>
+                  <span className="hidden xs:inline">Favorit Katering Pawon Hara</span>
+                  <span className="xs:hidden">Favorit Hara</span>
+                </div>
+
+                {/* Zoom / Expand Hint Badge */}
+                <div
+                  className={`absolute bottom-3.5 right-3.5 sm:bottom-4 sm:right-4 flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold shadow-md backdrop-blur-md transition-all duration-300 group-hover:scale-105 ${isDark
+                    ? 'bg-[#1C0B09]/90 border border-[#60241E] text-amber-300 group-hover:border-[#F59E0B]'
+                    : 'bg-white/95 border border-[#E6DACD] text-[#5C3831] group-hover:border-[#D97706]'
+                    }`}
+                >
+                  <Maximize2 size={13} className="text-[#F59E0B]" />
+                  <span className="hidden sm:inline">Perbesar Foto</span>
                 </div>
               </div>
 
@@ -788,37 +967,33 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                 {/* Daftar Isi Paket (Termasuk dalam Paket Dasar) */}
                 {product.package_items && product.package_items.length > 0 && (
                   <div
-                    className={`mt-5 rounded-2xl border p-4 sm:p-5 transition-all ${
-                      isDark
-                        ? 'border-[#60241E]/90 bg-[#1F0C0A]'
-                        : 'border-[#E6DACD] bg-[#FAF5EE]/90'
-                    }`}
+                    className={`mt-5 rounded-2xl border p-4 sm:p-5 transition-all ${isDark
+                      ? 'border-[#60241E]/90 bg-[#1F0C0A]'
+                      : 'border-[#E6DACD] bg-[#FAF5EE]/90'
+                      }`}
                   >
                     <div className="flex items-center justify-between gap-2 mb-3 pb-2.5 border-b border-inherit">
                       <div className="flex items-center gap-2">
                         <div
-                          className={`flex h-6 w-6 items-center justify-center rounded-lg ${
-                            isDark
-                              ? 'bg-[#3B1814] text-[#F59E0B]'
-                              : 'bg-[#FAF0E4] text-[#D97706]'
-                          }`}
+                          className={`flex h-6 w-6 items-center justify-center rounded-lg ${isDark
+                            ? 'bg-[#3B1814] text-[#F59E0B]'
+                            : 'bg-[#FAF0E4] text-[#D97706]'
+                            }`}
                         >
                           <UtensilsCrossed size={13} />
                         </div>
                         <h2
-                          className={`text-xs sm:text-sm font-bold tracking-wide uppercase font-poppins ${
-                            isDark ? 'text-white' : 'text-[#2B120E]'
-                          }`}
+                          className={`text-xs sm:text-sm font-bold tracking-wide uppercase font-poppins ${isDark ? 'text-white' : 'text-[#2B120E]'
+                            }`}
                         >
                           Sudah Termasuk Dalam Paket
                         </h2>
                       </div>
                       <span
-                        className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${
-                          isDark
-                            ? 'border-emerald-500/30 bg-emerald-950/40 text-emerald-400'
-                            : 'border-emerald-200 bg-emerald-50 text-emerald-700'
-                        }`}
+                        className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${isDark
+                          ? 'border-emerald-500/30 bg-emerald-950/40 text-emerald-400'
+                          : 'border-emerald-200 bg-emerald-50 text-emerald-700'
+                          }`}
                       >
                         Harga Dasar
                       </span>
@@ -828,11 +1003,10 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                       {product.package_items.map((item, idx) => (
                         <div
                           key={idx}
-                          className={`flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs sm:text-sm font-medium border transition-colors ${
-                            isDark
-                              ? 'border-[#60241E]/50 bg-[#2D120F]/60 text-amber-100/90'
-                              : 'border-[#E6DACD]/70 bg-white text-[#4A261F]'
-                          }`}
+                          className={`flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs sm:text-sm font-medium border transition-colors ${isDark
+                            ? 'border-[#60241E]/50 bg-[#2D120F]/60 text-amber-100/90'
+                            : 'border-[#E6DACD]/70 bg-white text-[#4A261F]'
+                            }`}
                         >
                           <CheckCircle2 size={15} className="text-emerald-500 shrink-0" />
                           <span className="leading-snug">{item}</span>
@@ -1113,7 +1287,7 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                 }`}
             >
               <h3
-                className={`text-sm font-dhaksinarga tracking-wide font-black uppercase border-b pb-3 flex items-center justify-between ${isDark ? 'border-[#60241E] text-white' : 'border-[#E6DACD] text-[#2B120E]'
+                className={`text-sm font-poppins tracking-wide font-black uppercase border-b pb-3 flex items-center justify-between ${isDark ? 'border-[#60241E] text-white' : 'border-[#E6DACD] text-[#2B120E]'
                   }`}
               >
                 <span>Ringkasan Pesanan</span>
@@ -1654,6 +1828,150 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* ============================================================
+          PHOTO LIGHTBOX / MODAL PREVIEW
+      ============================================================ */}
+      {isImageLightboxOpen && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label={`Foto ${product.name}`}
+          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-md"
+          onClick={closeImageLightbox}
+        >
+          {/* Close button at top right of viewport */}
+          <button
+            type="button"
+            onClick={closeImageLightbox}
+            aria-label="Tutup preview foto"
+            className="absolute top-4 right-4 z-30 flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-black/60 text-white/90 hover:text-white hover:bg-black/90 border border-white/20 transition active:scale-95 cursor-pointer shadow-xl backdrop-blur-sm"
+          >
+            <X size={22} />
+          </button>
+
+          {/* Modal Content Container */}
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className={`relative max-w-4xl w-full max-h-[92vh] flex flex-col items-center rounded-3xl overflow-hidden border shadow-2xl transition-all ${isDark
+              ? 'border-[#60241E] bg-[#240E0C]'
+              : 'border-[#E6DACD] bg-[#FAF5EE]'
+              }`}
+          >
+            {/* Image Canvas with theme-harmonized background & Zoom Controls */}
+            <div
+              onWheel={handleWheel}
+              onMouseDown={handleMouseDown}
+              onMouseMove={handleMouseMove}
+              onMouseUp={handleMouseUp}
+              onMouseLeave={handleMouseUp}
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+              onDoubleClick={handleDoubleClick}
+              className={`relative w-full flex items-center justify-center p-4 sm:p-8 min-h-[280px] max-h-[75vh] overflow-hidden select-none ${isDark
+                ? 'bg-gradient-to-br from-[#2D120F] via-[#240E0C] to-[#1C0B09]'
+                : 'bg-gradient-to-br from-[#FAF5EE] via-[#F4ECE1] to-[#EAE0D3]'
+                } ${zoomScale > 1
+                  ? isDragging
+                    ? 'cursor-grabbing'
+                    : 'cursor-grab'
+                  : 'cursor-zoom-in'
+                }`}
+            >
+              {/* Floating Zoom Controls Bar */}
+              <div
+                onClick={(e) => e.stopPropagation()}
+                className="absolute top-4 left-4 z-20 flex items-center gap-1 sm:gap-1.5 rounded-full px-2.5 py-1.5 backdrop-blur-md shadow-lg border border-white/20 bg-black/65 text-white"
+              >
+                <button
+                  type="button"
+                  onClick={handleZoomOut}
+                  disabled={zoomScale <= 1}
+                  title="Perkecil (-)"
+                  aria-label="Perkecil"
+                  className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full text-white/80 hover:text-white hover:bg-white/20 transition disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                >
+                  <ZoomOut size={16} />
+                </button>
+
+                <span className="min-w-[42px] text-center text-xs font-mono font-bold text-amber-300 select-none">
+                  {Math.round(zoomScale * 100)}%
+                </span>
+
+                <button
+                  type="button"
+                  onClick={handleZoomIn}
+                  disabled={zoomScale >= 3}
+                  title="Perbesar (+)"
+                  aria-label="Perbesar"
+                  className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full text-white/80 hover:text-white hover:bg-white/20 transition disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                >
+                  <ZoomIn size={16} />
+                </button>
+
+                {zoomScale > 1 && (
+                  <button
+                    type="button"
+                    onClick={handleResetZoom}
+                    title="Reset Zoom (0)"
+                    aria-label="Reset Zoom"
+                    className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full text-white/80 hover:text-white hover:bg-white/20 transition cursor-pointer border-l border-white/20 pl-1 ml-0.5"
+                  >
+                    <RotateCcw size={14} />
+                  </button>
+                )}
+              </div>
+
+              {/* Navigation hint when zoomed */}
+              {zoomScale > 1 && (
+                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 pointer-events-none rounded-full bg-black/60 px-3 py-1 text-[11px] font-medium text-amber-200/90 shadow backdrop-blur-sm whitespace-nowrap">
+                  Geser untuk navigasi • Klik 2x untuk reset
+                </div>
+              )}
+
+              <img
+                src={displayImage}
+                alt={product.name}
+                draggable={false}
+                style={{
+                  transform: `translate(${panPosition.x}px, ${panPosition.y}px) scale(${zoomScale})`,
+                  transition: isDragging ? 'none' : 'transform 0.2s cubic-bezier(0.2, 0, 0, 1)',
+                }}
+                className="max-h-[68vh] max-w-full w-auto h-auto object-contain drop-shadow-2xl select-none pointer-events-none"
+              />
+            </div>
+
+            {/* Bottom Info Bar */}
+            <div
+              className={`w-full px-5 py-3.5 sm:px-6 sm:py-4 border-t flex flex-wrap items-center justify-between gap-3 ${isDark
+                ? 'border-[#60241E] bg-[#1C0B09] text-white'
+                : 'border-[#E6DACD] bg-white text-[#2B120E]'
+                }`}
+            >
+              <div className="min-w-0">
+                <h3 className="font-poppins font-bold text-sm sm:text-base truncate">
+                  {product.name}
+                </h3>
+                <p className={`text-xs mt-0.5 ${isDark ? 'text-amber-200/70' : 'text-[#8C6B62]'}`}>
+                  {product.category?.name ? `${product.category.name} • ` : ''}Min. {minOrder} Porsi
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={closeImageLightbox}
+                className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer ${isDark
+                  ? 'bg-[#2D120F] text-amber-200 border border-[#60241E] hover:bg-[#3B1814]'
+                  : 'bg-[#FAF5EE] text-[#5C3831] border border-[#E6DACD] hover:bg-[#F3EBE0]'
+                  }`}
+              >
+                <span>Tutup</span>
+              </button>
+            </div>
           </div>
         </div>
       )}
