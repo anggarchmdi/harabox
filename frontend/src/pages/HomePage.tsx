@@ -7,12 +7,13 @@ import {
   Award,
   CalendarDays,
   ChevronDown,
+  Crown,
   Flame,
   MapPin,
   MessageCircle,
   ShieldCheck,
   ShoppingBag,
-  Star,
+  Sparkles,
   Truck,
   Users,
   ShoppingBasket,
@@ -57,6 +58,7 @@ interface CuratedProduct {
   image: string
   slug: string
   minOrder: number
+  isPremium?: boolean
 }
 
 const curatedFeaturedProducts: CuratedProduct[] = [
@@ -101,6 +103,7 @@ const curatedFeaturedProducts: CuratedProduct[] = [
     image: RamesBaladoImg,
     slug: 'nasi-box-rames-balado',
     minOrder: 10,
+    isPremium: true,
   },
   {
     name: 'Nasi Kuning Paha Krispi Spesial',
@@ -216,7 +219,7 @@ const trustPillars = [
   {
     icon: Award,
     title: 'Harga Bersahabat',
-    description: 'Pilihan menu mulai Rp 16.000 dengan porsi pas dan mengenyangkan.',
+    description: 'Berbagai macam menu tersedia dari harga 20.000.',
   },
 ]
 
@@ -807,6 +810,17 @@ export default function HomePage() {
                       ? 'Best Seller'
                       : 'Pilihan Menu'
                 const minOrder = isApiItem ? (item as Product).minimum_order : (item as CuratedProduct).minOrder
+                const isPremium = isApiItem
+                  ? Boolean(
+                      (item as Product).category?.name?.toLowerCase().includes('premium') ||
+                      (item as Product).category?.slug?.toLowerCase().includes('premium') ||
+                      item.name?.toLowerCase().includes('premium')
+                    )
+                  : Boolean(
+                      (item as CuratedProduct).isPremium ||
+                      (item as CuratedProduct).category?.toLowerCase().includes('premium') ||
+                      item.name?.toLowerCase().includes('premium')
+                    )
 
                 return (
                   <article
@@ -856,17 +870,24 @@ export default function HomePage() {
                         Min. {minOrder} Box
                       </div>
 
-                      {/* Rating Pill */}
-                      <div
-                        className={`absolute top-3.5 right-3.5 flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-black shadow-md backdrop-blur-md ${
-                          isDark
-                            ? 'bg-[#1C0B09]/90 border border-[#60241E] text-[#F59E0B]'
-                            : 'bg-white/95 border border-[#E6DACD] text-[#8C3A00]'
-                        }`}
-                      >
-                        <Star size={12} className="fill-[#F59E0B] text-[#F59E0B]" />
-                        <span>4.9</span>
-                      </div>
+                      {/* Category Badge (Premium Gold / Reguler Silver) */}
+                      {isPremium ? (
+                        <div className="absolute right-3.5 top-3.5 flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#F59E0B] via-amber-400 to-[#E77B49] text-[#1C0B09] px-3 py-1 text-[10px] font-black uppercase tracking-wider backdrop-blur-md shadow-md shadow-amber-500/25 border border-yellow-200/60 transition-transform duration-300 group-hover:scale-105">
+                          <Crown size={12} className="fill-[#1C0B09]" />
+                          <span>Premium</span>
+                        </div>
+                      ) : (
+                        <div
+                          className={`absolute right-3.5 top-3.5 flex items-center gap-1.5 rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-wider backdrop-blur-md shadow-md transition-transform duration-300 group-hover:scale-105 ${
+                            isDark
+                              ? 'bg-gradient-to-r from-slate-700/90 via-zinc-600/90 to-slate-700/90 border border-slate-400/50 text-slate-100 shadow-slate-900/50'
+                              : 'bg-gradient-to-r from-slate-100 via-white to-zinc-200 border border-slate-300 text-slate-700 shadow-slate-400/20'
+                          }`}
+                        >
+                          <Sparkles size={12} className={isDark ? 'fill-slate-300 text-slate-300' : 'fill-slate-400 text-slate-500'} />
+                          <span>Reguler</span>
+                        </div>
+                      )}
                     </div>
 
                     {/* Body Content */}

@@ -7,6 +7,7 @@ import {
   Check,
   CheckCircle2,
   Clock,
+  Crown,
   MapPin,
   MessageCircle,
   Minus,
@@ -14,6 +15,7 @@ import {
   ShieldCheck,
   ShoppingBag,
   ShoppingCart,
+  Sparkles,
   User,
   UtensilsCrossed,
   X,
@@ -776,6 +778,11 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
   }
 
   const displayImage = getProductDisplayImage(product)
+  const isPremium = Boolean(
+    product.category?.name?.toLowerCase().includes('premium') ||
+    product.category?.slug?.toLowerCase().includes('premium') ||
+    product.name?.toLowerCase().includes('premium')
+  )
 
   return (
     <main
@@ -804,17 +811,6 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
             <ArrowLeft size={15} />
             <span>Kembali ke Semua Menu</span>
           </Link>
-
-          {product.category && (
-            <span
-              className={`inline-flex items-center rounded-full px-3.5 py-1 text-xs font-bold border ${isDark
-                ? 'bg-[#2D120F] text-amber-300 border-[#60241E]'
-                : 'bg-amber-100 text-amber-900 border-amber-300'
-                }`}
-            >
-              {product.category.name}
-            </span>
-          )}
         </div>
 
         {/* 2-COLUMN MAIN GRID (Matches CartPage layout) */}
@@ -877,17 +873,24 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                   </div>
                 )}
 
-                {/* Satisfaction Tag */}
-                <div
-                  className={`absolute bottom-3.5 left-3.5 sm:bottom-4 sm:left-4 flex items-center gap-1.5 sm:gap-2 rounded-full px-3 py-1 text-xs font-bold shadow-md backdrop-blur-md ${isDark
-                    ? 'bg-[#1C0B09]/85 border border-[#60241E]/70 text-white'
-                    : 'bg-white/95 border border-[#E6DACD] text-[#2B120E]'
+                {/* Category Badge (Premium Gold / Reguler Silver) */}
+                {isPremium ? (
+                  <div className="absolute bottom-3.5 left-3.5 sm:bottom-4 sm:left-4 flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#F59E0B] via-amber-400 to-[#E77B49] text-[#1C0B09] px-3.5 py-1.5 text-xs font-black uppercase tracking-wider backdrop-blur-md shadow-md shadow-amber-500/25 border border-yellow-200/60 transition-transform duration-300 group-hover:scale-105">
+                    <Crown size={13} className="fill-[#1C0B09]" />
+                    <span>Premium</span>
+                  </div>
+                ) : (
+                  <div
+                    className={`absolute bottom-3.5 left-3.5 sm:bottom-4 sm:left-4 flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-black uppercase tracking-wider backdrop-blur-md shadow-md transition-transform duration-300 group-hover:scale-105 ${
+                      isDark
+                        ? 'bg-gradient-to-r from-slate-700/90 via-zinc-600/90 to-slate-700/90 border border-slate-400/50 text-slate-100 shadow-slate-900/50'
+                        : 'bg-gradient-to-r from-slate-100 via-white to-zinc-200 border border-slate-300 text-slate-700 shadow-slate-400/20'
                     }`}
-                >
-                  <span className="text-[#F59E0B]">★ 4.9</span>
-                  <span className="hidden xs:inline">Favorit Katering Pawon Hara</span>
-                  <span className="xs:hidden">Favorit Hara</span>
-                </div>
+                  >
+                    <Sparkles size={13} className={isDark ? 'fill-slate-300 text-slate-300' : 'fill-slate-400 text-slate-500'} />
+                    <span>Reguler</span>
+                  </div>
+                )}
 
                 {/* Zoom / Expand Hint Badge */}
                 <div

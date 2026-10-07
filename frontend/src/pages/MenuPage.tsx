@@ -5,16 +5,14 @@ import AOS from 'aos'
 import {
   ArrowRight,
   ArrowUpDown,
-//   CheckCircle2,
   ChevronDown,
   Clock,
-  Flame,
+  Crown,
   MessageCircle,
   Search,
   ShieldCheck,
   ShoppingBag,
-//   Sparkles,
-  Star,
+  Sparkles,
   X,
 } from 'lucide-react'
 
@@ -347,7 +345,7 @@ export default function MenuPage() {
                 isDark ? 'text-amber-100/90' : 'text-[#5C3831]'
               }`}
             >
-              <div
+              {/* <div
                 className={`flex items-center gap-1.5 rounded-xl sm:rounded-2xl border px-2.5 sm:px-4 py-1.5 sm:py-2 transition-all duration-300 hover:-translate-y-0.5 cursor-default ${
                   isDark
                     ? 'border-[#60241E]/80 bg-[#2D120F] shadow-lg hover:border-[#F59E0B]/40'
@@ -356,7 +354,7 @@ export default function MenuPage() {
               >
                 <Star size={13} className="fill-[#F59E0B] text-[#F59E0B] sm:h-3.5 sm:w-3.5" />
                 <span>4.9 / 5 Rating</span>
-              </div>
+              </div> */}
               <div
                 className={`flex items-center gap-1.5 rounded-xl sm:rounded-2xl border px-2.5 sm:px-4 py-1.5 sm:py-2 transition-all duration-300 hover:-translate-y-0.5 cursor-default ${
                   isDark
@@ -663,7 +661,11 @@ export default function MenuPage() {
               const displayImage = getProductDisplayImage(item)
               const unitPrice = Number(item.price)
               const minOrder = Math.max(10, item.minimum_order || 10)
-              const isFirstFeatured = index === 0 && !hasFilter
+              const isPremium = Boolean(
+                item.category?.name?.toLowerCase().includes('premium') ||
+                item.category?.slug?.toLowerCase().includes('premium') ||
+                item.name?.toLowerCase().includes('premium')
+              )
               const cardDelay = (index % 3) * 100
 
               return (
@@ -712,24 +714,26 @@ export default function MenuPage() {
                       <span>Min. {minOrder} Porsi</span>
                     </div>
 
-                    {/* Top Right: Best Seller Spotlight on item 1 */}
-                    {isFirstFeatured ? (
-                      <div className="absolute right-3.5 top-3.5 flex items-center gap-1 rounded-full bg-gradient-to-r from-[#F59E0B] via-amber-400 to-[#E77B49] text-[#1C0B09] px-3 py-1 text-[10px] font-black uppercase tracking-wider backdrop-blur-md shadow-md transition-transform duration-300 group-hover:scale-105">
-                        <Flame size={12} className="fill-[#1C0B09]" />
-                        <span>Best Seller</span>
+                    {/* Top Right: Category Badge (Premium Gold / Reguler Silver) */}
+                    {isPremium ? (
+                      <div className="absolute right-3.5 top-3.5 flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#F59E0B] via-amber-400 to-[#E77B49] text-[#1C0B09] px-3 py-1 text-[10px] font-black uppercase tracking-wider backdrop-blur-md shadow-md shadow-amber-500/25 border border-yellow-200/60 transition-transform duration-300 group-hover:scale-105">
+                        <Crown size={12} className="fill-[#1C0B09]" />
+                        <span>Premium</span>
                       </div>
                     ) : (
                       <div
-                        className={`absolute right-3.5 top-3.5 flex items-center gap-1 rounded-full backdrop-blur-md px-2.5 py-1 text-[11px] font-black shadow-md transition-transform duration-300 group-hover:scale-105 ${
+                        className={`absolute right-3.5 top-3.5 flex items-center gap-1.5 rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-wider backdrop-blur-md shadow-md transition-transform duration-300 group-hover:scale-105 ${
                           isDark
-                            ? 'bg-[#1C0B09]/90 border border-[#60241E] text-[#F59E0B]'
-                            : 'bg-white/95 border border-[#E6DACD] text-[#8C3A00]'
+                            ? 'bg-gradient-to-r from-slate-700/90 via-zinc-600/90 to-slate-700/90 border border-slate-400/50 text-slate-100 shadow-slate-900/50'
+                            : 'bg-gradient-to-r from-slate-100 via-white to-zinc-200 border border-slate-300 text-slate-700 shadow-slate-400/20'
                         }`}
                       >
-                        <Star size={12} className="fill-[#F59E0B]" />
-                        <span>4.9</span>
+                        <Sparkles size={12} className={isDark ? 'fill-slate-300 text-slate-300' : 'fill-slate-400 text-slate-500'} />
+                        <span>Reguler</span>
                       </div>
                     )}
+
+
 
                     {/* Bottom overlay preview: kelipatan 10 */}
                     <div className="absolute bottom-3 left-3.5 right-3.5 flex items-center justify-between text-[11px] font-semibold drop-shadow">
@@ -743,66 +747,52 @@ export default function MenuPage() {
                         <span className="h-1.5 w-1.5 rounded-full bg-[#F59E0B] animate-pulse" />
                         Kelipatan 10 Porsi
                       </span>
-                      <span
-                        className={`text-[10px] font-bold backdrop-blur-md px-2 py-0.5 rounded-full border ${
-                          isDark
-                            ? 'bg-[#1C0B09]/80 border-[#60241E]/70 text-amber-300'
-                            : 'bg-white/95 border-[#E6DACD] text-[#8C3A00]'
-                        }`}
-                      >
-                        Siap Santap
-                      </span>
                     </div>
                   </div>
 
                   {/* Card Body */}
                   <div className="flex flex-1 flex-col p-6 sm:p-7">
-                    {/* Category Eyebrow & Halal Badge */}
-                    <div className="flex items-center justify-between gap-2 mb-2.5">
-                      {item.category ? (
-                        <span
-                          className={`inline-flex items-center rounded-lg px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider ${
-                            isDark
-                              ? 'bg-[#3B1814] border border-[#60241E] text-amber-300'
-                              : 'bg-[#FAF0E4] border border-[#E6DACD] text-[#8C4320]'
-                          }`}
-                        >
-                          {item.category.name}
-                        </span>
-                      ) : (
-                        <span
-                          className={`inline-flex items-center rounded-lg px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
-                            isDark
-                              ? 'bg-[#3B1814] border border-[#60241E] text-amber-300'
-                              : 'bg-[#FAF0E4] border border-[#E6DACD] text-[#8C4320]'
-                          }`}
-                        >
-                          Paket Nasi Box
-                        </span>
-                      )}
-
-                      <span
-                        className={`flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-md ${
-                          isDark
-                            ? 'text-emerald-400 bg-[#1C0B09] border border-[#60241E]'
-                            : 'text-emerald-700 bg-emerald-50 border border-emerald-200'
+                    {/* Title & Badges Grid (50% - 50%) */}
+                    <div className="flex w-full justify-between gap-3  items-start w-full mb-2.5">
+                        <div className="w-[65%]">
+                      {/* Left: Product Title (atas-bawah) */}
+                      <h3
+                        className={`text-lg sm:text-xl font-poppins font-bold tracking-wide leading-snug transition-colors line-clamp-2 ${
+                          isDark ? 'text-white group-hover:text-[#F59E0B]' : 'text-[#2B120E] group-hover:text-[#D97706]'
                         }`}
                       >
-                        <ShieldCheck size={11} className={isDark ? 'text-emerald-400' : 'text-emerald-600'} />
-                        100% Halal
-                      </span>
-                    </div>
+                        <Link to={`/menu/${item.slug}`}>
+                          {item.name}
+                        </Link>
+                      </h3>
+                        </div>
+                        <div className="w-[35%]">
+                      {/* Right: 2 Badges Rata Kanan (Siap Santap di atas 100% Halal) */}
+                      <div className="flex flex-col items-end gap-1.5 w-full">
+                        <span
+                          className={`inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-md ${
+                            isDark
+                              ? 'text-amber-300 bg-[#1C0B09] border border-[#60241E]'
+                              : 'text-[#8C4320] bg-[#FAF0E4] border border-[#E6DACD]'
+                          }`}
+                        >
+                          <Clock size={11} className={isDark ? 'text-amber-300' : 'text-[#8C4320]'} />
+                          Siap Santap
+                        </span>
 
-                    {/* Product Name in Dhaksinarga */}
-                    <h3
-                      className={`text-lg sm:text-xl font-poppins font-bold tracking-wide leading-snug transition-colors line-clamp-1 ${
-                        isDark ? 'text-white group-hover:text-[#F59E0B]' : 'text-[#2B120E] group-hover:text-[#D97706]'
-                      }`}
-                    >
-                      <Link to={`/menu/${item.slug}`}>
-                        {item.name}
-                      </Link>
-                    </h3>
+                        <span
+                          className={`inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-md ${
+                            isDark
+                              ? 'text-emerald-400 bg-[#1C0B09] border border-[#60241E]'
+                              : 'text-emerald-700 bg-emerald-50 border border-emerald-200'
+                          }`}
+                        >
+                          <ShieldCheck size={11} className={isDark ? 'text-emerald-400' : 'text-emerald-600'} />
+                          100% Halal
+                        </span>
+                      </div>
+                        </div>
+                    </div>
 
                     {/* Description */}
                     <p
