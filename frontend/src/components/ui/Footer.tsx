@@ -40,7 +40,7 @@ export default function Footer() {
               </div>
             </Link>
 
-            <p className={`max-w-md text-sm leading-relaxed ${isDark ? 'text-stone-300' : 'text-[#5C3831]'}`}>
+            <p className={`max-w-md text-sm leading-relaxed ${isDark ? 'text-white' : 'text-[#5C3831]'}`}>
                 Sajian menu khas nusantara untuk semua acara. Pawon Hara Dapurnya Rasa Nusantara
             </p>
           </div>
@@ -69,7 +69,7 @@ export default function Footer() {
                     to={item.to}
                     className={`text-sm transition hover:translate-x-1 inline-block duration-200 ${
                       isDark
-                        ? 'text-stone-300 hover:text-[#F59E0B]'
+                        ? 'text-white hover:text-[#F59E0B]'
                         : 'text-[#5C3831] hover:text-[#B45309]'
                     }`}
                   >
@@ -90,7 +90,7 @@ export default function Footer() {
               Hubungi Pawon Hara
             </h3>
 
-            <div className={`mt-5 space-y-3.5 text-sm ${isDark ? 'text-stone-300' : 'text-[#5C3831]'}`}>
+            <div className={`mt-5 space-y-3.5 text-sm ${isDark ? 'text-white' : 'text-[#5C3831]'}`}>
               <div className="flex items-start gap-3">
                 <MapPin size={17} className="text-[#E77B49] shrink-0 mt-0.5" />
                 <span>Yogyakarta & Sekitarnya (Melayani Pengiriman ke Seluruh DIY)</span>
@@ -124,20 +124,20 @@ export default function Footer() {
         {/* Bottom */}
         <div
           className={`flex flex-col gap-4 border-t py-7 sm:flex-row sm:items-center sm:justify-between text-xs ${
-            isDark ? 'border-[#60241E]/60 text-stone-400' : 'border-[#D9C7B6] text-[#7A5B52]'
+            isDark ? 'border-[#60241E]/60 text-white' : 'border-[#D9C7B6] text-[#3b1205]'
           }`}
         >
           <p>© {new Date().getFullYear()} Pawon Hara. Seluruh hak cipta dilindungi.</p>
 
           <div className="flex items-center gap-6">
-            <span className={isDark ? 'text-stone-500' : 'text-[#9C8279]'}>
-              Catering & Bento Box Yogyakarta
+            <span className={isDark ? 'text-white' : 'text-[#3b1205]'}>
+              Catering & Nasi Box Yogyakarta
             </span>
             <a
               href="https://wa.me/6281122225520"
               target="_blank"
               rel="noopener noreferrer"
-              className={`transition ${isDark ? 'text-stone-400 hover:text-[#F59E0B]' : 'text-[#7A5B52] hover:text-[#B45309]'}`}
+              className={`transition ${isDark ? 'text-white hover:text-[#F59E0B]' : 'text-[#3b1205] hover:text-[#B45309]'}`}
             >
               WhatsApp
             </a>
