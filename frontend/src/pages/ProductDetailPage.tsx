@@ -28,6 +28,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'sonner'
 import PageLoader from '../components/ui/PageLoader'
 import { TimeInput24 } from '../components/ui/TimeInput24'
+import ProductRecommendationSlider from '../components/product/ProductRecommendationSlider'
 import { productService } from '../services/products.service'
 import { ordersService } from '../services/orders.service'
 import { settingsService } from '../services/settings.service'
@@ -1455,6 +1456,11 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
           </div>
         </div>
       </section>
+
+      {/* =====================================================
+          RECOMMENDED / OTHER PRODUCTS SLIDER SECTION
+      ====================================================== */}
+      <ProductRecommendationSlider currentProduct={product} />
 
       {/* =====================================================
           ORDER CONFIRMATION MODAL (FORM PEMESANAN CATERING)
