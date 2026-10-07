@@ -26,23 +26,17 @@ interface PackageAddonItem {
   price: string
 }
 
+
 const NASI_PRESETS = [
   { label: '+ Nasi Putih (+Rp 0)', name: 'Nasi Putih', price: '0' },
-  { label: '+ Nasi Kuning (+Rp 2.000)', name: 'Nasi Kuning', price: '2000' },
-  { label: '+ Nasi Uduk (+Rp 2.000)', name: 'Nasi Uduk', price: '2000' },
-  { label: '+ Nasi Liwet (+Rp 3.000)', name: 'Nasi Liwet', price: '3000' },
-  { label: '+ Nasi Daun Jeruk (+Rp 3.000)', name: 'Nasi Daun Jeruk', price: '3000' },
-  { label: '+ Nasi Merah (+Rp 3.000)', name: 'Nasi Merah', price: '3000' },
-]
+  { label: '+ Nasi Kuning (+Rp 0)', name: 'Nasi Kuning', price: '0' },
+  { label: '+ Nasi Daun Jeruk (+Rp 0)', name: 'Nasi Daun Jeruk', price: '0' },]
 
 const SAYUR_PRESETS = [
   { label: '+ Sayur Capcay (+Rp 0)', name: 'Sayur Capcay', price: '0' },
-  { label: '+ Sayur Asem (+Rp 0)', name: 'Sayur Asem', price: '0' },
-  { label: '+ Cah Kangkung (+Rp 0)', name: 'Cah Kangkung', price: '0' },
-  { label: '+ Tumis Buncis Jagung (+Rp 0)', name: 'Tumis Buncis Jagung', price: '0' },
-  { label: '+ Urap Sayur (+Rp 2.000)', name: 'Urap Sayur Segar', price: '2000' },
-  { label: '+ Orek Tempe (+Rp 0)', name: 'Orek Tempe Manis Gurih', price: '0' },
-  { label: '+ Lalapan Segar (+Rp 0)', name: 'Lalapan Segar', price: '0' },
+  { label: '+ Sayur Janggel (+Rp 0)', name: 'Sayur Janggel', price: '0' },
+  { label: '+ Buncis Telur (+Rp 0)', name: 'Buncis Telur', price: '0' },
+  { label: '+ Kacang Panjang + Tempe (+Rp 0)', name: 'Kacang Panjang + Tempe', price: '0' },
 ]
 
 const ADDON_PRESETS = [
@@ -56,16 +50,14 @@ const ADDON_PRESETS = [
 ]
 
 const PACKAGE_ITEM_PRESETS = [
-  'Nasi Putih Pulen',
-  'Nasi Kuning Gurih',
-  'Ayam Bakar Madu',
-  'Ayam Goreng Lengkuas',
+  'Nasi',
+  'Buah',
+  'Air Minum',
   'Sambal Bawang Khas Pawon Hara',
   'Sambal Terasi Segar',
   'Lalapan Segar (Timun & Kemangi)',
   'Tahu & Tempe Bacem',
   'Kerupuk Udang Renyah',
-  'Air Mineral Cup',
   'Sendok, Garpu & Tisu Steril',
 ]
 
@@ -100,13 +92,13 @@ export default function CreateProduct() {
   // 1. Custom Nasi
   const [customNasi, setCustomNasi] = useState<PackageAddonItem[]>([
     { name: 'Nasi Putih', price: '0' },
-    { name: 'Nasi Kuning', price: '2000' },
+    { name: 'Nasi Kuning', price: '0' },
   ])
 
   // 2. Custom Sayur
   const [customSayur, setCustomSayur] = useState<PackageAddonItem[]>([
     { name: 'Sayur Capcay', price: '0' },
-    { name: 'Tumis Buncis Jagung', price: '0' },
+    { name: 'Sayur Janggel', price: '0' },
   ])
 
   // 3. Add-on Tambahan Lainnya
@@ -115,8 +107,7 @@ export default function CreateProduct() {
 
   // 4. Daftar Isi Paket Bawaan (Termasuk dalam Paket)
   const [packageItems, setPackageItems] = useState<string[]>([
-    'Nasi Putih Pulen',
-    'Lauk Utama',
+    'Nasi',
     'Sambal Khas Pawon Hara',
     'Lalapan Segar',
     'Kerupuk Udang',
@@ -753,7 +744,7 @@ export default function CreateProduct() {
                         <h4 className={`text-xs sm:text-sm font-bold ${isDark ? 'text-amber-300' : 'text-amber-900'}`}>
                           1. Kolom Pilihan Nasi (Custom Nasi)
                         </h4>
-                        <span className="rounded-full px-2 py-0.5 text-[10px] font-bold bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30">
+                        <span className="rounded-full px-2 py-0.5 text-[10px] font-bold bg-amber-700 text-white dark:text-white border border-amber-500/30">
                           Wajib Pilih 1
                         </span>
                       </div>
@@ -765,7 +756,7 @@ export default function CreateProduct() {
                     <button
                       type="button"
                       onClick={() => handleAddNasiRow('', '0')}
-                      className="inline-flex items-center gap-1 text-xs font-bold text-amber-600 dark:text-amber-400 hover:underline shrink-0"
+                      className="inline-flex items-center gap-1 text-xs font-bold p-2 bg-yellow-500  text-amber-600 dark:text-white rounded-xl hover:cursor-pointer transition transform hover:scale-95 duration-300 shrink-0"
                     >
                       <Plus size={14} />
                       Tambah Pilihan Nasi
@@ -886,7 +877,7 @@ export default function CreateProduct() {
                         <h4 className={`text-xs sm:text-sm font-bold ${isDark ? 'text-emerald-300' : 'text-emerald-900'}`}>
                           2. Kolom Pilihan Sayur (Custom Sayur)
                         </h4>
-                        <span className="rounded-full px-2 py-0.5 text-[10px] font-bold bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30">
+                        <span className="rounded-full px-2 py-0.5 text-[10px] font-bold bg-emerald-700 text-white dark:text-white border border-emerald-500/30">
                           Wajib Pilih 1
                         </span>
                       </div>
@@ -898,7 +889,7 @@ export default function CreateProduct() {
                     <button
                       type="button"
                       onClick={() => handleAddSayurRow('', '0')}
-                      className="inline-flex items-center gap-1 text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:underline shrink-0"
+                      className="inline-flex items-center gap-1 text-xs p-2 bg-emerald-500  font-bold text-white  dark:text-white rounded-xl transition transform hover:scale-95 duration-300 hover:cursor-pointer shrink-0"
                     >
                       <Plus size={14} />
                       Tambah Pilihan Sayur
@@ -1037,8 +1028,8 @@ export default function CreateProduct() {
                         <button
                           type="button"
                           onClick={() => handleAddAddonRow('', '0')}
-                          className={`inline-flex items-center gap-1 text-xs font-bold ${
-                            isDark ? 'text-red-400 hover:text-red-300' : 'text-red-600 hover:text-red-700'
+                          className={`inline-flex p-2 bg-red-600 rounded-xl hover:cursor-pointer transition transform hover:scale-95 duration-300 items-center gap-1 text-xs font-bold ${
+                            isDark ? 'text-white' : 'text-white'
                           }`}
                         >
                           <Plus size={14} />
@@ -1054,8 +1045,8 @@ export default function CreateProduct() {
                             const next = !prev
                             if (next && packageAddons.length === 0) {
                               setPackageAddons([
-                                { name: 'Telur Balado', price: '4000' },
-                                { name: 'Sambal Bawang Extra', price: '1500' },
+                                { name: 'Buah', price: '4000' },
+                                { name: 'Air Minum', price: '3000' },
                               ])
                             }
                             return next
