@@ -411,7 +411,7 @@ Instagram: @pawonhara
                 <div style="font-weight: bold; color: #0f172a; margin-bottom: 3px;">Rekening Resmi Pembayaran:</div>
                 <div style="color: #334155; line-height: 1.4;">
                   <div>Bank: <strong>Bank BSI</strong></div>
-                  <div>No. Rekening: <strong>7881113346	</strong></div>
+                  <div>No. Rekening: <strong>7881113346</strong></div>
                   <div>Atas Nama: <strong>CV AYAM GEPREK PARANGTRITIS</strong></div>
                 </div>
                 <div style="margin-top: 4px; color: #64748b; font-size: 9px; font-style: italic;">

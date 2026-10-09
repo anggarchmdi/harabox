@@ -275,4 +275,12 @@ export const ordersService = {
     })
     return response.data.data
   },
+
+  async getGoogleDriveAuthUrl(): Promise<string> {
+    const response = await api.get<{
+      success: boolean
+      data: { url: string }
+    }>('/google-drive/auth-url')
+    return response.data.data.url
+  },
 }

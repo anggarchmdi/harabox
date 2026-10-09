@@ -40,7 +40,12 @@ class GoogleDriveService
         if (! empty($clientId) && ! empty($clientSecret) && ! empty($refreshToken)) {
             $client->setClientId($clientId);
             $client->setClientSecret($clientSecret);
-            $client->refreshToken($refreshToken);
+            $tokenResult = $client->fetchAccessTokenWithRefreshToken($refreshToken);
+
+            if (isset($tokenResult['error'])) {
+                Log::error('Google Drive token refresh failed: '.($tokenResult['error_description'] ?? $tokenResult['error']));
+                throw new RuntimeException('Google Drive token telah kedaluwarsa atau tidak valid: '.($tokenResult['error_description'] ?? $tokenResult['error']));
+            }
 
             $this->driveService = new Drive($client);
 

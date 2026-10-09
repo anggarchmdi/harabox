@@ -8,6 +8,7 @@ use App\Services\GoogleDriveService;
 use Exception;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\Sanctum;
 use Mockery\MockInterface;
 use Tests\TestCase;
@@ -188,8 +189,9 @@ class OrderPaymentProofTest extends TestCase
         ]);
     }
 
-    public function test_google_drive_failure_does_not_save_proof_in_database(): void
+    public function test_google_drive_failure_falls_back_to_local_storage_successfully(): void
     {
+        Storage::fake('public');
         Sanctum::actingAs($this->admin);
 
         $this->mock(GoogleDriveService::class, function (MockInterface $mock) {
@@ -203,13 +205,37 @@ class OrderPaymentProofTest extends TestCase
             'file' => UploadedFile::fake()->image('bukti.jpg'),
         ]);
 
-        $response->assertStatus(500)
+        $response->assertStatus(201)
             ->assertJson([
-                'success' => false,
-                'message' => 'Google Drive API Connection Timeout',
+                'success' => true,
             ]);
 
-        $this->assertEquals(0, $this->order->paymentProofs()->count());
+        $this->assertEquals(1, $this->order->paymentProofs()->count());
+        $proof = $this->order->paymentProofs()->first();
+        $this->assertStringStartsWith('local:', $proof->drive_file_id);
+    }
+
+    public function test_admin_can_delete_locally_stored_proof(): void
+    {
+        Storage::fake('public');
+        Sanctum::actingAs($this->admin);
+
+        $dummyPath = 'payment-proofs/test/dp/2026-10-09/bukti.webp';
+        Storage::disk('public')->put($dummyPath, 'fake-content');
+
+        $proof = $this->order->paymentProofs()->create([
+            'payment_type' => 'dp',
+            'drive_file_id' => 'local:'.$dummyPath,
+            'drive_file_name' => 'bukti.webp',
+            'drive_file_url' => '/storage/'.$dummyPath,
+            'uploaded_at' => now(),
+        ]);
+
+        $response = $this->deleteJson("/api/v1/admin/orders/{$this->order->id}/payment-proofs/{$proof->id}");
+        $response->assertStatus(200);
+
+        $this->assertDatabaseMissing('order_payment_proofs', ['id' => $proof->id]);
+        Storage::disk('public')->assertMissing($dummyPath);
     }
 
     public function test_admin_can_view_proofs_and_delete_proof(): void

@@ -13,6 +13,7 @@ import {
 import { toast } from 'sonner'
 import type { Order, OrderPaymentProof, PaymentProofType } from '../../../types/orders'
 import { ordersService } from '../../../services/orders.service'
+import { useAuthStore } from '../../../stores/auth.store'
 
 interface PaymentProofSectionProps {
   order: Order
@@ -45,7 +46,26 @@ export default function PaymentProofSection({
   const [filePreview, setFilePreview] = useState<string | null>(null)
   const [uploading, setUploading] = useState(false)
   const [deletingId, setDeletingId] = useState<number | null>(null)
+  const [connectingDrive, setConnectingDrive] = useState(false)
   const fileInputRef = useRef<HTMLInputElement | null>(null)
+
+  const user = useAuthStore((state) => state.user)
+  const isSuperAdmin = user?.role === 'super_admin'
+
+  const handleConnectDrive = async () => {
+    try {
+      setConnectingDrive(true)
+      const url = await ordersService.getGoogleDriveAuthUrl()
+      if (url) {
+        window.open(url, '_blank')
+        toast.info('Halaman otorisasi Google Drive dibuka di tab baru. Setelah diizinkan, Refresh token akan diperbarui otomatis.')
+      }
+    } catch {
+      toast.error('Gagal mengambil link otorisasi Google Drive. Pastikan kredensial .env telah diatur.')
+    } finally {
+      setConnectingDrive(false)
+    }
+  }
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -90,7 +110,11 @@ export default function PaymentProofSection({
 
     try {
       const newProof = await ordersService.uploadPaymentProof(order.id, formData)
-      toast.success('Bukti transfer berhasil diupload ke Google Drive')
+      if (newProof.drive_file_id?.startsWith('local:')) {
+        toast.success('Bukti transfer disimpan di server lokal (Google Drive offline)')
+      } else {
+        toast.success('Bukti transfer berhasil diupload ke Google Drive')
+      }
 
       const updated = [newProof, ...proofs.filter((p) => p.id !== newProof.id)]
       setProofs(updated)
@@ -169,18 +193,37 @@ export default function PaymentProofSection({
           </div>
         </div>
 
-        {proofs.length > 0 && (
-          <span
-            className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-bold ${
-              isDark
-                ? 'bg-emerald-950/80 text-emerald-300 border border-emerald-800/60'
-                : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-            }`}
-          >
-            <CheckCircle2 size={11} />
-            {proofs.length} File Tersimpan
-          </span>
-        )}
+        <div className="flex items-center gap-2">
+          {isSuperAdmin && (
+            <button
+              type="button"
+              onClick={handleConnectDrive}
+              disabled={connectingDrive}
+              className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold border transition cursor-pointer ${
+                isDark
+                  ? 'border-[#60241E] bg-[#240E0C] text-amber-300 hover:bg-[#341411]'
+                  : 'border-stone-200 bg-white text-stone-700 hover:bg-stone-50'
+              }`}
+              title="Sambungkan / Perbarui Otorisasi Google Drive OAuth 2.0"
+            >
+              <RefreshCw size={10} className={connectingDrive ? 'animate-spin' : ''} />
+              <span>{connectingDrive ? 'Menghubungkan...' : 'Otorisasi Drive'}</span>
+            </button>
+          )}
+
+          {proofs.length > 0 && (
+            <span
+              className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-bold ${
+                isDark
+                  ? 'bg-emerald-950/80 text-emerald-300 border border-emerald-800/60'
+                  : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+              }`}
+            >
+              <CheckCircle2 size={11} />
+              {proofs.length} File Tersimpan
+            </span>
+          )}
+        </div>
       </div>
 
       {/* Upload Form */}
@@ -367,6 +410,18 @@ export default function PaymentProofSection({
                         >
                           {proof.drive_file_name}
                         </span>
+                        {proof.drive_file_id?.startsWith('local:') && (
+                          <span
+                            className={`text-[9px] font-bold px-1.5 py-0.5 rounded shrink-0 ${
+                              isDark
+                                ? 'bg-amber-950/70 text-amber-300 border border-amber-800/60'
+                                : 'bg-amber-100 text-amber-800 border border-amber-200'
+                            }`}
+                            title="Tersimpan di penyimpanan lokal server"
+                          >
+                            Lokal
+                          </span>
+                        )}
                       </div>
                       <span
                         className={`text-[10px] block mt-0.5 ${
