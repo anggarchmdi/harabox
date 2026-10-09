@@ -603,8 +603,8 @@ class OrderFlowTest extends TestCase
         $dpRes = $this->patchJson("/api/v1/admin/orders/{$order->id}/payment", [
             'payment_status' => 'dp',
             'paid_amount' => 100000,
-            'payment_method' => 'Transfer BCA',
-            'payment_note' => 'DP via BCA a.n. Bambang',
+            'payment_method' => 'Transfer BSI',
+            'payment_note' => 'DP via BSI a.n. Bambang',
         ]);
 
         $dpRes->assertStatus(200)
@@ -612,7 +612,7 @@ class OrderFlowTest extends TestCase
                 'success' => true,
                 'data' => [
                     'payment_status' => 'dp',
-                    'payment_method' => 'Transfer BCA',
+                    'payment_method' => 'Transfer BSI',
                 ],
             ]);
 
@@ -624,7 +624,7 @@ class OrderFlowTest extends TestCase
         // 2. Update to Paid (Lunas)
         $paidRes = $this->patchJson("/api/v1/admin/orders/{$order->id}/payment", [
             'payment_status' => 'paid',
-            'payment_method' => 'Transfer BCA',
+            'payment_method' => 'Transfer BSI',
         ]);
 
         $paidRes->assertStatus(200)

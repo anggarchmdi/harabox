@@ -166,7 +166,7 @@ export default function AdminOrders() {
   }>({
     payment_status: 'unpaid',
     paid_amount: '0',
-    payment_method: 'Transfer BCA',
+    payment_method: 'Transfer BSI',
     payment_note: '',
   })
 
@@ -175,7 +175,7 @@ export default function AdminOrders() {
       setPaymentForm({
         payment_status: selectedOrder.payment_status || 'unpaid',
         paid_amount: String(selectedOrder.paid_amount || '0'),
-        payment_method: selectedOrder.payment_method || 'Transfer BCA',
+        payment_method: selectedOrder.payment_method || 'Transfer BSI',
         payment_note: selectedOrder.payment_note || '',
       })
     }
@@ -262,7 +262,7 @@ export default function AdminOrders() {
       setPaymentForm({
         payment_status: updated.payment_status,
         paid_amount: String(updated.paid_amount || '0'),
-        payment_method: updated.payment_method || 'Transfer BCA',
+        payment_method: updated.payment_method || 'Transfer BSI',
         payment_note: updated.payment_note || '',
       })
       toast.success(
@@ -915,7 +915,7 @@ export default function AdminOrders() {
                           : 'border-stone-200 bg-stone-50/80 text-stone-900 focus:border-red-600 focus:bg-white'
                       }`}
                     >
-                      <option value="Transfer BCA">Transfer BCA</option>
+                      <option value="Transfer BSI">Transfer BSI</option>
                       <option value="Transfer Mandiri">Transfer Mandiri</option>
                       <option value="Transfer BRI">Transfer BRI</option>
                       <option value="QRIS">QRIS</option>
@@ -937,7 +937,7 @@ export default function AdminOrders() {
                     </label>
                     <input
                       type="text"
-                      placeholder="Contoh: DP 50% via BCA a.n. Ibu Siti"
+                      placeholder="Contoh: DP 50% via BSI a.n. Ibu Siti"
                       value={paymentForm.payment_note}
                       onChange={(e) => setPaymentForm((prev) => ({ ...prev, payment_note: e.target.value }))}
                       className={`w-full rounded-xl border px-3 py-2 text-xs font-medium outline-none ${

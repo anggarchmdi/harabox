@@ -242,7 +242,7 @@ const faqs = [
   {
     question: 'Bagaimana metode pembayaran dan pengantarannya?',
     answer:
-      'Pembayaran dapat dilakukan melalui transfer bank resmi (BCA Syariah). Pesanan akan langsung tepat waktu.',
+      'Pembayaran dapat dilakukan melalui transfer bank resmi (BSI). Pesanan akan langsung tepat waktu.',
   },
 ]
 

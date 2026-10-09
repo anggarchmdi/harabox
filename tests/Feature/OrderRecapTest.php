@@ -58,7 +58,7 @@ class OrderRecapTest extends TestCase
             'status' => 'completed',
             'payment_status' => 'paid',
             'paid_amount' => 270000,
-            'payment_method' => 'Transfer BCA',
+            'payment_method' => 'Transfer BSI',
         ]);
 
         OrderItem::create([

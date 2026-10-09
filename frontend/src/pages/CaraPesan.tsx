@@ -351,7 +351,7 @@ export default function CaraPesan() {
                   TOTAL TAGIHAN: <span className="text-[#F59E0B]">Rp 750.000</span>
                 </p>
                 <p className={`text-[11px] font-sans mt-2 ${isDark ? 'text-amber-200/60' : 'text-[#8C6B62]'}`}>
-                  Pembayaran: Bank BCA / Mandiri a/n Pawon Hara
+                  Pembayaran: Bank BSI / Mandiri a/n Pawon Hara
                 </p>
               </div>
             </div>

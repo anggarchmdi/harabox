@@ -73,7 +73,7 @@ export default function CreateAdminOrder() {
   const [orderStatus, setOrderStatus] = useState<OrderStatus>('confirmed')
   const [paymentStatus, setPaymentStatus] = useState<PaymentStatus>('unpaid')
   const [paidAmount, setPaidAmount] = useState<number>(0)
-  const [paymentMethod, setPaymentMethod] = useState('Transfer BCA')
+  const [paymentMethod, setPaymentMethod] = useState('Transfer BSI')
   const [paymentNote, setPaymentNote] = useState('')
 
   // Cart / Items
@@ -919,7 +919,7 @@ export default function CreateAdminOrder() {
                     }`}
                   >
                     <option value="Tunai / Cash">Tunai / Cash</option>
-                    <option value="Transfer BCA">Transfer BCA</option>
+                    <option value="Transfer BSI">Transfer BSI</option>
                     <option value="Transfer Mandiri">Transfer Mandiri</option>
                     <option value="QRIS">QRIS</option>
                     <option value="Lainnya">Lainnya</option>
