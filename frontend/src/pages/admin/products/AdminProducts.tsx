@@ -18,6 +18,7 @@ import type { Product } from '../../../types/products'
 import ProductTable from '../../../components/admin/products/ProductTable'
 import PageLoader from '../../../components/ui/PageLoader'
 import Pagination from '../../../components/ui/Pagination'
+import ConfirmDeleteModal from '../../../components/admin/ConfirmDeleteModal'
 import { useThemeStore } from '../../../stores/theme.store'
 import useDebounce from '../../../hooks/useDebounce'
 
@@ -166,17 +167,27 @@ export default function Products() {
   const lastPage = productResponse?.last_page ?? 1
   const total = productResponse?.total ?? 0
 
+  // Delete Confirmation Modal State
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false)
+  const [productToDelete, setProductToDelete] = useState<Product | null>(null)
+  const [isDeleting, setIsDeleting] = useState(false)
+
   const handleEdit = (product: Product) => {
     navigate(`/admin/products/${product.id}/edit`)
   }
 
-  const handleDelete = async (product: Product) => {
-    const confirmed = window.confirm(`Hapus produk "${product.name}"?`)
-    if (!confirmed) return
+  const handleDelete = (product: Product) => {
+    setProductToDelete(product)
+    setDeleteModalOpen(true)
+  }
+
+  const confirmDelete = async () => {
+    if (!productToDelete) return
 
     try {
-      await productService.delete(product.id)
-      toast.success('Produk berhasil dihapus.')
+      setIsDeleting(true)
+      await productService.delete(productToDelete.id)
+      toast.success(`Produk "${productToDelete.name}" berhasil dihapus.`)
       await queryClient.invalidateQueries({
         queryKey: ['products'],
         refetchType: 'all',
@@ -184,10 +195,15 @@ export default function Products() {
       if (products.length === 1 && page > 1) {
         setPage((prev) => prev - 1)
       }
-    } catch (error: any) {
+      setDeleteModalOpen(false)
+      setProductToDelete(null)
+    } catch (error) {
+      const axiosError = error as { response?: { data?: { message?: string } } }
       toast.error(
-        error?.response?.data?.message || 'Gagal menghapus produk.',
+        axiosError?.response?.data?.message || 'Gagal menghapus produk.',
       )
+    } finally {
+      setIsDeleting(false)
     }
   }
 
@@ -355,6 +371,56 @@ export default function Products() {
           />
         </>
       )}
+
+      {/* Delete Confirmation Modal with Typed Confirmation */}
+      <ConfirmDeleteModal
+        isOpen={deleteModalOpen && Boolean(productToDelete)}
+        onClose={() => {
+          setDeleteModalOpen(false)
+          setProductToDelete(null)
+        }}
+        onConfirm={confirmDelete}
+        title="Hapus Menu Produk?"
+        itemName={productToDelete?.name ?? ''}
+        itemType="produk"
+        description={
+          productToDelete ? (
+            <div className="space-y-1.5">
+              <p>
+                Apakah Anda yakin ingin menghapus menu katering{' '}
+                <strong className={isDark ? 'text-white' : 'text-stone-900'}>
+                  "{productToDelete.name}"
+                </strong>
+                ?
+              </p>
+              <div className={`flex flex-wrap items-center gap-2 pt-1 text-[11px] ${
+                isDark ? 'text-stone-400' : 'text-stone-500'
+              }`}>
+                {productToDelete.category?.name && (
+                  <span className={`inline-flex rounded-md px-2 py-0.5 font-medium ${
+                    isDark ? 'bg-[#381612] text-amber-200' : 'bg-stone-100 text-stone-700'
+                  }`}>
+                    Kategori: {productToDelete.category.name}
+                  </span>
+                )}
+                {productToDelete.price && (
+                  <span className={`inline-flex rounded-md px-2 py-0.5 font-medium ${
+                    isDark ? 'bg-[#381612] text-amber-200' : 'bg-stone-100 text-stone-700'
+                  }`}>
+                    Rp {Number(productToDelete.price).toLocaleString('id-ID')}
+                  </span>
+                )}
+              </div>
+            </div>
+          ) : undefined
+        }
+        warningDetails={
+          <span>
+            Menu ini akan dihapus dari katalog produk dan tidak akan lagi dapat dipesan oleh pelanggan.
+          </span>
+        }
+        isLoading={isDeleting}
+      />
     </div>
     </>
   )

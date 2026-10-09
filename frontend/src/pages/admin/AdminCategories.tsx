@@ -9,7 +9,6 @@ import {
   Sparkles,
   Layers,
   UtensilsCrossed,
-  AlertTriangle,
   FolderPlus,
 } from 'lucide-react'
 import { toast } from 'sonner'
@@ -20,6 +19,7 @@ import type { Category, CategoryForm } from '../../types/category'
 import { categoryService } from '../../services/category.services'
 import PageLoader from '../../components/ui/PageLoader'
 import Pagination from '../../components/ui/Pagination'
+import ConfirmDeleteModal from '../../components/admin/ConfirmDeleteModal'
 import { useThemeStore } from '../../stores/theme.store'
 import useDebounce from '../../hooks/useDebounce'
 
@@ -764,65 +764,30 @@ export default function AdminCategories() {
         </div>
       )}
 
-      {/* IN-APP DELETE CONFIRMATION DIALOG */}
-      {deleteModalOpen && categoryToDelete && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-950/60 p-4 backdrop-blur-xs">
-          <div className={`w-full max-w-md overflow-hidden rounded-2xl p-6 shadow-xl ${
-            isDark ? 'bg-[#240E0C] border border-[#60241E]' : 'bg-white'
-          }`}>
-            <div className="flex items-center gap-3 text-red-500">
-              <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${
-                isDark ? 'bg-red-950/60 text-red-400' : 'bg-red-50 text-red-600'
-              }`}>
-                <AlertTriangle size={22} />
-              </div>
-              <div>
-                <h3 className={`text-base font-bold ${isDark ? 'text-white' : 'text-stone-900'}`}>Hapus Kategori?</h3>
-                <p className={`text-xs ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>Tindakan ini tidak dapat dibatalkan</p>
-              </div>
-            </div>
-
-            <p className={`mt-4 text-xs sm:text-sm ${isDark ? 'text-stone-300' : 'text-stone-600'}`}>
-              Apakah Anda yakin ingin menghapus kategori{' '}
-              <strong className={isDark ? 'text-white' : 'text-stone-900'}>"{categoryToDelete.name}"</strong>?
-              {categoryToDelete.products_count && categoryToDelete.products_count > 0 ? (
-                <span className={`mt-1 block font-semibold ${isDark ? 'text-amber-400' : 'text-amber-700'}`}>
-                  Perhatian: Kategori ini masih memiliki {categoryToDelete.products_count} menu terkait.
-                </span>
-              ) : null}
-            </p>
-
-            <div className="mt-6 flex items-center justify-end gap-2.5">
-              <button
-                type="button"
-                onClick={() => {
-                  setDeleteModalOpen(false)
-                  setCategoryToDelete(null)
-                }}
-                disabled={deleting}
-                className={`rounded-xl border px-4 py-2 text-xs sm:text-sm font-semibold shadow-2xs transition disabled:opacity-50 ${
-                  isDark
-                    ? 'border-[#60241E] bg-[#1C0B09] text-stone-300 hover:bg-[#2D120F]'
-                    : 'border-stone-200 bg-white text-stone-700 hover:bg-stone-50'
-                }`}
-              >
-                Batal
-              </button>
-              <button
-                type="button"
-                onClick={confirmDelete}
-                disabled={deleting}
-                className="inline-flex items-center gap-1.5 rounded-xl bg-red-600 px-4 py-2 text-xs sm:text-sm font-semibold text-white shadow-xs transition hover:bg-red-700 disabled:opacity-50"
-              >
-                {deleting && (
-                  <div className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                )}
-                <span>{deleting ? 'Menghapus...' : 'Ya, Hapus Kategori'}</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* IN-APP DELETE CONFIRMATION DIALOG WITH TYPED CONFIRMATION */}
+      <ConfirmDeleteModal
+        isOpen={deleteModalOpen && Boolean(categoryToDelete)}
+        onClose={() => {
+          setDeleteModalOpen(false)
+          setCategoryToDelete(null)
+        }}
+        onConfirm={confirmDelete}
+        title="Hapus Kategori?"
+        itemName={categoryToDelete?.name ?? ''}
+        itemType="kategori"
+        warningDetails={
+          categoryToDelete?.products_count && categoryToDelete.products_count > 0 ? (
+            <span>
+              Perhatian: Kategori ini masih memiliki{' '}
+              <strong className={isDark ? 'text-amber-300' : 'text-amber-900'}>
+                {categoryToDelete.products_count} menu terkait
+              </strong>
+              . Produk dalam kategori ini mungkin terpengaruh.
+            </span>
+          ) : undefined
+        }
+        isLoading={deleting}
+      />
     </div>
   )
 }
