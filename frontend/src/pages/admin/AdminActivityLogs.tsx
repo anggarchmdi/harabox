@@ -38,6 +38,7 @@ export default function AdminActivityLogs() {
 
   // Pagination & Filter States
   const [page, setPage] = useState(1)
+  const [perPage, setPerPage] = useState(50)
   const [searchInput, setSearchInput] = useState('')
   const search = useDebounce(searchInput.trim(), 400)
   const [actionFilter, setActionFilter] = useState<string>('all')
@@ -49,13 +50,13 @@ export default function AdminActivityLogs() {
   // Guard: Only super admin can access
   const isSuperAdmin = currentUser?.role === 'super_admin'
 
-  // Fetch Logs
+  // Fetch Logs (Default 50 per page)
   const { data: logsResponse, isLoading } = useQuery({
-    queryKey: ['admin-activity-logs', page, search, actionFilter, subjectFilter],
+    queryKey: ['admin-activity-logs', page, perPage, search, actionFilter, subjectFilter],
     queryFn: () =>
       activityLogService.list({
         page,
-        per_page: 15,
+        per_page: perPage,
         search: search || undefined,
         action: actionFilter === 'all' ? undefined : actionFilter,
         subject_type: subjectFilter === 'all' ? undefined : subjectFilter,
@@ -93,10 +94,11 @@ export default function AdminActivityLogs() {
     setSearchInput('')
     setActionFilter('all')
     setSubjectFilter('all')
+    setPerPage(50)
     setPage(1)
   }
 
-  const hasActiveFilters = Boolean(searchInput || actionFilter !== 'all' || subjectFilter !== 'all')
+  const hasActiveFilters = Boolean(searchInput || actionFilter !== 'all' || subjectFilter !== 'all' || perPage !== 50)
 
   // If not super admin, show access denied view
   if (!isSuperAdmin) {
@@ -374,6 +376,25 @@ export default function AdminActivityLogs() {
               <option value="payment_proof">Bukti Transfer</option>
             </select>
 
+            {/* Filter by Items Per Page */}
+            <select
+              value={perPage}
+              onChange={(e) => {
+                setPerPage(Number(e.target.value))
+                setPage(1)
+              }}
+              className={`h-10 rounded-xl border px-3 text-xs font-semibold outline-none transition ${
+                isDark
+                  ? 'border-[#5E221C] bg-[#180A08] text-amber-300 focus:border-[#F59E0B]'
+                  : 'border-stone-200 bg-white text-stone-800 focus:border-red-600'
+              }`}
+              title="Jumlah baris data per halaman"
+            >
+              <option value={25}>25 baris / hal</option>
+              <option value={50}>50 baris / hal (Standar)</option>
+              <option value={100}>100 baris / hal</option>
+            </select>
+
             {/* Reset Filters */}
             {hasActiveFilters && (
               <button
@@ -529,13 +550,14 @@ export default function AdminActivityLogs() {
             </div>
 
             {/* Pagination */}
-            <div className="p-4 border-t border-white/5">
+            <div className="border-t border-white/5">
               <Pagination
                 currentPage={currentPage}
                 lastPage={lastPage}
                 total={total}
                 onPageChange={setPage}
-                itemName="log aktivitas"
+                itemName={`log aktivitas (${perPage}/hal)`}
+                showWhenSinglePage={true}
               />
             </div>
           </div>

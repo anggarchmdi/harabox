@@ -14,7 +14,7 @@ class ActivityLogController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $perPage = min(max((int) $request->input('per_page', 15), 5), 100);
+        $perPage = min(max((int) $request->input('per_page', 50), 5), 100);
 
         $query = ActivityLog::query()
             ->filter($request->only([
