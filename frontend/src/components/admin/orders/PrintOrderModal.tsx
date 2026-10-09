@@ -129,18 +129,17 @@ Alamat     : ${order.delivery_address}
 ${doubleLine}
 DAFTAR MENU YANG HARUS DIMASAK:
 ${(order.items || [])
-  .map(
-    (item, idx) =>
-      `[ ] ${idx + 1}. ${item.quantity}x ${item.item_name.toUpperCase()}${
-        item.addons && item.addons.length > 0
-          ? '\n' +
-            item.addons
-              .map((a) => `     - [ ] ${a.addon_name} (${item.quantity} porsi)`)
-              .join('\n')
-          : ''
-      }`
-  )
-  .join('\n')}
+          .map(
+            (item, idx) =>
+              `[ ] ${idx + 1}. ${item.quantity}x ${item.item_name.toUpperCase()}${item.addons && item.addons.length > 0
+                ? '\n' +
+                item.addons
+                  .map((a) => `     - [ ] ${a.addon_name} (${item.quantity} porsi)`)
+                  .join('\n')
+                : ''
+              }`
+          )
+          .join('\n')}
 ${line}
 CATATAN KHUSUS:
 ${order.notes || 'Tidak ada catatan khusus'}
@@ -171,10 +170,13 @@ Ongkos Kirim  : ${formatRupiah(deliveryFee)}
 TOTAL TAGIHAN : ${formatRupiah(total)}
 ${line}
 Status Order  : ${orderStatusText}
-Status Bayar  : ${paymentStatusText}
+Status Bayar  : ${order.status === 'cancelled' ? 'DIBATALKAN' : (remaining <= 0 || order.payment_status === 'paid' ? 'LUNAS' : paymentStatusText)}
 Telah Dibayar : ${formatRupiah(paidAmount)}
-${remaining > 0 ? `Sisa Tagihan  : ${formatRupiah(remaining)}\n` : ''}Metode Bayar  : ${order.payment_method || '-'}
-${order.notes ? `Catatan       : ${order.notes}\n` : ''}${doubleLine}
+${remaining > 0 && order.status !== 'cancelled' ? `Sisa Tagihan  : ${formatRupiah(remaining)}\n` : ''}Metode Bayar  : ${order.payment_method || '-'}
+${order.status !== 'cancelled' && remaining > 0 && order.payment_status !== 'paid'
+        ? `\nRekening Bank :\nBank BSI: 7881113346\na/n CV AYAM GEPREK PARANGTRITIS\n`
+        : ''
+      }${order.notes ? `Catatan       : ${order.notes}\n` : ''}${doubleLine}
 Terima kasih telah mempercayakan
 hidangan Anda kepada Pawon Hara!
 Instagram: @pawonhara
@@ -246,24 +248,23 @@ Instagram: @pawonhara
                 <div style="font-size: 14px; font-weight: 900; line-height: 1.2;">
                   ${item.quantity}x ${item.item_name}
                 </div>
-                ${
-                  item.addons && item.addons.length > 0
-                    ? `
+                ${item.addons && item.addons.length > 0
+                ? `
                   <div style="margin-top: 3px; padding-left: 4px; font-size: 11px;">
                     ${item.addons
-                      .map(
-                        (a) => `
+                  .map(
+                    (a) => `
                       <div style="display: flex; align-items: center; gap: 4px; margin-top: 2px;">
                         <span>[&nbsp;]</span>
                         <span><strong>+ ${a.addon_name}</strong> (${item.quantity}x)</span>
                       </div>
                     `
-                      )
-                      .join('')}
+                  )
+                  .join('')}
                   </div>
                 `
-                    : ''
-                }
+                : ''
+              }
               </div>
             </div>
           </div>
@@ -323,7 +324,7 @@ Instagram: @pawonhara
             <div>Waktu Pengantaran: ${order.event_time ? `${order.event_time} WIB` : 'Fleksibel'}</div>
             <div style="margin-top: 4px;">
               <span style="display: inline-block; padding: 2px 8px; font-weight: bold; font-size: 11px; border: 1px solid #000; border-radius: 4px;">
-                STATUS: ${paymentStatusText}
+                STATUS: ${order.status === 'cancelled' ? 'DIBATALKAN' : (remaining <= 0 || order.payment_status === 'paid' ? 'LUNAS' : paymentStatusText)}
               </span>
             </div>
           </div>
@@ -341,34 +342,33 @@ Instagram: @pawonhara
           </thead>
           <tbody>
             ${(order.items || [])
-              .map((item, idx) => {
-                const addonsPrice = (item.addons || []).reduce(
-                  (sum, a) => sum + Number(a.price || 0),
-                  0
-                )
-                const unitTotal = Number(item.price) + addonsPrice
+          .map((item, idx) => {
+            const addonsPrice = (item.addons || []).reduce(
+              (sum, a) => sum + Number(a.price || 0),
+              0
+            )
+            const unitTotal = Number(item.price) + addonsPrice
 
-                return `
+            return `
                 <tr style="border-bottom: 1px solid #ddd;">
                   <td style="padding: 8px 6px; vertical-align: top;">${idx + 1}</td>
                   <td style="padding: 8px 6px; vertical-align: top;">
                     <div style="font-weight: bold; font-size: 12px;">${item.item_name}</div>
                     <div style="color: #555; font-size: 10px;">Harga dasar: ${formatRupiah(item.price)}</div>
-                    ${
-                      item.addons && item.addons.length > 0
-                        ? `
+                    ${item.addons && item.addons.length > 0
+                ? `
                       <div style="margin-top: 4px; padding-left: 8px; border-left: 2px solid #ccc; font-size: 10px;">
                         ${item.addons
-                          .map(
-                            (a) => `
+                  .map(
+                    (a) => `
                           <div>+ ${a.addon_name} (${formatRupiah(a.price)})</div>
                         `
-                          )
-                          .join('')}
+                  )
+                  .join('')}
                       </div>
                     `
-                        : ''
-                    }
+                : ''
+              }
                   </td>
                   <td style="padding: 8px 6px; text-align: center; vertical-align: top; font-weight: bold;">
                     ${item.quantity} box
@@ -381,8 +381,8 @@ Instagram: @pawonhara
                   </td>
                 </tr>
               `
-              })
-              .join('')}
+          })
+          .join('')}
           </tbody>
         </table>
 
@@ -392,10 +392,34 @@ Instagram: @pawonhara
               <div style="font-weight: bold; margin-bottom: 2px;">Catatan Pesanan:</div>
               <div style="color: #444;">${order.notes || 'Tidak ada catatan.'}</div>
             </div>
-            <div style="margin-top: 10px; font-size: 10px; color: #666;">
-              <div>Pembayaran Transfer Bank:</div>
-              <div style="font-weight: bold; color: #000;">BCA: 037-XXXX-XXXX a/n PAWON HARA</div>
-            </div>
+            ${order.status === 'cancelled'
+          ? `
+              <div style="margin-top: 10px; padding: 8px; border: 1px solid #ef4444; border-radius: 4px; background: #fef2f2; color: #991b1b; font-size: 10px;">
+                <div style="font-weight: bold;">STATUS PESANAN: DIBATALKAN</div>
+                <div style="margin-top: 2px;">Pesanan ini telah dibatalkan. Tidak ada tagihan pembayaran.</div>
+              </div>
+            `
+          : remaining <= 0 || order.payment_status === 'paid'
+            ? `
+              <div style="margin-top: 10px; padding: 8px; border: 1px solid #10b981; border-radius: 4px; background: #ecfdf5; color: #065f46; font-size: 10px;">
+                <div style="font-weight: bold;">STATUS PEMBAYARAN: LUNAS</div>
+                <div style="margin-top: 2px;">Terima kasih atas pembayaran Anda. Pesanan sedang disiapkan.</div>
+              </div>
+            `
+            : `
+              <div style="margin-top: 10px; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px; background: #f8fafc; font-size: 10px;">
+                <div style="font-weight: bold; color: #0f172a; margin-bottom: 3px;">Rekening Resmi Pembayaran:</div>
+                <div style="color: #334155; line-height: 1.4;">
+                  <div>Bank: <strong>Bank BSI</strong></div>
+                  <div>No. Rekening: <strong>7881113346	</strong></div>
+                  <div>Atas Nama: <strong>CV AYAM GEPREK PARANGTRITIS</strong></div>
+                </div>
+                <div style="margin-top: 4px; color: #64748b; font-size: 9px; font-style: italic;">
+                  Mohon konfirmasi dan kirimkan bukti transfer ke WhatsApp admin.
+                </div>
+              </div>
+            `
+        }
           </div>
 
           <div style="width: 44%; font-size: 11px;">
@@ -415,21 +439,27 @@ Instagram: @pawonhara
               <span>Nominal Dibayar:</span>
               <span style="font-family: monospace; font-weight: bold;">${formatRupiah(paidAmount)}</span>
             </div>
-            ${
-              remaining > 0
-                ? `
+            ${order.status === 'cancelled'
+          ? `
+              <div style="display: flex; justify-content: space-between; padding: 4px 0; font-weight: bold; color: #b91c1c;">
+                <span>Status Pesanan:</span>
+                <span>DIBATALKAN</span>
+              </div>
+            `
+          : remaining > 0
+            ? `
               <div style="display: flex; justify-content: space-between; padding: 4px 0; font-weight: bold; color: #b91c1c;">
                 <span>Sisa Tagihan (Piutang):</span>
                 <span style="font-family: monospace;">${formatRupiah(remaining)}</span>
               </div>
             `
-                : `
+            : `
               <div style="display: flex; justify-content: space-between; padding: 4px 0; font-weight: bold; color: #15803d;">
                 <span>Status Pembayaran:</span>
                 <span>LUNAS</span>
               </div>
             `
-            }
+        }
           </div>
         </div>
 
@@ -566,11 +596,10 @@ Instagram: @pawonhara
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/70 backdrop-blur-xs animate-in fade-in duration-200">
       <div
-        className={`w-full max-w-2xl max-h-[92vh] flex flex-col rounded-3xl border shadow-2xl overflow-hidden transition-all ${
-          isDark
-            ? 'border-[#60241E] bg-[#1C0B09] text-stone-100'
-            : 'border-stone-200 bg-white text-stone-900'
-        }`}
+        className={`w-full max-w-2xl max-h-[92vh] flex flex-col rounded-3xl border shadow-2xl overflow-hidden transition-all ${isDark
+          ? 'border-[#60241E] bg-[#1C0B09] text-stone-100'
+          : 'border-stone-200 bg-white text-stone-900'
+          }`}
       >
         {/* Modal Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-stone-200 dark:border-[#60241E]/80 shrink-0">
@@ -591,11 +620,10 @@ Instagram: @pawonhara
           <button
             type="button"
             onClick={onClose}
-            className={`p-2 rounded-full border transition cursor-pointer ${
-              isDark
-                ? 'border-[#60241E] bg-[#240E0C] text-stone-400 hover:text-white'
-                : 'border-stone-200 bg-stone-50 text-stone-500 hover:text-stone-900'
-            }`}
+            className={`p-2 rounded-full border transition cursor-pointer ${isDark
+              ? 'border-[#60241E] bg-[#240E0C] text-stone-400 hover:text-white'
+              : 'border-stone-200 bg-stone-50 text-stone-500 hover:text-stone-900'
+              }`}
           >
             <X size={16} />
           </button>
@@ -608,11 +636,10 @@ Instagram: @pawonhara
             <button
               type="button"
               onClick={() => setTemplate('kitchen')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
-                template === 'kitchen'
-                  ? 'bg-red-600 text-white shadow-xs'
-                  : 'text-stone-500 hover:text-stone-900 dark:text-stone-400 dark:hover:text-white'
-              }`}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${template === 'kitchen'
+                ? 'bg-red-600 text-white shadow-xs'
+                : 'text-stone-500 hover:text-stone-900 dark:text-stone-400 dark:hover:text-white'
+                }`}
             >
               <ChefHat size={13} />
               <span>Slip Dapur (Tiket Kerja)</span>
@@ -621,11 +648,10 @@ Instagram: @pawonhara
             <button
               type="button"
               onClick={() => setTemplate('invoice')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
-                template === 'invoice'
-                  ? 'bg-red-600 text-white shadow-xs'
-                  : 'text-stone-500 hover:text-stone-900 dark:text-stone-400 dark:hover:text-white'
-              }`}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${template === 'invoice'
+                ? 'bg-red-600 text-white shadow-xs'
+                : 'text-stone-500 hover:text-stone-900 dark:text-stone-400 dark:hover:text-white'
+                }`}
             >
               <FileText size={13} />
               <span>Invoice Resmi (A4)</span>
@@ -636,11 +662,10 @@ Instagram: @pawonhara
         {/* Live Preview Paper Container */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-6 bg-stone-100 dark:bg-[#140605] flex justify-center">
           <div
-            className={`bg-white text-black shadow-lg border border-stone-300 rounded-lg p-5 font-mono text-xs leading-relaxed select-text transition-all ${
-              template === 'invoice'
-                ? 'w-full max-w-xl text-[12px]'
-                : 'w-[360px] text-[12px]'
-            }`}
+            className={`bg-white text-black shadow-lg border border-stone-300 rounded-lg p-5 font-mono text-xs leading-relaxed select-text transition-all ${template === 'invoice'
+              ? 'w-full max-w-xl text-[12px]'
+              : 'w-[360px] text-[12px]'
+              }`}
             style={{
               fontFamily:
                 "'Courier New', Courier, Consolas, Monaco, monospace, sans-serif",
@@ -736,7 +761,7 @@ Instagram: @pawonhara
                     <p className="text-[10px] text-stone-600">WA: 0811-2222-5520 | @pawonhara</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-black uppercase">INVOICE PESANAN</p>
+                    <p className="text-sm font-black uppercase">INVOICE</p>
                     <p className="text-xs font-bold font-mono">#{order.order_code}</p>
                     <p className="text-[10px] text-stone-500">{formatShortDate(order.created_at)}</p>
                   </div>
@@ -792,9 +817,28 @@ Instagram: @pawonhara
                 </table>
 
                 <div className="flex justify-between items-start text-xs pt-1">
-                  <div className="w-1/2 text-[11px]">
+                  <div className="w-1/2 text-[11px] pr-2">
                     <p className="font-bold">Catatan:</p>
                     <p className="italic text-stone-600">{order.notes || '-'}</p>
+
+                    {order.status === 'cancelled' ? (
+                      <div className="mt-2 p-2 rounded-lg border border-red-200 bg-red-50 text-[10px] text-red-700">
+                        <p className="font-bold">STATUS PESANAN: DIBATALKAN</p>
+                        <p>Pesanan telah dibatalkan.</p>
+                      </div>
+                    ) : remaining <= 0 || order.payment_status === 'paid' ? (
+                      <div className="mt-2 p-2 rounded-lg border border-emerald-200 bg-emerald-50 text-[10px] text-emerald-800">
+                        <p className="font-bold">STATUS PEMBAYARAN: LUNAS</p>
+                        <p>Terima kasih atas pembayaran Anda.</p>
+                      </div>
+                    ) : (
+                      <div className="mt-2 p-2 rounded-lg border border-stone-200 bg-stone-50 text-[10px] space-y-0.5">
+                        <p className="font-bold text-stone-800">Rekening Resmi Pembayaran:</p>
+                        <p className="text-stone-700">Bank: <span className="font-bold">Bank BSI</span></p>
+                        <p className="text-stone-700">No. Rekening: <span className="font-mono font-bold">7881113346</span></p>
+                        <p className="text-stone-700">A/N: <span className="font-bold">CV AYAM GEPREK PARANGTRITIS</span></p>
+                      </div>
+                    )}
                   </div>
                   <div className="w-1/2 space-y-1 text-right">
                     <div className="flex justify-between">
@@ -813,10 +857,20 @@ Instagram: @pawonhara
                       <span>Sudah Dibayar:</span>
                       <span className="font-mono font-bold">{formatRupiah(paidAmount)}</span>
                     </div>
-                    {remaining > 0 && (
+                    {order.status === 'cancelled' ? (
                       <div className="flex justify-between font-bold text-red-600">
-                        <span>Sisa Tagihan:</span>
+                        <span>Status:</span>
+                        <span>DIBATALKAN</span>
+                      </div>
+                    ) : remaining > 0 ? (
+                      <div className="flex justify-between font-bold text-red-600">
+                        <span>Sisa Tagihan:</span>Invoice
                         <span className="font-mono">{formatRupiah(remaining)}</span>
+                      </div>
+                    ) : (
+                      <div className="flex justify-between font-bold text-emerald-600">
+                        <span>Status:</span>
+                        <span>LUNAS</span>
                       </div>
                     )}
                   </div>
@@ -838,11 +892,10 @@ Instagram: @pawonhara
             <button
               type="button"
               onClick={handleCopyText}
-              className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border text-xs font-bold transition cursor-pointer ${
-                isDark
-                  ? 'border-[#60241E] bg-[#240E0C] text-stone-300 hover:text-white hover:bg-[#2D120F]'
-                  : 'border-stone-200 bg-white text-stone-700 hover:bg-stone-50'
-              }`}
+              className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border text-xs font-bold transition cursor-pointer ${isDark
+                ? 'border-[#60241E] bg-[#240E0C] text-stone-300 hover:text-white hover:bg-[#2D120F]'
+                : 'border-stone-200 bg-white text-stone-700 hover:bg-stone-50'
+                }`}
               title="Salin teks struk untuk aplikasi printer bluetooth HP / WA"
             >
               {copied ? <Check size={14} className="text-emerald-500" /> : <Copy size={14} />}
