@@ -44,6 +44,9 @@ export interface DashboardRecentOrder {
   delivery_fee?: string | number
   total: string | number
   status: string
+  payment_status?: string
+  paid_amount?: string | number
+  payment_method?: string | null
   created_at: string
   items?: {
     id: number
@@ -52,6 +55,14 @@ export interface DashboardRecentOrder {
     price: string | number
     quantity: number
     subtotal: string | number
+    addons?: {
+      id?: number
+      addon_group_name?: string
+      addon_name?: string
+      price?: string | number
+      quantity?: number
+      subtotal?: string | number
+    }[]
   }[]
 }
 

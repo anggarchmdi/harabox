@@ -40,6 +40,7 @@ import PageLoader from '../../components/ui/PageLoader'
 import Pagination from '../../components/ui/Pagination'
 import { useThemeStore } from '../../stores/theme.store'
 import useDebounce from '../../hooks/useDebounce'
+import { getWhatsAppInvoiceUrl } from '../../utils/whatsappInvoice'
 
 // Aset lokal untuk smart fallback produk
 import BentoKatsuImg from '../../assets/nasibox/bento-katsu-b.webp'
@@ -112,51 +113,7 @@ function formatStatus(status: string) {
 }
 
 export function generateDashboardWhatsAppInvoice(order: DashboardRecentOrder): string {
-  const rawPhone = order.customers_phone.replace(/[^0-9]/g, '')
-  const phone = rawPhone.startsWith('0')
-    ? '62' + rawPhone.slice(1)
-    : rawPhone.startsWith('62')
-      ? rawPhone
-      : '62' + rawPhone
-
-  const itemsList =
-    order.items && order.items.length > 0
-      ? order.items
-          .map(
-            (i) =>
-              `• ${i.item_name} x ${i.quantity} porsi (Rp ${Number(i.subtotal).toLocaleString('id-ID')})`,
-          )
-          .join('\n')
-      : `• Paket Katering Nasi Box`
-
-  const statusLabel = formatStatus(order.status)
-
-  const message = `*INVOICE PESANAN HARABOX*
-===============================
-Halo Kak *${order.customers_name}*, terima kasih telah memesan katering di HaraBox!
-
-Berikut adalah rincian invoice resmi pesanan Anda:
-
-*No. Pesanan:* ${order.order_code}
-*Tanggal Acara:* ${formatDate(order.event_date)} ${order.event_time ? `(${order.event_time})` : ''}
-*Alamat Pengantaran:* ${order.delivery_address || '-'}
--------------------------------
-*Rincian Menu:*
-${itemsList}
-
-Subtotal: ${formatRupiah(order.subtotal || order.total)}
-Ongkos Kirim: ${formatRupiah(order.delivery_fee || 0)}
-*TOTAL TAGIHAN: ${formatRupiah(order.total)}*
--------------------------------
-*Status Pesanan:* ${statusLabel}
-${order.notes ? `*Catatan Khusus:* ${order.notes}\n` : ''}
-Silakan melakukan pembayaran ke rekening resmi:
-*Bank BCA: 1234567890*
-*A/N: HaraBox Catering*
-
-Mohon konfirmasi dan kirimkan bukti transfer melalui pesan ini. Terima kasih!`
-
-  return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`
+  return getWhatsAppInvoiceUrl(order)
 }
 
 export default function AdminDashboard() {

@@ -40,117 +40,12 @@ function formatDate(date: string) {
   }).format(new Date(date))
 }
 
-export function getWhatsAppInvoiceUrl(order: Order): string {
-  const rawPhone = order.customers_phone.replace(/[^0-9]/g, '')
-  const phone = rawPhone.startsWith('0')
-    ? '62' + rawPhone.slice(1)
-    : rawPhone.startsWith('62')
-      ? rawPhone
-      : '62' + rawPhone
+import {
+  getWhatsAppInvoiceUrl,
+  getWhatsAppTestimonialUrl,
+} from '../../../utils/whatsappInvoice'
 
-  const itemsList =
-    order.items && order.items.length > 0
-      ? order.items
-          .map((i) => {
-            const addonsDetail =
-              i.addons && i.addons.length > 0
-                ? '\n' +
-                  i.addons
-                    .map(
-                      (a) =>
-                        `   └ ${a.addon_group_name ? `${a.addon_group_name}: ` : ''}${a.addon_name}`,
-                    )
-                    .join('\n')
-                : ''
-            return `• ${i.item_name} x ${i.quantity} porsi (Rp ${Number(i.subtotal).toLocaleString('id-ID')})${addonsDetail}`
-          })
-          .join('\n')
-      : `• Paket Katering (Rp ${Number(order.subtotal).toLocaleString('id-ID')})`
-
-  const statusLabel =
-    {
-      pending: 'Menunggu Konfirmasi',
-      confirmed: 'Dikonfirmasi',
-      processing: 'Sedang Diproses Dapur',
-      completed: 'Selesai',
-      cancelled: 'Dibatalkan',
-    }[order.status] || order.status
-
-  const paymentLabel =
-    order.payment_status === 'paid'
-      ? `Lunas (${order.payment_method || 'Terverifikasi'})`
-      : order.payment_status === 'dp'
-        ? `DP Masuk Rp ${Number(order.paid_amount).toLocaleString('id-ID')} (Sisa: Rp ${Math.max(0, Number(order.total) - Number(order.paid_amount)).toLocaleString('id-ID')})`
-        : 'Belum Bayar'
-
-  const message = `*INVOICE PESANAN HARABOX*
-===============================
-Halo Kak *${order.customers_name}*, terima kasih telah memesan katering di HaraBox!
-
-Berikut adalah rincian invoice resmi pesanan Anda:
-
-*No. Pesanan:* ${order.order_code}
-*Tanggal Acara:* ${formatDate(order.event_date)} ${order.event_time ? `(${order.event_time})` : ''}
-*Alamat Pengantaran:* ${order.delivery_address || '-'}
--------------------------------
-*Rincian Menu:*
-${itemsList}
-
-Subtotal Menu: Rp ${Number(order.subtotal).toLocaleString('id-ID')}
-Ongkos Kirim: Rp ${Number(order.delivery_fee).toLocaleString('id-ID')}
-*TOTAL TAGIHAN: Rp ${Number(order.total).toLocaleString('id-ID')}*
--------------------------------
-*Status Pesanan:* ${statusLabel}
-*Status Pembayaran:* ${paymentLabel}
-${order.notes ? `*Catatan Khusus:* ${order.notes}\n` : ''}
-Silakan melakukan pembayaran ke rekening resmi HaraBox:
-*Bank BCA: 1234567890*
-*A/N: HaraBox Catering*
-
-Mohon konfirmasi dan kirimkan bukti transfer ke nomor ini agar pesanan Anda dapat segera kami siapkan. Terima kasih!`
-
-  return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`
-}
-
-export function getWhatsAppTestimonialUrl(order: Order): string {
-  const rawPhone = order.customers_phone.replace(/[^0-9]/g, '')
-  const phone = rawPhone.startsWith('0')
-    ? '62' + rawPhone.slice(1)
-    : rawPhone.startsWith('62')
-      ? rawPhone
-      : '62' + rawPhone
-
-  // Hitung jumlah pesanan box produk utama tanpa addons
-  const totalBox =
-    order.items && order.items.length > 0
-      ? order.items.reduce((sum, item) => sum + (Number(item.quantity) || 0), 0)
-      : 0
-
-  const quantityStr = totalBox > 0 ? `${totalBox} Box` : ''
-
-  // URL ulasan tersembunyi
-  const origin = typeof window !== 'undefined' ? window.location.origin : 'https://harabox.id'
-  const params = new URLSearchParams()
-  if (order.customers_name) params.set('name', order.customers_name)
-  if (quantityStr) params.set('qty', quantityStr)
-  if (order.order_code) params.set('order', order.order_code)
-
-  const testimonialLink = `${origin}/testimoni?${params.toString()}`
-
-  const message = `*TERIMA KASIH DARI HARABOX!* ✨
-===============================
-Halo Kak *${order.customers_name}*, terima kasih banyak telah mempercayakan konsumsi acara kepada HaraBox.
-
-Pesanan Anda (*${order.order_code}* ${quantityStr ? `- ${quantityStr}` : ''}) telah selesai kami layani. Kami berharap seluruh sajian dinikmati dengan puas oleh seluruh tamu & keluarga.
-
-Untuk membantu kami menjaga dan terus meningkatkan kualitas cita rasa serta pelayanan katering HaraBox, kami sangat berterima kasih jika Kakak berkenan meluangkan waktu 1 menit untuk mengisi ulasan melalui tautan berikut:
-
-👉 ${testimonialLink}
-
-Terima kasih banyak atas kepercayaannya! Semoga acaranya sukses dan berkesan, kami nantikan pesanan katering berikutnya. 🙏🍗`
-
-  return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`
-}
+export { getWhatsAppInvoiceUrl, getWhatsAppTestimonialUrl }
 
 export default function OrderTable({
   orders,

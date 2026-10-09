@@ -184,7 +184,7 @@ class DashboardController extends Controller
         */
 
         $recentOrders = Order::query()
-            ->with(['items.product'])
+            ->with(['items.product', 'items.addons'])
             ->latest()
             ->limit(15)
             ->get([
@@ -200,6 +200,9 @@ class DashboardController extends Controller
                 'delivery_fee',
                 'total',
                 'status',
+                'payment_status',
+                'paid_amount',
+                'payment_method',
                 'created_at',
             ]);
 

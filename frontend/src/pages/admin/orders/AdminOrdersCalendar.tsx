@@ -36,6 +36,7 @@ import { ordersService } from '../../../services/orders.service'
 import type { CalendarDayData, Order, CalendarItemBreakdown } from '../../../types/orders'
 import { useThemeStore } from '../../../stores/theme.store'
 import PageLoader from '../../../components/ui/PageLoader'
+import { getWhatsAppInvoiceUrl } from '../../../utils/whatsappInvoice'
 
 const DAYS_HEADER_ID = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min']
 const DAYS_HEADER_FULL = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu']
@@ -907,7 +908,7 @@ export default function AdminOrdersCalendar() {
                   <div className="space-y-3.5">
                     {selectedDayData.orders.map((order: Order) => {
                       const waLink = order.customers_phone
-                        ? `https://wa.me/${order.customers_phone.replace(/^0/, '62').replace(/\D/g, '')}`
+                        ? getWhatsAppInvoiceUrl(order)
                         : null
 
                       return (
