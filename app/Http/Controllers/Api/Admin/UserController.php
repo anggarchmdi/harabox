@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\ActivityLogger;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -65,6 +66,14 @@ class UserController extends Controller
             'role' => $validated['role'],
             'is_active' => $validated['is_active'] ?? true,
         ]);
+
+        ActivityLogger::log(
+            action: 'create',
+            subjectType: 'user',
+            description: "Menambahkan akun admin baru '{$user->name}' ({$user->role})",
+            subjectName: $user->name,
+            subjectId: $user->id
+        );
 
         return response()->json([
             'success' => true,
@@ -138,6 +147,14 @@ class UserController extends Controller
 
         $user->update($validated);
 
+        ActivityLogger::log(
+            action: 'update',
+            subjectType: 'user',
+            description: "Memperbarui data akun admin '{$user->name}'",
+            subjectName: $user->name,
+            subjectId: $user->id
+        );
+
         return response()->json([
             'success' => true,
             'message' => 'Data admin berhasil diperbarui.',
@@ -184,6 +201,14 @@ class UserController extends Controller
 
         $statusText = $newStatus ? 'diaktifkan' : 'dinonaktifkan';
 
+        ActivityLogger::log(
+            action: 'status_change',
+            subjectType: 'user',
+            description: "Mengubah status akun admin '{$user->name}' menjadi " . ($newStatus ? 'Aktif' : 'Nonaktif'),
+            subjectName: $user->name,
+            subjectId: $user->id
+        );
+
         return response()->json([
             'success' => true,
             'message' => "Akun admin {$user->name} berhasil {$statusText}.",
@@ -203,6 +228,14 @@ class UserController extends Controller
         $user->update([
             'password' => Hash::make($validated['password']),
         ]);
+
+        ActivityLogger::log(
+            action: 'update',
+            subjectType: 'user',
+            description: "Mereset password untuk akun admin '{$user->name}'",
+            subjectName: $user->name,
+            subjectId: $user->id
+        );
 
         // Revoke active sessions except the caller if resetting own password
         $currentUser = $request->user();
@@ -245,8 +278,19 @@ class UserController extends Controller
             }
         }
 
+        $userName = $user->name;
+        $userId = $user->id;
+
         $user->tokens()->delete();
         $user->delete();
+
+        ActivityLogger::log(
+            action: 'delete',
+            subjectType: 'user',
+            description: "Menghapus akun admin '{$userName}'",
+            subjectName: $userName,
+            subjectId: $userId
+        );
 
         return response()->json([
             'success' => true,

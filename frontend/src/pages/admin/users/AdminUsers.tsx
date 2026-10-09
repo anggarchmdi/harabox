@@ -1,6 +1,8 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import {
   ShieldCheck,
+  ShieldAlert,
   UserCheck,
   UserX,
   Plus,
@@ -15,6 +17,7 @@ import {
   Eye,
   EyeOff,
   CheckCircle2,
+  ChevronRight,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
@@ -28,6 +31,7 @@ import useDebounce from '../../../hooks/useDebounce'
 import { showDynamicIslandToast } from '../../../components/ui/AppToaster'
 
 export default function AdminUsers() {
+  const navigate = useNavigate()
   const isDark = useThemeStore((state) => state.theme === 'dark')
   const currentUser = useAuthStore((state) => state.user)
   const queryClient = useQueryClient()
@@ -324,6 +328,59 @@ export default function AdminUsers() {
           <p className="mt-1 text-[11px] text-stone-400">Dapat melakukan login</p>
         </div>
       </div>
+
+      {/* Super Admin Secret Audit Log Banner Card */}
+      {currentUser?.role === 'super_admin' && (
+        <div
+          onClick={() => navigate('/admin/activity-logs')}
+          className={`group relative overflow-hidden rounded-2xl border p-4 sm:p-5 transition-all duration-300 cursor-pointer shadow-2xs hover:shadow-md ${
+            isDark
+              ? 'bg-gradient-to-r from-[#220E0B] via-[#2A110D] to-[#1E0C0A] border-[#5E221C] hover:border-amber-500/50'
+              : 'bg-gradient-to-r from-amber-50/70 via-rose-50/40 to-white border-amber-200/80 hover:border-amber-400'
+          }`}
+        >
+          {/* Decorative background glow */}
+          <div className="absolute -top-12 -right-12 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl pointer-events-none group-hover:bg-amber-500/20 transition-all duration-300" />
+
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative z-10">
+            <div className="flex items-start sm:items-center gap-3.5">
+              <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl transition-transform duration-300 group-hover:scale-105 ${
+                isDark
+                  ? 'bg-amber-500/15 text-amber-400 border border-amber-500/25 shadow-xs'
+                  : 'bg-amber-100 text-amber-700 border border-amber-300/60 shadow-xs'
+              }`}>
+                <ShieldAlert size={24} />
+              </div>
+
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-amber-500/15 text-amber-500 border border-amber-500/25">
+                    <ShieldCheck size={11} /> Rahasia Super Admin
+                  </span>
+                  <span className={`text-[11px] font-medium ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
+                    • Retensi 60 Hari
+                  </span>
+                </div>
+
+                <h3 className={`mt-1 text-sm sm:text-base font-bold ${isDark ? 'text-white' : 'text-stone-900'}`}>
+                  Audit Log & Rekam Jejak Aksi Admin
+                </h3>
+
+                <p className={`text-xs mt-0.5 ${isDark ? 'text-amber-100/70' : 'text-stone-600'}`}>
+                  Pantau siapa yang menghapus produk, mengubah kategori, memproses order, atau mengedit pengaturan sistem.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 self-end sm:self-center shrink-0">
+              <span className="inline-flex items-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold px-4 py-2 text-xs shadow-xs transition group-hover:translate-x-0.5">
+                <span>Buka Log Aktivitas</span>
+                <ChevronRight size={14} />
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Filter & Search Bar */}
       <div

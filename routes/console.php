@@ -32,3 +32,7 @@ Artisan::command('drive:auth', function () {
 
     return 0;
 })->purpose('Menampilkan link otorisasi OAuth 2.0 bertanda tangan aman untuk Google Drive');
+
+// Jadwal pembersihan log aktivitas otomatis (retensi 60 hari)
+\Illuminate\Support\Facades\Schedule::command('activity-logs:prune --days=60')->daily();
+

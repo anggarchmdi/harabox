@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
 use App\Models\Category;
+use App\Services\ActivityLogger;
 use Illuminate\Http\JsonResponse;
 
 class CategoryController extends Controller
@@ -26,6 +27,14 @@ class CategoryController extends Controller
     public function store(StoreCategoryRequest $request): JsonResponse
     {
         $category = Category::create($request->validated());
+
+        ActivityLogger::log(
+            action: 'create',
+            subjectType: 'category',
+            description: "Menambahkan kategori baru '{$category->name}'",
+            subjectName: $category->name,
+            subjectId: $category->id
+        );
 
         return response()->json([
             'success' => true,
@@ -51,6 +60,14 @@ class CategoryController extends Controller
     ): JsonResponse {
         $category->update($request->validated());
 
+        ActivityLogger::log(
+            action: 'update',
+            subjectType: 'category',
+            description: "Memperbarui kategori '{$category->name}'",
+            subjectName: $category->name,
+            subjectId: $category->id
+        );
+
         return response()->json([
             'success' => true,
             'message' => 'Category updated successfully',
@@ -60,7 +77,18 @@ class CategoryController extends Controller
 
     public function destroy(Category $category): JsonResponse
     {
+        $categoryName = $category->name;
+        $categoryId = $category->id;
+
         $category->delete();
+
+        ActivityLogger::log(
+            action: 'delete',
+            subjectType: 'category',
+            description: "Menghapus kategori '{$categoryName}'",
+            subjectName: $categoryName,
+            subjectId: $categoryId
+        );
 
         return response()->json([
             'success' => true,

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AddonController;
+use App\Http\Controllers\Api\Admin\ActivityLogController as AdminActivityLogController;
 use App\Http\Controllers\Api\Admin\AddonController as AdminAddonController;
 use App\Http\Controllers\Api\Admin\AddonGroupController as AdminAddonGroupController;
 use App\Http\Controllers\Api\Admin\AuthController;
@@ -216,6 +217,13 @@ Route::prefix('v1')->group(function () {
                 Route::delete('/{user}', [AdminUserController::class, 'destroy']);
                 Route::patch('/{user}/toggle-status', [AdminUserController::class, 'toggleStatus']);
                 Route::patch('/{user}/reset-password', [AdminUserController::class, 'resetPassword']);
+            });
+
+            // Activity Logs (Super Admin only)
+            Route::middleware('super_admin')->prefix('activity-logs')->group(function () {
+                Route::get('/', [AdminActivityLogController::class, 'index']);
+                Route::get('/stats', [AdminActivityLogController::class, 'stats']);
+                Route::post('/prune', [AdminActivityLogController::class, 'prune']);
             });
 
             // Google Drive OAuth Setup (Super Admin only)

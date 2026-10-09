@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\AddonGroup;
+use App\Services\ActivityLogger;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -42,6 +43,14 @@ class AddonGroupController extends Controller
         $group = AddonGroup::create($validated);
         $group->load('addons');
 
+        ActivityLogger::log(
+            action: 'create',
+            subjectType: 'addon_group',
+            description: "Menambahkan grup pilihan addon baru '{$group->name}'",
+            subjectName: $group->name,
+            subjectId: $group->id
+        );
+
         return response()->json([
             'success' => true,
             'message' => 'Addon group created successfully',
@@ -78,6 +87,14 @@ class AddonGroupController extends Controller
             $q->orderBy('price');
         }]);
 
+        ActivityLogger::log(
+            action: 'update',
+            subjectType: 'addon_group',
+            description: "Memperbarui grup pilihan addon '{$addonGroup->name}'",
+            subjectName: $addonGroup->name,
+            subjectId: $addonGroup->id
+        );
+
         return response()->json([
             'success' => true,
             'message' => 'Addon group updated successfully',
@@ -87,7 +104,17 @@ class AddonGroupController extends Controller
 
     public function destroy(AddonGroup $addonGroup): JsonResponse
     {
+        $name = $addonGroup->name;
+        $id = $addonGroup->id;
         $addonGroup->delete();
+
+        ActivityLogger::log(
+            action: 'delete',
+            subjectType: 'addon_group',
+            description: "Menghapus grup pilihan addon '{$name}'",
+            subjectName: $name,
+            subjectId: $id
+        );
 
         return response()->json([
             'success' => true,

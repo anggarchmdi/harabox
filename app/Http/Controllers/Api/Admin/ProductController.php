@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateProductRequest;
 use App\Models\Addon;
 use App\Models\AddonGroup;
 use App\Models\Product;
+use App\Services\ActivityLogger;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -140,6 +141,15 @@ class ProductController extends Controller
 
         $product->load(['category', 'addonGroups.addons']);
 
+        ActivityLogger::log(
+            action: 'create',
+            subjectType: 'product',
+            description: "Menambahkan menu baru '{$product->name}'",
+            subjectName: $product->name,
+            subjectId: $product->id,
+            properties: ['price' => $product->price, 'category_id' => $product->category_id]
+        );
+
         return response()->json([
             'success' => true,
             'message' => 'Produk berhasil dibuat.',
@@ -229,6 +239,14 @@ class ProductController extends Controller
 
         $product->load(['category', 'addonGroups.addons']);
 
+        ActivityLogger::log(
+            action: 'update',
+            subjectType: 'product',
+            description: "Memperbarui menu katering '{$product->name}'",
+            subjectName: $product->name,
+            subjectId: $product->id
+        );
+
         return response()->json([
             'success' => true,
             'message' => 'Product updated successfully',
@@ -251,8 +269,19 @@ class ProductController extends Controller
             );
         }
 
+        $productName = $product->name;
+        $productId = $product->id;
+
         // Hapus product dari database
         $product->delete();
+
+        ActivityLogger::log(
+            action: 'delete',
+            subjectType: 'product',
+            description: "Menghapus menu katering '{$productName}'",
+            subjectName: $productName,
+            subjectId: $productId
+        );
 
         return response()->json([
             'success' => true,

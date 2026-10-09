@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\CapacityOverride;
+use App\Services\ActivityLogger;
 use App\Services\KitchenCapacityService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -43,6 +44,14 @@ class SettingController extends Controller
 
         $this->capacityService->setDefaultCapacity((int) $validated['daily_box_capacity']);
 
+        ActivityLogger::log(
+            action: 'update',
+            subjectType: 'setting',
+            description: "Mengubah batas kuota dapur harian menjadi {$validated['daily_box_capacity']} box",
+            subjectName: 'Batas Kuota Dapur',
+            properties: ['daily_box_capacity' => $validated['daily_box_capacity']]
+        );
+
         return response()->json([
             'success' => true,
             'message' => 'Batas kuota harian berhasil disimpan.',
@@ -73,6 +82,18 @@ class SettingController extends Controller
             ]
         );
 
+        $actionDesc = ($override->is_closed)
+            ? "Mengatur dapur LIBUR (TUTUP) pada tanggal {$validated['date']}"
+            : "Mengatur kuota khusus tanggal {$validated['date']} menjadi {$validated['max_capacity']} box";
+
+        ActivityLogger::log(
+            action: 'update',
+            subjectType: 'setting',
+            description: $actionDesc,
+            subjectName: $validated['date'],
+            properties: $validated
+        );
+
         return response()->json([
             'success' => true,
             'message' => 'Kapasitas khusus tanggal berhasil disimpan.',
@@ -86,6 +107,13 @@ class SettingController extends Controller
     public function deleteOverride(string $date): JsonResponse
     {
         CapacityOverride::whereDate('date', $date)->delete();
+
+        ActivityLogger::log(
+            action: 'delete',
+            subjectType: 'setting',
+            description: "Menghapus aturan kuota khusus tanggal {$date}",
+            subjectName: $date
+        );
 
         return response()->json([
             'success' => true,

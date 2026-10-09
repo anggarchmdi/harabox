@@ -18,6 +18,7 @@ import EditProduct from '../pages/admin/products/EditProducts'
 import AdminTestimonials from '../pages/admin/AdminTestimonials'
 import AdminSettings from '../pages/admin/AdminSettings'
 import AdminUsers from '../pages/admin/users/AdminUsers'
+import AdminActivityLogs from '../pages/admin/AdminActivityLogs'
 
 // layout
 import AdminLayout from '../layout/AdminLayout'
@@ -80,6 +81,9 @@ export default function AppRoutes() {
 
           {/* user / admin management (super admin) */}
           <Route path="users" element={<AdminUsers />} />
+
+          {/* audit activity logs (super admin) */}
+          <Route path="activity-logs" element={<AdminActivityLogs />} />
 
         </Route>
       </Route>

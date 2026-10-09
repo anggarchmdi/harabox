@@ -7,6 +7,7 @@ use App\Http\Requests\StoreAdminOrderRequest;
 use App\Http\Requests\UpdateOrderPaymentRequest;
 use App\Http\Requests\UpdateOrderStatusRequest;
 use App\Models\Order;
+use App\Services\ActivityLogger;
 use App\Services\KitchenCapacityService;
 use App\Services\OrderService;
 use Illuminate\Http\JsonResponse;
@@ -29,6 +30,14 @@ class OrderController extends Controller
             $order = $this->orderService->createOrder(
                 $request->validated(),
                 isAdmin: true
+            );
+
+            ActivityLogger::log(
+                action: 'create',
+                subjectType: 'order',
+                description: "Membuat pesanan manual #{$order->order_code} untuk pelanggan '{$order->customers_name}'",
+                subjectName: $order->order_code,
+                subjectId: $order->id
             );
 
             return response()->json([
@@ -134,9 +143,19 @@ class OrderController extends Controller
             }
         }
 
+        $oldStatus = $order->status;
         $order->update([
             'status' => $newStatus,
         ]);
+
+        ActivityLogger::log(
+            action: 'status_change',
+            subjectType: 'order',
+            description: "Mengubah status pesanan #{$order->order_code} dari '{$oldStatus}' menjadi '{$newStatus}'",
+            subjectName: $order->order_code,
+            subjectId: $order->id,
+            properties: ['old_status' => $oldStatus, 'new_status' => $newStatus]
+        );
 
         return response()->json([
             'success' => true,
@@ -172,6 +191,15 @@ class OrderController extends Controller
         }
 
         $order->update($validated);
+
+        ActivityLogger::log(
+            action: 'payment_update',
+            subjectType: 'order',
+            description: "Memperbarui status pembayaran pesanan #{$order->order_code} menjadi '{$validated['payment_status']}'",
+            subjectName: $order->order_code,
+            subjectId: $order->id,
+            properties: ['payment_status' => $validated['payment_status']]
+        );
 
         return response()->json([
             'success' => true,

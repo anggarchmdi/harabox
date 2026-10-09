@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\UploadPaymentProofRequest;
 use App\Models\Order;
 use App\Models\OrderPaymentProof;
+use App\Services\ActivityLogger;
 use App\Services\GoogleDriveService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
@@ -103,6 +104,14 @@ class OrderPaymentProofController extends Controller
             ], 500);
         }
 
+        ActivityLogger::log(
+            action: 'create',
+            subjectType: 'payment_proof',
+            description: "Mengunggah bukti pembayaran baru untuk pesanan #{$order->order_code}",
+            subjectName: $order->order_code,
+            subjectId: $order->id
+        );
+
         return response()->json([
             'success' => true,
             'message' => 'Bukti transfer berhasil diupload.',
@@ -136,6 +145,14 @@ class OrderPaymentProofController extends Controller
         }
 
         $paymentProof->delete();
+
+        ActivityLogger::log(
+            action: 'delete',
+            subjectType: 'payment_proof',
+            description: "Menghapus bukti transfer pembayaran untuk pesanan #{$order->order_code}",
+            subjectName: $order->order_code,
+            subjectId: $order->id
+        );
 
         return response()->json([
             'success' => true,
