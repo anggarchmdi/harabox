@@ -10,6 +10,7 @@ use App\Models\Order;
 use App\Services\ActivityLogger;
 use App\Services\KitchenCapacityService;
 use App\Services\OrderService;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use RuntimeException;
@@ -89,6 +90,123 @@ class OrderController extends Controller
             'success' => true,
             'message' => 'Orders retrieved successfully',
             'data' => $orders,
+        ]);
+    }
+
+    /**
+     * Get calendar order tracking data grouped by date for a given month.
+     */
+    public function calendar(Request $request): JsonResponse
+    {
+        $month = $request->query('month'); // Format: YYYY-MM
+        if (! $month || ! preg_match('/^\d{4}-\d{2}$/', $month)) {
+            $month = now()->format('Y-m');
+        }
+
+        $startDate = Carbon::createFromFormat('Y-m', $month)->startOfMonth()->format('Y-m-d');
+        $endDate = Carbon::createFromFormat('Y-m', $month)->endOfMonth()->format('Y-m-d');
+
+        $orders = Order::query()
+            ->with(['items.product', 'items.addons', 'addons.addon'])
+            ->whereBetween('event_date', [$startDate, $endDate])
+            ->orderBy('event_date', 'asc')
+            ->orderBy('event_time', 'asc')
+            ->get();
+
+        $grouped = [];
+        $monthlyPortions = 0;
+        $monthlyRevenue = 0;
+        $allSoldItems = [];
+
+        foreach ($orders as $order) {
+            $dateKey = $order->event_date instanceof \DateTimeInterface
+                ? $order->event_date->format('Y-m-d')
+                : Carbon::parse($order->event_date)->format('Y-m-d');
+
+            if (! isset($grouped[$dateKey])) {
+                $grouped[$dateKey] = [
+                    'date' => $dateKey,
+                    'orders' => [],
+                    'order_count' => 0,
+                    'total_portions' => 0,
+                    'total_revenue' => 0,
+                    'items_breakdown' => [],
+                    'max_capacity' => $this->capacityService->getMaxCapacity($dateKey),
+                    'is_closed' => $this->capacityService->isDateClosed($dateKey),
+                    'status_counts' => [
+                        'pending' => 0,
+                        'confirmed' => 0,
+                        'processing' => 0,
+                        'completed' => 0,
+                        'cancelled' => 0,
+                    ],
+                ];
+            }
+
+            $orderData = $order->toArray();
+            $orderPortions = (int) $order->items->sum('quantity');
+            $orderData['total_portions'] = $orderPortions;
+            $grouped[$dateKey]['orders'][] = $orderData;
+            $grouped[$dateKey]['order_count']++;
+
+            $status = $order->status ?? 'pending';
+            if (isset($grouped[$dateKey]['status_counts'][$status])) {
+                $grouped[$dateKey]['status_counts'][$status]++;
+            }
+
+            if ($status !== 'cancelled') {
+                $grouped[$dateKey]['total_portions'] += $orderPortions;
+                $grouped[$dateKey]['total_revenue'] += (float) $order->total;
+                $monthlyPortions += $orderPortions;
+                $monthlyRevenue += (float) $order->total;
+
+                foreach ($order->items as $item) {
+                    $itemName = $item->item_name ?: ($item->product?->name ?? 'Menu Katering');
+                    if (! isset($grouped[$dateKey]['items_breakdown'][$itemName])) {
+                        $grouped[$dateKey]['items_breakdown'][$itemName] = [
+                            'name' => $itemName,
+                            'quantity' => 0,
+                            'subtotal' => 0,
+                        ];
+                    }
+                    $grouped[$dateKey]['items_breakdown'][$itemName]['quantity'] += (int) $item->quantity;
+                    $grouped[$dateKey]['items_breakdown'][$itemName]['subtotal'] += (float) $item->subtotal;
+
+                    if (! isset($allSoldItems[$itemName])) {
+                        $allSoldItems[$itemName] = [
+                            'name' => $itemName,
+                            'quantity' => 0,
+                            'subtotal' => 0,
+                        ];
+                    }
+                    $allSoldItems[$itemName]['quantity'] += (int) $item->quantity;
+                    $allSoldItems[$itemName]['subtotal'] += (float) $item->subtotal;
+                }
+            }
+        }
+
+        foreach ($grouped as &$dayData) {
+            $dayData['items_breakdown'] = array_values($dayData['items_breakdown']);
+        }
+        unset($dayData);
+
+        usort($allSoldItems, fn ($a, $b) => $b['quantity'] <=> $a['quantity']);
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'month' => $month,
+                'start_date' => $startDate,
+                'end_date' => $endDate,
+                'days' => $grouped,
+                'monthly_summary' => [
+                    'total_orders' => $orders->count(),
+                    'active_orders' => $orders->where('status', '!=', 'cancelled')->count(),
+                    'total_portions' => $monthlyPortions,
+                    'total_revenue' => $monthlyRevenue,
+                    'top_sold_items' => array_slice(array_values($allSoldItems), 0, 5),
+                ],
+            ],
         ]);
     }
 

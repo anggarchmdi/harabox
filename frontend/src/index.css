@@ -3,6 +3,8 @@
 
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @font-face {
   font-family: 'Eagle Lake';
   src: url('/fonts/EagleLake-Regular.ttf') format('truetype');

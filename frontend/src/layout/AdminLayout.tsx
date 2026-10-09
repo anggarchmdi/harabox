@@ -9,6 +9,7 @@ import {
   ChevronLeft,
   ExternalLink,
   FileSpreadsheet,
+  CalendarDays,
   HelpCircle,
   LayoutDashboard,
   LogOut,
@@ -62,6 +63,11 @@ const mainMenus: MenuItem[] = [
     icon: ShoppingCart,
     badgeKey: 'pending_orders',
     end: true,
+  },
+  {
+    label: 'Kalender Pesanan',
+    to: '/admin/orders/calendar',
+    icon: CalendarDays,
   },
   {
     label: 'Rekap Pesanan',

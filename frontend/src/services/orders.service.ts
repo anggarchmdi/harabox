@@ -13,6 +13,7 @@ import type {
   OrderRecapResponse,
   OrderRecapParams,
   OrderPaymentProof,
+  CalendarDataResponse,
 } from '../types/orders'
 
 export interface OrderFilters {
@@ -263,5 +264,15 @@ export const ordersService = {
     proofId: number,
   ): Promise<void> {
     await api.delete(`/admin/orders/${orderId}/payment-proofs/${proofId}`)
+  },
+
+  async getCalendar(month?: string): Promise<CalendarDataResponse> {
+    const response = await api.get<{
+      success: boolean
+      data: CalendarDataResponse
+    }>('/admin/orders/calendar', {
+      params: month ? { month } : {},
+    })
+    return response.data.data
   },
 }

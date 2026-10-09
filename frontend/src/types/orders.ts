@@ -215,3 +215,42 @@ export interface OrderRecapParams {
   per_page?: number
 }
 
+export interface CalendarItemBreakdown {
+  name: string
+  quantity: number
+  subtotal: number
+}
+
+export interface CalendarDayData {
+  date: string
+  orders: Order[]
+  order_count: number
+  total_portions: number
+  total_revenue: number
+  items_breakdown: CalendarItemBreakdown[]
+  max_capacity: number
+  is_closed: boolean
+  status_counts: {
+    pending: number
+    confirmed: number
+    processing: number
+    completed: number
+    cancelled: number
+  }
+}
+
+export interface CalendarMonthlySummary {
+  total_orders: number
+  active_orders: number
+  total_portions: number
+  total_revenue: number
+  top_sold_items: CalendarItemBreakdown[]
+}
+
+export interface CalendarDataResponse {
+  month: string
+  start_date: string
+  end_date: string
+  days: Record<string, CalendarDayData>
+  monthly_summary: CalendarMonthlySummary
+}

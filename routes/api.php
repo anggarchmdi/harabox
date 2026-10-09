@@ -163,6 +163,11 @@ Route::prefix('v1')->group(function () {
                 'store',
             ]);
 
+            Route::get('/orders/calendar', [
+                AdminOrderController::class,
+                'calendar',
+            ]);
+
             Route::get('/orders/{order}', [
                 AdminOrderController::class,
                 'show',
