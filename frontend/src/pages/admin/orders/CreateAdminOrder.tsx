@@ -586,7 +586,7 @@ export default function CreateAdminOrder() {
                   </p>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 max-h-[720px] overflow-y-auto pr-1">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 max-h-[720px] overflow-y-auto pr-1.5 scrollbar-thin">
                   {filteredProducts.map((product) => {
                     const hasAddons =
                       product.addons_enabled &&
@@ -745,7 +745,7 @@ export default function CreateAdminOrder() {
                   </p>
                 </div>
               ) : (
-                <div className="space-y-2.5 max-h-64 overflow-y-auto pr-1">
+                <div className="space-y-2.5 max-h-64 overflow-y-auto pr-1.5 scrollbar-thin">
                   {items.map((item) => {
                     const addonsPrice = item.selectedAddons.reduce(
                       (sum, a) => sum + Number(a.addon.price || 0),
@@ -1494,7 +1494,7 @@ export default function CreateAdminOrder() {
       {configuringProduct && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200">
           <div
-            className={`w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-3xl border p-5 sm:p-6 shadow-2xl transition-all ${
+            className={`w-full max-w-lg max-h-[90vh] overflow-y-auto scrollbar-thin rounded-3xl border p-5 sm:p-6 shadow-2xl transition-all ${
               isDark ? 'border-[#60241E] bg-[#1C0B09] text-stone-100' : 'border-stone-200 bg-white text-stone-900'
             }`}
           >
