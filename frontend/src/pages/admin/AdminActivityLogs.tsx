@@ -19,6 +19,8 @@ import {
   Sliders,
   DollarSign,
   ShieldCheck,
+  Calendar,
+  X,
 } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -29,6 +31,13 @@ import { useThemeStore } from '../../stores/theme.store'
 import useDebounce from '../../hooks/useDebounce'
 import PageLoader from '../../components/ui/PageLoader'
 import Pagination from '../../components/ui/Pagination'
+
+function formatYMD(d: Date): string {
+  const year = d.getFullYear()
+  const month = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
 
 export default function AdminActivityLogs() {
   const navigate = useNavigate()
@@ -44,15 +53,66 @@ export default function AdminActivityLogs() {
   const [actionFilter, setActionFilter] = useState<string>('all')
   const [subjectFilter, setSubjectFilter] = useState<string>('all')
 
+  // Date Filter States
+  type DatePreset = 'all' | 'today' | 'last_7_days' | 'this_month' | 'custom'
+  const [datePreset, setDatePreset] = useState<DatePreset>('all')
+  const [startDate, setStartDate] = useState<string>('')
+  const [endDate, setEndDate] = useState<string>('')
+
+  const handleSelectPreset = (preset: DatePreset) => {
+    setDatePreset(preset)
+    setPage(1)
+    const now = new Date()
+
+    if (preset === 'all') {
+      setStartDate('')
+      setEndDate('')
+    } else if (preset === 'today') {
+      const todayStr = formatYMD(now)
+      setStartDate(todayStr)
+      setEndDate(todayStr)
+    } else if (preset === 'last_7_days') {
+      const sevenDaysAgo = new Date()
+      sevenDaysAgo.setDate(now.getDate() - 6)
+      setStartDate(formatYMD(sevenDaysAgo))
+      setEndDate(formatYMD(now))
+    } else if (preset === 'this_month') {
+      const firstDay = new Date(now.getFullYear(), now.getMonth(), 1)
+      setStartDate(formatYMD(firstDay))
+      setEndDate(formatYMD(now))
+    }
+  }
+
+  const handleStartDateChange = (val: string) => {
+    setStartDate(val)
+    setDatePreset('custom')
+    setPage(1)
+  }
+
+  const handleEndDateChange = (val: string) => {
+    setEndDate(val)
+    setDatePreset('custom')
+    setPage(1)
+  }
+
   // Prune manual modal
   const [pruneModalOpen, setPruneModalOpen] = useState(false)
 
   // Guard: Only super admin can access
   const isSuperAdmin = currentUser?.role === 'super_admin'
 
-  // Fetch Logs (Default 50 per page)
+  // Fetch Logs (Default 50 per page, with search, action, subject, date filters)
   const { data: logsResponse, isLoading } = useQuery({
-    queryKey: ['admin-activity-logs', page, perPage, search, actionFilter, subjectFilter],
+    queryKey: [
+      'admin-activity-logs',
+      page,
+      perPage,
+      search,
+      actionFilter,
+      subjectFilter,
+      startDate,
+      endDate,
+    ],
     queryFn: () =>
       activityLogService.list({
         page,
@@ -60,6 +120,8 @@ export default function AdminActivityLogs() {
         search: search || undefined,
         action: actionFilter === 'all' ? undefined : actionFilter,
         subject_type: subjectFilter === 'all' ? undefined : subjectFilter,
+        start_date: startDate || undefined,
+        end_date: endDate || undefined,
       }),
     enabled: isSuperAdmin,
   })
@@ -94,11 +156,22 @@ export default function AdminActivityLogs() {
     setSearchInput('')
     setActionFilter('all')
     setSubjectFilter('all')
+    setDatePreset('all')
+    setStartDate('')
+    setEndDate('')
     setPerPage(50)
     setPage(1)
   }
 
-  const hasActiveFilters = Boolean(searchInput || actionFilter !== 'all' || subjectFilter !== 'all' || perPage !== 50)
+  const hasActiveFilters = Boolean(
+    searchInput ||
+      actionFilter !== 'all' ||
+      subjectFilter !== 'all' ||
+      datePreset !== 'all' ||
+      startDate ||
+      endDate ||
+      perPage !== 50,
+  )
 
   // If not super admin, show access denied view
   if (!isSuperAdmin) {
@@ -410,6 +483,131 @@ export default function AdminActivityLogs() {
                 <span>Reset</span>
               </button>
             )}
+          </div>
+
+          {/* Row 2: Date Filters & Custom Date Range */}
+          <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-3 pt-3 border-t border-stone-200/80 dark:border-[#5E221C]/60">
+            {/* Presets Pills */}
+            <div className="flex flex-wrap items-center gap-1.5">
+              <span
+                className={`text-[11px] font-bold uppercase tracking-wider mr-1 flex items-center gap-1.5 ${
+                  isDark ? 'text-amber-200/70' : 'text-stone-500'
+                }`}
+              >
+                <Calendar size={13} className="text-red-500" />
+                Periode:
+              </span>
+
+              <button
+                type="button"
+                onClick={() => handleSelectPreset('all')}
+                className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition cursor-pointer ${
+                  datePreset === 'all' && !startDate && !endDate
+                    ? 'bg-red-600 text-white shadow-2xs font-bold'
+                    : isDark
+                      ? 'bg-[#180A08] text-stone-300 hover:bg-[#25100D] hover:text-white border border-[#5E221C]'
+                      : 'bg-stone-100 text-stone-700 hover:bg-stone-200 border border-stone-200'
+                }`}
+              >
+                Semua
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleSelectPreset('today')}
+                className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition cursor-pointer ${
+                  datePreset === 'today'
+                    ? 'bg-red-600 text-white shadow-2xs font-bold'
+                    : isDark
+                      ? 'bg-[#180A08] text-stone-300 hover:bg-[#25100D] hover:text-white border border-[#5E221C]'
+                      : 'bg-stone-100 text-stone-700 hover:bg-stone-200 border border-stone-200'
+                }`}
+              >
+                Hari Ini
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleSelectPreset('last_7_days')}
+                className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition cursor-pointer ${
+                  datePreset === 'last_7_days'
+                    ? 'bg-red-600 text-white shadow-2xs font-bold'
+                    : isDark
+                      ? 'bg-[#180A08] text-stone-300 hover:bg-[#25100D] hover:text-white border border-[#5E221C]'
+                      : 'bg-stone-100 text-stone-700 hover:bg-stone-200 border border-stone-200'
+                }`}
+              >
+                7 Hari Terakhir
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleSelectPreset('this_month')}
+                className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition cursor-pointer ${
+                  datePreset === 'this_month'
+                    ? 'bg-red-600 text-white shadow-2xs font-bold'
+                    : isDark
+                      ? 'bg-[#180A08] text-stone-300 hover:bg-[#25100D] hover:text-white border border-[#5E221C]'
+                      : 'bg-stone-100 text-stone-700 hover:bg-stone-200 border border-stone-200'
+                }`}
+              >
+                Bulan Ini
+              </button>
+            </div>
+
+            {/* Custom Date Range Picker */}
+            <div className="flex flex-wrap items-center gap-2 text-xs">
+              <span
+                className={`text-[11px] font-medium ${
+                  isDark ? 'text-stone-400' : 'text-stone-500'
+                }`}
+              >
+                Rentang Tanggal:
+              </span>
+              <div className="flex items-center gap-1.5">
+                <input
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => handleStartDateChange(e.target.value)}
+                  className={`rounded-xl border px-2.5 py-1.5 text-xs outline-none transition cursor-pointer ${
+                    isDark
+                      ? 'border-[#5E221C] bg-[#180A08] text-white focus:border-red-500 [color-scheme:dark]'
+                      : 'border-stone-200 bg-white text-stone-900 focus:border-red-500 [color-scheme:light]'
+                  }`}
+                  placeholder="Dari tgl"
+                  title="Dari tanggal"
+                />
+                <span className={isDark ? 'text-stone-500' : 'text-stone-400'}>s/d</span>
+                <input
+                  type="date"
+                  value={endDate}
+                  min={startDate || undefined}
+                  onChange={(e) => handleEndDateChange(e.target.value)}
+                  className={`rounded-xl border px-2.5 py-1.5 text-xs outline-none transition cursor-pointer ${
+                    isDark
+                      ? 'border-[#5E221C] bg-[#180A08] text-white focus:border-red-500 [color-scheme:dark]'
+                      : 'border-stone-200 bg-white text-stone-900 focus:border-red-500 [color-scheme:light]'
+                  }`}
+                  placeholder="Sampai tgl"
+                  title="Sampai tanggal"
+                />
+              </div>
+
+              {(startDate || endDate) && (
+                <button
+                  type="button"
+                  onClick={() => handleSelectPreset('all')}
+                  className={`p-1.5 rounded-lg transition cursor-pointer ${
+                    isDark
+                      ? 'text-stone-400 hover:text-red-400 hover:bg-[#2A110E]'
+                      : 'text-stone-400 hover:text-red-600 hover:bg-stone-100'
+                  }`}
+                  title="Hapus filter tanggal"
+                >
+                  <X size={14} />
+                </button>
+              )}
+            </div>
           </div>
         </div>
 
