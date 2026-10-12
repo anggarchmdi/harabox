@@ -16,6 +16,8 @@ export interface Product {
   price: string
   minimum_order: number
   lead_time_days?: number
+  has_delivery_fee?: boolean
+  delivery_fee?: number | string
   addons_enabled?: boolean
   image?: string | null
   is_active: boolean
@@ -41,6 +43,8 @@ export interface CreateProductRequest {
   price: number
   minimum_order: number
   lead_time_days?: number
+  has_delivery_fee?: boolean
+  delivery_fee?: number
   addons_enabled?: boolean
   addon_group_ids?: number[]
   custom_nasi?: ProductPackageAddon[]
@@ -58,6 +62,8 @@ export interface UpdateProductRequest {
   price?: number
   minimum_order?: number
   lead_time_days?: number
+  has_delivery_fee?: boolean
+  delivery_fee?: number
   addons_enabled?: boolean
   addon_group_ids?: number[]
   custom_nasi?: ProductPackageAddon[]

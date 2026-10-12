@@ -4,7 +4,6 @@ import {
   ArrowLeft,
   Calendar,
   Clock,
-  Info,
   MapPin,
   MessageCircle,
   Minus,
@@ -12,6 +11,7 @@ import {
   ShoppingBag,
   ShoppingCart,
   Trash2,
+  Truck,
   User,
   X,
   AlertCircle,
@@ -122,8 +122,7 @@ export default function CartPage() {
   const selectedTotalPortions = getSelectedTotalPortions()
   const selectedSubtotal = getSelectedSubtotal()
   const selectedMaxLeadDays = getSelectedMaxLeadTimeDays()
-  const deliveryFee = selectedDistinctCount > 0 ? 10000 : 0
-  const grandTotal = selectedSubtotal + deliveryFee
+  const grandTotal = selectedSubtotal
 
   const isAllSelected = items.length > 0 && items.every((i) => i.selected)
 
@@ -296,8 +295,8 @@ ${itemBlocks.join('\n\n')}
 
 -----------------------------------------
 - Subtotal Menu: *Rp ${selectedSubtotal.toLocaleString('id-ID')}*
-- Estimasi Ongkir: *Rp ${deliveryFee.toLocaleString('id-ID')}*
-- Total Estimasi: *Rp ${grandTotal.toLocaleString('id-ID')}*
+- Ongkos Kirim: *GRATIS (Rp 0) 🎉*
+- Total Pembayaran: *Rp ${grandTotal.toLocaleString('id-ID')}*
 
 - Tanggal Acara: *${eventDate}* ${eventTime ? `(Jam: ${eventTime})` : ''}
 - Alamat Pengantaran: *${deliveryAddress.trim()}*
@@ -700,13 +699,17 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                     </span>
                   </div>
 
-                  <div className={`flex justify-between ${isDark ? 'text-amber-100/80' : 'text-[#5C3831]'}`}>
-                    <span className="flex items-center gap-1">
+                  <div className={`flex justify-between items-center ${isDark ? 'text-amber-100/80' : 'text-[#5C3831]'}`}>
+                    <span className="flex items-center gap-1.5">
+                      <Truck size={14} className="text-emerald-500" />
                       Biaya Pengiriman:
-                      <Info size={13} className={isDark ? 'text-amber-400' : 'text-[#D97706]'} />
                     </span>
-                    <span className={`font-semibold ${isDark ? 'text-amber-200' : 'text-[#8C4320]'}`}>
-                      {selectedDistinctCount > 0 ? `Rp ${deliveryFee.toLocaleString('id-ID')}` : 'Rp 0'}
+                    <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold ${
+                      isDark
+                        ? 'bg-emerald-950/60 text-emerald-400 border border-emerald-500/40'
+                        : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                    }`}>
+                      GRATIS (Rp 0)
                     </span>
                   </div>
 
@@ -1092,6 +1095,12 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                         : 'border-[#E6DACD] bg-white text-[#2B120E] placeholder-stone-400 focus:border-[#D97706] focus:ring-2 focus:ring-[#D97706]/20'
                     }`}
                   />
+                </div>
+                <div className={`mt-1.5 flex items-center gap-1.5 text-[11px] font-semibold ${
+                  isDark ? 'text-emerald-400' : 'text-emerald-700'
+                }`}>
+                  <Truck size={13} className="shrink-0" />
+                  <span>Bebas biaya ongkir ke seluruh lokasi pengantaran.</span>
                 </div>
               </div>
 

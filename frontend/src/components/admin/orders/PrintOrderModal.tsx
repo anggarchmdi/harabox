@@ -166,7 +166,7 @@ RINCIAN PESANAN:
 ${itemsText}
 ${line}
 Subtotal Menu : ${formatRupiah(subtotal)}
-Ongkos Kirim  : ${formatRupiah(deliveryFee)}
+Ongkos Kirim  : ${deliveryFee > 0 ? formatRupiah(deliveryFee) : 'GRATIS (Rp 0)'}
 TOTAL TAGIHAN : ${formatRupiah(total)}
 ${line}
 Status Order  : ${orderStatusText}
@@ -429,7 +429,7 @@ Instagram: @pawonhara
             </div>
             <div style="display: flex; justify-content: space-between; padding: 4px 0;">
               <span>Ongkos Kirim:</span>
-              <span style="font-family: monospace;">${formatRupiah(deliveryFee)}</span>
+              <span style="font-family: monospace;">${deliveryFee > 0 ? formatRupiah(deliveryFee) : 'GRATIS'}</span>
             </div>
             <div style="display: flex; justify-content: space-between; padding: 6px 0; border-top: 2px solid #000; border-bottom: 2px solid #000; font-size: 13px; font-weight: 900;">
               <span>TOTAL TAGIHAN:</span>
@@ -847,7 +847,7 @@ Instagram: @pawonhara
                     </div>
                     <div className="flex justify-between">
                       <span>Ongkir:</span>
-                      <span className="font-mono">{formatRupiah(deliveryFee)}</span>
+                      <span className="font-mono">{deliveryFee > 0 ? formatRupiah(deliveryFee) : 'GRATIS'}</span>
                     </div>
                     <div className="flex justify-between font-black text-sm border-t border-black pt-1">
                       <span>TOTAL:</span>

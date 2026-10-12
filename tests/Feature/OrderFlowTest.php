@@ -66,8 +66,8 @@ class OrderFlowTest extends TestCase
         $this->assertDatabaseHas('orders', [
             'customers_name' => 'Pak Bambang Test',
             'subtotal' => 100000.00,
-            'delivery_fee' => 10000.00,
-            'total' => 110000.00,
+            'delivery_fee' => 0.00,
+            'total' => 100000.00,
             'status' => 'pending',
         ]);
     }
@@ -122,7 +122,7 @@ class OrderFlowTest extends TestCase
 
         $response = $this->postJson('/api/v1/orders', $payload);
 
-        // Unit price = 15000 + 1000 = 16000. Subtotal = 16000 * 20 = 320000. Total = 320000 + 10000 = 330000
+        // Unit price = 15000 + 1000 = 16000. Subtotal = 16000 * 20 = 320000. Total = 320000 (Gratis Ongkir)
         $response->assertStatus(201)
             ->assertJson([
                 'success' => true,
@@ -137,7 +137,7 @@ class OrderFlowTest extends TestCase
         $this->assertDatabaseHas('orders', [
             'customers_name' => 'Ibu Rina Test',
             'subtotal' => 320000.00,
-            'total' => 330000.00,
+            'total' => 320000.00,
         ]);
 
         $this->assertDatabaseHas('order_item_addons', [
@@ -465,10 +465,10 @@ class OrderFlowTest extends TestCase
         // Item 1: (15000 + 2000) * 30 = 510000
         // Item 2: 15000 * 20 = 300000
         // Item 3: 20000 * 25 = 500000
-        // Subtotal = 1310000, Delivery Fee = 10000, Total = 1320000
+        // Subtotal = 1310000, Delivery Fee = 0, Total = 1310000
         $this->assertEquals(1310000.00, (float) $order->subtotal);
-        $this->assertEquals(10000.00, (float) $order->delivery_fee);
-        $this->assertEquals(1320000.00, (float) $order->total);
+        $this->assertEquals(0.00, (float) $order->delivery_fee);
+        $this->assertEquals(1310000.00, (float) $order->total);
 
         // Check addons on first item
         $firstItem = $order->items()->where('product_id', $productA->id)->where('quantity', 30)->first();

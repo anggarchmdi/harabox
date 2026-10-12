@@ -16,6 +16,7 @@ import {
   ShoppingBag,
   ShoppingCart,
   Sparkles,
+  Truck,
   User,
   UtensilsCrossed,
   X,
@@ -192,6 +193,8 @@ export default function ProductDetailPage() {
 
   const minOrder = product ? Math.max(1, product.minimum_order || 1) : 10
   const leadTimeDays = product?.lead_time_days ?? 3
+  const productHasDeliveryFee = Boolean(product?.has_delivery_fee)
+  const productDeliveryFee = Number(product?.delivery_fee || 0)
 
   const minDateString = useMemo(() => {
     const d = new Date()
@@ -698,6 +701,8 @@ export default function ProductDetailPage() {
 - Jumlah: *${quantity} Porsi*
 - Harga Paket Dasar: *Rp ${formattedBasePrice} x ${quantity} porsi = Rp ${formattedBaseTotal}*
 ${addonLines.length > 0 ? `- Pilihan Add-on / Variasi Paket:\n${addonLines.join('\n')}\n` : ''}- Total Estimasi: *Rp ${formattedEstimatedSubtotal}* (@ Rp ${formattedUnitPrice}/porsi)
+- Ongkos Kirim: *${productHasDeliveryFee ? `Rp ${productDeliveryFee.toLocaleString('id-ID')}` : 'GRATIS (Rp 0) 🎉'}*
+- Total Pembayaran: *Rp ${(estimatedTotal + (productHasDeliveryFee ? productDeliveryFee : 0)).toLocaleString('id-ID')}*
 - Tanggal Acara: *${eventDate}* ${eventTime ? `(Jam: ${eventTime})` : ''}
 - Alamat Pengantaran: *${deliveryAddress.trim()}*
 ${notes.trim() ? `- Catatan Khusus: *${notes.trim()}*\n` : ''}
@@ -855,15 +860,33 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                   <div className="absolute inset-0 bg-gradient-to-t from-[#2B120E]/20 via-transparent to-transparent pointer-events-none" />
                 )}
 
-                {/* Min Order Badge */}
-                <div
-                  className={`absolute left-3.5 top-3.5 sm:left-4 sm:top-4 flex items-center gap-1.5 rounded-full px-3 py-1.5 sm:px-3.5 text-xs font-black shadow-md backdrop-blur-md transition-transform duration-300 group-hover:scale-105 ${isDark
-                    ? 'bg-[#1C0B09]/90 border border-[#F59E0B]/40 text-amber-300'
-                    : 'bg-white/95 border border-[#E6DACD] text-[#8C3A00]'
-                    }`}
-                >
-                  <ShoppingBag size={13} className="text-[#F59E0B]" />
-                  <span>Min. {minOrder} Porsi</span>
+                {/* Top Left Badges: Min Order & Gratis Ongkir */}
+                <div className="absolute left-3.5 top-3.5 sm:left-4 sm:top-4 flex flex-wrap items-center gap-2 z-10">
+                  <div
+                    className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 sm:px-3.5 text-xs font-black shadow-md backdrop-blur-md transition-transform duration-300 group-hover:scale-105 ${isDark
+                      ? 'bg-[#1C0B09]/90 border border-[#F59E0B]/40 text-amber-300'
+                      : 'bg-white/95 border border-[#E6DACD] text-[#8C3A00]'
+                      }`}
+                  >
+                    <ShoppingBag size={13} className="text-[#F59E0B]" />
+                    <span>Min. {minOrder} Porsi</span>
+                  </div>
+
+                  {productHasDeliveryFee ? (
+                    <div
+                      className="flex items-center gap-1.5 rounded-full px-3 py-1.5 sm:px-3.5 text-xs font-black uppercase tracking-wider text-amber-900 bg-amber-100 dark:text-amber-200 dark:bg-amber-950/90 border border-amber-300/40 shadow-lg backdrop-blur-md transition-transform duration-300 group-hover:scale-105"
+                    >
+                      <Truck size={13} />
+                      <span>+Ongkir Rp {productDeliveryFee.toLocaleString('id-ID')}</span>
+                    </div>
+                  ) : (
+                    <div
+                      className="flex items-center gap-1.5 rounded-full px-3 py-1.5 sm:px-3.5 text-xs font-black uppercase tracking-wider text-white shadow-lg shadow-emerald-950/40 backdrop-blur-md transition-transform duration-300 group-hover:scale-105 bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 border border-emerald-300/40"
+                    >
+                      <Truck size={13} className="animate-pulse" />
+                      <span>Gratis Ongkir</span>
+                    </div>
+                  )}
                 </div>
 
                 {/* Lead Time Badge */}
@@ -947,6 +970,27 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
 
                   {/* Clean Trust Tags */}
                   <div className="flex flex-wrap items-center gap-2">
+                    {productHasDeliveryFee ? (
+                      <span
+                        className={`inline-flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-semibold ${isDark
+                          ? 'border-amber-500/40 bg-amber-950/40 text-amber-300'
+                          : 'border-amber-200 bg-amber-50 text-amber-800'
+                          }`}
+                      >
+                        <Truck size={13} className="text-amber-500" />
+                        +Ongkir Rp {productDeliveryFee.toLocaleString('id-ID')}
+                      </span>
+                    ) : (
+                      <span
+                        className={`inline-flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-semibold ${isDark
+                          ? 'border-emerald-500/40 bg-emerald-950/40 text-emerald-300'
+                          : 'border-emerald-200 bg-emerald-50 text-emerald-700'
+                          }`}
+                      >
+                        <Truck size={13} className="text-emerald-500" />
+                        Gratis Ongkir
+                      </span>
+                    )}
                     <span
                       className={`inline-flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-semibold ${isDark
                         ? 'border-[#60241E] bg-[#2D120F] text-amber-200'
@@ -967,6 +1011,89 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                     </span>
                   </div>
                 </div>
+
+                {/* Free Shipping / Delivery Fee Highlight Banner */}
+                {productHasDeliveryFee ? (
+                  <div
+                    className={`mt-5 rounded-2xl border p-3.5 sm:p-4 flex items-center gap-3.5 transition-all shadow-xs ${isDark
+                      ? 'border-amber-500/30 bg-gradient-to-r from-amber-950/40 via-[#2D120F] to-[#1F0C0A]'
+                      : 'border-amber-200/90 bg-gradient-to-r from-amber-50/90 via-orange-50/30 to-white'
+                      }`}
+                  >
+                    <div
+                      className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl shadow-xs ${isDark
+                        ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
+                        : 'bg-amber-100 text-amber-800 border border-amber-200'
+                        }`}
+                    >
+                      <Truck size={20} />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2">
+                        <h4
+                          className={`text-xs sm:text-sm font-bold font-poppins tracking-wide ${isDark ? 'text-white' : 'text-[#2B120E]'
+                            }`}
+                        >
+                          Biaya Pengiriman: Rp {productDeliveryFee.toLocaleString('id-ID')}
+                        </h4>
+                        <span
+                          className={`inline-flex text-[10px] font-black uppercase px-2 py-0.5 rounded-full ${isDark
+                            ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                            : 'bg-amber-100 text-amber-800 border border-amber-200'
+                            }`}
+                        >
+                          Biaya Kirim
+                        </span>
+                      </div>
+                      <p
+                        className={`mt-0.5 text-[11px] sm:text-xs leading-relaxed ${isDark ? 'text-amber-100/70' : 'text-[#6B423A]'
+                          }`}
+                      >
+                        Pengantaran katering untuk paket ini dikenakan biaya ongkos kirim standar ke lokasi Anda.
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <div
+                    className={`mt-5 rounded-2xl border p-3.5 sm:p-4 flex items-center gap-3.5 transition-all shadow-xs ${isDark
+                      ? 'border-emerald-500/30 bg-gradient-to-r from-emerald-950/40 via-[#2D120F] to-[#1F0C0A]'
+                      : 'border-emerald-200/90 bg-gradient-to-r from-emerald-50/90 via-amber-50/30 to-white'
+                      }`}
+                  >
+                    <div
+                      className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl shadow-xs ${isDark
+                        ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                        : 'bg-emerald-100 text-emerald-700 border border-emerald-200'
+                        }`}
+                    >
+                      <Truck size={20} />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2">
+                        <h4
+                          className={`text-xs sm:text-sm font-bold font-poppins tracking-wide ${isDark ? 'text-white' : 'text-[#2B120E]'
+                            }`}
+                        >
+                          Bebas Biaya Pengiriman (Gratis Ongkir)
+                        </h4>
+                        <span
+                          className={`inline-flex text-[10px] font-black uppercase px-2 py-0.5 rounded-full ${isDark
+                            ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                            : 'bg-emerald-100 text-emerald-700 border border-emerald-200'
+                            }`}
+                        >
+                          Gratis
+                        </span>
+                      </div>
+                      <p
+                        className={`mt-0.5 text-[11px] sm:text-xs leading-relaxed ${isDark ? 'text-amber-100/70' : 'text-[#6B423A]'
+                          }`}
+                      >
+                        Pesanan katering diantar langsung ke lokasi acara Anda tanpa tambahan biaya ongkos kirim.
+                      </p>
+                    </div>
+                  </div>
+                )}
 
                 {/* Daftar Isi Paket (Termasuk dalam Paket Dasar) */}
                 {product.package_items && product.package_items.length > 0 && (
@@ -1386,6 +1513,31 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                   </div>
                 )}
 
+                {/* Free Shipping Row in Summary */}
+                <div
+                  className={`flex items-center justify-between text-xs py-1.5 ${isDark ? 'text-amber-100/80' : 'text-[#5C3831]'
+                    }`}
+                >
+                  <span className="flex items-center gap-1.5">
+                    <Truck size={14} className={productHasDeliveryFee ? 'text-amber-500' : 'text-emerald-500'} />
+                    Biaya Pengiriman:
+                  </span>
+                  {productHasDeliveryFee ? (
+                    <span className="font-semibold font-mono text-xs text-amber-500">
+                      Rp {productDeliveryFee.toLocaleString('id-ID')}
+                    </span>
+                  ) : (
+                    <span
+                      className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold ${isDark
+                        ? 'bg-emerald-950/60 text-emerald-400 border border-emerald-500/40'
+                        : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                        }`}
+                    >
+                      GRATIS (Rp 0)
+                    </span>
+                  )}
+                </div>
+
                 {/* Total Estimasi */}
                 <div
                   className={`border-t pt-3 flex items-baseline justify-between ${isDark ? 'border-[#60241E]' : 'border-[#E6DACD]'
@@ -1403,7 +1555,7 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                     </p>
                   </div>
                   <p className="text-xl sm:text-2xl font-poppins tracking-wide font-black text-[#F59E0B]">
-                    Rp {estimatedTotal.toLocaleString('id-ID')}
+                    Rp {(estimatedTotal + (productHasDeliveryFee ? productDeliveryFee : 0)).toLocaleString('id-ID')}
                   </p>
                 </div>
               </div>
@@ -1432,11 +1584,16 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                 </button>
               </div>
 
-              {/* 3 Compact Trust Badges */}
+              {/* 4 Compact Trust Badges */}
               <div
-                className={`pt-2 border-t flex items-center justify-around text-center text-[10px] font-semibold ${isDark ? 'border-[#60241E] text-amber-200/60' : 'border-[#E6DACD] text-[#8C6B62]'
+                className={`pt-2 border-t flex flex-wrap items-center justify-around gap-1 text-center text-[10px] font-semibold ${isDark ? 'border-[#60241E] text-amber-200/60' : 'border-[#E6DACD] text-[#8C6B62]'
                   }`}
               >
+                <span className="flex items-center gap-1">
+                  <Truck size={12} className="text-emerald-500" />
+                  Gratis Ongkir
+                </span>
+                <span>•</span>
                 <span className="flex items-center gap-1">
                   <ShieldCheck size={12} className="text-emerald-500" />
                   100% Halal
@@ -1776,6 +1933,12 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                       : 'border-[#E6DACD] bg-white text-[#2B120E] placeholder-stone-400 focus:border-[#D97706] focus:ring-2 focus:ring-[#D97706]/20'
                       }`}
                   />
+                </div>
+                <div className={`mt-1.5 flex items-center gap-1.5 text-[11px] font-semibold ${
+                  isDark ? 'text-emerald-400' : 'text-emerald-700'
+                }`}>
+                  <Truck size={13} className="shrink-0" />
+                  <span>Bebas biaya ongkir ke seluruh lokasi pengantaran.</span>
                 </div>
               </div>
 

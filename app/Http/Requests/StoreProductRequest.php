@@ -119,6 +119,17 @@ class StoreProductRequest extends FormRequest
                 'boolean',
             ],
 
+            'has_delivery_fee' => [
+                'sometimes',
+                'boolean',
+            ],
+
+            'delivery_fee' => [
+                'nullable',
+                'numeric',
+                'min:0',
+            ],
+
             'addons_enabled' => [
                 'sometimes',
                 'boolean',

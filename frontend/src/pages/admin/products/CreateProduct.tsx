@@ -12,6 +12,7 @@ import {
   Check,
   Plus,
   Trash2,
+  Truck,
   Info,
 } from 'lucide-react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
@@ -84,6 +85,8 @@ export default function CreateProduct() {
     price: '',
     minimum_order: '10',
     lead_time_days: '3',
+    has_delivery_fee: false,
+    delivery_fee: '0',
     addons_enabled: false,
     image: null as File | null,
     is_active: true,
@@ -295,6 +298,8 @@ export default function CreateProduct() {
         price: Number(form.price),
         minimum_order: Math.max(1, Number(form.minimum_order) || 1),
         lead_time_days: Math.max(0, Number(form.lead_time_days) || 0),
+        has_delivery_fee: form.has_delivery_fee,
+        delivery_fee: form.has_delivery_fee ? Math.max(0, Number(form.delivery_fee) || 0) : 0,
         addons_enabled: form.addons_enabled,
         custom_nasi: validNasi,
         custom_sayur: validSayur,
@@ -555,6 +560,150 @@ export default function CreateProduct() {
                     Minimal H-X hari sebelum acara (0 = bisa hari H)
                   </p>
                 </div>
+              </div>
+
+              {/* Shipping & Delivery Fee Settings (Shopee Style Toggle) */}
+              <div
+                className={`rounded-2xl border p-4 sm:p-5 transition-all ${
+                  isDark
+                    ? 'border-[#60241E] bg-[#1C0B09]/80'
+                    : 'border-stone-200 bg-stone-50/60'
+                }`}
+              >
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div className="flex items-start gap-3">
+                    <div
+                      className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${
+                        form.has_delivery_fee
+                          ? isDark
+                            ? 'bg-amber-950/60 text-amber-400 border border-amber-500/30'
+                            : 'bg-amber-100 text-amber-700 border border-amber-200'
+                          : isDark
+                            ? 'bg-emerald-950/60 text-emerald-400 border border-emerald-500/30'
+                            : 'bg-emerald-100 text-emerald-700 border border-emerald-200'
+                      }`}
+                    >
+                      <Truck size={18} />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h4 className={`text-sm font-bold ${isDark ? 'text-white' : 'text-stone-900'}`}>
+                          Pengaturan Ongkir Menu
+                        </h4>
+                        <span
+                          className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-full ${
+                            form.has_delivery_fee
+                              ? isDark
+                                ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                                : 'bg-amber-100 text-amber-800 border border-amber-200'
+                              : isDark
+                                ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                                : 'bg-emerald-100 text-emerald-800 border border-emerald-200'
+                          }`}
+                        >
+                          {form.has_delivery_fee ? 'Dikenakan Ongkir' : 'Gratis Ongkir'}
+                        </span>
+                      </div>
+                      <p className={`mt-0.5 text-xs ${isDark ? 'text-amber-100/60' : 'text-stone-500'}`}>
+                        {form.has_delivery_fee
+                          ? 'Menu ini akan menambahkan biaya pengiriman khusus saat dipesan.'
+                          : 'Default gratis ongkir (bebas biaya pengiriman untuk menu ini).'}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Toggle Switch */}
+                  <div className="flex items-center gap-3 shrink-0 self-end sm:self-auto">
+                    <span className={`text-xs font-bold ${isDark ? 'text-stone-300' : 'text-stone-600'}`}>
+                      {form.has_delivery_fee ? 'Biaya Tambahan' : 'Gratis Ongkir'}
+                    </span>
+                    <button
+                      type="button"
+                      role="switch"
+                      aria-checked={form.has_delivery_fee}
+                      onClick={() =>
+                        setForm((prev) => ({
+                          ...prev,
+                          has_delivery_fee: !prev.has_delivery_fee,
+                          delivery_fee: !prev.has_delivery_fee && (prev.delivery_fee === '0' || !prev.delivery_fee) ? '10000' : prev.delivery_fee,
+                        }))
+                      }
+                      className={`relative inline-flex h-7 w-12 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                        form.has_delivery_fee
+                          ? 'bg-amber-500'
+                          : isDark
+                            ? 'bg-[#381612]'
+                            : 'bg-stone-300'
+                      }`}
+                    >
+                      <span
+                        className={`pointer-events-none inline-block h-6 w-6 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                          form.has_delivery_fee ? 'translate-x-5' : 'translate-x-0'
+                        }`}
+                      />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Nominal Input if toggle is ON */}
+                {form.has_delivery_fee && (
+                  <div className="mt-4 pt-3.5 border-t border-inherit animate-in fade-in duration-200">
+                    <label
+                      htmlFor="delivery_fee"
+                      className={`mb-1.5 block text-xs font-bold uppercase tracking-wider ${
+                        isDark ? 'text-amber-100/70' : 'text-stone-600'
+                      }`}
+                    >
+                      Nominal Ongkos Kirim Tambahan (Rp) <span className="text-red-600">*</span>
+                    </label>
+                    <div className="relative">
+                      <span className={`absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-bold ${
+                        isDark ? 'text-stone-500' : 'text-stone-400'
+                      }`}>
+                        Rp
+                      </span>
+                      <input
+                        id="delivery_fee"
+                        name="delivery_fee"
+                        type="number"
+                        min="0"
+                        step="1000"
+                        value={form.delivery_fee}
+                        onChange={handleChange}
+                        disabled={loading}
+                        placeholder="10000"
+                        className={`w-full rounded-xl border pl-10 pr-3.5 py-2.5 text-sm font-semibold outline-none transition ${
+                          isDark
+                            ? 'border-[#60241E] bg-[#1C0B09] text-white focus:border-[#F59E0B] focus:ring-1 focus:ring-[#F59E0B]'
+                            : 'border-stone-200 bg-white text-stone-900 focus:border-red-600 focus:ring-1 focus:ring-red-600'
+                        }`}
+                      />
+                    </div>
+                    <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                      <span className={`text-[11px] mr-1 ${isDark ? 'text-stone-500' : 'text-stone-400'}`}>
+                        Preset cepat:
+                      </span>
+                      {['10000', '15000', '20000', '25000'].map((preset) => (
+                        <button
+                          key={preset}
+                          type="button"
+                          onClick={() => setForm((prev) => ({ ...prev, delivery_fee: preset }))}
+                          className={`text-[11px] px-2.5 py-1 rounded-lg border font-semibold transition cursor-pointer ${
+                            form.delivery_fee === preset
+                              ? isDark
+                                ? 'border-amber-400 bg-amber-500/20 text-amber-300'
+                                : 'border-amber-500 bg-amber-50 text-amber-800'
+                              : isDark
+                                ? 'border-[#60241E] bg-[#240E0C] text-stone-300 hover:border-stone-500'
+                                : 'border-stone-200 bg-white text-stone-600 hover:border-stone-400'
+                          }`}
+                        >
+                          Rp {Number(preset).toLocaleString('id-ID')}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Description */}

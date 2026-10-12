@@ -158,7 +158,17 @@ class OrderService
                 ];
             }
 
-            $deliveryFee = isset($data['delivery_fee']) ? (float) $data['delivery_fee'] : 10000;
+            if (isset($data['delivery_fee'])) {
+                $deliveryFee = (float) $data['delivery_fee'];
+            } else {
+                $calculatedProductFee = 0.0;
+                foreach ($itemsCalculated as $calcItem) {
+                    if (! empty($calcItem['product']->has_delivery_fee)) {
+                        $calculatedProductFee = max($calculatedProductFee, (float) $calcItem['product']->delivery_fee);
+                    }
+                }
+                $deliveryFee = $calculatedProductFee;
+            }
             $total = $subtotal + $deliveryFee;
 
             $status = $data['status'] ?? 'pending';

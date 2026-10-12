@@ -822,6 +822,9 @@ export default function HomePage() {
                       item.name?.toLowerCase().includes('premium')
                     )
 
+                const hasDeliveryFee = isApiItem && Boolean((item as Product).has_delivery_fee)
+                const productDeliveryFee = isApiItem ? Number((item as Product).delivery_fee || 0) : 0
+
                 return (
                   <article
                     key={idx}
@@ -859,15 +862,33 @@ export default function HomePage() {
                         {badgeLabel}
                       </div>
 
-                      {/* Minimum Order Tag */}
-                      <div
-                        className={`absolute bottom-3 left-3 rounded-xl px-2.5 py-1 text-[11px] font-bold shadow-md backdrop-blur-md ${
-                          isDark
-                            ? 'bg-[#1C0B09]/85 text-amber-200 border border-[#60241E]/70'
-                            : 'bg-white/95 text-[#5C3831] border border-[#E6DACD]'
-                        }`}
-                      >
-                        Min. {minOrder} Box
+                      {/* Bottom overlay tags: Min Order & Gratis Ongkir */}
+                      <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-[11px] font-bold drop-shadow z-10">
+                        <div
+                          className={`rounded-xl px-2.5 py-1 shadow-md backdrop-blur-md ${
+                            isDark
+                              ? 'bg-[#1C0B09]/85 text-amber-200 border border-[#60241E]/70'
+                              : 'bg-white/95 text-[#5C3831] border border-[#E6DACD]'
+                          }`}
+                        >
+                          Min. {minOrder} Box
+                        </div>
+
+                        {hasDeliveryFee ? (
+                          <div
+                            className="flex items-center gap-1 backdrop-blur-md px-2.5 py-1 rounded-xl text-[10px] font-black uppercase tracking-wider text-amber-900 bg-amber-100 dark:text-amber-200 dark:bg-amber-950/80 border border-amber-300/40 shadow-sm"
+                          >
+                            <Truck size={11} className="shrink-0" />
+                            +Ongkir {productDeliveryFee.toLocaleString('id-ID')}
+                          </div>
+                        ) : (
+                          <div
+                            className="flex items-center gap-1 backdrop-blur-md px-2.5 py-1 rounded-xl text-[10px] font-black uppercase tracking-wider text-white bg-gradient-to-r from-emerald-600 to-teal-600 border border-emerald-300/40 shadow-sm"
+                          >
+                            <Truck size={11} className="shrink-0" />
+                            Gratis Ongkir
+                          </div>
+                        )}
                       </div>
 
                       {/* Category Badge (Premium Gold / Reguler Silver) */}

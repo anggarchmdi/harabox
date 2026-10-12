@@ -265,7 +265,7 @@ export default function CaraPesan() {
 
               <p className={`text-sm sm:text-base leading-relaxed ${isDark ? 'text-amber-100/75' : 'text-[#5C3831]'}`}>
                 Setelah Anda memilih menu dan jumlah porsi di website, pesanan Anda tercatat langsung di dashboard admin kami.
-                Tim Pawon Hara akan segera mengirimkan invoice resmi berisi rincian pesanan, konfirmasi ongkir,
+                Tim Pawon Hara akan segera mengirimkan invoice resmi berisi rincian pesanan, konfirmasi gratis ongkir,
                 serta rekening pembayaran resmi.
               </p>
 

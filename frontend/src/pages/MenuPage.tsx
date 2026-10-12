@@ -13,6 +13,7 @@ import {
   ShieldCheck,
   ShoppingBag,
   Sparkles,
+  Truck,
   X,
 } from 'lucide-react'
 
@@ -735,8 +736,8 @@ export default function MenuPage() {
 
 
 
-                    {/* Bottom overlay preview: kelipatan 10 */}
-                    <div className="absolute bottom-3 left-3.5 right-3.5 flex items-center justify-between text-[11px] font-semibold drop-shadow">
+                    {/* Bottom overlay preview: kelipatan 10 & Gratis Ongkir */}
+                    <div className="absolute bottom-3 left-3.5 right-3.5 flex items-center justify-between text-[11px] font-semibold drop-shadow z-10">
                       <span
                         className={`flex items-center gap-1.5 backdrop-blur-md px-2.5 py-0.5 rounded-full border ${
                           isDark
@@ -747,6 +748,22 @@ export default function MenuPage() {
                         <span className="h-1.5 w-1.5 rounded-full bg-[#F59E0B] animate-pulse" />
                         Kelipatan 10 Porsi
                       </span>
+
+                      {item.has_delivery_fee ? (
+                        <span
+                          className="flex items-center gap-1 backdrop-blur-md px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider text-amber-900 bg-amber-100 dark:text-amber-200 dark:bg-amber-950/80 border border-amber-300/40 shadow-sm"
+                        >
+                          <Truck size={11} className="shrink-0" />
+                          +Ongkir {Number(item.delivery_fee || 0).toLocaleString('id-ID')}
+                        </span>
+                      ) : (
+                        <span
+                          className="flex items-center gap-1 backdrop-blur-md px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider text-white bg-gradient-to-r from-emerald-600 to-teal-600 border border-emerald-300/40 shadow-sm"
+                        >
+                          <Truck size={11} className="shrink-0" />
+                          Gratis Ongkir
+                        </span>
+                      )}
                     </div>
                   </div>
 

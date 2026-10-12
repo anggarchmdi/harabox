@@ -1120,10 +1120,20 @@ export default function OrderTrackingPage() {
                       <span className={`font-semibold ${isDark ? 'text-white' : 'text-[#2B120E]'}`}>{formatRupiah(order.subtotal)}</span>
                     </div>
 
-                    <div className={`flex justify-between ${isDark ? 'text-amber-100/80' : 'text-[#5C3831]'}`}>
+                    <div className={`flex justify-between items-center ${isDark ? 'text-amber-100/80' : 'text-[#5C3831]'}`}>
                       <span>Estimasi Ongkos Kirim</span>
                       <span className={`font-semibold ${isDark ? 'text-white' : 'text-[#2B120E]'}`}>
-                        {Number(order.delivery_fee) > 0 ? formatRupiah(order.delivery_fee) : 'Gratis'}
+                        {Number(order.delivery_fee) > 0 ? (
+                          formatRupiah(order.delivery_fee)
+                        ) : (
+                          <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold ${
+                            isDark
+                              ? 'bg-emerald-950/60 text-emerald-400 border border-emerald-500/40'
+                              : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                          }`}>
+                            <Truck size={12} /> Gratis Ongkir (Rp 0)
+                          </span>
+                        )}
                       </span>
                     </div>
 

@@ -19,6 +19,8 @@ class ProductResource extends JsonResource
             'price' => (string) $this->price,
             'minimum_order' => (int) $this->minimum_order,
             'lead_time_days' => (int) ($this->lead_time_days ?? 3),
+            'has_delivery_fee' => (bool) $this->has_delivery_fee,
+            'delivery_fee' => (string) ($this->delivery_fee ?? '0.00'),
             'addons_enabled' => (bool) $this->addons_enabled,
             'custom_nasi' => $this->custom_nasi,
             'custom_sayur' => $this->custom_sayur,

@@ -165,7 +165,7 @@ Berikut adalah rincian invoice resmi pesanan Anda:
 ${itemsList}
 
 Subtotal Menu: Rp ${formatNumberRupiah(subtotalVal)}
-Ongkos Kirim: Rp ${formatNumberRupiah(deliveryFeeVal)}
+Ongkos Kirim: ${deliveryFeeVal > 0 ? `Rp ${formatNumberRupiah(deliveryFeeVal)}` : 'GRATIS (Rp 0) 🎉'}
 *TOTAL TAGIHAN: Rp ${formatNumberRupiah(totalVal)}*
 -------------------------------
 *Status Pesanan:* ${statusLabel}
