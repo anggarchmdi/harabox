@@ -283,12 +283,12 @@ Instagram: @pawonhara
           <div style="text-align: center; width: 45%;">
             <div>Disiapkan (Dapur)</div>
             <div style="height: 35px;"></div>
-            <div>( .................... )</div>
+            <div style="white-space: nowrap; overflow: hidden; letter-spacing: 1px;">................</div>
           </div>
           <div style="text-align: center; width: 45%;">
             <div>Dicek (QC / Packing)</div>
             <div style="height: 35px;"></div>
-            <div>( .................... )</div>
+            <div style="white-space: nowrap; overflow: hidden; letter-spacing: 1px;">................</div>
           </div>
         </div>
         <div style="text-align: center; font-size: 9px; margin-top: 10px; color: #555;">
@@ -743,12 +743,12 @@ Instagram: @pawonhara
                   <div className="w-[45%]">
                     <p>Disiapkan (Dapur)</p>
                     <div className="h-8" />
-                    <p>( .................... )</p>
+                    <p className="whitespace-nowrap overflow-hidden tracking-wider">................</p>
                   </div>
                   <div className="w-[45%]">
                     <p>Dicek (QC / Packing)</p>
                     <div className="h-8" />
-                    <p>( .................... )</p>
+                    <p className="whitespace-nowrap overflow-hidden tracking-wider">................</p>
                   </div>
                 </div>
               </div>
