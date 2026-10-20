@@ -320,7 +320,7 @@ export default function MenuPage() {
               }`}
             >
                 Dapurnya Rasa Nusantara
-              <span className="block text-[#F59E0B] font-dhaksinarga text-2xl sm:text-4xl lg:text-6xl mt-1">
+              <span className="block text-white font-dhaksinarga text-2xl sm:text-4xl lg:text-6xl mt-1">
                 Untuk semua acara
               </span>
             </h1>
