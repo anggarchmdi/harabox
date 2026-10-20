@@ -22,19 +22,19 @@ export default function Footer() {
           <div className="lg:col-span-5 space-y-5">
             <Link to="/" className="inline-flex items-center gap-3 group">
               <div>
-                <img src={PawonHaraImg} className="w-16" alt="Pawon Hara Logo" />
+                <img src={PawonHaraImg} className="w-10 md:w-14" alt="Pawon Hara Logo" />
               </div>
               <div className="flex flex-col">
                 <div className="flex items-center gap-1.5">
                   <span
-                    className={`font-dhaksinarga tracking-wide text-2xl sm:text-3xl leading-none ${
+                    className={`font-dhaksinarga tracking-wide text-md sm:text-xl leading-none ${
                       isDark ? 'text-white' : 'text-[#2B120E]'
                     }`}
                   >
                     Pawon Hara
                   </span>
                 </div>
-                <span className="text-[11px] italic font-poppins tracking-widest text-[#E77B49] mt-0.5">
+                <span className="text-[8px] sm:text-[10px] italic font-poppins tracking-widest text-[#E77B49] mt-0.5">
                   Dapurnya Rasa Nusantara
                 </span>
               </div>

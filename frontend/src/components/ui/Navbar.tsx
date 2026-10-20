@@ -127,7 +127,7 @@ export default function Navbar() {
                   Pawon Hara
                 </span>
               </div>
-              <span className="text-[8px] sm:text-[11px] italic tracking-widest font-poppins text-[#E77B49] mt-0.5">
+              <span className="text-[8px] sm:text-[10px] italic tracking-widest font-poppins text-[#E77B49] mt-0.5">
                 Dapurnya Rasa Nusantara
               </span>
             </div>
