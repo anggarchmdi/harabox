@@ -25,6 +25,7 @@ import ProductCardSkeleton from '../components/ui/ProductCardSkeleton'
 import { useThemeStore } from '../stores/theme.store'
 import useDebounce from '../hooks/useDebounce'
 import { useSEO } from '../hooks/useSEO'
+import HeroMenu from '../assets/hero-menu.webp'
 
 // Aset lokal untuk smart fallback beresolusi tinggi & menggugah selera
 import BentoKatsuImg from '../assets/nasibox/bento-katsu-b.webp'
@@ -278,7 +279,7 @@ export default function MenuPage() {
           LUXURY CHOCOLATE & GOLD HERO SECTION
       ====================================================== */}
       <section
-        className={`relative overflow-hidden border-b pt-24 pb-6 sm:pt-36 sm:pb-16 lg:pt-20 lg:pb-20 transition-colors duration-300 ${
+        className={`relative overflow-hidden border-b pt-28 pb-14 sm:pt-36 sm:pb-20 lg:pt-36 lg:pb-24 transition-colors duration-300 ${
           isDark
             ? 'border-[#60241E]/80 bg-gradient-to-b from-[#1C0B09] via-[#240E0C] to-[#1C0B09]'
             : 'border-[#E6DACD] bg-gradient-to-b from-[#FAF4ED] via-[#F5EDE4] to-[#FBF7F2]'
@@ -286,7 +287,7 @@ export default function MenuPage() {
       >
         {/* Subtle ambient light patterns */}
         <div
-          className={`pointer-events-none absolute -top-40 left-1/2 h-[550px] w-[800px] -translate-x-1/2 rounded-full blur-3xl ${
+          className={`pointer-events-none absolute -top-40 left-1/2 h-[800px] w-[800px] -translate-x-1/2 rounded-full blur-3xl ${
             isDark
               ? 'bg-gradient-to-b from-[#60241E]/40 to-transparent'
               : 'bg-gradient-to-b from-[#E77B49]/15 to-transparent'
@@ -294,33 +295,33 @@ export default function MenuPage() {
         />
         <div className="pointer-events-none absolute -left-20 top-16 h-72 w-72 rounded-full bg-[#F59E0B]/10 blur-3xl" />
 
+        {/* Hero Panorama Background Image (Shifted up so Bento Boxes on table are fully visible) */}
+        <div className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none">
+          <img
+            src={HeroMenu}
+            alt="Hero Menu Pawon Hara"
+            className="h-[114%] w-full object-cover object-bottom -translate-y-6 sm:-translate-y-8 lg:-translate-y-10 select-none transition-transform duration-700"
+          />
+          <div
+            className={`absolute inset-0 transition-opacity duration-300 ${
+              isDark
+                ? 'bg-gradient-to-b from-[#1C0B09]/50 via-black/25 via-55% to-[#1C0B09]/65'
+                : 'bg-gradient-to-b from-black/50 via-black/20 via-55% to-[#1C0B09]/25'
+            }`}
+          />
+        </div>
+
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col items-center text-center">
-            {/* Elegant luxury pill badge */}
-            {/* <div
-              data-aos="fade-down"
-              data-aos-duration="600"
-              className={`inline-flex items-center gap-1.5 sm:gap-2 rounded-full border px-3 sm:px-4 py-1 sm:py-1.5 text-[10px] sm:text-[11px] font-extrabold uppercase tracking-[0.2em] sm:tracking-[0.25em] shadow-sm backdrop-blur transition-all duration-300 ${
-                isDark
-                  ? 'border-[#F59E0B]/40 bg-[#60241E] text-amber-300'
-                  : 'border-[#D97706]/40 bg-[#FAF0E4] text-[#8C4320]'
-              }`}
-            >
-              <Sparkles size={12} className={isDark ? 'text-[#F59E0B]' : 'text-[#D97706]'} />
-              Pawon Hara Gourmet Catering
-            </div> */}
-
             {/* Main Headline in Dhaksinarga */}
             <h1
               data-aos="fade-up"
               data-aos-delay="100"
               data-aos-duration="700"
-              className={`mt-3 sm:mt-6 max-w-4xl text-3xl font-dhaksinarga tracking-wide sm:text-5xl lg:text-7xl leading-tight sm:leading-[1.08] ${
-                isDark ? 'text-white' : 'text-[#2B120E]'
-              }`}
+              className="mt-3 sm:mt-6 max-w-4xl text-3xl font-dhaksinarga tracking-wide sm:text-5xl lg:text-7xl leading-tight sm:leading-[1.08] text-white drop-shadow-md"
             >
-                Dapurnya Rasa Nusantara
-              <span className="block font-dhaksinarga text-2xl sm:text-4xl lg:text-6xl mt-1">
+              Dapurnya Rasa Nusantara
+              <span className="block font-dhaksinarga text-2xl sm:text-4xl lg:text-6xl mt-1 text-white drop-shadow-md">
                 Untuk semua acara
               </span>
             </h1>
@@ -330,9 +331,7 @@ export default function MenuPage() {
               data-aos="fade-up"
               data-aos-delay="200"
               data-aos-duration="700"
-              className={`mt-2.5 sm:mt-6 max-w-2xl text-xs sm:text-base lg:text-lg leading-relaxed line-clamp-2 sm:line-clamp-none ${
-                isDark ? 'text-amber-100/75' : 'text-[#6B423A]'
-              }`}
+              className="mt-2.5 sm:mt-6 max-w-2xl text-xs sm:text-base lg:text-lg leading-relaxed text-stone-200 drop-shadow-sm line-clamp-2 sm:line-clamp-none"
             >
               Sajian menu khas nusantara yang nikmat, mulai tasyakuran hingga rapat
             </p>
@@ -342,48 +341,24 @@ export default function MenuPage() {
               data-aos="fade-up"
               data-aos-delay="300"
               data-aos-duration="700"
-              className={`mt-4 sm:mt-8 flex flex-wrap items-center justify-center gap-2 sm:gap-3 text-[11px] sm:text-xs font-semibold ${
-                isDark ? 'text-amber-100/90' : 'text-[#5C3831]'
-              }`}
+              className="mt-4 sm:mt-8 flex flex-wrap items-center justify-center gap-2 sm:gap-3 text-[11px] sm:text-xs font-semibold text-stone-200"
             >
-              {/* <div
-                className={`flex items-center gap-1.5 rounded-xl sm:rounded-2xl border px-2.5 sm:px-4 py-1.5 sm:py-2 transition-all duration-300 hover:-translate-y-0.5 cursor-default ${
-                  isDark
-                    ? 'border-[#60241E]/80 bg-[#2D120F] shadow-lg hover:border-[#F59E0B]/40'
-                    : 'border-[#E6DACD] bg-white shadow-sm hover:border-[#D97706]/40'
-                }`}
-              >
-                <Star size={13} className="fill-[#F59E0B] text-[#F59E0B] sm:h-3.5 sm:w-3.5" />
-                <span>4.9 / 5 Rating</span>
-              </div> */}
               <div
-                className={`flex items-center gap-1.5 rounded-xl sm:rounded-2xl border px-2.5 sm:px-4 py-1.5 sm:py-2 transition-all duration-300 hover:-translate-y-0.5 cursor-default ${
-                  isDark
-                    ? 'border-[#60241E]/80 bg-[#2D120F] shadow-lg hover:border-[#F59E0B]/40'
-                    : 'border-[#E6DACD] bg-white shadow-sm hover:border-[#D97706]/40'
-                }`}
+                className="flex items-center gap-1.5 rounded-xl sm:rounded-2xl border border-white/20 bg-black/40 px-2.5 sm:px-4 py-1.5 sm:py-2 backdrop-blur-md shadow-lg transition-all duration-300 hover:-translate-y-0.5 cursor-default hover:border-[#F59E0B]/50"
               >
-                <ShieldCheck size={14} className="text-emerald-500 sm:h-[15px] sm:w-[15px]" />
+                <ShieldCheck size={14} className="text-emerald-400 sm:h-[15px] sm:w-[15px]" />
                 <span>100% Halal</span>
               </div>
               <div
-                className={`flex items-center gap-1.5 rounded-xl sm:rounded-2xl border px-2.5 sm:px-4 py-1.5 sm:py-2 transition-all duration-300 hover:-translate-y-0.5 cursor-default ${
-                  isDark
-                    ? 'border-[#60241E]/80 bg-[#2D120F] shadow-lg hover:border-[#F59E0B]/40'
-                    : 'border-[#E6DACD] bg-white shadow-sm hover:border-[#D97706]/40'
-                }`}
+                className="flex items-center gap-1.5 rounded-xl sm:rounded-2xl border border-white/20 bg-black/40 px-2.5 sm:px-4 py-1.5 sm:py-2 backdrop-blur-md shadow-lg transition-all duration-300 hover:-translate-y-0.5 cursor-default hover:border-[#F59E0B]/50"
               >
-                <Clock size={13} className={isDark ? 'text-[#F59E0B]' : 'text-[#D97706]'} />
+                <Clock size={13} className="text-[#F59E0B]" />
                 <span>Tepat Waktu & Rapi</span>
               </div>
               <div
-                className={`hidden sm:flex items-center gap-2 rounded-2xl border px-4 py-2 transition-all duration-300 hover:-translate-y-0.5 cursor-default ${
-                  isDark
-                    ? 'border-[#60241E]/80 bg-[#2D120F] shadow-lg hover:border-[#F59E0B]/40'
-                    : 'border-[#E6DACD] bg-white shadow-sm hover:border-[#D97706]/40'
-                }`}
+                className="hidden sm:flex items-center gap-2 rounded-2xl border border-white/20 bg-black/40 px-4 py-2 backdrop-blur-md shadow-lg transition-all duration-300 hover:-translate-y-0.5 cursor-default hover:border-[#F59E0B]/50"
               >
-                <ShoppingBag size={14} className={isDark ? 'text-[#F59E0B]' : 'text-[#D97706]'} />
+                <ShoppingBag size={14} className="text-[#F59E0B]" />
                 <span>{products?.length ?? 0} Pilihan Menu Aktif</span>
               </div>
             </div>
@@ -876,101 +851,6 @@ export default function MenuPage() {
         )}
       </section>
 
-      {/* =====================================================
-          LUXURY CHOCOLATE CONSULTATION BANNER (BOTTOM)
-      ====================================================== */}
-      {/* <section className="mx-auto max-w-7xl px-6 pb-24 lg:px-8">
-        <div
-          data-aos="fade-up"
-          data-aos-duration="700"
-          data-aos-offset="60"
-          className={`relative overflow-hidden rounded-[2.5rem] p-8 sm:p-12 lg:p-16 shadow-2xl transition-colors duration-300 ${
-            isDark
-              ? 'border-2 border-[#B34A44]/40 bg-gradient-to-br from-[#2D120F] via-[#381612] to-[#451B17] text-white'
-              : 'border-2 border-[#E77B49]/40 bg-gradient-to-br from-[#FAF3EA] via-[#F4E9DC] to-[#EFE1D1] text-[#2B120E]'
-          }`}
-        >
-          <div className="grid gap-8 lg:grid-cols-[1.4fr_0.8fr] lg:items-center">
-            <div data-aos="fade-right" data-aos-delay="100" data-aos-duration="650">
-              <div
-                className={`inline-flex items-center gap-2 rounded-full px-3.5 py-1 text-[11px] font-bold uppercase tracking-wider shadow-sm ${
-                  isDark
-                    ? 'border border-[#F59E0B]/40 bg-[#60241E] text-amber-300'
-                    : 'border border-[#D97706]/40 bg-[#FAF0E4] text-[#8C4320]'
-                }`}
-              >
-                <CheckCircle2 size={13} className={isDark ? 'text-[#F59E0B]' : 'text-[#D97706]'} />
-                Konsultasi & Penawaran Katering Resmi
-              </div>
-
-              <h2
-                className={`mt-4 text-3xl font-dhaksinarga tracking-wide sm:text-4xl lg:text-5xl leading-tight ${
-                  isDark ? 'text-white' : 'text-[#2B120E]'
-                }`}
-              >
-                Punya Kebutuhan Khusus atau Ratusan Porsi?
-              </h2>
-
-              <p
-                className={`mt-4 text-sm sm:text-base leading-relaxed max-w-2xl ${
-                  isDark ? 'text-amber-100/75' : 'text-[#5C3831]'
-                }`}
-              >
-                Tim Pawon Hara siap membantu penyesuaian menu, penjadwalan waktu pengantaran ke lokasi acara Anda,
-                serta menerbitkan invoice resmi untuk pembayaran transfer perusahaan ataupun pribadi.
-              </p>
-
-              <div
-                className={`mt-6 flex flex-wrap gap-4 text-xs font-semibold ${
-                  isDark ? 'text-amber-100/90' : 'text-[#5C3831]'
-                }`}
-              >
-                <div className="flex items-center gap-1.5">
-                  <CheckCircle2 size={14} className={isDark ? 'text-[#F59E0B]' : 'text-[#D97706]'} />
-                  Bisa Uji Cicip (Sample Menu)
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <CheckCircle2 size={14} className={isDark ? 'text-[#F59E0B]' : 'text-[#D97706]'} />
-                  Invoice & Kuitansi Lengkap
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <CheckCircle2 size={14} className={isDark ? 'text-[#F59E0B]' : 'text-[#D97706]'} />
-                  Kapasitas hingga 2.000+ porsi/hari
-                </div>
-              </div>
-            </div>
-
-            <div
-              data-aos="fade-left"
-              data-aos-delay="200"
-              data-aos-duration="650"
-              className="flex flex-col gap-3 lg:items-end"
-            >
-              <a
-                href="https://wa.me/6281122225520?text=Halo%20Pawon%20Hara,%20saya%20ingin%20konsultasi%20pesanan%20katering%20nasi%20box%20untuk%20acara%20saya."
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2.5 rounded-2xl bg-gradient-to-r from-[#F59E0B] via-amber-400 to-[#E77B49] px-8 py-4 text-sm font-black text-[#1C0B09] shadow-xl shadow-[#F59E0B]/25 transition-all hover:scale-[1.02] active:scale-[0.98]"
-              >
-                <MessageCircle size={18} />
-                Konsultasi via WhatsApp (Admin)
-              </a>
-
-              <Link
-                to="/cara-pesan"
-                className={`inline-flex items-center justify-center gap-2 rounded-2xl border px-6 py-3.5 text-xs font-bold transition ${
-                  isDark
-                    ? 'border-[#E77B49]/50 bg-[#1C0B09] text-white hover:bg-[#250D0A]'
-                    : 'border-[#E6DACD] bg-white text-[#2B120E] hover:bg-[#FAF4ED]'
-                }`}
-              >
-                Pelajari Cara Pemesanan
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section> */}
-
          <section
         className={`py-16 sm:py-20 transition-colors duration-300 ${
           isDark ? 'bg-[#1C0B09]' : 'bg-[#FBF7F2]'
@@ -995,20 +875,9 @@ export default function MenuPage() {
                   Menemani semua acara,<span className="text-[#F59E0B]"> Pawon Hara </span>Dapurnya rasa Nusantara
 
                 </h2>
-                {/* <p className="mt-3 text-sm sm:text-base text-amber-100/85 leading-relaxed">
-                  Pesan katering nasi box favorit sekarang juga. Dapatkan rekomendasi menu terbaik
-                  dan penawaran istimewa untuk acara Anda.
-                </p> */}
               </div>
 
               <div className="flex flex-wrap items-center justify-center gap-4 shrink-0">
-                {/* <Link
-                  to="/menu"
-                  className="rounded-2xl bg-gradient-to-r from-[#F59E0B] via-amber-400 to-[#E77B49] hover:from-amber-400 hover:to-amber-500 text-[#1C0B09] font-black px-8 py-4 text-sm shadow-xl shadow-[#F59E0B]/30 transition hover:scale-105 active:scale-95"
-                >
-                  Pesan Sekarang
-                </Link> */}
-
                 <a
                   href="https://wa.me/6281122225520?text=Halo%20Pawon%20Hara,%20saya%20ingin%20konsultasi%20pesanan%20katering%20nasi%20box%20untuk%20acara%20saya."
                   target="_blank"
