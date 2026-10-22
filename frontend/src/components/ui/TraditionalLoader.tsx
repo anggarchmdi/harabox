@@ -1,5 +1,6 @@
 import { useThemeStore } from '../../stores/theme.store'
 import PawonHaraImg from '../../assets/PawonHara.webp'
+import BatikParang from '../../assets/batik-parang-gold.webp'
 
 export type TraditionalLoaderVariant = 'besek' | 'gunungan' | 'kendil' | 'padma'
 
@@ -945,6 +946,31 @@ export default function TraditionalLoader({
           height: '100dvh',
         }}
       >
+        {/* Motif Batik Parang Keraton (Selaras dengan Footer) */}
+        <div
+          className={`pointer-events-none absolute inset-0 transition-opacity duration-500 ${
+            !isLight
+              ? 'opacity-[0.075] mix-blend-screen'
+              : 'opacity-[0.075] mix-blend-multiply'
+          }`}
+          style={{
+            backgroundImage: `url(${BatikParang})`,
+            backgroundRepeat: 'repeat',
+            backgroundSize: '460px auto',
+          }}
+          aria-hidden="true"
+        />
+
+        {/* Radial Vignette agar bagian tengah tetap jernih & fokus */}
+        <div
+          className={`pointer-events-none absolute inset-0 transition-colors duration-500 ${
+            !isLight
+              ? 'bg-[radial-gradient(ellipse_at_center,transparent_25%,#1C0B09_92%)]'
+              : 'bg-[radial-gradient(ellipse_at_center,transparent_25%,#FBF7F2_92%)]'
+          }`}
+          aria-hidden="true"
+        />
+
         {/* Pendaran Hangat Latar Belakang */}
         <div
           className={`pointer-events-none absolute -top-24 left-1/2 h-96 w-96 -translate-x-1/2 rounded-full blur-3xl ${

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import TraditionalLoader from './TraditionalLoader'
 import { useThemeStore } from '../../stores/theme.store'
+import BatikParang from '../../assets/batik-parang-gold.webp'
 
 export interface PageLoaderProps {
   /** Whether the page is currently in loading state */
@@ -19,72 +20,33 @@ export interface PageLoaderProps {
 }
 
 /**
- * Pola Watermark Samar Batik Kawung Tradisional Jawa
+ * Pola Watermark Samar Batik Parang Emas Keraton (Selaras dengan Footer)
  */
 function BatikWatermarkBackdrop({ isDark }: { isDark: boolean }) {
   return (
-    <div
-      className={`pointer-events-none absolute inset-0 overflow-hidden transition-opacity duration-500 ${
-        isDark ? 'opacity-[0.035] text-amber-100' : 'opacity-[0.045] text-[#60241E]'
-      }`}
-      aria-hidden="true"
-    >
-      <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <pattern
-            id="pawon-kawung-pattern"
-            width="64"
-            height="64"
-            patternUnits="userSpaceOnUse"
-          >
-            {/* Kelopak Kawung Silang */}
-            <ellipse
-              cx="32"
-              cy="16"
-              rx="14"
-              ry="7"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.2"
-            />
-            <ellipse
-              cx="32"
-              cy="48"
-              rx="14"
-              ry="7"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.2"
-            />
-            <ellipse
-              cx="16"
-              cy="32"
-              rx="7"
-              ry="14"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.2"
-            />
-            <ellipse
-              cx="48"
-              cy="32"
-              rx="7"
-              ry="14"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.2"
-            />
+    <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+      {/* Motif Batik Parang Asli dari aset (berwarna emas keraton hangat & halus) */}
+      <div
+        className={`absolute inset-0 transition-opacity duration-500 ${
+          isDark
+            ? 'opacity-10 mix-blend-screen'
+            : 'opacity-15 mix-blend-multiply'
+        }`}
+        style={{
+          backgroundImage: `url(${BatikParang})`,
+          backgroundRepeat: 'repeat',
+          backgroundSize: '1200px auto',
+        }}
+      />
 
-            {/* Titik Cecek Tengah & Sudut */}
-            <circle cx="32" cy="32" r="2.2" fill="currentColor" />
-            <circle cx="0" cy="0" r="2" fill="currentColor" />
-            <circle cx="64" cy="0" r="2" fill="currentColor" />
-            <circle cx="0" cy="64" r="2" fill="currentColor" />
-            <circle cx="64" cy="64" r="2" fill="currentColor" />
-          </pattern>
-        </defs>
-        <rect width="100%" height="100%" fill="url(#pawon-kawung-pattern)" />
-      </svg>
+      {/* Radial Vignette agar bagian tengah loader tetap jernih & berfokus pada konten loader */}
+      <div
+        className={`absolute inset-0 transition-colors duration-500 ${
+          isDark
+            ? 'bg-[radial-gradient(ellipse_at_center,transparent_65%,#1C0B09_92%)]'
+            : 'bg-[radial-gradient(ellipse_at_center,transparent_65%,#FBF7F2_92%)]'
+        }`}
+      />
     </div>
   )
 }
@@ -167,7 +129,7 @@ export function PageLoader({
       aria-live="polite"
       aria-busy="true"
     >
-      {/* Watermark Latar Belakang Motif Batik Kawung Samar */}
+      {/* Watermark Latar Belakang Motif Batik Parang Emas (Konsisten dengan Footer) */}
       <BatikWatermarkBackdrop isDark={isDark} />
 
       {/* Pendaran Kehangatan Tungku Tradisional Pawon Hara */}
