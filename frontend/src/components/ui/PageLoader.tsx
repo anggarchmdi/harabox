@@ -29,7 +29,7 @@ function BatikWatermarkBackdrop({ isDark }: { isDark: boolean }) {
       <div
         className={`absolute inset-0 transition-opacity duration-500 ${
           isDark
-            ? 'opacity-10 mix-blend-screen'
+            ? 'opacity-5 mix-blend-screen'
             : 'opacity-15 mix-blend-multiply'
         }`}
         style={{
