@@ -46,11 +46,13 @@ export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false)
 
   const isHome = location.pathname === '/'
+  const isMenu = location.pathname === '/menu'
+  const hasTransparentHero = isHome || isMenu
   const isCartPage = location.pathname === '/cart'
-  const solidNavbar = !isHome || scrolled
+  const solidNavbar = !hasTransparentHero || scrolled
 
   useEffect(() => {
-    if (!isHome) {
+    if (!hasTransparentHero) {
       setScrolled(false)
       return
     }
@@ -66,7 +68,7 @@ export default function Navbar() {
     return () => {
       window.removeEventListener('scroll', handleScroll)
     }
-  }, [isHome])
+  }, [hasTransparentHero, location.pathname])
 
   useEffect(() => {
     setMobileOpen(false)
