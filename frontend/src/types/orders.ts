@@ -38,6 +38,10 @@ export interface CreateAdminOrderPayload extends CreateOrderPayload {
   payment_note?: string
 }
 
+export interface UpdateAdminOrderPayload extends CreateAdminOrderPayload {
+  force?: boolean
+}
+
 export interface OrderItemAddon {
   id?: number
   addon_id?: number | null

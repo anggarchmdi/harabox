@@ -10,6 +10,7 @@ import AdminDashboard from '../pages/admin/AdminDashboard'
 import AdminOrders from '../pages/admin/AdminOrders'
 import AdminOrderRecap from '../pages/admin/AdminOrderRecap'
 import CreateAdminOrder from '../pages/admin/orders/CreateAdminOrder'
+import EditAdminOrder from '../pages/admin/orders/EditAdminOrder'
 import AdminOrdersCalendar from '../pages/admin/orders/AdminOrdersCalendar'
 import AdminProducts from '../pages/admin/products/AdminProducts'
 import AdminCategories from '../pages/admin/AdminCategories'
@@ -59,6 +60,7 @@ export default function AppRoutes() {
           {/* orders */}
           <Route path="orders" element={<AdminOrders />} />
           <Route path="orders/create" element={<CreateAdminOrder />} />
+          <Route path="orders/:id/edit" element={<EditAdminOrder />} />
           <Route path="orders/recap" element={<AdminOrderRecap />} />
           <Route path="orders/calendar" element={<AdminOrdersCalendar />} />
 

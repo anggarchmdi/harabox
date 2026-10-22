@@ -256,13 +256,13 @@ export default function AdminLayout() {
         theme={isDark ? 'dark' : 'light'}
       />
       {/* =====================================================
-          DESKTOP SIDEBAR (EXPAND / COLLAPSE)
+          DESKTOP SIDEBAR (EXPAND / COLLAPSE) - FLOATING & CURVED
       ====================================================== */}
       <aside
-        className={`fixed inset-y-0 left-0 hidden flex-col border-r z-30 lg:flex transition-all duration-300 ease-in-out ${
+        className={`fixed top-3.5 bottom-3.5 left-3.5 hidden flex-col rounded-3xl border z-30 lg:flex transition-all duration-300 ease-in-out backdrop-blur-xl ${
           isDark
-            ? 'border-[#60241E]/80 bg-[#240E0C] shadow-[1px_0_16px_rgba(0,0,0,0.4)]'
-            : 'border-stone-200/80 bg-white shadow-[1px_0_12px_rgba(0,0,0,0.02)]'
+            ? 'border-[#60241E]/80 bg-[#240E0C]/95 shadow-[0_12px_40px_rgba(0,0,0,0.65)]'
+            : 'border-stone-200/90 bg-white/95 shadow-[0_12px_36px_rgba(43,18,14,0.08)]'
         } ${isCollapsed ? 'w-20' : 'w-72'}`}
       >
         {/* Floating Expand/Collapse Toggle Button */}
@@ -271,7 +271,7 @@ export default function AdminLayout() {
           onClick={toggleCollapse}
           aria-label={isCollapsed ? 'Perluas Sidebar' : 'Perkecil Sidebar'}
           title={isCollapsed ? 'Perluas Sidebar' : 'Perkecil Sidebar'}
-          className={`absolute -right-3.5 top-80 hidden lg:flex h-7 w-7 items-center justify-center rounded-full border shadow-xs transition-all z-40 focus:outline-none cursor-pointer ${
+          className={`absolute -right-3.5 top-80 hidden lg:flex h-7 w-7 items-center justify-center rounded-full border shadow-md transition-all z-40 focus:outline-none cursor-pointer ${
             isDark
               ? 'bg-[#2D120F] border-[#60241E] text-stone-300 hover:text-white hover:bg-[#381612] focus:ring-2 focus:ring-[#F59E0B]/30'
               : 'bg-white border-stone-200 text-stone-500 hover:text-stone-950 hover:bg-stone-50 focus:ring-2 focus:ring-red-500/20'
@@ -286,7 +286,7 @@ export default function AdminLayout() {
 
         {/* Brand / Logo Header */}
         <div
-          className={`flex h-20 items-center border-b transition-all duration-300 ${
+          className={`flex h-20 items-center border-b transition-all duration-300 rounded-t-3xl ${
             isDark ? 'border-[#60241E]/60' : 'border-stone-100'
           } ${isCollapsed ? 'justify-center px-2' : 'justify-between px-6'}`}
         >
@@ -361,7 +361,7 @@ export default function AdminLayout() {
         )}
 
         {/* Navigation Menus */}
-        <div className="flex-1 overflow-y-auto px-3 py-5 space-y-6">
+        <div className="flex-1 overflow-y-auto px-3 py-5 space-y-6 scrollbar-thin rounded-b-3xl">
           {/* Main Menus */}
           <div>
             {!isCollapsed && (
@@ -585,14 +585,14 @@ export default function AdminLayout() {
             onClick={() => setMobileSidebarOpen(false)}
           />
 
-          {/* Drawer Content */}
+          {/* Drawer Content - Floating & Curved */}
           <aside
-            className={`fixed inset-y-0 left-0 w-72 flex-col border-r shadow-2xl flex z-10 ${
+            className={`fixed top-3 bottom-3 left-3 w-[calc(100vw-2rem)] max-w-xs flex-col border rounded-3xl shadow-2xl flex z-10 overflow-hidden ${
               isDark ? 'bg-[#240E0C] border-[#60241E] text-stone-100' : 'bg-white border-stone-200 text-stone-900'
             }`}
           >
             <div
-              className={`flex h-20 items-center justify-between border-b px-6 ${
+              className={`flex h-20 items-center justify-between border-b px-6 rounded-t-3xl ${
                 isDark ? 'border-[#60241E]/60' : 'border-stone-100'
               }`}
             >
@@ -724,7 +724,7 @@ export default function AdminLayout() {
             </div>
 
             <div
-              className={`border-t p-4 ${
+              className={`border-t p-4 rounded-b-3xl ${
                 isDark ? 'border-[#60241E]/60' : 'border-stone-100'
               }`}
             >
@@ -751,7 +751,7 @@ export default function AdminLayout() {
       ====================================================== */}
       <div
         className={`transition-all duration-300 ease-in-out ${
-          isCollapsed ? 'lg:pl-20' : 'lg:pl-72'
+          isCollapsed ? 'lg:pl-[108px]' : 'lg:pl-[316px]'
         }`}
       >
         {/* =====================================================

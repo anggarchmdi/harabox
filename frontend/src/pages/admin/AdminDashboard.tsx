@@ -908,32 +908,50 @@ export default function AdminDashboard() {
                         )}
                       </td>
 
-                      {/* Actions */}
+                      {/* Actions (Horizontal Icon Toolbar) */}
                       <td className="whitespace-nowrap px-5 py-4 text-right align-top">
-                        <div className="flex flex-col items-end gap-1.5">
-                          <a
-                            href={invoiceUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1 rounded-lg bg-emerald-600 px-2.5 py-1 text-xs font-semibold text-white shadow-2xs hover:bg-emerald-700 transition"
-                            title="Kirim invoice WhatsApp"
-                          >
-                            <Receipt size={13} />
-                            <span>Invoice WA</span>
-                          </a>
-
+                        <div className="flex items-center justify-end gap-1.5">
                           <button
                             type="button"
                             onClick={() => setSelectedOrder(order)}
-                            className={`inline-flex items-center gap-1 rounded-lg border px-2.5 py-1 text-xs font-medium transition ${
+                            className={`h-8 w-8 rounded-xl border flex items-center justify-center transition active:scale-95 cursor-pointer shadow-2xs ${
                               isDark
                                 ? 'border-[#60241E] bg-[#1C0B09] text-stone-200 hover:bg-[#2D120F]'
                                 : 'border-stone-200 bg-white text-stone-700 hover:bg-stone-50'
                             }`}
+                            title="Lihat Detail Pesanan"
+                            aria-label="Detail"
                           >
-                            <Eye size={13} />
-                            <span>Detail</span>
+                            <Eye size={14} />
                           </button>
+
+                          <Link
+                            to={`/admin/orders/${order.id}/edit`}
+                            className={`h-8 w-8 rounded-xl border flex items-center justify-center transition active:scale-95 cursor-pointer shadow-2xs ${
+                              isDark
+                                ? 'border-amber-600/40 bg-amber-950/30 text-amber-300 hover:bg-amber-900/40'
+                                : 'border-amber-200 bg-amber-50 text-amber-800 hover:bg-amber-100'
+                            }`}
+                            title="Edit Rincian Pesanan"
+                            aria-label="Edit"
+                          >
+                            <Edit size={13} />
+                          </Link>
+
+                          <a
+                            href={invoiceUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={`h-8 w-8 rounded-xl border flex items-center justify-center transition active:scale-95 shadow-2xs ${
+                              isDark
+                                ? 'border-emerald-600/40 bg-emerald-950/40 text-emerald-300 hover:bg-emerald-900/50'
+                                : 'border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
+                            }`}
+                            title="Kirim Invoice WhatsApp"
+                            aria-label="Invoice WA"
+                          >
+                            <Receipt size={13} />
+                          </a>
                         </div>
                       </td>
                     </tr>
@@ -1016,29 +1034,48 @@ export default function AdminDashboard() {
                       </p>
                     </div>
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <button
+                        type="button"
+                        onClick={() => setSelectedOrder(order)}
+                        className={`h-8 w-8 rounded-xl border flex items-center justify-center transition active:scale-95 cursor-pointer ${
+                          isDark
+                            ? 'border-[#60241E] bg-[#240E0C] text-stone-200'
+                            : 'border-stone-200 bg-white text-stone-700'
+                        }`}
+                        title="Lihat Detail Pesanan"
+                        aria-label="Detail"
+                      >
+                        <Eye size={14} />
+                      </button>
+
+                      <Link
+                        to={`/admin/orders/${order.id}/edit`}
+                        className={`h-8 w-8 rounded-xl border flex items-center justify-center transition active:scale-95 cursor-pointer ${
+                          isDark
+                            ? 'border-amber-600/40 bg-amber-950/30 text-amber-300'
+                            : 'border-amber-200 bg-amber-50 text-amber-800'
+                        }`}
+                        title="Edit Pesanan"
+                        aria-label="Edit"
+                      >
+                        <Edit size={13} />
+                      </Link>
+
                       <a
                         href={invoiceUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white shadow-2xs hover:bg-emerald-700 transition"
+                        className={`h-8 w-8 rounded-xl border flex items-center justify-center transition active:scale-95 ${
+                          isDark
+                            ? 'border-emerald-600/40 bg-emerald-950/40 text-emerald-300'
+                            : 'border-emerald-200 bg-emerald-50 text-emerald-700'
+                        }`}
+                        title="Kirim Invoice WhatsApp"
+                        aria-label="Invoice WA"
                       >
                         <Receipt size={13} />
-                        <span>WA</span>
                       </a>
-
-                      <button
-                        type="button"
-                        onClick={() => setSelectedOrder(order)}
-                        className={`inline-flex items-center gap-1 rounded-lg border px-3 py-1.5 text-xs font-medium transition ${
-                          isDark
-                            ? 'border-[#60241E] bg-[#240E0C] text-stone-200 hover:bg-[#2D120F]'
-                            : 'border-stone-200 bg-white text-stone-700'
-                        }`}
-                      >
-                        <Eye size={13} />
-                        <span>Detail</span>
-                      </button>
                     </div>
                   </div>
                 </div>

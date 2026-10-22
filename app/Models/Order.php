@@ -30,7 +30,7 @@ class Order extends Model
     ];
 
     protected $casts = [
-        'event_date' => 'date',
+        'event_date' => 'date:Y-m-d',
         'subtotal' => 'decimal:2',
         'delivery_fee' => 'decimal:2',
         'total' => 'decimal:2',

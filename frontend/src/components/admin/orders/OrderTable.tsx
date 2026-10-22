@@ -1,12 +1,15 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import {
   Calendar,
   Eye,
   MapPin,
   MessageCircle,
+  Pencil,
   Printer,
   Receipt,
   Star,
+  Trash2,
   User,
 } from 'lucide-react'
 import { toast } from 'sonner'
@@ -21,6 +24,7 @@ interface OrderTableProps {
   orders: Order[]
   onView: (order: Order) => void
   onPrint?: (order: Order) => void
+  onDelete?: (order: Order) => void
   onStatusUpdated?: () => void
 }
 
@@ -51,6 +55,7 @@ export default function OrderTable({
   orders,
   onView,
   onPrint,
+  onDelete,
   onStatusUpdated,
 }: OrderTableProps) {
   const isDark = useThemeStore((state) => state.theme === 'dark')
@@ -359,57 +364,105 @@ export default function OrderTable({
                     </div>
                   </td>
 
-                  {/* Actions */}
+                  {/* Actions (Horizontal Icon Toolbar) */}
                   <td className="px-5 py-4 align-top text-right whitespace-nowrap">
-                    <div className="flex flex-col items-end gap-1.5">
+                    <div className="flex items-center justify-end gap-1.5">
+                      {/* Detail */}
+                      <button
+                        type="button"
+                        onClick={() => onView(order)}
+                        className={`h-8 w-8 rounded-xl border flex items-center justify-center transition active:scale-95 cursor-pointer shadow-2xs ${
+                          isDark
+                            ? 'border-[#60241E] bg-[#1C0B09] text-stone-300 hover:bg-[#2D120F] hover:text-white'
+                            : 'border-stone-200 bg-white text-stone-700 hover:bg-stone-100 hover:text-stone-900'
+                        }`}
+                        title="Lihat Detail Pesanan"
+                        aria-label="Detail"
+                      >
+                        <Eye size={14} />
+                      </button>
+
+                      {/* Edit */}
+                      <Link
+                        to={`/admin/orders/${order.id}/edit`}
+                        className={`h-8 w-8 rounded-xl border flex items-center justify-center transition active:scale-95 cursor-pointer shadow-2xs ${
+                          isDark
+                            ? 'border-amber-600/40 bg-amber-950/30 text-amber-300 hover:bg-amber-900/50'
+                            : 'border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100'
+                        }`}
+                        title="Edit Rincian Pesanan"
+                        aria-label="Edit"
+                      >
+                        <Pencil size={13} />
+                      </Link>
+
+                      {/* Hapus */}
+                      {onDelete && (
+                        <button
+                          type="button"
+                          onClick={() => onDelete(order)}
+                          className={`h-8 w-8 rounded-xl border flex items-center justify-center transition active:scale-95 cursor-pointer shadow-2xs ${
+                            isDark
+                              ? 'border-rose-600/40 bg-rose-950/30 text-rose-300 hover:bg-rose-900/50'
+                              : 'border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100'
+                          }`}
+                          title="Hapus Pesanan"
+                          aria-label="Hapus"
+                        >
+                          <Trash2 size={13} />
+                        </button>
+                      )}
+
+                      {/* Cetak Nota */}
+                      {onPrint && (
+                        <button
+                          type="button"
+                          onClick={() => onPrint(order)}
+                          className={`h-8 w-8 rounded-xl border flex items-center justify-center transition active:scale-95 cursor-pointer shadow-2xs ${
+                            isDark
+                              ? 'border-red-600/40 bg-red-950/40 text-red-300 hover:bg-red-900/50'
+                              : 'border-red-200 bg-red-50 text-red-700 hover:bg-red-100'
+                          }`}
+                          title="Cetak Nota / Slip Dapur"
+                          aria-label="Cetak Nota"
+                        >
+                          <Printer size={13} />
+                        </button>
+                      )}
+
+                      {/* Invoice WA */}
                       <a
                         href={invoiceUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 rounded-lg bg-emerald-600 px-2.5 py-1 text-xs font-semibold text-white shadow-2xs hover:bg-emerald-700 transition"
-                        title="Kirim invoice resmi ke nomor WhatsApp pemesan"
+                        className={`h-8 w-8 rounded-xl border flex items-center justify-center transition active:scale-95 shadow-2xs ${
+                          isDark
+                            ? 'border-emerald-600/40 bg-emerald-950/40 text-emerald-300 hover:bg-emerald-900/50'
+                            : 'border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
+                        }`}
+                        title="Kirim Invoice Resmi ke WhatsApp"
+                        aria-label="Invoice WA"
                       >
                         <Receipt size={13} />
-                        <span>Invoice WA</span>
                       </a>
 
+                      {/* Link Testimoni (hanya saat completed) */}
                       {order.status === 'completed' && (
                         <a
                           href={getWhatsAppTestimonialUrl(order)}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 rounded-lg bg-amber-500 px-2.5 py-1 text-xs font-semibold text-white shadow-2xs hover:bg-amber-600 transition"
-                          title="Kirim link testimoni via WhatsApp ke pemesan"
+                          className={`h-8 w-8 rounded-xl border flex items-center justify-center transition active:scale-95 shadow-2xs ${
+                            isDark
+                              ? 'border-amber-500/40 bg-amber-950/40 text-amber-300 hover:bg-amber-900/50'
+                              : 'border-amber-200 bg-amber-50 text-amber-600 hover:bg-amber-100'
+                          }`}
+                          title="Kirim Link Testimoni via WhatsApp"
+                          aria-label="Link Testimoni"
                         >
-                          <Star size={13} className="fill-white" />
-                          <span>Link Testimoni</span>
+                          <Star size={13} className="fill-amber-400 text-amber-500" />
                         </a>
                       )}
-
-                      {onPrint && (
-                        <button
-                          type="button"
-                          onClick={() => onPrint(order)}
-                          className="inline-flex items-center gap-1 rounded-lg bg-red-600 px-2.5 py-1 text-xs font-semibold text-white shadow-2xs hover:bg-red-700 transition cursor-pointer"
-                          title="Cetak Slip Dapur / Invoice"
-                        >
-                          <Printer size={13} />
-                          <span>Cetak Nota</span>
-                        </button>
-                      )}
-
-                      <button
-                        type="button"
-                        onClick={() => onView(order)}
-                        className={`inline-flex items-center gap-1 rounded-lg border px-2.5 py-1 text-xs font-medium transition ${
-                          isDark
-                            ? 'border-[#60241E] bg-[#1C0B09] text-stone-300 hover:bg-[#2D120F] hover:text-white'
-                            : 'border-stone-200 bg-white text-stone-700 hover:bg-stone-50'
-                        }`}
-                      >
-                        <Eye size={13} />
-                        <span>Detail</span>
-                      </button>
                     </div>
                   </td>
                 </tr>
@@ -572,54 +625,103 @@ export default function OrderTable({
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5 shrink-0">
+                  {/* Detail */}
+                  <button
+                    type="button"
+                    onClick={() => onView(order)}
+                    className={`h-8 w-8 rounded-xl border flex items-center justify-center transition active:scale-95 cursor-pointer shadow-2xs ${
+                      isDark
+                        ? 'border-[#60241E] bg-[#240E0C] text-stone-200'
+                        : 'border-stone-200 bg-white text-stone-700'
+                    }`}
+                    title="Lihat Detail Pesanan"
+                    aria-label="Detail"
+                  >
+                    <Eye size={14} />
+                  </button>
+
+                  {/* Edit */}
+                  <Link
+                    to={`/admin/orders/${order.id}/edit`}
+                    className={`h-8 w-8 rounded-xl border flex items-center justify-center transition active:scale-95 cursor-pointer shadow-2xs ${
+                      isDark
+                        ? 'border-amber-600/40 bg-amber-950/30 text-amber-300'
+                        : 'border-amber-200 bg-amber-50 text-amber-800'
+                    }`}
+                    title="Edit Pesanan"
+                    aria-label="Edit"
+                  >
+                    <Pencil size={13} />
+                  </Link>
+
+                  {/* Hapus */}
+                  {onDelete && (
+                    <button
+                      type="button"
+                      onClick={() => onDelete(order)}
+                      className={`h-8 w-8 rounded-xl border flex items-center justify-center transition active:scale-95 cursor-pointer shadow-2xs ${
+                        isDark
+                          ? 'border-rose-600/40 bg-rose-950/30 text-rose-300'
+                          : 'border-rose-200 bg-rose-50 text-rose-700'
+                      }`}
+                      title="Hapus Pesanan"
+                      aria-label="Hapus"
+                    >
+                      <Trash2 size={13} />
+                    </button>
+                  )}
+
+                  {/* Cetak Nota */}
+                  {onPrint && (
+                    <button
+                      type="button"
+                      onClick={() => onPrint(order)}
+                      className={`h-8 w-8 rounded-xl border flex items-center justify-center transition active:scale-95 cursor-pointer shadow-2xs ${
+                        isDark
+                          ? 'border-red-600/40 bg-red-950/40 text-red-300'
+                          : 'border-red-200 bg-red-50 text-red-700'
+                      }`}
+                      title="Cetak Nota / Slip Dapur"
+                      aria-label="Cetak Nota"
+                    >
+                      <Printer size={13} />
+                    </button>
+                  )}
+
+                  {/* Invoice WA */}
                   <a
                     href={invoiceUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white shadow-2xs"
+                    className={`h-8 w-8 rounded-xl border flex items-center justify-center transition active:scale-95 shadow-2xs ${
+                      isDark
+                        ? 'border-emerald-600/40 bg-emerald-950/40 text-emerald-300'
+                        : 'border-emerald-200 bg-emerald-50 text-emerald-700'
+                    }`}
+                    title="Kirim Invoice WhatsApp"
+                    aria-label="Invoice WA"
                   >
                     <Receipt size={13} />
-                    <span>WA</span>
                   </a>
 
+                  {/* Link Testimoni */}
                   {order.status === 'completed' && (
                     <a
                       href={getWhatsAppTestimonialUrl(order)}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 rounded-lg bg-amber-500 px-3 py-1.5 text-xs font-semibold text-white shadow-2xs"
-                      title="Kirim link testimoni ke pemesan"
+                      className={`h-8 w-8 rounded-xl border flex items-center justify-center transition active:scale-95 shadow-2xs ${
+                        isDark
+                          ? 'border-amber-500/40 bg-amber-950/40 text-amber-400'
+                          : 'border-amber-200 bg-amber-50 text-amber-600'
+                      }`}
+                      title="Kirim Link Testimoni WhatsApp"
+                      aria-label="Link Testimoni"
                     >
-                      <Star size={13} className="fill-white" />
-                      <span>Testimoni</span>
+                      <Star size={13} className="fill-amber-400 text-amber-500" />
                     </a>
                   )}
-
-                  {onPrint && (
-                    <button
-                      type="button"
-                      onClick={() => onPrint(order)}
-                      className="inline-flex items-center gap-1 rounded-lg bg-red-600 px-3 py-1.5 text-xs font-semibold text-white shadow-2xs hover:bg-red-700 transition cursor-pointer"
-                      title="Cetak Nota Kasir / Slip Dapur"
-                    >
-                      <Printer size={13} />
-                      <span>Cetak</span>
-                    </button>
-                  )}
-
-                  <button
-                    type="button"
-                    onClick={() => onView(order)}
-                    className={`inline-flex items-center gap-1 rounded-lg border px-3 py-1.5 text-xs font-medium ${
-                      isDark
-                        ? 'border-[#60241E] bg-[#240E0C] text-stone-200'
-                        : 'border-stone-200 bg-white text-stone-700'
-                    }`}
-                  >
-                    <Eye size={13} />
-                    <span>Detail</span>
-                  </button>
                 </div>
               </div>
 

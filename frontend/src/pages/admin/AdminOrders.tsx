@@ -11,12 +11,14 @@ import {
   MapPin,
   MessageCircle,
   PackageCheck,
+  Pencil,
   Printer,
   Receipt,
   RefreshCw,
   Search,
   ShoppingBag,
   Star,
+  Trash2,
   User,
   X,
   XCircle,
@@ -34,6 +36,7 @@ import OrderTable, {
   getWhatsAppTestimonialUrl,
 } from '../../components/admin/orders/OrderTable'
 import PrintOrderModal from '../../components/admin/orders/PrintOrderModal'
+import ConfirmDeleteModal from '../../components/admin/ConfirmDeleteModal'
 import OrderStatusBadge from '../../components/admin/orders/OrderStatusBadge'
 import PaymentStatusBadge from '../../components/admin/orders/PaymentStatusBadge'
 import PaymentProofSection from '../../components/admin/orders/PaymentProofSection'
@@ -150,8 +153,10 @@ export default function AdminOrders() {
   const [selectedPaymentStatus, setSelectedPaymentStatus] = useState<PaymentStatus | ''>('')
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
   const [printingOrder, setPrintingOrder] = useState<Order | null>(null)
+  const [orderToDelete, setOrderToDelete] = useState<Order | null>(null)
   const [updatingStatus, setUpdatingStatus] = useState(false)
   const [updatingPayment, setUpdatingPayment] = useState(false)
+  const [isDeletingOrder, setIsDeletingOrder] = useState(false)
 
   // Reset page when search or filters change
   useEffect(() => {
@@ -234,6 +239,31 @@ export default function AdminOrders() {
       }
     } finally {
       setUpdatingStatus(false)
+    }
+  }
+
+  const handleDeleteOrder = async () => {
+    if (!orderToDelete) return
+
+    try {
+      setIsDeletingOrder(true)
+      await ordersService.delete(orderToDelete.id)
+      toast.success(`Pesanan ${orderToDelete.order_code} berhasil dihapus.`)
+
+      if (selectedOrder?.id === orderToDelete.id) {
+        setSelectedOrder(null)
+      }
+      setOrderToDelete(null)
+
+      queryClient.invalidateQueries({ queryKey: ['admin-orders'] })
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] })
+      queryClient.invalidateQueries({ queryKey: ['admin-today-capacity'] })
+      queryClient.invalidateQueries({ queryKey: ['admin-capacity-overview'] })
+      queryClient.invalidateQueries({ queryKey: ['admin-order-recap'] })
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Gagal menghapus pesanan.')
+    } finally {
+      setIsDeletingOrder(false)
     }
   }
 
@@ -628,6 +658,7 @@ export default function AdminOrders() {
             orders={orders}
             onView={(order) => setSelectedOrder(order)}
             onPrint={(order) => setPrintingOrder(order)}
+            onDelete={setOrderToDelete}
             onStatusUpdated={() => refetch()}
           />
 
@@ -685,17 +716,46 @@ export default function AdminOrders() {
                 </div>
               </div>
 
-              <button
-                type="button"
-                onClick={() => setSelectedOrder(null)}
-                className={`rounded-lg p-1.5 transition ${
-                  isDark
-                    ? 'text-stone-400 hover:bg-[#2D120F] hover:text-stone-200'
-                    : 'text-stone-400 hover:bg-stone-200 hover:text-stone-700'
-                }`}
-              >
-                <X size={18} />
-              </button>
+              <div className="flex items-center gap-2">
+                <Link
+                  to={`/admin/orders/${selectedOrder.id}/edit`}
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-semibold transition cursor-pointer ${
+                    isDark
+                      ? 'border-amber-600/50 bg-amber-950/40 text-amber-300 hover:bg-amber-900/60'
+                      : 'border-amber-200 bg-amber-50 text-amber-800 hover:bg-amber-100'
+                  }`}
+                  title="Buka halaman edit lengkap pesanan"
+                >
+                  <Pencil size={13} />
+                  <span>Edit Pesanan</span>
+                </Link>
+
+                <button
+                  type="button"
+                  onClick={() => setOrderToDelete(selectedOrder)}
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-semibold transition cursor-pointer ${
+                    isDark
+                      ? 'border-rose-600/50 bg-rose-950/40 text-rose-300 hover:bg-rose-900/60'
+                      : 'border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100'
+                  }`}
+                  title="Hapus pesanan ini secara permanen"
+                >
+                  <Trash2 size={13} />
+                  <span>Hapus</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setSelectedOrder(null)}
+                  className={`rounded-lg p-1.5 transition cursor-pointer ${
+                    isDark
+                      ? 'text-stone-400 hover:bg-[#2D120F] hover:text-stone-200'
+                      : 'text-stone-400 hover:bg-stone-200 hover:text-stone-700'
+                  }`}
+                >
+                  <X size={18} />
+                </button>
+              </div>
             </div>
 
             {/* Modal Body */}
@@ -1260,6 +1320,29 @@ export default function AdminOrders() {
         order={printingOrder}
         isOpen={!!printingOrder}
         onClose={() => setPrintingOrder(null)}
+      />
+
+      {/* Delete Order Confirmation Modal */}
+      <ConfirmDeleteModal
+        isOpen={!!orderToDelete}
+        onClose={() => setOrderToDelete(null)}
+        onConfirm={handleDeleteOrder}
+        title="Hapus Pesanan"
+        itemName={orderToDelete?.order_code || ''}
+        itemType="pesanan"
+        expectedConfirmation="HAPUS"
+        description={
+          orderToDelete ? (
+            <>
+              Apakah Anda yakin ingin menghapus pesanan{' '}
+              <strong className="text-amber-500 font-mono">{orderToDelete.order_code}</strong> atas nama{' '}
+              <strong>{orderToDelete.customers_name}</strong>? Seluruh data rincian menu, add-on, dan riwayat pembayaran terkait akan dihapus secara permanen.
+            </>
+          ) : undefined
+        }
+        warningDetails="Tindakan ini tidak dapat dibatalkan. File bukti transfer pada server & Google Drive juga akan dibersihkan."
+        isLoading={isDeletingOrder}
+        confirmButtonText="Hapus Pesanan"
       />
     </div>
     </>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreAdminOrderRequest;
+use App\Http\Requests\UpdateAdminOrderRequest;
 use App\Http\Requests\UpdateOrderPaymentRequest;
 use App\Http\Requests\UpdateOrderStatusRequest;
 use App\Models\Order;
@@ -46,6 +47,48 @@ class OrderController extends Controller
                 'message' => 'Pesanan manual berhasil dibuat',
                 'data' => $order->load(['items.product', 'items.addons', 'addons.addon']),
             ], 201);
+        } catch (RuntimeException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 422);
+        }
+    }
+
+    /**
+     * Update an existing order by admin.
+     */
+    public function update(UpdateAdminOrderRequest $request, Order $order): JsonResponse
+    {
+        try {
+            $validated = $request->validated();
+            $force = (bool) $request->boolean('force');
+
+            $updatedOrder = $this->orderService->updateOrder(
+                $order,
+                $validated,
+                isAdmin: true,
+                force: $force
+            );
+
+            ActivityLogger::log(
+                action: 'update',
+                subjectType: 'order',
+                description: "Memperbarui pesanan #{$updatedOrder->order_code} untuk pelanggan '{$updatedOrder->customers_name}' (Total: Rp ".number_format($updatedOrder->total, 0, ',', '.').')',
+                subjectName: $updatedOrder->order_code,
+                subjectId: $updatedOrder->id,
+                properties: [
+                    'order_code' => $updatedOrder->order_code,
+                    'total' => $updatedOrder->total,
+                    'event_date' => $updatedOrder->event_date instanceof \DateTimeInterface ? $updatedOrder->event_date->format('Y-m-d') : (string) $updatedOrder->event_date,
+                ]
+            );
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Pesanan berhasil diperbarui',
+                'data' => $updatedOrder->load(['items.product', 'items.addons', 'addons.addon', 'paymentProofs']),
+            ]);
         } catch (RuntimeException $e) {
             return response()->json([
                 'success' => false,
@@ -323,6 +366,31 @@ class OrderController extends Controller
             'success' => true,
             'message' => 'Catatan pembayaran berhasil diperbarui',
             'data' => $order->fresh(['items.product', 'items.addons', 'addons.addon', 'paymentProofs']),
+        ]);
+    }
+
+    /**
+     * Remove the specified order from storage.
+     */
+    public function destroy(Order $order): JsonResponse
+    {
+        $orderCode = $order->order_code;
+        $customerName = $order->customers_name;
+        $orderId = $order->id;
+
+        $this->orderService->deleteOrder($order);
+
+        ActivityLogger::log(
+            action: 'delete',
+            subjectType: 'order',
+            description: "Menghapus pesanan #{$orderCode} (Pemesan: {$customerName})",
+            subjectName: $orderCode,
+            subjectId: $orderId
+        );
+
+        return response()->json([
+            'success' => true,
+            'message' => "Pesanan {$orderCode} berhasil dihapus.",
         ]);
     }
 }

@@ -173,6 +173,16 @@ Route::prefix('v1')->group(function () {
                 'show',
             ]);
 
+            Route::match(['put', 'patch'], '/orders/{order}', [
+                AdminOrderController::class,
+                'update',
+            ]);
+
+            Route::delete('/orders/{order}', [
+                AdminOrderController::class,
+                'destroy',
+            ]);
+
             Route::patch('/orders/{order}/status', [
                 AdminOrderController::class,
                 'updateStatus',

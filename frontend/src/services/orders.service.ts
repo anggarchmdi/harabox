@@ -10,6 +10,7 @@ import type {
   UpdateOrderPaymentPayload,
   CreateOrderPayload,
   CreateAdminOrderPayload,
+  UpdateAdminOrderPayload,
   OrderRecapResponse,
   OrderRecapParams,
   OrderPaymentProof,
@@ -143,6 +144,23 @@ export const ordersService = {
     }>('/admin/orders', data)
 
     return response.data.data
+  },
+
+  async update(
+    id: number,
+    data: UpdateAdminOrderPayload,
+  ): Promise<Order> {
+    const response = await api.put<{
+      success: boolean
+      message: string
+      data: Order
+    }>(`/admin/orders/${id}`, data)
+
+    return response.data.data
+  },
+
+  async delete(id: number): Promise<void> {
+    await api.delete(`/admin/orders/${id}`)
   },
 
   async trackOrder(
