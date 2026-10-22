@@ -18,8 +18,9 @@ import AOS from 'aos'
 
 import Summary from '../components/ui/Summary'
 import PageLoader from '../components/ui/PageLoader'
-import BentoKatsuImg from '../assets/nasibox/bento-katsu-b.webp'
-import RamesBaladoImg from '../assets/nasibox/rames-balado-b.webp'
+import NasiKuning from '../assets/nasi_kuning.webp'
+import Krisbar from '../assets/krisbar.webp'
+import BatikParang from '../assets/batik-parang-gold.webp'
 import { useThemeStore } from '../stores/theme.store'
 import { useSEO } from '../hooks/useSEO'
 
@@ -267,18 +268,66 @@ export default function TentangKami() {
 
           {/* Visual Showcase Stack */}
           <div data-aos="fade-left" className="relative">
+            {/* Main Showcase Image Card */}
             <div
-              className={`relative overflow-hidden rounded-[2.5rem] border p-3 shadow-2xl ${
+              className={`group relative overflow-hidden rounded-[2.5rem] border p-3 shadow-2xl transition-all duration-300 ${
                 isDark
                   ? 'border-[#60241E]/80 bg-[#2D120F]'
-                  : 'border-[#E6DACD] bg-white shadow-[#2B120E]/5'
+                  : 'border-[#E6DACD] bg-[#FAF5EE] shadow-[#2B120E]/5'
               }`}
             >
-              <div className="aspect-[4/3] overflow-hidden rounded-[2rem]">
+              {/* Outer frame subtle batik watermark */}
+              <div
+                className={`absolute inset-0 w-full h-full pointer-events-none transition-opacity duration-500 ${
+                  isDark ? 'opacity-[0.10] mix-blend-screen' : 'opacity-[0.10] mix-blend-multiply'
+                }`}
+                style={{
+                  backgroundImage: `url(${BatikParang})`,
+                  backgroundRepeat: 'repeat',
+                  backgroundPosition: 'center',
+                  backgroundSize: '240px auto',
+                }}
+                aria-hidden="true"
+              />
+
+              {/* Inner Kotakan Gambar with Full 1 Kotak Batik Parang (Bukan Setengah) */}
+              <div
+                className={`relative aspect-[4/3] overflow-hidden rounded-[2rem] border transition-colors duration-300 ${
+                  isDark
+                    ? 'border-[#60241E]/60 bg-gradient-to-br from-[#381613] via-[#2A100E] to-[#1E0B09]'
+                    : 'border-[#EADCCF] bg-gradient-to-br from-[#FFF9F3] via-[#F8EFE4] to-[#EFE2D2]'
+                }`}
+              >
+                {/* Full 1 Kotak Motif Batik Parang Emas Keraton (Edge-to-Edge, Bukan Setengah) */}
+                <div
+                  className={`absolute inset-0 w-full h-full pointer-events-none transition-opacity duration-500 ${
+                    isDark
+                      ? 'opacity-10 mix-blend-screen'
+                      : 'opacity-10 mix-blend-multiply'
+                  }`}
+                  style={{
+                    backgroundImage: `url(${BatikParang})`,
+                    backgroundRepeat: 'repeat',
+                    backgroundPosition: 'center',
+                    backgroundSize: '600px auto',
+                  }}
+                  aria-hidden="true"
+                />
+
+                {/* Subtle Radial Ambient Warm Glow behind food cutout */}
+                <div
+                  className={`absolute inset-0 pointer-events-none ${
+                    isDark
+                      ? 'bg-[radial-gradient(ellipse_at_center,rgba(245,158,11,0.18)_0%,transparent_75%)]'
+                      : 'bg-[radial-gradient(ellipse_at_center,rgba(217,119,6,0.12)_0%,transparent_75%)]'
+                  }`}
+                  aria-hidden="true"
+                />
+
                 <img
-                  src={BentoKatsuImg}
+                  src={Krisbar}
                   alt="Pawon Hara Bento Katsu"
-                  className="h-full w-full object-cover transition-transform duration-700 hover:scale-105"
+                  className="relative h-full w-full object-cover transition-transform duration-700 group-hover:scale-105 drop-shadow-2xl"
                 />
               </div>
             </div>
@@ -291,20 +340,54 @@ export default function TentangKami() {
                 isDark ? 'border-[#1C0B09] bg-[#2D120F]' : 'border-white bg-white shadow-xl'
               }`}
             >
-              <img
-                src={RamesBaladoImg}
-                alt="Nasi Rames Balado"
-                className="aspect-square w-full object-cover"
-              />
               <div
-                className={`p-2.5 text-center border-t ${
+                className={`relative z-20 aspect-square w-full overflow-hidden ${
+                  isDark
+                    ? 'bg-gradient-to-br from-[#381613] via-[#2A100E] to-[#1E0B09]'
+                    : 'bg-gradient-to-br from-[#FFF9F3] via-[#F8EFE4] to-[#EFE2D2]'
+                }`}
+              >
+                {/* Full 1 Kotak Batik Parang Pattern */}
+                <div
+                  className={`absolute inset-0 w-full h-full pointer-events-none transition-opacity duration-500 ${
+                    isDark
+                      ? 'opacity-10 mix-blend-screen'
+                      : 'opacity-10 mix-blend-multiply'
+                  }`}
+                  style={{
+                    backgroundImage: `url(${BatikParang})`,
+                    backgroundRepeat: 'repeat',
+                    backgroundPosition: 'center',
+                    backgroundSize: '400px auto',
+                  }}
+                  aria-hidden="true"
+                />
+
+                {/* Ambient Warm Spotlight */}
+                <div
+                  className={`absolute inset-0 pointer-events-none ${
+                    isDark
+                      ? 'bg-[radial-gradient(ellipse_at_center,rgba(245,158,11,0.14)_0%,transparent_75%)]'
+                      : 'bg-[radial-gradient(ellipse_at_center,rgba(217,119,6,0.10)_0%,transparent_75%)]'
+                  }`}
+                  aria-hidden="true"
+                />
+
+                <img
+                  src={NasiKuning}
+                  alt="Nasi Rames Balado"
+                  className="relative z-10 aspect-square w-full object-cover transition-transform duration-700 hover:scale-105"
+                />
+              </div>
+              <div
+                className={`p-2.5 text-center border-t relative z-10 ${
                   isDark
                     ? 'bg-[#2D120F] border-[#60241E]/60'
                     : 'bg-white border-[#EFE5D8]'
                 }`}
               >
                 <p className={`text-[11px] font-black ${isDark ? 'text-white' : 'text-[#2B120E]'}`}>
-                  Nasi Rames Balado
+                  Nasi Kuning
                 </p>
                 <p className={`text-[10px] ${isDark ? 'text-amber-200/50' : 'text-[#8C6B62]'}`}>
                   Favorit Acara Kantor
