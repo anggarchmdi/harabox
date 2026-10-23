@@ -306,7 +306,7 @@ export default function MenuPage() {
           <div
             className={`absolute inset-0 transition-opacity duration-300 ${
               isDark
-                ? 'bg-gradient-to-b from-[#1C0B09]/50 via-black/25 via-55% to-[#1C0B09]/65'
+                ? 'bg-gradient-to-b from-[#1C0B09]/60 via-black/25 via-55% to-[#1C0B09]/65'
                 : 'bg-gradient-to-b from-black/50 via-black/20 via-55% to-[#1C0B09]/25'
             }`}
           />
@@ -321,9 +321,9 @@ export default function MenuPage() {
               data-aos-duration="700"
               className="mt-3 sm:mt-6 max-w-4xl text-3xl font-dhaksinarga tracking-wide sm:text-5xl lg:text-7xl leading-tight sm:leading-[1.08] text-white drop-shadow-md"
             >
-              Dapurnya Rasa Nusantara
-              <span className="block font-dhaksinarga text-2xl sm:text-4xl lg:text-6xl mt-1 text-white drop-shadow-md">
-                Untuk semua acara
+              Sajian Istimewa, Momen Lebih
+              <span className="block font-dhaksinarga text-3xl sm:text-5xl lg:text-7xl mt-1 text-white drop-shadow-md">
+                Bermakna
               </span>
             </h1>
 
@@ -334,7 +334,7 @@ export default function MenuPage() {
               data-aos-duration="700"
               className="mt-2.5 sm:mt-6 max-w-2xl text-xs sm:text-base lg:text-lg leading-relaxed text-stone-200 drop-shadow-sm line-clamp-2 sm:line-clamp-none"
             >
-              Sajian menu khas nusantara yang nikmat, mulai tasyakuran hingga rapat
+                Nasi box dan katering lezat untuk syukuran, rapat, hingga setiap momen spesial.
             </p>
 
             {/* Luxury Trust Indicators Pills */}
@@ -750,7 +750,7 @@ export default function MenuPage() {
                         <div className="w-[65%]">
                       {/* Left: Product Title (atas-bawah) */}
                       <h3
-                        className={`text-lg sm:text-xl font-poppins font-bold tracking-wide leading-snug transition-colors line-clamp-2 ${
+                        className={`text-lg sm:text-xl font-poppins capitalize font-bold tracking-wide leading-snug transition-colors line-clamp-2 ${
                           isDark ? 'text-white group-hover:text-[#F59E0B]' : 'text-[#2B120E] group-hover:text-[#D97706]'
                         }`}
                       >
@@ -885,8 +885,8 @@ export default function MenuPage() {
                 {/* <span className="rounded-full bg-[#1C0B09]/60 border border-[#F59E0B]/40 px-3.5 py-1 text-xs font-black uppercase tracking-wider text-amber-300">
                   Siap untuk Acaramu?
                 </span> */}
-                <h2 className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-poppins font-bold tracking-wide leading-tight text-white">
-                  Menemani semua acara,<span className="text-[#F59E0B]"> Pawon Hara </span>Dapurnya rasa Nusantara
+                <h2 className="mt-4 text-3xl capitalize sm:text-4xl lg:text-4xl font-poppins font-bold tracking-wide leading-tight text-white">
+                  Menemani semua acara,<span className="text-white block">Pawon Hara Dapurnya Rasa Nusantara</span>
 
                 </h2>
               </div>
