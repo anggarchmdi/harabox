@@ -880,12 +880,12 @@ export default function MenuPage() {
               }}
             />
 
-            <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-8 text-center lg:text-left">
+            <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-y-6 text-center lg:text-left">
               <div className="max-w-7xl">
                 {/* <span className="rounded-full bg-[#1C0B09]/60 border border-[#F59E0B]/40 px-3.5 py-1 text-xs font-black uppercase tracking-wider text-amber-300">
                   Siap untuk Acaramu?
                 </span> */}
-                <h2 className="mt-4 text-3xl capitalize sm:text-4xl lg:text-4xl font-poppins font-bold tracking-wide leading-tight text-white">
+                <h2 className="mt-4 text-xl text-center lg:text-left capitalize sm:text-4xl lg:text-4xl font-poppins font-bold tracking-wide leading-tight text-white">
                   Menemani semua acara,<span className="text-white block">Pawon Hara Dapurnya Rasa Nusantara</span>
 
                 </h2>
