@@ -232,134 +232,6 @@ export default function CaraPesan() {
           </div>
         </div>
       </section>
-
-      {/* =====================================================
-          WHATSAPP INVOICE PREVIEW SECTION
-      ====================================================== */}
-      {/* <section
-        className={`border-t py-20 lg:py-28 overflow-hidden transition-colors duration-300 ${
-          isDark ? 'border-[#60241E]/80 bg-[#200B09]' : 'border-[#E0D2C2] bg-[#EFE5D8]'
-        }`}
-      >
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="grid gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
-
-            <div data-aos="fade-right" className="space-y-5">
-              <div
-                className={`inline-flex items-center gap-2 rounded-full border px-3.5 py-1 text-[11px] font-extrabold uppercase tracking-wider ${
-                  isDark
-                    ? 'border-[#F59E0B]/40 bg-[#60241E] text-amber-300'
-                    : 'border-[#D97706]/40 bg-[#FAF0E4] text-[#8C4320]'
-                }`}
-              >
-                <Receipt size={13} className={isDark ? 'text-[#F59E0B]' : 'text-[#D97706]'} />
-                Sistem Invoice Digital WhatsApp
-              </div>
-
-              <h2
-                className={`text-3xl font-dhaksinarga tracking-wide sm:text-4xl lg:text-5xl leading-tight ${
-                  isDark ? 'text-white' : 'text-[#2B120E]'
-                }`}
-              >
-                Harga Ditentukan Tim Kami, Invoice Resmi Langsung di WhatsApp Anda
-              </h2>
-
-              <p className={`text-sm sm:text-base leading-relaxed ${isDark ? 'text-amber-100/75' : 'text-[#5C3831]'}`}>
-                Setelah Anda memilih menu dan jumlah porsi di website, pesanan Anda tercatat langsung di dashboard admin kami.
-                Tim Pawon Hara akan segera mengirimkan invoice resmi berisi rincian pesanan, konfirmasi gratis ongkir,
-                serta rekening pembayaran resmi.
-              </p>
-
-              <div
-                className={`pt-2 flex flex-wrap gap-3 text-xs font-semibold ${
-                  isDark ? 'text-amber-100/90' : 'text-[#5C3831]'
-                }`}
-              >
-                <div
-                  className={`flex items-center gap-1.5 rounded-xl border px-3.5 py-2 shadow-xs ${
-                    isDark ? 'border-[#60241E] bg-[#2D120F]' : 'border-[#E6DACD] bg-white'
-                  }`}
-                >
-                  <CheckCircle2 size={14} className={isDark ? 'text-[#F59E0B]' : 'text-[#D97706]'} />
-                  Rincian Porsi Jelas
-                </div>
-                <div
-                  className={`flex items-center gap-1.5 rounded-xl border px-3.5 py-2 shadow-xs ${
-                    isDark ? 'border-[#60241E] bg-[#2D120F]' : 'border-[#E6DACD] bg-white'
-                  }`}
-                >
-                  <CheckCircle2 size={14} className={isDark ? 'text-[#F59E0B]' : 'text-[#D97706]'} />
-                  Rekening Bank Resmi
-                </div>
-                <div
-                  className={`flex items-center gap-1.5 rounded-xl border px-3.5 py-2 shadow-xs ${
-                    isDark ? 'border-[#60241E] bg-[#2D120F]' : 'border-[#E6DACD] bg-white'
-                  }`}
-                >
-                  <CheckCircle2 size={14} className={isDark ? 'text-[#F59E0B]' : 'text-[#D97706]'} />
-                  Tercatat di Sistem
-                </div>
-              </div>
-            </div>
-
-
-            <div
-              data-aos="fade-left"
-              data-aos-delay="150"
-              className={`relative rounded-[2.5rem] border p-6 sm:p-8 shadow-2xl ${
-                isDark
-                  ? 'border-[#60241E]/80 bg-[#2D120F]'
-                  : 'border-[#E6DACD] bg-white shadow-[#2B120E]/10'
-              }`}
-            >
-              <div
-                className={`flex items-center gap-3 border-b pb-4 mb-4 ${
-                  isDark ? 'border-[#60241E]/70' : 'border-[#EFE5D8]'
-                }`}
-              >
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#60241E] text-[#F59E0B] ring-1 ring-[#F59E0B]/30">
-                  <MessageCircle size={20} />
-                </div>
-                <div>
-                  <p className={`font-extrabold text-sm ${isDark ? 'text-white' : 'text-[#2B120E]'}`}>
-                    Admin Katering Pawon Hara
-                  </p>
-                  <p className="text-[11px] text-emerald-500 font-semibold">● Online • Fast Response</p>
-                </div>
-              </div>
-
-              <div
-                className={`rounded-2xl border p-4 font-mono text-xs space-y-2 shadow-inner overflow-hidden break-words ${
-                  isDark
-                    ? 'border-[#60241E] bg-[#1C0B09] text-amber-100'
-                    : 'border-[#E6DACD] bg-[#FAF5EE] text-[#2B120E]'
-                }`}
-              >
-                <p className="font-bold text-[#F59E0B] font-dhaksinarga text-sm tracking-wider">
-                  *INVOICE PESANAN PAWON HARA*
-                </p>
-                <div className={isDark ? 'text-[#60241E]' : 'text-[#DDCBC0]'}>
-                  ===============================
-                </div>
-                <p>No. Pesanan: <span className={`font-bold ${isDark ? 'text-white' : 'text-[#2B120E]'}`}>PH-20260903-XXXX</span></p>
-                <p>Menu: <span className={`font-bold ${isDark ? 'text-white' : 'text-[#2B120E]'}`}>Nasi Box Bento Katsu (30 Porsi)</span></p>
-                <p>Tanggal Acara: <span className={`font-bold ${isDark ? 'text-white' : 'text-[#2B120E]'}`}>12 Oktober 2026</span></p>
-                <p>Alamat: <span className={`font-bold ${isDark ? 'text-white' : 'text-[#2B120E]'}`}>Gedung Pertemuan Lt. 3</span></p>
-                <div className={isDark ? 'text-[#60241E]' : 'text-[#DDCBC0]'}>
-                  -------------------------------
-                </div>
-                <p className={`font-bold text-sm ${isDark ? 'text-white' : 'text-[#2B120E]'}`}>
-                  TOTAL TAGIHAN: <span className="text-[#F59E0B]">Rp 750.000</span>
-                </p>
-                <p className={`text-[11px] font-sans mt-2 ${isDark ? 'text-amber-200/60' : 'text-[#8C6B62]'}`}>
-                  Pembayaran: Bank BSI / Mandiri a/n Pawon Hara
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section> */}
-
       {/* =====================================================
           PRO TIPS SECTION
       ====================================================== */}
@@ -448,23 +320,23 @@ export default function CaraPesan() {
               }}
             />
 
-            <div className="relative z-10 grid gap-8 lg:grid-cols-[1.4fr_0.8fr] lg:items-center">
+            <div className="relative z-10 grid lg:grid-cols-[1.3fr_1fr] lg:items-center">
               <div>
-                <div className="inline-flex items-center gap-2 rounded-full border border-[#F59E0B]/40 bg-[#1C0B09]/60 px-3.5 py-1 text-[11px] font-bold uppercase tracking-wider text-amber-300 shadow-sm backdrop-blur-sm">
+                {/* <div className="inline-flex items-center gap-2 rounded-full border border-[#F59E0B]/40 bg-[#1C0B09]/60 px-3.5 py-1 text-[11px] font-bold uppercase tracking-wider text-amber-300 shadow-sm backdrop-blur-sm">
                   <CheckCircle2 size={13} className="text-[#F59E0B]" />
                   Siap Memesan?
-                </div>
+                </div> */}
 
-                <h2 className="mt-4 text-3xl font-poppins font-bold tracking-wide sm:text-4xl lg:text-5xl leading-tight text-white">
-                  Pilih Menu Katering Favorit Anda Sekarang
+                <h2 className="mt-4 text-3xl font-poppins capitalize font-bold tracking-wide sm:text-4xl lg:text-4xl leading-tight text-white">
+                  Pilih Menu Katering <span className='block'>Favorit Anda Sekarang</span>
                 </h2>
 
-                <p className="mt-4 text-sm sm:text-base leading-relaxed max-w-2xl text-amber-100/80">
+                {/* <p className="mt-4 text-sm sm:text-base leading-relaxed max-w-2xl text-amber-100/80">
                   Tersedia beragam pilihan paket nasi box bento katsu, krisbar, dan nasi kuning dengan harga hemat serta rasa lezat.
-                </p>
+                </p> */}
               </div>
 
-              <div className="flex flex-col sm:flex-row lg:flex-col gap-3 lg:items-end">
+              <div className="flex flex-col w-full sm:flex-row lg:flex-row gap-3 lg:items-end">
                 <Link
                   to="/menu"
                   className="inline-flex items-center justify-center gap-2.5 rounded-2xl bg-gradient-to-r from-[#F59E0B] via-amber-400 to-[#E77B49] hover:from-amber-400 hover:to-amber-500 px-8 py-4 text-sm font-black text-[#1C0B09] shadow-xl shadow-[#F59E0B]/25 transition hover:scale-105 active:scale-95"
