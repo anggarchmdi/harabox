@@ -655,22 +655,17 @@ export default function TentangKami() {
 
             <div className="relative z-10 grid gap-8 lg:grid-cols-[1.4fr_0.8fr] lg:items-center">
               <div>
-                <div className="inline-flex items-center gap-2 rounded-full border border-[#F59E0B]/40 bg-[#1C0B09]/60 px-3.5 py-1 text-[11px] font-bold uppercase tracking-wider text-amber-300 shadow-sm backdrop-blur-sm">
-                  <CheckCircle2 size={13} className="text-[#F59E0B]" />
-                  Konsultasi & Invoice Katering
-                </div>
-
-                <h2 className="mt-4 text-3xl font-poppins font-bold tracking-wide sm:text-4xl lg:text-5xl leading-tight text-white">
-                  Rencanakan Konsumsi Acara Anda Bersama Kami
+                <h2 className="mt-4 text-3xl font-poppins capitalize font-bold tracking-wide sm:text-4xl lg:text-4xl leading-tight text-white">
+                  Rencanakan Konsumsi <span className='block'>Acara Anda Bersama Kami</span>
                 </h2>
 
-                <p className="mt-4 text-sm sm:text-base leading-relaxed max-w-2xl text-amber-100/80">
+                {/* <p className="mt-4 text-sm sm:text-base leading-relaxed max-w-2xl text-amber-100/80">
                   Hubungi tim admin katering kami langsung via WhatsApp untuk mendiskusikan kebutuhan acara,
                   pengiriman invoice penawaran resmi, serta ketersediaan jadwal dapur.
-                </p>
+                </p> */}
               </div>
 
-              <div className="flex flex-col gap-3 lg:items-end">
+              <div className="flex flex-row gap-3 lg:items-end">
                 <a
                   href="https://wa.me/6281122225520?text=Halo%20Pawon%20Hara,%20saya%20ingin%20konsultasi%20pesanan%20katering%20untuk%20acara%20saya."
                   target="_blank"
@@ -678,7 +673,7 @@ export default function TentangKami() {
                   className="inline-flex items-center justify-center gap-2.5 rounded-2xl bg-gradient-to-r from-[#F59E0B] via-amber-400 to-[#E77B49] hover:from-amber-400 hover:to-amber-500 px-8 py-4 text-sm font-black text-[#1C0B09] shadow-xl shadow-[#F59E0B]/25 transition-all hover:scale-105 active:scale-95"
                 >
                   <MessageCircle size={18} />
-                  Hubungi Admin WhatsApp
+                  Hubungi Admin
                 </a>
 
                 <Link
