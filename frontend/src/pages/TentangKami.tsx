@@ -625,64 +625,69 @@ export default function TentangKami() {
       {/* =====================================================
           SECTION 5: BOTTOM CONSULTATION CTA
       ====================================================== */}
-      <section className="mx-auto max-w-7xl px-6 py-20 lg:px-8">
-        <div
-          data-aos="zoom-in"
-          data-aos-duration="650"
-          className={`relative overflow-hidden rounded-[2.5rem] p-8 sm:p-12 lg:p-16 shadow-2xl transition-colors duration-300 ${
-            isDark
-              ? 'border-2 border-[#B34A44]/40 bg-gradient-to-br from-[#2D120F] via-[#381612] to-[#451B17] text-white'
-              : 'border-2 border-[#E77B49]/40 bg-gradient-to-br from-[#FAF3EA] via-[#F4E9DC] to-[#EFE1D1] text-[#2B120E]'
-          }`}
-        >
-          <div className="grid gap-8 lg:grid-cols-[1.4fr_0.8fr] lg:items-center">
-            <div>
-              <div
-                className={`inline-flex items-center gap-2 rounded-full px-3.5 py-1 text-[11px] font-bold uppercase tracking-wider shadow-sm ${
-                  isDark
-                    ? 'border border-[#F59E0B]/40 bg-[#60241E] text-amber-300'
-                    : 'border border-[#D97706]/40 bg-[#FAF0E4] text-[#8C4320]'
-                }`}
-              >
-                <CheckCircle2 size={13} className={isDark ? 'text-[#F59E0B]' : 'text-[#D97706]'} />
-                Konsultasi & Invoice Katering
+      <section
+        className={`py-16 sm:py-20 transition-colors duration-300 ${
+          isDark ? 'bg-[#1C0B09]' : 'bg-[#FBF7F2]'
+        }`}
+      >
+        <div className="mx-auto max-w-7xl px-5 sm:px-8">
+          <div
+            data-aos="zoom-in"
+            data-aos-duration="650"
+            className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-r from-[#42140F] via-[#60241E] to-[#95271D] border-2 border-[#E77B49]/40 p-8 sm:p-14 lg:p-16 text-white shadow-2xl shadow-black/60"
+          >
+            {/* Background Accent Rings */}
+            <div className="absolute -right-16 -top-16 h-72 w-72 rounded-full bg-[#E77B49]/20 blur-3xl" />
+            <div className="absolute -left-16 -bottom-16 h-72 w-72 rounded-full bg-[#F59E0B]/20 blur-3xl" />
+
+            {/* Traditional Javanese Batik Parang Watermark (Width Full, Height 1/2, Smooth Gradient Fade) */}
+            <div
+              className="absolute bottom-0 inset-x-0 w-full h-1/2 pointer-events-none opacity-25 mix-blend-screen overflow-hidden"
+              style={{
+                backgroundImage: `url(${BatikParang})`,
+                backgroundRepeat: 'repeat',
+                backgroundPosition: 'bottom center',
+                backgroundSize: '800px auto',
+                maskImage: 'linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0.5) 65%, rgba(0,0,0,0) 100%)',
+                WebkitMaskImage: 'linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0.5) 65%, rgba(0,0,0,0) 100%)',
+              }}
+            />
+
+            <div className="relative z-10 grid gap-8 lg:grid-cols-[1.4fr_0.8fr] lg:items-center">
+              <div>
+                <div className="inline-flex items-center gap-2 rounded-full border border-[#F59E0B]/40 bg-[#1C0B09]/60 px-3.5 py-1 text-[11px] font-bold uppercase tracking-wider text-amber-300 shadow-sm backdrop-blur-sm">
+                  <CheckCircle2 size={13} className="text-[#F59E0B]" />
+                  Konsultasi & Invoice Katering
+                </div>
+
+                <h2 className="mt-4 text-3xl font-poppins font-bold tracking-wide sm:text-4xl lg:text-5xl leading-tight text-white">
+                  Rencanakan Konsumsi Acara Anda Bersama Kami
+                </h2>
+
+                <p className="mt-4 text-sm sm:text-base leading-relaxed max-w-2xl text-amber-100/80">
+                  Hubungi tim admin katering kami langsung via WhatsApp untuk mendiskusikan kebutuhan acara,
+                  pengiriman invoice penawaran resmi, serta ketersediaan jadwal dapur.
+                </p>
               </div>
 
-              <h2
-                className={`mt-4 text-3xl font-poppins font-bold tracking-wide sm:text-4xl lg:text-5xl leading-tight ${
-                  isDark ? 'text-white' : 'text-[#2B120E]'
-                }`}
-              >
-                Rencanakan Konsumsi Acara Anda Bersama Kami
-              </h2>
+              <div className="flex flex-col gap-3 lg:items-end">
+                <a
+                  href="https://wa.me/6281122225520?text=Halo%20Pawon%20Hara,%20saya%20ingin%20konsultasi%20pesanan%20katering%20untuk%20acara%20saya."
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-2.5 rounded-2xl bg-gradient-to-r from-[#F59E0B] via-amber-400 to-[#E77B49] hover:from-amber-400 hover:to-amber-500 px-8 py-4 text-sm font-black text-[#1C0B09] shadow-xl shadow-[#F59E0B]/25 transition-all hover:scale-105 active:scale-95"
+                >
+                  <MessageCircle size={18} />
+                  Hubungi Admin WhatsApp
+                </a>
 
-              <p className={`mt-4 text-sm sm:text-base leading-relaxed max-w-2xl ${isDark ? 'text-amber-100/75' : 'text-[#5C3831]'}`}>
-                Hubungi tim admin katering kami langsung via WhatsApp untuk mendiskusikan kebutuhan acara,
-                pengiriman invoice penawaran resmi, serta ketersediaan jadwal dapur.
-              </p>
-            </div>
-
-            <div className="flex flex-col gap-3 lg:items-end">
-              <a
-                href="https://wa.me/6281122225520?text=Halo%20Pawon%20Hara,%20saya%20ingin%20konsultasi%20pesanan%20katering%20untuk%20acara%20saya."
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2.5 rounded-2xl bg-gradient-to-r from-[#F59E0B] via-amber-400 to-[#E77B49] px-8 py-4 text-sm font-black text-[#1C0B09] shadow-xl shadow-[#F59E0B]/25 transition-all hover:scale-105 active:scale-95"
-              >
-                <MessageCircle size={18} />
-                Hubungi Admin WhatsApp
-              </a>
-
-              <Link
-                to="/menu"
-                className={`inline-flex items-center justify-center gap-2 rounded-2xl border px-6 py-3.5 text-xs font-bold transition ${
-                  isDark
-                    ? 'border-[#E77B49]/50 bg-[#1C0B09] text-white hover:bg-[#250D0A]'
-                    : 'border-[#E6DACD] bg-white text-[#2B120E] hover:bg-[#FAF4ED]'
-                }`}
-              >
-                Lihat Koleksi Menu
-              </Link>
+                <Link
+                  to="/menu"
+                  className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[#2D120F] hover:bg-[#3B1814] text-white border border-[#E77B49]/50 font-black px-7 py-4 text-xs shadow-xl transition hover:scale-105 active:scale-95"
+                >
+                  Lihat Koleksi Menu
+                </Link>
+              </div>
             </div>
           </div>
         </div>

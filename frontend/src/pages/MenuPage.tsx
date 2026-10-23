@@ -26,6 +26,7 @@ import { useThemeStore } from '../stores/theme.store'
 import useDebounce from '../hooks/useDebounce'
 import { useSEO } from '../hooks/useSEO'
 import HeroMenu from '../assets/hero-menu.webp'
+import BatikParang from '../assets/batik-parang-gold.webp'
 
 // Aset lokal untuk smart fallback beresolusi tinggi & menggugah selera
 import BentoKatsuImg from '../assets/nasibox/bento-katsu-b.webp'
@@ -865,6 +866,19 @@ export default function MenuPage() {
             {/* Background Accent Rings */}
             <div className="absolute -right-16 -top-16 h-72 w-72 rounded-full bg-[#E77B49]/20 blur-3xl" />
             <div className="absolute -left-16 -bottom-16 h-72 w-72 rounded-full bg-[#F59E0B]/20 blur-3xl" />
+
+            {/* Traditional Javanese Batik Parang Watermark (Width Full, Height 1/2, Smooth Gradient Fade) */}
+            <div
+              className="absolute bottom-0 inset-x-0 w-full h-1/2 pointer-events-none opacity-25 mix-blend-screen overflow-hidden"
+              style={{
+                backgroundImage: `url(${BatikParang})`,
+                backgroundRepeat: 'repeat',
+                backgroundPosition: 'bottom center',
+                backgroundSize: '800px auto',
+                maskImage: 'linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0.5) 65%, rgba(0,0,0,0) 100%)',
+                WebkitMaskImage: 'linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0.5) 65%, rgba(0,0,0,0) 100%)',
+              }}
+            />
 
             <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-8 text-center lg:text-left">
               <div className="max-w-7xl">
