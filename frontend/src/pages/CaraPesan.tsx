@@ -320,14 +320,14 @@ export default function CaraPesan() {
               }}
             />
 
-            <div className="relative z-10 grid lg:grid-cols-[1.3fr_1fr] lg:items-center">
+            <div className="relative z-10 grid lg:grid-cols-[1.3fr_1fr] gap-y-6 lg:items-center">
               <div>
                 {/* <div className="inline-flex items-center gap-2 rounded-full border border-[#F59E0B]/40 bg-[#1C0B09]/60 px-3.5 py-1 text-[11px] font-bold uppercase tracking-wider text-amber-300 shadow-sm backdrop-blur-sm">
                   <CheckCircle2 size={13} className="text-[#F59E0B]" />
                   Siap Memesan?
                 </div> */}
 
-                <h2 className="mt-4 text-3xl font-poppins capitalize font-bold tracking-wide sm:text-4xl lg:text-4xl leading-tight text-white">
+                <h2 className="mt-4 text-xl text-center lg:text-left font-poppins capitalize font-bold tracking-wide sm:text-4xl lg:text-4xl leading-tight text-white">
                   Pilih Menu Katering <span className='block'>Favorit Anda Sekarang</span>
                 </h2>
 
@@ -336,10 +336,10 @@ export default function CaraPesan() {
                 </p> */}
               </div>
 
-              <div className="flex flex-col w-full sm:flex-row lg:flex-row gap-3 lg:items-end">
+              <div className="flex flex-col w-full justify-center sm:flex-row lg:flex-row gap-3 lg:items-end">
                 <Link
                   to="/menu"
-                  className="inline-flex items-center justify-center gap-2.5 rounded-2xl bg-gradient-to-r from-[#F59E0B] via-amber-400 to-[#E77B49] hover:from-amber-400 hover:to-amber-500 px-8 py-4 text-sm font-black text-[#1C0B09] shadow-xl shadow-[#F59E0B]/25 transition hover:scale-105 active:scale-95"
+                  className="inline-flex items-center justify-center gap-2.5 rounded-2xl bg-gradient-to-r from-[#F59E0B] via-amber-400 to-[#E77B49] hover:from-amber-400 hover:to-amber-500 px-8 py-3 md:py-4 text-sm font-black text-[#1C0B09] shadow-xl shadow-[#F59E0B]/25 transition hover:scale-105 active:scale-95"
                 >
                   <span>Jelajahi Semua Menu</span>
                   <ArrowRight size={16} />
@@ -349,7 +349,7 @@ export default function CaraPesan() {
                   href="https://wa.me/6281122225520?text=Halo%20Pawon%20Hara,%20saya%20ingin%20tanya%20cara%20pemesanan%20katering."
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[#2D120F] hover:bg-[#3B1814] text-white border border-[#E77B49]/50 font-black px-7 py-4 text-xs shadow-xl transition hover:scale-105 active:scale-95"
+                  className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[#2D120F] hover:bg-[#3B1814] text-white border border-[#E77B49]/50 font-black px-7 py-3 md:py-4 text-xs shadow-xl transition hover:scale-105 active:scale-95"
                 >
                   <MessageCircle size={15} className="text-[#F59E0B]" />
                   <span>Chat WhatsApp Admin</span>
