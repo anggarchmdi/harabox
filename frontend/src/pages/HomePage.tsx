@@ -1043,9 +1043,9 @@ export default function HomePage() {
               }}
             />
 
-            <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-0 text-center lg:text-left">
+            <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-y-6 text-center lg:text-left">
               <div className="max-w-7xl">
-                <h2 className="mt-4 text-3xl sm:text-4xl lg:text-4xl capitalize font-poppins font-bold tracking-wide leading-tight text-white">
+                <h2 className="mt-4 text-xl text-center lg:text-left sm:text-4xl lg:text-4xl capitalize font-poppins font-bold tracking-wide leading-tight text-white">
                   Menemani semua acara,<span className="text-white block"> Pawon Hara Dapurnya Rasa Nusantara</span>
                 </h2>
               </div>
@@ -1053,9 +1053,10 @@ export default function HomePage() {
               <div className="flex flex-row items-center justify-center shrink-0">
                 <Link
                   to="/menu"
-                  className="rounded-2xl bg-gradient-to-r from-[#F59E0B] via-amber-400 to-[#E77B49] hover:from-amber-400 hover:to-amber-500 text-[#1C0B09] font-black px-8 py-4 text-sm shadow-xl shadow-[#F59E0B]/30 transition hover:scale-105 active:scale-95"
+                  className="rounded-2xl flex justify-center items-center gap-x-2 bg-gradient-to-r from-[#F59E0B] via-amber-400 to-[#E77B49] hover:from-amber-400 hover:to-amber-500 text-[#1C0B09] font-black px-8 py-4 text-sm shadow-xl shadow-[#F59E0B]/30 transition hover:scale-105 active:scale-95"
                 >
                   Pesan Sekarang
+                    <ArrowRight size={16} />
                 </Link>
 
                 {/* <a
