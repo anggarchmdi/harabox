@@ -298,7 +298,9 @@ export const ordersService = {
     const response = await api.get<{
       success: boolean
       data: { url: string }
-    }>('/google-drive/auth-url')
+    }>('/admin/google-drive/auth-url', {
+      params: { reconnect: 1, force_consent: 1 },
+    })
     return response.data.data.url
   },
 }

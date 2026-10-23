@@ -43,10 +43,12 @@ return [
 
     'google_drive' => [
         'root_folder_id' => env('GOOGLE_DRIVE_ROOT_FOLDER_ID', env('GOOGLE_DRIVE_FOLDER_ID')),
-        'credentials_path' => env('GOOGLE_DRIVE_CREDENTIALS', env('GOOGLE_DRIVE_SERVICE_ACCOUNT_JSON', 'storage/app/google/credentials.json')),
+        'credentials_path' => env('GOOGLE_DRIVE_CREDENTIALS', env('GOOGLE_DRIVE_SERVICE_ACCOUNT_JSON')),
         'client_id' => env('GOOGLE_DRIVE_CLIENT_ID'),
         'client_secret' => env('GOOGLE_DRIVE_CLIENT_SECRET'),
         'refresh_token' => env('GOOGLE_DRIVE_REFRESH_TOKEN'),
+        'redirect_uri' => env('GOOGLE_DRIVE_REDIRECT_URI'),
+        'timeout' => (int) env('GOOGLE_DRIVE_TIMEOUT', 30),
+        'connect_timeout' => (int) env('GOOGLE_DRIVE_CONNECT_TIMEOUT', 10),
     ],
-
 ];

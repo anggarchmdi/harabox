@@ -249,4 +249,9 @@ Route::prefix('v1')->group(function () {
 
     });
 
+    // Alias for Google Drive Auth URL
+    Route::middleware(['auth:sanctum', 'active_admin', 'super_admin'])->group(function () {
+        Route::get('/google-drive/auth-url', [GoogleDriveOAuthController::class, 'getAuthUrl']);
+    });
+
 });

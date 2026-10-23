@@ -2,6 +2,7 @@
 
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Schedule;
 use Illuminate\Support\Facades\URL;
 
 Artisan::command('inspire', function () {
@@ -21,7 +22,7 @@ Artisan::command('drive:auth', function () {
         return 1;
     }
 
-    $redirectUri = url('/google-drive/callback');
+    $redirectUri = config('services.google_drive.redirect_uri') ?: route('google-drive.callback');
     $signedConnectUrl = URL::temporarySignedRoute('google-drive.connect', now()->addMinutes(30));
 
     $this->info('=== Google Drive OAuth 2.0 Secure Setup ===');
@@ -34,5 +35,4 @@ Artisan::command('drive:auth', function () {
 })->purpose('Menampilkan link otorisasi OAuth 2.0 bertanda tangan aman untuk Google Drive');
 
 // Jadwal pembersihan log aktivitas otomatis (retensi 60 hari)
-\Illuminate\Support\Facades\Schedule::command('activity-logs:prune --days=60')->daily();
-
+Schedule::command('activity-logs:prune --days=60')->daily();

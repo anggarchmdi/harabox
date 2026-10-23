@@ -2,6 +2,8 @@
 
 namespace Tests\Feature;
 
+use App\Exceptions\GoogleDriveAuthenticationException;
+use App\Exceptions\GoogleDriveNetworkException;
 use App\Models\Order;
 use App\Models\User;
 use App\Services\GoogleDriveService;
@@ -281,5 +283,57 @@ class OrderPaymentProofTest extends TestCase
         $this->assertDatabaseMissing('order_payment_proofs', [
             'id' => $proof->id,
         ]);
+    }
+
+    public function test_google_drive_authentication_failure_falls_back_to_local_storage_with_clear_message(): void
+    {
+        Storage::fake('public');
+        Sanctum::actingAs($this->admin);
+
+        $this->mock(GoogleDriveService::class, function (MockInterface $mock) {
+            $mock->shouldReceive('uploadPaymentProof')
+                ->once()
+                ->andThrow(new GoogleDriveAuthenticationException('Token has been expired or revoked.'));
+        });
+
+        $response = $this->postJson("/api/v1/admin/orders/{$this->order->id}/payment-proof", [
+            'payment_type' => 'dp',
+            'file' => UploadedFile::fake()->image('bukti.jpg'),
+        ]);
+
+        $response->assertStatus(201)
+            ->assertJson([
+                'success' => true,
+                'message' => 'Bukti transfer berhasil disimpan di server (Google Drive perlu diotorisasi ulang oleh Super Admin).',
+            ]);
+
+        $proof = $this->order->paymentProofs()->first();
+        $this->assertStringStartsWith('local:', $proof->drive_file_id);
+    }
+
+    public function test_google_drive_network_timeout_falls_back_to_local_storage_with_clear_message(): void
+    {
+        Storage::fake('public');
+        Sanctum::actingAs($this->admin);
+
+        $this->mock(GoogleDriveService::class, function (MockInterface $mock) {
+            $mock->shouldReceive('uploadPaymentProof')
+                ->once()
+                ->andThrow(new GoogleDriveNetworkException('Google Drive API Connection Timeout: cURL error 28'));
+        });
+
+        $response = $this->postJson("/api/v1/admin/orders/{$this->order->id}/payment-proof", [
+            'payment_type' => 'dp',
+            'file' => UploadedFile::fake()->image('bukti.jpg'),
+        ]);
+
+        $response->assertStatus(201)
+            ->assertJson([
+                'success' => true,
+                'message' => 'Bukti transfer berhasil disimpan di server (Google Drive connection timeout).',
+            ]);
+
+        $proof = $this->order->paymentProofs()->first();
+        $this->assertStringStartsWith('local:', $proof->drive_file_id);
     }
 }

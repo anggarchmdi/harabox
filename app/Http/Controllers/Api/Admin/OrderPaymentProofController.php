@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers\Api\Admin;
 
+use App\Exceptions\GoogleDriveAuthenticationException;
+use App\Exceptions\GoogleDriveConfigurationException;
+use App\Exceptions\GoogleDriveNetworkException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UploadPaymentProofRequest;
 use App\Models\Order;
@@ -64,16 +67,39 @@ class OrderPaymentProofController extends Controller
         $paymentType = (string) $request->validated('payment_type');
         $uploadedFile = $request->file('file');
         $isLocalFallback = false;
+        $driveException = null;
 
         // 1. Upload to Google Drive, fallback to local storage if Drive fails/expired
         try {
             $driveResult = $this->driveService->uploadPaymentProof($order, $paymentType, $uploadedFile);
         } catch (Throwable $e) {
-            Log::warning('Google Drive upload gagal atau token kedaluwarsa. Mengalihkan ke penyimpanan lokal server: '.$e->getMessage(), [
-                'order_id' => $order->id,
-                'order_code' => $order->order_code,
-                'payment_type' => $paymentType,
-            ]);
+            $driveException = $e;
+
+            if ($e instanceof GoogleDriveAuthenticationException) {
+                Log::warning('Google Drive token tidak valid atau kedaluwarsa. Mengalihkan ke penyimpanan lokal: '.$e->getMessage(), [
+                    'order_id' => $order->id,
+                    'order_code' => $order->order_code,
+                    'payment_type' => $paymentType,
+                ]);
+            } elseif ($e instanceof GoogleDriveNetworkException) {
+                Log::warning('Google Drive koneksi timeout/jaringan terganggu. Mengalihkan ke penyimpanan lokal: '.$e->getMessage(), [
+                    'order_id' => $order->id,
+                    'order_code' => $order->order_code,
+                    'payment_type' => $paymentType,
+                ]);
+            } elseif ($e instanceof GoogleDriveConfigurationException) {
+                Log::warning('Google Drive belum dikonfigurasi lengkap. Mengalihkan ke penyimpanan lokal: '.$e->getMessage(), [
+                    'order_id' => $order->id,
+                    'order_code' => $order->order_code,
+                    'payment_type' => $paymentType,
+                ]);
+            } else {
+                Log::warning('Google Drive upload gagal. Mengalihkan ke penyimpanan lokal server: '.$e->getMessage(), [
+                    'order_id' => $order->id,
+                    'order_code' => $order->order_code,
+                    'payment_type' => $paymentType,
+                ]);
+            }
 
             try {
                 $driveResult = $this->uploadToLocalFallback($order, $paymentType, $uploadedFile);
@@ -128,9 +154,12 @@ class OrderPaymentProofController extends Controller
             subjectId: $order->id
         );
 
-        $successMsg = $isLocalFallback
-            ? 'Bukti transfer berhasil disimpan di server (Google Drive offline/token kedaluwarsa).'
-            : 'Bukti transfer berhasil diupload.';
+        $successMsg = match (true) {
+            ! $isLocalFallback => 'Bukti transfer berhasil diupload.',
+            $driveException instanceof GoogleDriveAuthenticationException => 'Bukti transfer berhasil disimpan di server (Google Drive perlu diotorisasi ulang oleh Super Admin).',
+            $driveException instanceof GoogleDriveNetworkException => 'Bukti transfer berhasil disimpan di server (Google Drive connection timeout).',
+            default => 'Bukti transfer berhasil disimpan di server (Google Drive offline/token kedaluwarsa).',
+        };
 
         return response()->json([
             'success' => true,
