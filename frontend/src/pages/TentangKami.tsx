@@ -655,7 +655,7 @@ export default function TentangKami() {
 
             <div className="relative z-10 grid gap-8 lg:grid-cols-[1.4fr_0.8fr] lg:items-center">
               <div>
-                <h2 className="mt-4 text-3xl font-poppins capitalize font-bold tracking-wide sm:text-4xl lg:text-4xl leading-tight text-white">
+                <h2 className="mt-4 text-xl text-center lg:text-left font-poppins capitalize font-bold tracking-wide sm:text-4xl lg:text-4xl leading-tight text-white">
                   Rencanakan Konsumsi <span className='block'>Acara Anda Bersama Kami</span>
                 </h2>
 
@@ -665,7 +665,7 @@ export default function TentangKami() {
                 </p> */}
               </div>
 
-              <div className="flex flex-row gap-3 lg:items-end">
+              <div className="flex flex-col md:flex-row gap-3 justify-center lg:items-end">
                 <a
                   href="https://wa.me/6281122225520?text=Halo%20Pawon%20Hara,%20saya%20ingin%20konsultasi%20pesanan%20katering%20untuk%20acara%20saya."
                   target="_blank"
