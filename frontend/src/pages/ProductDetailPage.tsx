@@ -938,7 +938,7 @@ Mohon dicek ketersediaannya dan kirimkan invoice resminya ya. Terima kasih!`
                     {product.name}
                   </h1>
                   <p
-                    className={`mt-2 text-xs sm:text-sm leading-relaxed ${isDark ? 'text-amber-100/75' : 'text-[#5C3831]'
+                    className={`mt-2 text-xs sm:text-sm  capitalize leading-relaxed ${isDark ? 'text-amber-100/75' : 'text-[#5C3831]'
                       }`}
                   >
                     {product.description ||

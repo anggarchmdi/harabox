@@ -635,7 +635,7 @@ export default function HomePage() {
                       </div>
 
                       <p
-                        className={`mt-2 text-xs sm:text-sm h-10 leading-relaxed line-clamp-2 ${
+                        className={`mt-2 text-xs sm:text-sm h-10 capitalize leading-relaxed line-clamp-2 ${
                           isDark ? 'text-amber-100/65' : 'text-[#6B423A]'
                         }`}
                       >

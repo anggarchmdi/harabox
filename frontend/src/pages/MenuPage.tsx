@@ -789,7 +789,7 @@ export default function MenuPage() {
 
                     {/* Description */}
                     <p
-                      className={`mt-2 text-xs sm:text-sm leading-relaxed line-clamp-2 ${
+                      className={`mt-2 text-xs sm:text-sm capitalize leading-relaxed line-clamp-2 ${
                         isDark ? 'text-amber-100/70' : 'text-[#6B423A]'
                       }`}
                     >
