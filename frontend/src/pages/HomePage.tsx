@@ -626,7 +626,7 @@ export default function HomePage() {
                     <div className="flex flex-1 flex-col p-6">
                       <div className="flex items-start justify-between gap-2">
                         <h3
-                          className={`text-lg font-black transition ${
+                          className={`text-lg capitalize font-black transition ${
                             isDark ? 'text-white group-hover:text-[#F59E0B]' : 'text-[#2B120E] group-hover:text-[#D97706]'
                           }`}
                         >
@@ -635,7 +635,7 @@ export default function HomePage() {
                       </div>
 
                       <p
-                        className={`mt-2 text-xs sm:text-sm leading-relaxed line-clamp-2 ${
+                        className={`mt-2 text-xs sm:text-sm h-10 leading-relaxed line-clamp-2 ${
                           isDark ? 'text-amber-100/65' : 'text-[#6B423A]'
                         }`}
                       >
@@ -656,7 +656,7 @@ export default function HomePage() {
                           >
                             Harga per Box
                           </span>
-                          <p className="text-xl font-black text-[#F59E0B]">{priceLabel}</p>
+                          <p className="text-xl font-extrabold font-poppins text-[#F59E0B]">{priceLabel}</p>
                         </div>
 
                         <Link
@@ -1016,7 +1016,7 @@ export default function HomePage() {
           9. CLOSING HEROIC CTA BANNER
       ====================================================== */}
       <section
-        className={`py-16 sm:py-20 transition-colors duration-300 ${
+        className={`py-16 sm:py-20 transition-colors lowercase duration-300 ${
           isDark ? 'bg-[#1C0B09]' : 'bg-[#FBF7F2]'
         }`}
       >
@@ -1043,15 +1043,14 @@ export default function HomePage() {
               }}
             />
 
-            <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-8 text-center lg:text-left">
-              <div className="max-w-2xl">
-                <h2 className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-poppins font-bold tracking-wide leading-tight text-white">
-                  Menemani semua acara,<span className="text-[#F59E0B]"> Pawon Hara</span> Dapurnya rasa Nusantara
-
+            <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-0 text-center lg:text-left">
+              <div className="max-w-7xl">
+                <h2 className="mt-4 text-3xl sm:text-4xl lg:text-4xl capitalize font-poppins font-bold tracking-wide leading-tight text-white">
+                  Menemani semua acara,<span className="text-white block"> Pawon Hara Dapurnya Rasa Nusantara</span>
                 </h2>
               </div>
 
-              <div className="flex flex-wrap items-center justify-center gap-4 shrink-0">
+              <div className="flex flex-row items-center justify-center shrink-0">
                 <Link
                   to="/menu"
                   className="rounded-2xl bg-gradient-to-r from-[#F59E0B] via-amber-400 to-[#E77B49] hover:from-amber-400 hover:to-amber-500 text-[#1C0B09] font-black px-8 py-4 text-sm shadow-xl shadow-[#F59E0B]/30 transition hover:scale-105 active:scale-95"
@@ -1059,7 +1058,7 @@ export default function HomePage() {
                   Pesan Sekarang
                 </Link>
 
-                <a
+                {/* <a
                   href={whatsappUrl}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -1067,7 +1066,7 @@ export default function HomePage() {
                 >
                   <MessageCircle size={18} className="text-[#F59E0B]" />
                   <span>Chat WhatsApp</span>
-                </a>
+                </a> */}
               </div>
             </div>
           </div>
