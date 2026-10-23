@@ -55,11 +55,11 @@ export default function Footer() {
             {/* Duck Mascot in Traditional Attire & Crowned Brand Title */}
             <Link to="/" className="group inline-flex items-center gap-3.5 sm:gap-4">
               <div className="flex flex-col items-start">
-                <span className="font-dhaksinarga tracking-wide text-xl sm:text-4xl font-bold text-white transition-colors leading-tight">
+                <span className="font-dhaksinarga tracking-wide text-xl sm:text-4xl text-white transition-colors leading-tight">
                   Pawon Hara
                 </span>
-                <span className="text-[10px] sm:text-lg font-semibold tracking-[0.2em] uppercase text-[#E77B49] mt-0.5">
-                  Dapur Citarasa Nusantara
+                <span className="text-[10px] sm:text-lg font-poppins tracking-[0.2em] font-semibold italic text-[#E77B49] mt-0.5">
+                  Dapurnya Rasa Nusantara
                 </span>
               </div>
             </Link>
