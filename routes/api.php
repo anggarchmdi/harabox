@@ -204,6 +204,11 @@ Route::prefix('v1')->group(function () {
                 'store',
             ]);
 
+            Route::post('/orders/{order}/payment-proofs/{paymentProof}/retry-drive', [
+                OrderPaymentProofController::class,
+                'retryDriveUpload',
+            ]);
+
             Route::delete('/orders/{order}/payment-proofs/{paymentProof}', [
                 OrderPaymentProofController::class,
                 'destroy',

@@ -45,12 +45,34 @@ export default function PaymentProofSection({
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [filePreview, setFilePreview] = useState<string | null>(null)
   const [uploading, setUploading] = useState(false)
+  const [retryingId, setRetryingId] = useState<number | null>(null)
   const [deletingId, setDeletingId] = useState<number | null>(null)
   const [connectingDrive, setConnectingDrive] = useState(false)
   const fileInputRef = useRef<HTMLInputElement | null>(null)
 
   const user = useAuthStore((state) => state.user)
   const isSuperAdmin = user?.role === 'super_admin'
+
+  const handleRetryUpload = async (proof: OrderPaymentProof) => {
+    setRetryingId(proof.id)
+    try {
+      const updatedProof = await ordersService.retryPaymentProofDriveUpload(order.id, proof.id)
+      toast.success('Bukti transfer berhasil diupload ulang ke Google Drive')
+      const updated = proofs.map((p) => (p.id === updatedProof.id ? updatedProof : p))
+      setProofs(updated)
+      if (onProofUpdated) {
+        onProofUpdated(updated)
+      }
+    } catch (err: unknown) {
+      const errorObj = err as { response?: { data?: { message?: string } } }
+      const msg =
+        errorObj.response?.data?.message ||
+        'Gagal mengupload ulang bukti transfer ke Google Drive. Silakan coba lagi.'
+      toast.error(msg)
+    } finally {
+      setRetryingId(null)
+    }
+  }
 
   const handleConnectDrive = async () => {
     try {
@@ -434,6 +456,32 @@ export default function PaymentProofSection({
                   </div>
 
                   <div className="flex items-center gap-2 shrink-0 self-end sm:self-auto">
+                    {proof.drive_file_id?.startsWith('local:') && (
+                      <button
+                        type="button"
+                        disabled={retryingId === proof.id || deletingId === proof.id}
+                        onClick={() => handleRetryUpload(proof)}
+                        className={`inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold shadow-2xs transition active:scale-95 cursor-pointer disabled:opacity-50 ${
+                          isDark
+                            ? 'bg-amber-600 hover:bg-amber-500 text-white border border-amber-500/60'
+                            : 'bg-amber-500 hover:bg-amber-600 text-white border border-amber-600/30'
+                        }`}
+                        title="Upload ulang bukti transfer lokal ini ke Google Drive"
+                      >
+                        {retryingId === proof.id ? (
+                          <>
+                            <RefreshCw size={12} className="animate-spin" />
+                            <span>Mengupload...</span>
+                          </>
+                        ) : (
+                          <>
+                            <UploadCloud size={13} />
+                            <span>Upload Ulang</span>
+                          </>
+                        )}
+                      </button>
+                    )}
+
                     <a
                       href={viewUrl}
                       target="_blank"
@@ -450,7 +498,7 @@ export default function PaymentProofSection({
 
                     <button
                       type="button"
-                      disabled={deletingId === proof.id}
+                      disabled={deletingId === proof.id || retryingId === proof.id}
                       onClick={() => handleDelete(proof)}
                       className={`p-1.5 rounded-lg text-stone-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 transition active:scale-95 disabled:opacity-50 cursor-pointer`}
                       title="Hapus Bukti Transfer"

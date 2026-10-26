@@ -284,6 +284,18 @@ export const ordersService = {
     await api.delete(`/admin/orders/${orderId}/payment-proofs/${proofId}`)
   },
 
+  async retryPaymentProofDriveUpload(
+    orderId: number,
+    proofId: number,
+  ): Promise<OrderPaymentProof> {
+    const response = await api.post<{
+      success: boolean
+      message: string
+      data: OrderPaymentProof
+    }>(`/admin/orders/${orderId}/payment-proofs/${proofId}/retry-drive`)
+    return response.data.data
+  },
+
   async getCalendar(month?: string): Promise<CalendarDataResponse> {
     const response = await api.get<{
       success: boolean

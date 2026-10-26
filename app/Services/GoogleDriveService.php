@@ -187,6 +187,24 @@ class GoogleDriveService
      */
     public function uploadPaymentProof(Order $order, string $paymentType, UploadedFile $file): array
     {
+        $encodedWebp = $this->convertToWebp($file);
+
+        return $this->uploadPaymentProofContent($order, $paymentType, $encodedWebp);
+    }
+
+    /**
+     * Upload an existing payment proof binary/WebP content directly to Google Drive.
+     * Useful for re-uploading / syncing proofs that were saved locally due to Drive outage.
+     *
+     * @return array{file_id: string, file_name: string, file_url: string}
+     */
+    public function uploadPaymentProofContent(
+        Order $order,
+        string $paymentType,
+        string $fileContent,
+        ?string $originalFileName = null,
+        ?string $date = null
+    ): array {
         $rootFolderId = config('services.google_drive.root_folder_id');
         if (empty($rootFolderId)) {
             throw new GoogleDriveConfigurationException('Google Drive root folder ID belum dikonfigurasi (GOOGLE_DRIVE_FOLDER_ID).');
@@ -218,16 +236,13 @@ class GoogleDriveService
 
         // 4. Resolve & create Date Folder (YYYY-MM-DD in app timezone)
         $appTimezone = config('app.timezone', 'Asia/Jakarta');
-        $dateFolderName = now()->setTimezone($appTimezone)->format('Y-m-d');
+        $dateFolderName = $date ?: now()->setTimezone($appTimezone)->format('Y-m-d');
         $dateFolderId = $this->findOrCreateFolder($dateFolderName, $paymentTypeFolderId);
 
-        // 5. Convert Image to WebP format
-        $encodedWebp = $this->convertToWebp($file);
+        // 5. Determine unique file name in the date folder
+        $fileName = $this->resolveUniqueFileName($originalFileName ?: 'bukti-transfer.webp', $dateFolderId);
 
-        // 6. Determine unique file name in the date folder
-        $fileName = $this->resolveUniqueFileName('bukti-transfer.webp', $dateFolderId);
-
-        // 7. Upload to Google Drive
+        // 6. Upload to Google Drive
         $fileMetadata = new DriveFile([
             'name' => $fileName,
             'parents' => [$dateFolderId],
@@ -235,7 +250,7 @@ class GoogleDriveService
 
         try {
             $createdFile = $service->files->create($fileMetadata, [
-                'data' => $encodedWebp,
+                'data' => $fileContent,
                 'mimeType' => 'image/webp',
                 'uploadType' => 'multipart',
                 'fields' => 'id, name, webViewLink, webContentLink',
@@ -263,7 +278,7 @@ class GoogleDriveService
             throw new RuntimeException('Gagal mendapatkan file ID dari Google Drive.');
         }
 
-        // 8. Attempt to set anyone with link as reader so preview works
+        // 7. Attempt to set anyone with link as reader so preview works
         $this->setAnyoneReaderPermission($fileId);
 
         $fileUrl = $createdFile->getWebViewLink() ?: "https://drive.google.com/file/d/{$fileId}/view?usp=sharing";

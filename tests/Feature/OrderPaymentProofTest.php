@@ -336,4 +336,68 @@ class OrderPaymentProofTest extends TestCase
         $proof = $this->order->paymentProofs()->first();
         $this->assertStringStartsWith('local:', $proof->drive_file_id);
     }
+
+    public function test_admin_can_retry_upload_local_proof_to_google_drive(): void
+    {
+        Storage::fake('public');
+        Sanctum::actingAs($this->admin);
+
+        $fakePath = 'payment-proofs/test/dp/2026-10-26/test.webp';
+        Storage::disk('public')->put($fakePath, 'dummy-webp-content');
+
+        $proof = $this->order->paymentProofs()->create([
+            'payment_type' => 'dp',
+            'drive_file_id' => 'local:'.$fakePath,
+            'drive_file_name' => 'test.webp',
+            'drive_file_url' => 'http://localhost/storage/'.$fakePath,
+            'drive_web_view_link' => 'http://localhost/storage/'.$fakePath,
+            'uploaded_at' => now(),
+        ]);
+
+        $this->mock(GoogleDriveService::class, function (MockInterface $mock) {
+            $mock->shouldReceive('uploadPaymentProofContent')
+                ->once()
+                ->andReturn([
+                    'file_id' => 'gdrive-file-id-12345',
+                    'file_name' => 'bukti-transfer.webp',
+                    'file_url' => 'https://drive.google.com/file/d/gdrive-file-id-12345/view',
+                ]);
+        });
+
+        $response = $this->postJson("/api/v1/admin/orders/{$this->order->id}/payment-proofs/{$proof->id}/retry-drive");
+
+        $response->assertStatus(200)
+            ->assertJson([
+                'success' => true,
+                'message' => 'Bukti transfer berhasil diupload ke Google Drive.',
+                'data' => [
+                    'id' => $proof->id,
+                    'drive_file_id' => 'gdrive-file-id-12345',
+                ],
+            ]);
+
+        $this->assertEquals('gdrive-file-id-12345', $proof->fresh()->drive_file_id);
+        Storage::disk('public')->assertMissing($fakePath);
+    }
+
+    public function test_retry_upload_rejects_already_synced_proof(): void
+    {
+        Sanctum::actingAs($this->admin);
+
+        $proof = $this->order->paymentProofs()->create([
+            'payment_type' => 'dp',
+            'drive_file_id' => 'existing-gdrive-id',
+            'drive_file_name' => 'bukti.webp',
+            'drive_file_url' => 'https://drive.google.com/file/d/existing-gdrive-id/view',
+            'uploaded_at' => now(),
+        ]);
+
+        $response = $this->postJson("/api/v1/admin/orders/{$this->order->id}/payment-proofs/{$proof->id}/retry-drive");
+
+        $response->assertStatus(400)
+            ->assertJson([
+                'success' => false,
+                'message' => 'Bukti transfer ini sudah tersimpan di Google Drive.',
+            ]);
+    }
 }

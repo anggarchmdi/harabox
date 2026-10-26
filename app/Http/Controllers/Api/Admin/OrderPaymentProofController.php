@@ -247,4 +247,101 @@ class OrderPaymentProofController extends Controller
             'message' => 'Bukti transfer berhasil dihapus.',
         ]);
     }
+
+    /**
+     * Retry uploading a locally stored payment proof to Google Drive.
+     */
+    public function retryDriveUpload(Order $order, OrderPaymentProof $paymentProof): JsonResponse
+    {
+        $user = request()->user();
+        if (! $user || ! in_array($user->role, ['admin', 'super_admin'])) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Akses ditolak. Fitur ini hanya dapat diakses oleh Admin.',
+            ], 403);
+        }
+
+        if (! $user->isActive()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Akun Anda dinonaktifkan. Silakan hubungi Super Admin.',
+            ], 403);
+        }
+
+        if ($paymentProof->order_id !== $order->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Bukti transfer tidak ditemukan untuk pesanan ini.',
+            ], 404);
+        }
+
+        if (! str_starts_with($paymentProof->drive_file_id ?? '', 'local:')) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Bukti transfer ini sudah tersimpan di Google Drive.',
+            ], 400);
+        }
+
+        $relativePath = substr($paymentProof->drive_file_id, 6);
+        if (! Storage::disk('public')->exists($relativePath)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'File bukti transfer lokal tidak ditemukan di penyimpanan server.',
+            ], 404);
+        }
+
+        $fileContent = Storage::disk('public')->get($relativePath);
+        $dateStr = $paymentProof->uploaded_at ? $paymentProof->uploaded_at->format('Y-m-d') : null;
+
+        try {
+            $driveResult = $this->driveService->uploadPaymentProofContent(
+                $order,
+                $paymentProof->payment_type,
+                $fileContent,
+                $paymentProof->drive_file_name,
+                $dateStr
+            );
+        } catch (Throwable $e) {
+            Log::error('Gagal mengupload ulang bukti transfer lokal ke Google Drive: '.$e->getMessage(), [
+                'order_id' => $order->id,
+                'payment_proof_id' => $paymentProof->id,
+            ]);
+
+            $message = match (true) {
+                $e instanceof GoogleDriveAuthenticationException => 'Gagal upload ke Google Drive: Sesi Google Drive kedaluwarsa. Super Admin perlu melakukan otorisasi ulang.',
+                $e instanceof GoogleDriveNetworkException => 'Gagal upload ke Google Drive: Koneksi timeout atau jaringan terganggu. Silakan coba beberapa saat lagi.',
+                default => 'Gagal mengupload bukti transfer ke Google Drive: '.$e->getMessage(),
+            };
+
+            return response()->json([
+                'success' => false,
+                'message' => $message,
+            ], 500);
+        }
+
+        // Update database with Google Drive info
+        $paymentProof->update([
+            'drive_file_id' => $driveResult['file_id'],
+            'drive_file_name' => $driveResult['file_name'],
+            'drive_file_url' => $driveResult['file_url'],
+            'drive_web_view_link' => $driveResult['file_url'],
+        ]);
+
+        // Cleanup local file
+        Storage::disk('public')->delete($relativePath);
+
+        ActivityLogger::log(
+            action: 'update',
+            subjectType: 'payment_proof',
+            description: "Mengunggah ulang bukti transfer ({$paymentProof->payment_type}) ke Google Drive untuk pesanan #{$order->order_code}",
+            subjectName: $order->order_code,
+            subjectId: $order->id
+        );
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Bukti transfer berhasil diupload ke Google Drive.',
+            'data' => $paymentProof->fresh(),
+        ]);
+    }
 }
