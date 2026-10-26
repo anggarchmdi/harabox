@@ -49,6 +49,10 @@ import NasiKuningPahaImg from '../assets/nasibox/nasi-kuning-paha-krispi-b.webp'
 import RamesBaladoImg from '../assets/nasibox/rames-balado-b.webp'
 import RamesPahaImg from '../assets/nasibox/rames-paha-b.webp'
 
+// Traditional Indonesian Batik & Keraton Ornament Assets
+import BatikParang from '../assets/batik-parang-gold.webp'
+import FooterCorner from '../assets/footer-corner-gold.webp'
+
 function getItemImage(name: string, imageUrl?: string | null): string {
   const uploaded = getImageUrl(imageUrl)
   if (uploaded) return uploaded
@@ -389,35 +393,109 @@ export default function OrderTrackingPage() {
           </div> */}
         </div>
 
-        {/* Hero Search Section */}
-        <section className={`relative mb-8 overflow-hidden rounded-3xl border p-6 sm:p-8 shadow-xl ${
-          isDark ? 'border-[#60241E] bg-[#240E0C]' : 'border-[#E6DACD] bg-white'
+        {/* Hero Search Section with Traditional Batik Parang Pattern & Keraton Gold Ornaments */}
+        <section className={`relative mb-8 overflow-hidden rounded-3xl border p-6 sm:p-10 shadow-2xl transition-colors duration-300 ${
+          isDark
+            ? 'border-[#F59E0B]/30 bg-gradient-to-b from-[#2D120F] via-[#240E0C] to-[#1C0B09]'
+            : 'border-[#F59E0B]/35 bg-gradient-to-b from-[#FFFDF9] via-[#FAF5EE] to-[#F5ECE0]'
         }`}>
-          {/* Ambient background glow */}
+          {/* 1. Golden Accent Lines (Top & Bottom Rim Glow) */}
+          <div className="pointer-events-none absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-[#F59E0B]/80 to-transparent" />
+          <div className="pointer-events-none absolute bottom-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-[#F59E0B]/40 to-transparent" />
+
+          {/* 2. Traditional Javanese Batik Parang Gold Pattern Overlay */}
+          <div
+            className={`pointer-events-none absolute inset-0 transition-opacity duration-500 ${
+              isDark ? 'opacity-[0.14] mix-blend-screen' : 'opacity-[0.11] mix-blend-multiply'
+            }`}
+            style={{
+              backgroundImage: `url(${BatikParang})`,
+              backgroundRepeat: 'repeat',
+              backgroundPosition: 'center',
+              backgroundSize: '800px auto',
+            }}
+            aria-hidden="true"
+          />
+
+          {/* 3. Radial Vignette for Center Text Clarity & Depth */}
+          <div
+            className={`pointer-events-none absolute inset-0 ${
+              isDark
+                ? 'bg-[radial-gradient(ellipse_at_center,rgba(36,14,12,0.85)_25%,rgba(36,14,12,0.45)_65%,rgba(28,11,9,0.92)_100%)]'
+                : 'bg-[radial-gradient(ellipse_at_center,rgba(255,253,249,0.88)_25%,rgba(250,245,238,0.55)_65%,rgba(245,236,224,0.92)_100%)]'
+            }`}
+            aria-hidden="true"
+          />
+
+          {/* 4. Ambient Warm Glow Spheres */}
           <div className={`pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full blur-3xl ${
-            isDark ? 'bg-[#60241E]/40' : 'bg-amber-200/30'
+            isDark ? 'bg-[#F59E0B]/18' : 'bg-amber-300/25'
           }`} />
           <div className={`pointer-events-none absolute -left-16 -bottom-16 h-56 w-56 rounded-full blur-3xl ${
-            isDark ? 'bg-[#F59E0B]/15' : 'bg-orange-200/30'
+            isDark ? 'bg-[#E77B49]/18' : 'bg-orange-300/20'
           }`} />
 
-          <div className="relative mx-auto max-w-2xl text-center">
-            {/* <div className={`inline-flex items-center gap-2 rounded-full border px-3.5 py-1 text-xs font-bold mb-3 shadow-2xs ${
-              isDark ? 'border-[#60241E] bg-[#2D120F] text-amber-400' : 'border-[#E6DACD] bg-[#FAF5EE] text-[#D97706]'
+          {/* 5. Inner Delicate Double Frame (Tradisi Keraton) */}
+          <div className="pointer-events-none absolute inset-2 sm:inset-3 rounded-2xl border border-[#F59E0B]/15" />
+
+          {/* 6. Traditional Corner Filigree Ornaments in 4 Corners */}
+          <img
+            src={FooterCorner}
+            alt=""
+            aria-hidden="true"
+            className="pointer-events-none select-none absolute top-1.5 left-1.5 sm:top-2 sm:left-2 w-10 sm:w-14 md:w-16 h-auto opacity-75 -scale-y-100 drop-shadow-[0_2px_8px_rgba(245,158,11,0.25)]"
+          />
+          <img
+            src={FooterCorner}
+            alt=""
+            aria-hidden="true"
+            className="pointer-events-none select-none absolute top-1.5 right-1.5 sm:top-2 sm:right-2 w-10 sm:w-14 md:w-16 h-auto opacity-75 -scale-x-100 -scale-y-100 drop-shadow-[0_2px_8px_rgba(245,158,11,0.25)]"
+          />
+          <img
+            src={FooterCorner}
+            alt=""
+            aria-hidden="true"
+            className="pointer-events-none select-none absolute bottom-1.5 left-1.5 sm:bottom-2 sm:left-2 w-10 sm:w-14 md:w-16 h-auto opacity-75 drop-shadow-[0_2px_8px_rgba(245,158,11,0.25)]"
+          />
+          <img
+            src={FooterCorner}
+            alt=""
+            aria-hidden="true"
+            className="pointer-events-none select-none absolute bottom-1.5 right-1.5 sm:bottom-2 sm:right-2 w-10 sm:w-14 md:w-16 h-auto opacity-75 -scale-x-100 drop-shadow-[0_2px_8px_rgba(245,158,11,0.25)]"
+          />
+
+          {/* 7. Card Content */}
+          <div className="relative z-10 mx-auto max-w-2xl text-center">
+            {/* Elegant Brand Tag with traditional sparkle */}
+            <div className={`inline-flex items-center gap-2 rounded-full border px-3.5 py-1 text-xs font-semibold mb-3 shadow-2xs ${
+              isDark
+                ? 'border-[#F59E0B]/40 bg-[#1C0B09]/80 text-amber-300 backdrop-blur-xs'
+                : 'border-[#F59E0B]/40 bg-amber-50/90 text-[#95271D] backdrop-blur-xs'
             }`}>
-              <Sparkles size={13} className={isDark ? 'text-[#F59E0B] animate-spin' : 'text-[#D97706] animate-spin'} style={{ animationDuration: '8s' }} />
-              <span className="font-poppins tracking-widest text-xs">PELACAKAN STATUS REAL-TIME</span>
-            </div> */}
+              <Sparkles size={12} className="text-[#F59E0B] animate-pulse" />
+              <span className="font-poppins tracking-widest text-[10px] sm:text-[11px] uppercase font-bold">
+                Pelacakan Pesanan Real-Time
+              </span>
+              <Sparkles size={12} className="text-[#F59E0B] animate-pulse" />
+            </div>
 
             <h1 className={`text-2xl sm:text-3xl lg:text-4xl font-poppins tracking-wide font-black ${
               isDark ? 'text-white' : 'text-[#2B120E]'
             }`}>
               Cek status pesanan
             </h1>
-            <p className={`mt-2 text-xs sm:text-sm leading-relaxed ${
-              isDark ? 'text-amber-100/70' : 'text-[#5C3831]'
+
+            {/* Traditional Diamond Divider Motif */}
+            <div className="flex items-center justify-center gap-2.5 my-2.5">
+              <span className="h-px w-10 sm:w-16 bg-gradient-to-r from-transparent to-[#F59E0B]/60" />
+              <span className="text-[#F59E0B] text-xs">❖</span>
+              <span className="h-px w-10 sm:w-16 bg-gradient-to-l from-transparent to-[#F59E0B]/60" />
+            </div>
+
+            <p className={`text-xs sm:text-sm leading-relaxed max-w-lg mx-auto ${
+              isDark ? 'text-amber-100/75' : 'text-[#5C3831]'
             }`}>
-                Melacak pesanan bisa menggunakan kode pesanan atau nomor WA yang terdaftar
+              Melacak pesanan bisa menggunakan kode pesanan atau nomor WA yang terdaftar
             </p>
 
             {/* Search Input Form */}
@@ -434,10 +512,10 @@ export default function OrderTrackingPage() {
                   value={inputCode}
                   onChange={(e) => setInputCode(e.target.value.toUpperCase())}
                   placeholder="Kode Pesanan (PH-20260915-XXXXXX)"
-                  className={`w-full rounded-2xl border pl-10 pr-4 py-3.5 text-xs sm:text-sm font-bold uppercase tracking-wider outline-none transition ${
+                  className={`w-full rounded-2xl border pl-10 pr-4 py-3.5 text-xs sm:text-sm font-bold uppercase tracking-wider outline-none transition backdrop-blur-md shadow-inner ${
                     isDark
-                      ? 'border-[#60241E] bg-[#1C0B09] text-white placeholder:font-normal placeholder:normal-case placeholder:text-stone-500 focus:border-[#F59E0B] focus:ring-2 focus:ring-[#F59E0B]/20'
-                      : 'border-[#E6DACD] bg-[#FAF5EE] text-[#2B120E] placeholder:font-normal placeholder:normal-case placeholder:text-stone-400 focus:border-[#D97706] focus:ring-2 focus:ring-[#D97706]/20'
+                      ? 'border-[#60241E] bg-[#1C0B09]/85 text-white placeholder:font-normal placeholder:normal-case placeholder:text-stone-500 focus:border-[#F59E0B] focus:ring-2 focus:ring-[#F59E0B]/25'
+                      : 'border-[#E6DACD] bg-white/90 text-[#2B120E] placeholder:font-normal placeholder:normal-case placeholder:text-stone-400 focus:border-[#D97706] focus:ring-2 focus:ring-[#D97706]/25'
                   }`}
                 />
               </div>
@@ -455,10 +533,10 @@ export default function OrderTrackingPage() {
                   value={inputPhone}
                   onChange={(e) => setInputPhone(e.target.value)}
                   placeholder="No. WA Pemesan (Wajib)"
-                  className={`w-full rounded-2xl border pl-10 pr-4 py-3.5 text-xs sm:text-sm font-semibold outline-none transition ${
+                  className={`w-full rounded-2xl border pl-10 pr-4 py-3.5 text-xs sm:text-sm font-semibold outline-none transition backdrop-blur-md shadow-inner ${
                     isDark
-                      ? 'border-[#60241E] bg-[#1C0B09] text-white placeholder:font-normal placeholder:text-stone-500 focus:border-[#F59E0B] focus:ring-2 focus:ring-[#F59E0B]/20'
-                      : 'border-[#E6DACD] bg-[#FAF5EE] text-[#2B120E] placeholder:font-normal placeholder:text-stone-400 focus:border-[#D97706] focus:ring-2 focus:ring-[#D97706]/20'
+                      ? 'border-[#60241E] bg-[#1C0B09]/85 text-white placeholder:font-normal placeholder:text-stone-500 focus:border-[#F59E0B] focus:ring-2 focus:ring-[#F59E0B]/25'
+                      : 'border-[#E6DACD] bg-white/90 text-[#2B120E] placeholder:font-normal placeholder:text-stone-400 focus:border-[#D97706] focus:ring-2 focus:ring-[#D97706]/25'
                   }`}
                 />
               </div>
@@ -466,7 +544,7 @@ export default function OrderTrackingPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#F59E0B] via-[#E77B49] to-[#F59E0B] px-7 py-3.5 text-xs sm:text-sm font-poppins font-bold tracking-wide font-black text-[#1C0B09] shadow-lg shadow-[#F59E0B]/20 transition duration-300 hover:brightness-110 active:scale-95 disabled:opacity-50 cursor-pointer"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#F59E0B] via-[#E77B49] to-[#F59E0B] px-7 py-3.5 text-xs sm:text-sm font-poppins font-bold tracking-wide font-black text-[#1C0B09] shadow-lg shadow-[#F59E0B]/25 transition duration-300 hover:brightness-110 hover:shadow-[#F59E0B]/40 active:scale-95 disabled:opacity-50 cursor-pointer"
               >
                 {loading ? (
                   <>
@@ -1282,24 +1360,44 @@ export default function OrderTrackingPage() {
           </div>
         ) : (
           /* Initial Guide */
-          <div className={`rounded-3xl border p-8 sm:p-10 shadow-xl text-center max-w-xl mx-auto ${
-            isDark ? 'border-[#60241E] bg-[#240E0C] text-stone-100' : 'border-[#E6DACD] bg-white text-[#2B120E]'
+          <div className={`relative overflow-hidden rounded-3xl border p-8 sm:p-10 shadow-xl text-center max-w-xl mx-auto transition-colors duration-300 ${
+            isDark
+              ? 'border-[#F59E0B]/20 bg-gradient-to-b from-[#2D120F] to-[#1C0B09] text-stone-100'
+              : 'border-[#F59E0B]/25 bg-gradient-to-b from-[#FFFDF9] to-[#FAF5EE] text-[#2B120E]'
           }`}>
-            <div className={`mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border ${
-              isDark ? 'bg-[#2D120F] text-amber-400 border-[#60241E]' : 'bg-[#FAF5EE] text-[#D97706] border-[#E6DACD]'
-            }`}>
-              <FileText size={28} />
+            {/* Subtle Batik Parang watermark */}
+            <div
+              className={`pointer-events-none absolute inset-0 ${
+                isDark ? 'opacity-[0.06] mix-blend-screen' : 'opacity-[0.05] mix-blend-multiply'
+              }`}
+              style={{
+                backgroundImage: `url(${BatikParang})`,
+                backgroundRepeat: 'repeat',
+                backgroundPosition: 'center',
+                backgroundSize: '800px auto',
+              }}
+              aria-hidden="true"
+            />
+            {/* Top gold hairline */}
+            <div className="pointer-events-none absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-[#F59E0B]/40 to-transparent" />
+
+            <div className="relative z-10">
+              <div className={`mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border ${
+                isDark ? 'bg-[#2D120F] text-amber-400 border-[#60241E]' : 'bg-[#FAF5EE] text-[#D97706] border-[#E6DACD]'
+              }`}>
+                <FileText size={28} />
+              </div>
+              <h3 className={`mt-4 text-base sm:text-lg font-poppins tracking-wide font-bold ${
+                isDark ? 'text-white' : 'text-[#2B120E]'
+              }`}>
+                Cara Menemukan Kode Pesanan Anda
+              </h3>
+              <p className={`mt-2 text-xs leading-relaxed ${
+                isDark ? 'text-amber-100/70' : 'text-[#5C3831]'
+              }`}>
+                  Kode pesanan bisa panjenengan lihat pada pesan Whatsapp Pawon Hara
+              </p>
             </div>
-            <h3 className={`mt-4 text-base sm:text-lg font-poppins tracking-wide font-bold ${
-              isDark ? 'text-white' : 'text-[#2B120E]'
-            }`}>
-              Cara Menemukan Kode Pesanan Anda
-            </h3>
-            <p className={`mt-2 text-xs leading-relaxed ${
-              isDark ? 'text-amber-100/70' : 'text-[#5C3831]'
-            }`}>
-                Kode pesanan bisa panjenengan lihat pada pesan Whatsapp Pawon Hara
-            </p>
           </div>
         )}
       </div>
