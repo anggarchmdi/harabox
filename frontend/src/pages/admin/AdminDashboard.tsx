@@ -1102,25 +1102,25 @@ export default function AdminDashboard() {
           ORDER DETAIL MODAL
       ====================================================== */}
       {selectedOrder && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-950/60 backdrop-blur-xs transition-opacity">
-          <div className={`w-full max-w-xl rounded-2xl border shadow-2xl overflow-hidden ${
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-stone-950/70 backdrop-blur-xs transition-opacity">
+          <div className={`w-full max-w-xl max-h-[92vh] flex flex-col rounded-2xl sm:rounded-3xl border shadow-2xl overflow-hidden ${
             isDark ? 'border-[#60241E] bg-[#240E0C] text-stone-100' : 'border-stone-200 bg-white text-stone-900'
           }`}>
             {/* Modal Header */}
-            <div className={`border-b px-6 py-4 flex items-center justify-between ${
+            <div className={`border-b px-4 py-3 sm:px-6 sm:py-4 flex items-center justify-between shrink-0 ${
               isDark ? 'border-[#60241E] bg-[#2D120F]' : 'border-stone-100 bg-stone-50'
             }`}>
-              <div className="flex items-center gap-3">
-                <div className={`flex h-10 w-10 items-center justify-center rounded-xl shadow-xs ${
+              <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1 mr-2">
+                <div className={`flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl shadow-xs ${
                   isDark ? 'bg-[#95271D] text-white' : 'bg-stone-900 text-white'
                 }`}>
                   <Receipt size={18} />
                 </div>
-                <div>
-                  <h3 className={`font-bold text-base ${isDark ? 'text-white' : 'text-stone-950'}`}>
-                    Detail Pesanan: {selectedOrder.order_code}
+                <div className="min-w-0 flex-1">
+                  <h3 className={`font-bold text-sm sm:text-base truncate ${isDark ? 'text-white' : 'text-stone-950'}`}>
+                    Detail: {selectedOrder.order_code}
                   </h3>
-                  <p className={`text-xs ${isDark ? 'text-amber-100/60' : 'text-stone-400'}`}>
+                  <p className={`text-[11px] sm:text-xs truncate ${isDark ? 'text-amber-100/60' : 'text-stone-400'}`}>
                     Masuk pada {formatDate(selectedOrder.created_at)}
                   </p>
                 </div>
@@ -1129,7 +1129,7 @@ export default function AdminDashboard() {
               <button
                 type="button"
                 onClick={() => setSelectedOrder(null)}
-                className={`rounded-lg p-1.5 transition ${
+                className={`rounded-lg p-1.5 transition shrink-0 ${
                   isDark ? 'text-stone-400 hover:bg-[#381612] hover:text-stone-200' : 'text-stone-400 hover:bg-stone-200 hover:text-stone-700'
                 }`}
               >
@@ -1138,9 +1138,9 @@ export default function AdminDashboard() {
             </div>
 
             {/* Modal Body */}
-            <div className="p-6 space-y-5 max-h-[75vh] overflow-y-auto">
+            <div className="flex-1 overflow-y-auto min-h-0 p-4 sm:p-6 space-y-4 sm:space-y-5 overscroll-contain">
               {/* Status Switcher Row */}
-              <div className={`rounded-xl border p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 ${
+              <div className={`rounded-xl border p-3.5 sm:p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 ${
                 isDark ? 'border-[#60241E] bg-[#1C0B09]' : 'border-stone-200 bg-stone-50/70'
               }`}>
                 <div>
@@ -1156,7 +1156,7 @@ export default function AdminDashboard() {
                   <p className={`text-[10px] font-bold uppercase tracking-wider mb-1.5 ${isDark ? 'text-amber-100/60' : 'text-stone-400'}`}>
                     Ubah Status Cepat:
                   </p>
-                  <div className="flex flex-wrap gap-1.5">
+                  <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-1.5">
                     {[
                       { status: 'pending', label: 'Menunggu' },
                       { status: 'processing', label: 'Diproses Dapur' },
@@ -1170,7 +1170,7 @@ export default function AdminDashboard() {
                         onClick={() =>
                           handleStatusChange(selectedOrder.id, st.status as OrderStatus)
                         }
-                        className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
+                        className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition text-center ${
                           selectedOrder.status === st.status
                             ? isDark
                               ? 'bg-[#95271D] text-white shadow-2xs'
@@ -1287,18 +1287,18 @@ export default function AdminDashboard() {
             </div>
 
             {/* Modal Actions Footer */}
-            <div className={`border-t px-6 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 ${
+            <div className={`border-t px-4 py-3 sm:px-6 sm:py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 shrink-0 ${
               isDark ? 'border-[#60241E] bg-[#2D120F]' : 'border-stone-100 bg-stone-50'
             }`}>
-              <p className={`text-xs ${isDark ? 'text-amber-100/60' : 'text-stone-400'}`}>
+              <p className={`text-xs hidden sm:block ${isDark ? 'text-amber-100/60' : 'text-stone-400'}`}>
                 Kirim invoice resmi langsung ke nomor WhatsApp pemesan.
               </p>
 
-              <div className="flex items-center gap-2 self-end sm:self-auto">
+              <div className="grid grid-cols-2 sm:flex sm:items-center gap-2 w-full sm:w-auto">
                 <button
                   type="button"
                   onClick={() => setSelectedOrder(null)}
-                  className={`px-4 py-2 rounded-xl border text-xs font-semibold transition ${
+                  className={`px-4 py-2 rounded-xl border text-xs font-semibold transition text-center justify-center ${
                     isDark ? 'border-[#60241E] text-stone-200 hover:bg-[#381612]' : 'border-stone-200 text-stone-700 hover:bg-white'
                   }`}
                 >
@@ -1309,10 +1309,10 @@ export default function AdminDashboard() {
                   href={generateDashboardWhatsAppInvoice(selectedOrder)}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 text-white text-xs font-bold shadow-xs hover:bg-emerald-700 transition"
+                  className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 text-white text-xs font-bold shadow-xs hover:bg-emerald-700 transition text-center"
                 >
-                  <Receipt size={14} />
-                  <span>Kirim Invoice WA</span>
+                  <Receipt size={14} className="shrink-0" />
+                  <span className="truncate">Kirim Invoice WA</span>
                 </a>
               </div>
             </div>

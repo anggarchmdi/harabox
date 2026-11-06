@@ -680,9 +680,9 @@ export default function AdminOrders() {
           ORDER DETAIL & INVOICE MODAL
       ====================================================== */}
       {selectedOrder && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-950/60 p-4 backdrop-blur-xs transition-opacity">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-stone-950/70 backdrop-blur-xs transition-opacity">
           <div
-            className={`relative w-full max-w-2xl overflow-hidden rounded-2xl border shadow-2xl ${
+            className={`relative w-full max-w-2xl max-h-[92vh] flex flex-col overflow-hidden rounded-2xl sm:rounded-3xl border shadow-2xl ${
               isDark
                 ? 'border-[#60241E] bg-[#240E0C] text-white shadow-black/80'
                 : 'border-stone-200 bg-white text-stone-900'
@@ -690,36 +690,36 @@ export default function AdminOrders() {
           >
             {/* Modal Header */}
             <div
-              className={`flex items-center justify-between border-b px-6 py-4 ${
+              className={`flex items-center justify-between border-b px-4 py-3 sm:px-6 sm:py-4 shrink-0 ${
                 isDark ? 'border-[#60241E]/60 bg-[#1C0B09]' : 'border-stone-100 bg-stone-50'
               }`}
             >
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1 mr-2">
                 <div
-                  className={`flex h-10 w-10 items-center justify-center rounded-xl shadow-xs ${
+                  className={`flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl shadow-xs ${
                     isDark ? 'bg-[#2D120F] text-amber-400 border border-[#60241E]' : 'bg-stone-900 text-white'
                   }`}
                 >
                   <Receipt size={18} />
                 </div>
-                <div>
+                <div className="min-w-0 flex-1">
                   <h3
-                    className={`font-bold text-base ${
+                    className={`font-bold text-sm sm:text-base truncate ${
                       isDark ? 'text-white' : 'text-stone-900'
                     }`}
                   >
-                    Detail Pesanan: {selectedOrder.order_code}
+                    Detail: {selectedOrder.order_code}
                   </h3>
-                  <p className={`text-xs ${isDark ? 'text-amber-200/50' : 'text-stone-400'}`}>
+                  <p className={`text-[11px] sm:text-xs truncate ${isDark ? 'text-amber-200/50' : 'text-stone-400'}`}>
                     Masuk pada {formatDate(selectedOrder.created_at)}
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
                 <Link
                   to={`/admin/orders/${selectedOrder.id}/edit`}
-                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-semibold transition cursor-pointer ${
+                  className={`inline-flex items-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-xl border text-xs font-semibold transition cursor-pointer ${
                     isDark
                       ? 'border-amber-600/50 bg-amber-950/40 text-amber-300 hover:bg-amber-900/60'
                       : 'border-amber-200 bg-amber-50 text-amber-800 hover:bg-amber-100'
@@ -727,13 +727,14 @@ export default function AdminOrders() {
                   title="Buka halaman edit lengkap pesanan"
                 >
                   <Pencil size={13} />
-                  <span>Edit Pesanan</span>
+                  <span className="hidden sm:inline">Edit Pesanan</span>
+                  <span className="sm:hidden">Edit</span>
                 </Link>
 
                 <button
                   type="button"
                   onClick={() => setOrderToDelete(selectedOrder)}
-                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-semibold transition cursor-pointer ${
+                  className={`inline-flex items-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-xl border text-xs font-semibold transition cursor-pointer ${
                     isDark
                       ? 'border-rose-600/50 bg-rose-950/40 text-rose-300 hover:bg-rose-900/60'
                       : 'border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100'
@@ -741,13 +742,13 @@ export default function AdminOrders() {
                   title="Hapus pesanan ini secara permanen"
                 >
                   <Trash2 size={13} />
-                  <span>Hapus</span>
+                  <span className="hidden sm:inline">Hapus</span>
                 </button>
 
                 <button
                   type="button"
                   onClick={() => setSelectedOrder(null)}
-                  className={`rounded-lg p-1.5 transition cursor-pointer ${
+                  className={`rounded-lg p-1.5 transition cursor-pointer shrink-0 ${
                     isDark
                       ? 'text-stone-400 hover:bg-[#2D120F] hover:text-stone-200'
                       : 'text-stone-400 hover:bg-stone-200 hover:text-stone-700'
@@ -759,10 +760,10 @@ export default function AdminOrders() {
             </div>
 
             {/* Modal Body */}
-            <div className="p-6 space-y-5 max-h-[75vh] overflow-y-auto">
+            <div className="flex-1 overflow-y-auto min-h-0 p-4 sm:p-6 space-y-4 sm:space-y-5 overscroll-contain">
               {/* Status Row & Changer */}
               <div
-                className={`rounded-xl border p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 ${
+                className={`rounded-xl border p-3.5 sm:p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 ${
                   isDark ? 'border-[#60241E]/80 bg-[#1C0B09]/70' : 'border-stone-200 bg-stone-50/70'
                 }`}
               >
@@ -788,7 +789,7 @@ export default function AdminOrders() {
                   >
                     Ubah Status Cepat:
                   </p>
-                  <div className="flex flex-wrap gap-1.5">
+                  <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-1.5">
                     {[
                       { status: 'pending', label: 'Menunggu' },
                       { status: 'processing', label: 'Diproses Dapur' },
@@ -802,7 +803,7 @@ export default function AdminOrders() {
                         onClick={() =>
                           handleUpdateStatus(st.status as OrderStatus)
                         }
-                        className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer ${
+                        className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer text-center ${
                           selectedOrder.status === st.status
                             ? isDark
                               ? 'bg-gradient-to-r from-[#95271D] to-[#60241E] text-white shadow-md border border-[#F59E0B]/30'
@@ -821,7 +822,7 @@ export default function AdminOrders() {
 
               {/* Financial & Payment Tracking Card */}
               <div
-                className={`rounded-2xl border p-4.5 shadow-2xs space-y-4 ${
+                className={`rounded-2xl border p-3.5 sm:p-4.5 shadow-2xs space-y-4 ${
                   isDark ? 'border-[#60241E]/80 bg-[#1C0B09]' : 'border-stone-200 bg-white'
                 }`}
               >
@@ -860,39 +861,39 @@ export default function AdminOrders() {
                 </div>
 
                 {/* Quick Action Buttons */}
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-col sm:flex-row sm:flex-wrap gap-2">
                   <button
                     type="button"
                     disabled={updatingPayment}
                     onClick={() => handleUpdatePayment('paid', Number(selectedOrder.total))}
-                    className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 px-3.5 py-1.5 text-xs font-bold text-white shadow-2xs hover:bg-emerald-700 active:scale-95 transition disabled:opacity-50 cursor-pointer"
+                    className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-emerald-600 px-3.5 py-2 sm:py-1.5 text-xs font-bold text-white shadow-2xs hover:bg-emerald-700 active:scale-95 transition disabled:opacity-50 cursor-pointer w-full sm:w-auto text-center"
                   >
-                    <CheckCircle2 size={13} />
-                    <span>Tandai Lunas ({formatRupiah(selectedOrder.total)})</span>
+                    <CheckCircle2 size={13} className="shrink-0" />
+                    <span className="truncate">Tandai Lunas ({formatRupiah(selectedOrder.total)})</span>
                   </button>
 
                   <button
                     type="button"
                     disabled={updatingPayment}
                     onClick={() => handleUpdatePayment('dp', Math.round(Number(selectedOrder.total) * 0.5))}
-                    className="inline-flex items-center gap-1.5 rounded-xl bg-amber-500 px-3.5 py-1.5 text-xs font-bold text-white shadow-2xs hover:bg-amber-600 active:scale-95 transition disabled:opacity-50 cursor-pointer"
+                    className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-amber-500 px-3.5 py-2 sm:py-1.5 text-xs font-bold text-white shadow-2xs hover:bg-amber-600 active:scale-95 transition disabled:opacity-50 cursor-pointer w-full sm:w-auto text-center"
                   >
-                    <Coins size={13} />
-                    <span>Catat DP 50% ({formatRupiah(Math.round(Number(selectedOrder.total) * 0.5))})</span>
+                    <Coins size={13} className="shrink-0" />
+                    <span className="truncate">Catat DP 50% ({formatRupiah(Math.round(Number(selectedOrder.total) * 0.5))})</span>
                   </button>
 
                   <button
                     type="button"
                     disabled={updatingPayment}
                     onClick={() => handleUpdatePayment('unpaid', 0)}
-                    className={`inline-flex items-center gap-1.5 rounded-xl border px-3.5 py-1.5 text-xs font-semibold active:scale-95 transition disabled:opacity-50 cursor-pointer ${
+                    className={`inline-flex items-center justify-center gap-1.5 rounded-xl border px-3.5 py-2 sm:py-1.5 text-xs font-semibold active:scale-95 transition disabled:opacity-50 cursor-pointer w-full sm:w-auto text-center ${
                       isDark
                         ? 'border-[#60241E] bg-[#240E0C] text-stone-300 hover:bg-[#2D120F]'
                         : 'border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100'
                     }`}
                   >
-                    <Clock size={13} />
-                    <span>Reset Belum Bayar</span>
+                    <Clock size={13} className="shrink-0" />
+                    <span className="truncate">Reset Belum Bayar</span>
                   </button>
                 </div>
 
@@ -1256,19 +1257,19 @@ export default function AdminOrders() {
 
             {/* Modal Actions */}
             <div
-              className={`border-t px-6 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 ${
+              className={`border-t px-4 py-3 sm:px-6 sm:py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 shrink-0 ${
                 isDark ? 'border-[#60241E]/60 bg-[#1C0B09]' : 'border-stone-100 bg-stone-50'
               }`}
             >
-              <p className={`text-xs ${isDark ? 'text-amber-200/50' : 'text-stone-400'}`}>
+              <p className={`text-xs hidden sm:block ${isDark ? 'text-amber-200/50' : 'text-stone-400'}`}>
                 Kirimkan invoice resmi langsung ke nomor WhatsApp pemesan.
               </p>
 
-              <div className="flex items-center gap-2 self-end sm:self-auto">
+              <div className="grid grid-cols-2 sm:flex sm:items-center gap-2 w-full sm:w-auto">
                 <button
                   type="button"
                   onClick={() => setSelectedOrder(null)}
-                  className={`px-4 py-2 rounded-xl border text-xs font-semibold transition cursor-pointer ${
+                  className={`px-3 py-2 rounded-xl border text-xs font-semibold transition cursor-pointer text-center justify-center ${
                     isDark
                       ? 'border-[#60241E] text-stone-300 hover:bg-[#240E0C]'
                       : 'border-stone-200 text-stone-700 hover:bg-white'
@@ -1282,32 +1283,34 @@ export default function AdminOrders() {
                     href={getWhatsAppTestimonialUrl(selectedOrder)}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-amber-500 text-white text-xs font-bold shadow-xs hover:bg-amber-600 transition"
+                    className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-amber-500 text-white text-xs font-bold shadow-xs hover:bg-amber-600 transition text-center"
                     title="Kirim link ulasan ke nomor WhatsApp pemesan"
                   >
-                    <Star size={14} className="fill-white" />
-                    <span>Kirim Link Testimoni (WA)</span>
+                    <Star size={14} className="fill-white shrink-0" />
+                    <span className="truncate">Kirim Testimoni</span>
                   </a>
                 )}
 
                 <button
                   type="button"
                   onClick={() => setPrintingOrder(selectedOrder)}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold shadow-xs transition cursor-pointer"
+                  className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold shadow-xs transition cursor-pointer text-center"
                   title="Cetak Slip Dapur / Invoice Resmi"
                 >
-                  <Printer size={14} />
-                  <span>Cetak Nota / Slip</span>
+                  <Printer size={14} className="shrink-0" />
+                  <span className="truncate">Cetak Nota</span>
                 </button>
 
                 <a
                   href={getWhatsAppInvoiceUrl(selectedOrder)}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 text-white text-xs font-bold shadow-xs hover:bg-emerald-700 transition"
+                  className={`inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-600 text-white text-xs font-bold shadow-xs hover:bg-emerald-700 transition text-center ${
+                    selectedOrder.status !== 'completed' ? 'col-span-2 sm:col-span-1' : ''
+                  }`}
                 >
-                  <Receipt size={14} />
-                  <span>Kirim Invoice WA</span>
+                  <Receipt size={14} className="shrink-0" />
+                  <span className="truncate">Kirim Invoice WA</span>
                 </a>
               </div>
             </div>

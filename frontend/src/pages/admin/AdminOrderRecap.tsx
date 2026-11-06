@@ -917,23 +917,23 @@ export default function AdminOrderRecap() {
 
       {/* Order Detail Modal */}
       {selectedOrder && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200">
           <div
-            className={`w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl border p-6 shadow-2xl transition-all ${isDark ? 'border-[#60241E] bg-[#1C0B09] text-stone-100' : 'border-stone-200 bg-white text-stone-900'
+            className={`w-full max-w-2xl max-h-[92vh] flex flex-col rounded-2xl sm:rounded-3xl border shadow-2xl overflow-hidden transition-all ${isDark ? 'border-[#60241E] bg-[#1C0B09] text-stone-100' : 'border-stone-200 bg-white text-stone-900'
               }`}
           >
             {/* Modal Header */}
-            <div className="flex items-center justify-between pb-4 border-b border-stone-200 dark:border-[#60241E]">
-              <div>
+            <div className="flex items-center justify-between px-4 py-3 sm:px-6 sm:py-4 border-b border-stone-200 dark:border-[#60241E] shrink-0">
+              <div className="min-w-0 flex-1 mr-2">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-red-600">
                   Rincian Data Pesanan
                 </span>
-                <h3 className="text-xl font-extrabold mt-0.5">{selectedOrder.order_code}</h3>
+                <h3 className="text-base sm:text-xl font-extrabold mt-0.5 truncate">{selectedOrder.order_code}</h3>
               </div>
               <button
                 type="button"
                 onClick={() => setSelectedOrder(null)}
-                className={`p-2 rounded-full border transition cursor-pointer ${isDark
+                className={`p-2 rounded-full border transition cursor-pointer shrink-0 ${isDark
                   ? 'border-[#60241E] bg-[#240E0C] text-stone-400 hover:text-white'
                   : 'border-stone-200 bg-stone-50 text-stone-500 hover:text-stone-900'
                   }`}
@@ -943,9 +943,9 @@ export default function AdminOrderRecap() {
             </div>
 
             {/* Modal Content */}
-            <div className="py-4 space-y-5">
+            <div className="flex-1 overflow-y-auto min-h-0 p-4 sm:p-6 space-y-4 sm:space-y-5 overscroll-contain">
               {/* Order Info Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div
                   className={`p-3.5 rounded-2xl border ${isDark ? 'border-[#60241E]/60 bg-[#240E0C]' : 'border-stone-100 bg-stone-50'
                     }`}
@@ -953,10 +953,10 @@ export default function AdminOrderRecap() {
                   <p className="text-[11px] font-bold text-stone-400 uppercase tracking-wider mb-1">
                     Informasi Pemesan
                   </p>
-                  <p className="text-sm font-bold">{selectedOrder.customers_name}</p>
+                  <p className="text-sm font-bold truncate">{selectedOrder.customers_name}</p>
                   <p className="text-xs text-stone-500 font-mono mt-0.5">{selectedOrder.customers_phone}</p>
-                  <p className="text-xs text-stone-500 mt-2">
-                    <span className="font-semibold">Alamat:</span> {selectedOrder.delivery_address}
+                  <p className="text-xs text-stone-500 mt-2 break-words">
+                    <span className="font-semibold">Alamat:</span> {selectedOrder.delivery_address || '-'}
                   </p>
                 </div>
 
@@ -975,7 +975,7 @@ export default function AdminOrderRecap() {
                   <p className="text-xs text-stone-500 mt-0.5">
                     <span className="text-stone-400">Dibuat:</span> {formatDate(selectedOrder.created_at)}
                   </p>
-                  <div className="flex items-center gap-2 mt-2">
+                  <div className="flex flex-wrap items-center gap-2 mt-2">
                     <OrderStatusBadge status={selectedOrder.status} />
                     <PaymentStatusBadge status={selectedOrder.payment_status} />
                   </div>
@@ -994,9 +994,9 @@ export default function AdminOrderRecap() {
                     }`}
                 >
                   {selectedOrder.items?.map((item, idx) => (
-                    <div key={idx} className="p-3.5 flex items-start justify-between gap-4">
-                      <div>
-                        <p className="text-xs font-bold">
+                    <div key={idx} className="p-3 sm:p-3.5 flex items-start justify-between gap-3 sm:gap-4">
+                      <div className="min-w-0 flex-1">
+                        <p className="text-xs font-bold break-words">
                           {item.item_name}{' '}
                           <span className="text-red-600 font-semibold">x{item.quantity}</span>
                         </p>
@@ -1056,11 +1056,11 @@ export default function AdminOrderRecap() {
             </div>
 
             {/* Modal Footer */}
-            <div className="pt-3 border-t border-stone-200 dark:border-[#60241E] flex justify-end">
+            <div className="px-4 py-3 sm:px-6 sm:py-4 border-t border-stone-200 dark:border-[#60241E] flex justify-end shrink-0">
               <button
                 type="button"
                 onClick={() => setSelectedOrder(null)}
-                className={`px-4 py-2 rounded-xl text-xs font-bold border transition cursor-pointer ${isDark
+                className={`w-full sm:w-auto px-4 py-2 rounded-xl text-xs font-bold border transition cursor-pointer text-center ${isDark
                   ? 'border-[#60241E] bg-[#240E0C] text-stone-300 hover:bg-[#2D120F]'
                   : 'border-stone-200 bg-stone-100 text-stone-700 hover:bg-stone-200'
                   }`}

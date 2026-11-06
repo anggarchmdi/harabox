@@ -594,24 +594,24 @@ Instagram: @pawonhara
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/70 backdrop-blur-xs animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/70 backdrop-blur-xs animate-in fade-in duration-200">
       <div
-        className={`w-full max-w-2xl max-h-[92vh] flex flex-col rounded-3xl border shadow-2xl overflow-hidden transition-all ${isDark
+        className={`w-full max-w-2xl max-h-[92vh] flex flex-col rounded-2xl sm:rounded-3xl border shadow-2xl overflow-hidden transition-all ${isDark
           ? 'border-[#60241E] bg-[#1C0B09] text-stone-100'
           : 'border-stone-200 bg-white text-stone-900'
           }`}
       >
         {/* Modal Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-stone-200 dark:border-[#60241E]/80 shrink-0">
-          <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-xl bg-red-600 text-white shadow-2xs">
+        <div className="flex items-center justify-between px-4 py-3 sm:px-5 sm:py-4 border-b border-stone-200 dark:border-[#60241E]/80 shrink-0">
+          <div className="flex items-center gap-2.5 min-w-0 flex-1 mr-2">
+            <div className="p-2 rounded-xl bg-red-600 text-white shadow-2xs shrink-0">
               <Printer size={18} />
             </div>
-            <div>
-              <h3 className="text-base font-extrabold tracking-tight">
+            <div className="min-w-0 flex-1">
+              <h3 className="text-sm sm:text-base font-extrabold tracking-tight truncate">
                 Cetak Nota & Slip Pesanan
               </h3>
-              <p className="text-xs text-stone-400">
+              <p className="text-[11px] sm:text-xs text-stone-400 truncate">
                 Order #{order.order_code} • {order.customers_name}
               </p>
             </div>
@@ -620,7 +620,7 @@ Instagram: @pawonhara
           <button
             type="button"
             onClick={onClose}
-            className={`p-2 rounded-full border transition cursor-pointer ${isDark
+            className={`p-2 rounded-full border transition cursor-pointer shrink-0 ${isDark
               ? 'border-[#60241E] bg-[#240E0C] text-stone-400 hover:text-white'
               : 'border-stone-200 bg-stone-50 text-stone-500 hover:text-stone-900'
               }`}
@@ -630,41 +630,41 @@ Instagram: @pawonhara
         </div>
 
         {/* Control Toolbar (Template Switcher & Size Selector) */}
-        <div className="px-5 py-3 border-b border-stone-200/80 dark:border-[#60241E]/60 bg-stone-50/50 dark:bg-[#240E0C]/40 flex flex-wrap items-center justify-between gap-3 shrink-0">
+        <div className="px-4 py-2.5 sm:px-5 sm:py-3 border-b border-stone-200/80 dark:border-[#60241E]/60 bg-stone-50/50 dark:bg-[#240E0C]/40 flex flex-wrap items-center justify-between gap-2 shrink-0">
           {/* Format Tabs */}
-          <div className="flex items-center gap-1.5 p-1 rounded-xl border border-stone-200 dark:border-[#60241E] bg-white dark:bg-[#1C0B09]">
+          <div className="grid grid-cols-2 sm:flex items-center gap-1.5 p-1 rounded-xl border border-stone-200 dark:border-[#60241E] bg-white dark:bg-[#1C0B09] w-full sm:w-auto">
             <button
               type="button"
               onClick={() => setTemplate('kitchen')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${template === 'kitchen'
+              className={`flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer text-center ${template === 'kitchen'
                 ? 'bg-red-600 text-white shadow-xs'
                 : 'text-stone-500 hover:text-stone-900 dark:text-stone-400 dark:hover:text-white'
                 }`}
             >
-              <ChefHat size={13} />
-              <span>Slip Dapur (Tiket Kerja)</span>
+              <ChefHat size={13} className="shrink-0" />
+              <span className="truncate">Slip Dapur (Tiket Kerja)</span>
             </button>
 
             <button
               type="button"
               onClick={() => setTemplate('invoice')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${template === 'invoice'
+              className={`flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer text-center ${template === 'invoice'
                 ? 'bg-red-600 text-white shadow-xs'
                 : 'text-stone-500 hover:text-stone-900 dark:text-stone-400 dark:hover:text-white'
                 }`}
             >
-              <FileText size={13} />
-              <span>Invoice Resmi (A4)</span>
+              <FileText size={13} className="shrink-0" />
+              <span className="truncate">Invoice Resmi (A4)</span>
             </button>
           </div>
         </div>
 
         {/* Live Preview Paper Container */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-6 bg-stone-100 dark:bg-[#140605] flex justify-center">
+        <div className="flex-1 overflow-y-auto p-3 sm:p-6 bg-stone-100 dark:bg-[#140605] overscroll-contain">
           <div
-            className={`bg-white text-black shadow-lg border border-stone-300 rounded-lg p-5 font-mono text-xs leading-relaxed select-text transition-all ${template === 'invoice'
-              ? 'w-full max-w-xl text-[12px]'
-              : 'w-[360px] text-[12px]'
+            className={`mx-auto bg-white text-black shadow-lg border border-stone-300 rounded-lg p-4 sm:p-5 font-mono text-xs leading-relaxed select-text transition-all h-fit ${template === 'invoice'
+              ? 'w-full max-w-xl text-[11px] sm:text-[12px]'
+              : 'w-full max-w-[360px] text-[11px] sm:text-[12px]'
               }`}
             style={{
               fontFamily:
@@ -682,17 +682,17 @@ Instagram: @pawonhara
                 </div>
                 <div className="border-t-2 border-dashed border-black" />
 
-                <div className="border border-black p-2.5 text-center bg-stone-50">
+                <div className="border border-black p-2 sm:p-2.5 text-center bg-stone-50 rounded-xs">
                   <p className="text-[10px] font-bold uppercase">Waktu Pengantaran:</p>
-                  <p className="font-extrabold text-sm mt-0.5">
+                  <p className="font-extrabold text-xs sm:text-sm mt-0.5">
                     {formatDateIndo(order.event_date)}
                   </p>
-                  <p className="font-black text-base text-red-600">
+                  <p className="font-black text-sm sm:text-base text-red-600 break-words">
                     PUKUL {order.event_time ? `${order.event_time} WIB` : 'JAM BELUM DIATUR'}
                   </p>
                 </div>
 
-                <div className="text-[11px] space-y-0.5">
+                <div className="text-[11px] space-y-0.5 break-words">
                   <p>
                     <strong>Order:</strong> {order.order_code}
                   </p>
@@ -700,7 +700,7 @@ Instagram: @pawonhara
                     <strong>Pemesan:</strong> {order.customers_name} ({order.customers_phone})
                   </p>
                   <p>
-                    <strong>Alamat:</strong> {order.delivery_address}
+                    <strong>Alamat:</strong> {order.delivery_address || '-'}
                   </p>
                 </div>
 
@@ -713,16 +713,17 @@ Instagram: @pawonhara
                   {(order.items || []).map((item, idx) => (
                     <div key={idx} className="border-b border-dashed border-stone-300 pb-2">
                       <div className="flex items-start gap-2">
-                        <span className="font-bold">[  ]</span>
-                        <div>
-                          <p className="font-extrabold text-sm leading-tight">
+                        <span className="font-bold shrink-0 select-none whitespace-nowrap">[&nbsp;&nbsp;]</span>
+                        <div className="min-w-0 flex-1">
+                          <p className="font-extrabold text-sm leading-tight break-words">
                             {item.quantity}x {item.item_name}
                           </p>
                           {item.addons && item.addons.length > 0 && (
                             <div className="mt-1 pl-2 text-[11px] space-y-0.5">
                               {item.addons.map((a, aIdx) => (
-                                <p key={aIdx}>
-                                  - [ ] {a.addon_name} ({item.quantity}x)
+                                <p key={aIdx} className="flex items-start gap-1.5">
+                                  <span className="shrink-0 select-none whitespace-nowrap">- [&nbsp;&nbsp;]</span>
+                                  <span className="break-words">{a.addon_name} ({item.quantity}x)</span>
                                 </p>
                               ))}
                             </div>
@@ -735,46 +736,44 @@ Instagram: @pawonhara
 
                 <div className="border border-dashed border-black p-2 text-[11px] bg-stone-50">
                   <p className="font-bold">CATATAN KHUSUS:</p>
-                  <p className="italic mt-0.5">{order.notes || 'Tidak ada catatan.'}</p>
+                  <p className="italic mt-0.5 break-words">{order.notes || 'Tidak ada catatan.'}</p>
                 </div>
 
                 <div className="border-t-2 border-dashed border-black" />
-                <div className="flex justify-between text-[10px] text-center pt-2">
+                <div className="flex justify-between text-[10px] text-center pt-2 gap-2">
                   <div className="w-[45%]">
                     <p>Disiapkan (Dapur)</p>
-                    <div className="h-8" />
-                    <p className="whitespace-nowrap overflow-hidden tracking-wider">................</p>
+                    <div className="h-8 border-b border-dashed border-stone-400 mt-2" />
                   </div>
                   <div className="w-[45%]">
                     <p>Dicek (QC / Packing)</p>
-                    <div className="h-8" />
-                    <p className="whitespace-nowrap overflow-hidden tracking-wider">................</p>
+                    <div className="h-8 border-b border-dashed border-stone-400 mt-2" />
                   </div>
                 </div>
               </div>
             ) : (
               <div className="space-y-4">
-                <div className="flex justify-between items-start border-b-2 border-black pb-3">
-                  <div>
-                    <h4 className="text-xl font-black tracking-tight">PAWON HARA</h4>
-                    <p className="text-[11px] text-stone-600">Dapurnya Rasa Nusantara</p>
-                    <p className="text-[10px] text-stone-600">WA: 0811-2222-5520 | @pawonhara</p>
+                <div className="flex justify-between items-start border-b-2 border-black pb-3 gap-2">
+                  <div className="min-w-0">
+                    <h4 className="text-lg sm:text-xl font-black tracking-tight">PAWON HARA</h4>
+                    <p className="text-[10px] sm:text-[11px] text-stone-600">Dapurnya Rasa Nusantara</p>
+                    <p className="text-[9px] sm:text-[10px] text-stone-600">WA: 0811-2222-5520 | @pawonhara</p>
                   </div>
-                  <div className="text-right">
-                    <p className="text-sm font-black uppercase">INVOICE</p>
-                    <p className="text-xs font-bold font-mono">#{order.order_code}</p>
-                    <p className="text-[10px] text-stone-500">{formatShortDate(order.created_at)}</p>
+                  <div className="text-right shrink-0">
+                    <p className="text-xs sm:text-sm font-black uppercase">INVOICE</p>
+                    <p className="text-[11px] sm:text-xs font-bold font-mono">#{order.order_code}</p>
+                    <p className="text-[9px] sm:text-[10px] text-stone-500">{formatShortDate(order.created_at)}</p>
                   </div>
                 </div>
 
-                <div className="flex justify-between text-xs">
+                <div className="flex flex-col sm:flex-row justify-between text-xs gap-3">
                   <div>
                     <p className="text-[10px] font-bold text-stone-500 uppercase">PEMESAN:</p>
                     <p className="font-bold">{order.customers_name}</p>
                     <p>{order.customers_phone}</p>
-                    <p className="max-w-[200px] text-[11px]">{order.delivery_address}</p>
+                    <p className="max-w-[240px] text-[11px] break-words">{order.delivery_address || '-'}</p>
                   </div>
-                  <div className="text-right">
+                  <div className="sm:text-right">
                     <p className="text-[10px] font-bold text-stone-500 uppercase">WAKTU ACARA:</p>
                     <p className="font-bold">{formatDateIndo(order.event_date)}</p>
                     <p>Jam: {order.event_time ? `${order.event_time} WIB` : 'Fleksibel'}</p>
@@ -784,42 +783,44 @@ Instagram: @pawonhara
                   </div>
                 </div>
 
-                <table className="w-full text-left text-xs border-y-2 border-black">
-                  <thead>
-                    <tr className="border-b border-stone-300 bg-stone-100">
-                      <th className="py-1 px-1">MENU & ADDON</th>
-                      <th className="py-1 text-center">QTY</th>
-                      <th className="py-1 text-right">HARGA</th>
-                      <th className="py-1 text-right">SUBTOTAL</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {(order.items || []).map((item, idx) => (
-                      <tr key={idx} className="border-b border-stone-200">
-                        <td className="py-1.5 px-1">
-                          <p className="font-bold">{item.item_name}</p>
-                          {item.addons && item.addons.length > 0 && (
-                            <p className="text-[10px] text-stone-600">
-                              + {item.addons.map((a) => a.addon_name).join(', ')}
-                            </p>
-                          )}
-                        </td>
-                        <td className="py-1.5 text-center font-bold">{item.quantity}</td>
-                        <td className="py-1.5 text-right font-mono">
-                          {formatRupiah(item.price)}
-                        </td>
-                        <td className="py-1.5 text-right font-mono font-bold">
-                          {formatRupiah(item.subtotal)}
-                        </td>
+                <div className="overflow-x-auto -mx-2 sm:mx-0">
+                  <table className="w-full text-left text-xs border-y-2 border-black min-w-[320px]">
+                    <thead>
+                      <tr className="border-b border-stone-300 bg-stone-100">
+                        <th className="py-1 px-1">MENU & ADDON</th>
+                        <th className="py-1 text-center">QTY</th>
+                        <th className="py-1 text-right">HARGA</th>
+                        <th className="py-1 text-right">SUBTOTAL</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {(order.items || []).map((item, idx) => (
+                        <tr key={idx} className="border-b border-stone-200">
+                          <td className="py-1.5 px-1">
+                            <p className="font-bold">{item.item_name}</p>
+                            {item.addons && item.addons.length > 0 && (
+                              <p className="text-[10px] text-stone-600">
+                                + {item.addons.map((a) => a.addon_name).join(', ')}
+                              </p>
+                            )}
+                          </td>
+                          <td className="py-1.5 text-center font-bold">{item.quantity}</td>
+                          <td className="py-1.5 text-right font-mono">
+                            {formatRupiah(item.price)}
+                          </td>
+                          <td className="py-1.5 text-right font-mono font-bold">
+                            {formatRupiah(item.subtotal)}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
 
-                <div className="flex justify-between items-start text-xs pt-1">
-                  <div className="w-1/2 text-[11px] pr-2">
+                <div className="flex flex-col sm:flex-row justify-between items-start text-xs pt-1 gap-3">
+                  <div className="w-full sm:w-1/2 text-[11px] sm:pr-2">
                     <p className="font-bold">Catatan:</p>
-                    <p className="italic text-stone-600">{order.notes || '-'}</p>
+                    <p className="italic text-stone-600 break-words">{order.notes || '-'}</p>
 
                     {order.status === 'cancelled' ? (
                       <div className="mt-2 p-2 rounded-lg border border-red-200 bg-red-50 text-[10px] text-red-700">
@@ -840,7 +841,7 @@ Instagram: @pawonhara
                       </div>
                     )}
                   </div>
-                  <div className="w-1/2 space-y-1 text-right">
+                  <div className="w-full sm:w-1/2 space-y-1 text-right">
                     <div className="flex justify-between">
                       <span>Subtotal Menu:</span>
                       <span className="font-mono">{formatRupiah(subtotal)}</span>
@@ -864,7 +865,7 @@ Instagram: @pawonhara
                       </div>
                     ) : remaining > 0 ? (
                       <div className="flex justify-between font-bold text-red-600">
-                        <span>Sisa Tagihan:</span>Invoice
+                        <span>Sisa Tagihan:</span>
                         <span className="font-mono">{formatRupiah(remaining)}</span>
                       </div>
                     ) : (
@@ -881,34 +882,34 @@ Instagram: @pawonhara
         </div>
 
         {/* Modal Actions Footer */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-5 py-4 border-t border-stone-200 dark:border-[#60241E]/80 shrink-0">
-          <div className="text-xs text-stone-400">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-4 py-3 sm:px-5 sm:py-4 border-t border-stone-200 dark:border-[#60241E]/80 shrink-0">
+          <div className="text-xs text-stone-400 hidden sm:block">
             {template === 'kitchen'
               ? 'Format Tiket Dapur • Dilengkapi Checkbox Porsi & Addon'
               : 'Format Invoice Resmi • Ukuran A4 dengan Tanda Tangan'}
           </div>
 
-          <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+          <div className="grid grid-cols-2 sm:flex items-center gap-2 w-full sm:w-auto justify-end">
             <button
               type="button"
               onClick={handleCopyText}
-              className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border text-xs font-bold transition cursor-pointer ${isDark
+              className={`inline-flex items-center justify-center gap-1.5 px-3 py-2.5 sm:py-2 rounded-xl border text-xs font-bold transition cursor-pointer text-center ${isDark
                 ? 'border-[#60241E] bg-[#240E0C] text-stone-300 hover:text-white hover:bg-[#2D120F]'
                 : 'border-stone-200 bg-white text-stone-700 hover:bg-stone-50'
                 }`}
               title="Salin teks struk untuk aplikasi printer bluetooth HP / WA"
             >
-              {copied ? <Check size={14} className="text-emerald-500" /> : <Copy size={14} />}
-              <span>{copied ? 'Tersalin!' : 'Salin Teks Struk'}</span>
+              {copied ? <Check size={14} className="text-emerald-500 shrink-0" /> : <Copy size={14} className="shrink-0" />}
+              <span className="truncate">{copied ? 'Tersalin!' : 'Salin Teks'}</span>
             </button>
 
             <button
               type="button"
               onClick={handlePrint}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-700 hover:to-rose-800 text-white text-xs font-bold shadow-md shadow-red-950/20 transition active:scale-95 cursor-pointer"
+              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-700 hover:to-rose-800 text-white text-xs font-bold shadow-md shadow-red-950/20 transition active:scale-95 cursor-pointer text-center"
             >
-              <Printer size={15} />
-              <span>Cetak Sekarang (Print)</span>
+              <Printer size={15} className="shrink-0" />
+              <span className="truncate">Cetak (Print)</span>
             </button>
           </div>
         </div>
