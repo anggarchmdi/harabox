@@ -20,6 +20,8 @@ import {
   Sparkles,
   CheckCircle2,
   RotateCcw,
+  Loader2,
+  ArrowRight,
 } from 'lucide-react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
@@ -65,6 +67,9 @@ export default function CreateAdminOrder() {
   const isDark = useThemeStore((state) => state.theme === 'dark')
   const navigate = useNavigate()
   const queryClient = useQueryClient()
+
+  // Mobile navigation tab: 'details' (Order details & cart) vs 'catalog' (Browse food items)
+  const [mobileTab, setMobileTab] = useState<'details' | 'catalog'>('details')
 
   // Form Fields
   const now = new Date()
@@ -187,7 +192,7 @@ export default function CreateAdminOrder() {
     setTempSelectedAddons([])
   }
 
-  // Toggle single addon in modal (multi-select / checkbox)
+  // Toggle single addon in modal
   const handleToggleAddon = (group: AddonGroup, addon: Addon) => {
     setTempSelectedAddons((prev) => {
       const isSelected = prev.some((item) => item.addon.id === addon.id)
@@ -259,9 +264,7 @@ export default function CreateAdminOrder() {
     setItems((prev) => [...prev, newItem])
     setConfiguringProduct(null)
     toast.success(
-      `${configuringProduct.name} (${tempQuantity}x${
-        selectedAddonList.length > 0 ? ` + ${selectedAddonList.length} addon` : ''
-      }) berhasil ditambahkan.`
+      `${configuringProduct.name} (${tempQuantity}x) berhasil ditambahkan.`
     )
   }
 
@@ -323,45 +326,33 @@ export default function CreateAdminOrder() {
     }
   }
 
-  // Quick payment amount presets
-  const handleSetFullPayment = () => {
-    setPaidAmount(total)
-    setPaymentStatus('paid')
-  }
-
-  const handleSetDp50 = () => {
-    const half = Math.round(total / 2)
-    setPaidAmount(half)
-    setPaymentStatus('dp')
-  }
-
-  const handleSetZeroPayment = () => {
-    setPaidAmount(0)
-    setPaymentStatus('unpaid')
-  }
-
   // Submit Order Form
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
     if (!customerName.trim()) {
       toast.error('Nama pemesan wajib diisi.')
+      setMobileTab('details')
       return
     }
     if (!customerPhone.trim()) {
       toast.error('Nomor WhatsApp wajib diisi.')
+      setMobileTab('details')
       return
     }
     if (!eventDate) {
       toast.error('Tanggal acara wajib diisi.')
+      setMobileTab('details')
       return
     }
     if (!deliveryAddress.trim()) {
       toast.error('Alamat pengiriman / catatan pengambilan wajib diisi.')
+      setMobileTab('details')
       return
     }
     if (items.length === 0) {
       toast.error('Silakan pilih minimal 1 menu katering.')
+      setMobileTab('catalog')
       return
     }
 
@@ -412,113 +403,192 @@ export default function CreateAdminOrder() {
 
   return (
     <div
-      className={`min-h-screen space-y-6 sm:space-y-8 p-4 sm:p-6 lg:p-8 pb-24 transition-colors duration-300 ${
-        isDark ? 'text-stone-100' : 'text-stone-900'
+      className={`min-h-screen space-y-4 sm:space-y-6 p-3 sm:p-6 lg:p-8 pb-28 lg:pb-12 transition-colors duration-300 ${
+        isDark ? 'bg-[#140D0C] text-stone-100' : 'bg-[#FAF8F5] text-stone-900'
       }`}
     >
-      {/* Top Navigation & Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div>
-          <Link
-            to="/admin/orders"
-            className={`inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-xl border mb-3 transition cursor-pointer ${
-              isDark
-                ? 'border-[#60241E] bg-[#240E0C] text-stone-300 hover:text-white hover:bg-[#2D120F]'
-                : 'border-stone-200 bg-white text-stone-600 hover:text-stone-950 hover:bg-stone-50'
-            }`}
-          >
-            <ArrowLeft size={14} />
-            <span>Kembali ke Daftar Pesanan</span>
-          </Link>
-
-          <div className="flex items-center gap-2">
-            <span className="flex h-2 w-2 rounded-full bg-red-600 animate-pulse" />
-            <p className="text-xs font-black uppercase tracking-wider text-red-600">
-              Kasir & Order Desk Offline
-            </p>
+      {/* Top Header & Breadcrumb */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 pb-2 border-b border-[#352321]/40 dark:border-[#352321]/60">
+        <div className="space-y-1 w-full sm:w-auto">
+          <div className="flex items-center justify-between sm:justify-start gap-2">
+            <Link
+              to="/admin/orders"
+              className={`inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1.5 rounded-xl border transition cursor-pointer ${
+                isDark
+                  ? 'border-[#382321] bg-[#1E1413] text-stone-300 hover:text-white hover:bg-[#281A19]'
+                  : 'border-stone-200 bg-white text-stone-600 hover:text-stone-900 hover:bg-stone-100'
+              }`}
+            >
+              <ArrowLeft size={13} />
+              <span>Daftar Pesanan</span>
+            </Link>
           </div>
-          <h1
-            className={`mt-1 text-2xl sm:text-3xl font-extrabold tracking-tight ${
-              isDark ? 'text-white' : 'text-stone-950'
-            }`}
-          >
-            Input Pesanan Manual / Offline
-          </h1>
-          <p
-            className={`mt-1 text-xs sm:text-sm max-w-2xl ${
-              isDark ? 'text-amber-100/70' : 'text-stone-500'
-            }`}
-          >
-            Pencatatan pesanan walk-in, pelanggan offline, katering acara, atau pemesanan via telepon dengan kalkulasi ongkir fleksibel.
+
+          <div className="flex flex-wrap items-baseline gap-2 pt-0.5">
+            <h1
+              className={`text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight ${
+                isDark ? 'text-white' : 'text-stone-900'
+              }`}
+            >
+              Input Pesanan Manual / Offline
+            </h1>
+          </div>
+          <p className="text-xs text-stone-500 dark:text-stone-400">
+            Pencatatan pesanan walk-in, pelanggan offline, katering acara, atau pemesanan via telepon.
           </p>
         </div>
 
-        {/* Live Top Summary Chips */}
-        <div className="flex flex-wrap items-center gap-2 self-stretch sm:self-auto">
+        {/* Live Top Summary Chips (Desktop Only) */}
+        <div className="hidden sm:flex items-center gap-2 self-stretch sm:self-auto">
           <div
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-2xl border text-xs font-semibold ${
-              isDark ? 'border-[#60241E] bg-[#240E0C]' : 'border-stone-200 bg-white shadow-2xs'
+            className={`flex items-center gap-2 px-3 py-2 rounded-xl border text-xs ${
+              isDark
+                ? 'border-[#382321] bg-[#1A1211] text-stone-300'
+                : 'border-stone-200 bg-white text-stone-700 shadow-xs'
             }`}
           >
-            <ShoppingBag size={14} className="text-red-600" />
-            <span>{items.length} Menu ({totalBoxes} Box)</span>
+            <ShoppingBag size={14} className="text-[#95271D]" />
+            <span className="font-semibold">
+              {items.length} Menu ({totalBoxes} Box)
+            </span>
           </div>
           <div
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-2xl border text-xs font-bold ${
+            className={`flex items-center gap-1.5 px-3 py-2 rounded-xl border text-xs font-bold ${
               isDark
-                ? 'border-[#60241E] bg-[#1C0B09] text-amber-400'
-                : 'border-stone-200 bg-stone-50 text-red-700 shadow-2xs'
+                ? 'border-[#382321] bg-[#221615] text-amber-300'
+                : 'border-stone-200 bg-stone-50 text-stone-900 shadow-xs'
             }`}
           >
-            <span>Total: {formatRupiah(total)}</span>
+            <span className="text-stone-400 font-normal">Total:</span>
+            <span className="text-[#D9534F] dark:text-[#E06A55] font-extrabold">
+              {formatRupiah(total)}
+            </span>
           </div>
         </div>
       </div>
 
+      {/* Mobile Segmented Navigation Switcher (lg:hidden) */}
+      <div className="lg:hidden">
+        <div
+          className={`grid grid-cols-2 p-1 rounded-2xl border ${
+            isDark ? 'border-[#382321] bg-[#1A1211]' : 'border-stone-200 bg-stone-100'
+          }`}
+        >
+          <button
+            type="button"
+            onClick={() => setMobileTab('details')}
+            className={`py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition ${
+              mobileTab === 'details'
+                ? isDark
+                  ? 'bg-[#2E1B19] text-white shadow-sm border border-[#4A2825]'
+                  : 'bg-white text-stone-900 shadow-xs'
+                : isDark
+                  ? 'text-stone-400 hover:text-stone-200'
+                  : 'text-stone-600 hover:text-stone-900'
+            }`}
+          >
+            <ShoppingBag
+              size={14}
+              className={mobileTab === 'details' ? 'text-[#D9534F]' : ''}
+            />
+            <span>Rincian & Kasir</span>
+            <span
+              className={`text-[10px] px-1.5 py-0.2 rounded-full font-extrabold ${
+                mobileTab === 'details'
+                  ? 'bg-[#95271D] text-white'
+                  : isDark
+                    ? 'bg-stone-800 text-stone-300'
+                    : 'bg-stone-200 text-stone-700'
+              }`}
+            >
+              {items.length}
+            </span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setMobileTab('catalog')}
+            className={`py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition ${
+              mobileTab === 'catalog'
+                ? isDark
+                  ? 'bg-[#2E1B19] text-white shadow-sm border border-[#4A2825]'
+                  : 'bg-white text-stone-900 shadow-xs'
+                : isDark
+                  ? 'text-stone-400 hover:text-stone-200'
+                  : 'text-stone-600 hover:text-stone-900'
+            }`}
+          >
+            <Package
+              size={14}
+              className={mobileTab === 'catalog' ? 'text-[#D9534F]' : ''}
+            />
+            <span>Katalog Menu</span>
+            <span
+              className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
+                mobileTab === 'catalog'
+                  ? 'bg-amber-600 text-white'
+                  : isDark
+                    ? 'bg-stone-800 text-stone-400'
+                    : 'bg-stone-200 text-stone-600'
+              }`}
+            >
+              {products.length}
+            </span>
+          </button>
+        </div>
+      </div>
+
       <form onSubmit={handleSubmit}>
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
-          
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-6 items-start">
           {/* ======================================================== */}
           {/* LEFT COLUMN: KATALOG MENU KATERING (7 cols)             */}
           {/* ======================================================== */}
-          <div className="lg:col-span-7 space-y-5">
+          <div
+            className={`lg:col-span-7 space-y-4 ${
+              mobileTab === 'catalog' ? 'block' : 'hidden lg:block'
+            }`}
+          >
             <div
-              className={`rounded-3xl border p-5 sm:p-6 shadow-sm transition-all ${
-                isDark ? 'border-[#60241E]/80 bg-[#240E0C]' : 'border-stone-200/90 bg-white'
+              className={`rounded-2xl sm:rounded-3xl border p-4 sm:p-5 shadow-sm transition-all ${
+                isDark ? 'border-[#382321] bg-[#1A1211]' : 'border-stone-200/90 bg-white'
               }`}
             >
-              {/* Header Katalog */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 mb-4 border-b border-stone-200/60 dark:border-[#60241E]/60">
-                <div className="flex items-center gap-3">
+              {/* Header Katalog: Title & Search */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 mb-3 border-b border-[#352321]/40 dark:border-[#352321]/60">
+                <div className="flex items-center gap-2.5">
                   <div
-                    className={`p-2.5 rounded-2xl ${
-                      isDark ? 'bg-amber-950/60 text-amber-400' : 'bg-amber-50 text-amber-600'
+                    className={`p-2 rounded-xl ${
+                      isDark
+                        ? 'bg-amber-500/10 text-amber-400'
+                        : 'bg-amber-50 text-amber-700'
                     }`}
                   >
-                    <Package size={20} />
+                    <Package size={18} />
                   </div>
                   <div>
-                    <h2 className="text-base font-bold tracking-tight">Katalog Menu Katering</h2>
-                    <p className="text-xs text-stone-400">
-                      Pilih menu katering untuk dimasukkan ke pesanan pelanggan.
+                    <h2 className="text-sm sm:text-base font-bold tracking-tight">
+                      Katalog Menu Katering
+                    </h2>
+                    <p className="text-[11px] text-stone-400">
+                      Pilih menu katering untuk dimasukkan ke pesanan pelanggan
                     </p>
                   </div>
                 </div>
 
                 {/* Search Bar */}
-                <div className="relative w-full sm:w-60">
+                <div className="relative w-full sm:w-64">
                   <Search
                     size={14}
                     className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400"
                   />
                   <input
                     type="text"
-                    placeholder="Cari menu..."
+                    placeholder="Cari menu katering..."
                     value={searchProduct}
                     onChange={(e) => setSearchProduct(e.target.value)}
-                    className={`w-full rounded-xl border pl-8.5 pr-8 py-2 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-red-500/20 transition ${
+                    className={`w-full rounded-xl border pl-8.5 pr-8 py-2 text-xs font-medium focus:outline-none focus:ring-1 focus:ring-[#95271D] transition ${
                       isDark
-                        ? 'border-[#60241E] bg-[#1C0B09] text-white placeholder:text-stone-500'
+                        ? 'border-[#382321] bg-[#221615] text-white placeholder:text-stone-500'
                         : 'border-stone-200 bg-stone-50 text-stone-900 placeholder:text-stone-400'
                     }`}
                   />
@@ -526,7 +596,7 @@ export default function CreateAdminOrder() {
                     <button
                       type="button"
                       onClick={() => setSearchProduct('')}
-                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600"
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600 dark:hover:text-stone-200"
                     >
                       <X size={13} />
                     </button>
@@ -535,15 +605,15 @@ export default function CreateAdminOrder() {
               </div>
 
               {/* Category Filter Pills */}
-              <div className="flex items-center gap-2 overflow-x-auto pb-2 mb-4 scrollbar-none">
+              <div className="flex items-center gap-1.5 overflow-x-auto pb-2 mb-3 scrollbar-none">
                 <button
                   type="button"
                   onClick={() => setSelectedCategory('all')}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-bold shrink-0 transition cursor-pointer ${
+                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold shrink-0 transition cursor-pointer ${
                     selectedCategory === 'all'
-                      ? 'bg-red-600 text-white shadow-xs'
+                      ? 'bg-[#95271D] text-white shadow-xs font-bold'
                       : isDark
-                        ? 'bg-[#1C0B09] text-stone-400 hover:text-white border border-[#60241E]'
+                        ? 'bg-[#221615] text-stone-400 hover:text-white border border-[#382321]'
                         : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
                   }`}
                 >
@@ -557,11 +627,11 @@ export default function CreateAdminOrder() {
                       key={c.id}
                       type="button"
                       onClick={() => setSelectedCategory(String(c.id))}
-                      className={`px-3 py-1.5 rounded-xl text-xs font-bold shrink-0 transition cursor-pointer ${
+                      className={`px-3 py-1.5 rounded-xl text-xs font-semibold shrink-0 transition cursor-pointer ${
                         isSelected
-                          ? 'bg-red-600 text-white shadow-xs'
+                          ? 'bg-[#95271D] text-white shadow-xs font-bold'
                           : isDark
-                            ? 'bg-[#1C0B09] text-stone-400 hover:text-white border border-[#60241E]'
+                            ? 'bg-[#221615] text-stone-400 hover:text-white border border-[#382321]'
                             : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
                       }`}
                     >
@@ -578,15 +648,15 @@ export default function CreateAdminOrder() {
                   <p className="text-xs text-stone-400">Memuat katalog produk katering...</p>
                 </div>
               ) : filteredProducts.length === 0 ? (
-                <div className="py-16 text-center space-y-2">
-                  <AlertCircle size={28} className="mx-auto text-stone-400" />
+                <div className="py-14 text-center space-y-2">
+                  <AlertCircle size={26} className="mx-auto text-stone-400" />
                   <p className="text-xs font-bold text-stone-400">Tidak ada menu yang sesuai</p>
                   <p className="text-[11px] text-stone-500">
                     Coba kata kunci lain atau pilih kategori berbeda.
                   </p>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 max-h-[720px] overflow-y-auto pr-1.5 scrollbar-thin">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[640px] overflow-y-auto pr-1 scrollbar-thin">
                   {filteredProducts.map((product) => {
                     const hasAddons =
                       product.addons_enabled &&
@@ -600,19 +670,19 @@ export default function CreateAdminOrder() {
                     return (
                       <div
                         key={product.id}
-                        className={`group relative rounded-2xl border p-3.5 flex flex-col justify-between transition-all duration-200 hover:shadow-md ${
+                        className={`group relative rounded-xl border p-3 flex flex-col justify-between transition-all duration-200 ${
                           cartItemCount > 0
                             ? isDark
-                              ? 'border-red-500/60 bg-[#2A100D] shadow-red-950/20'
-                              : 'border-red-300 bg-red-50/40 shadow-red-100'
+                              ? 'border-[#95271D]/70 bg-[#241412] shadow-xs'
+                              : 'border-red-200 bg-red-50/40 shadow-xs'
                             : isDark
-                              ? 'border-[#60241E]/70 bg-[#1C0B09] hover:border-[#8E342B]'
-                              : 'border-stone-200 bg-stone-50/60 hover:border-stone-300 hover:bg-white'
+                              ? 'border-[#382321] bg-[#1E1413] hover:border-[#52332F]'
+                              : 'border-stone-200 bg-stone-50/70 hover:border-stone-300 hover:bg-white'
                         }`}
                       >
                         <div>
-                          {/* Image & Badges */}
-                          <div className="relative aspect-video w-full rounded-xl overflow-hidden mb-3 bg-stone-200 dark:bg-[#2D120F]">
+                          {/* Image & Subtle Badges */}
+                          <div className="relative aspect-[16/10] w-full rounded-lg overflow-hidden mb-2.5 bg-stone-200 dark:bg-[#281816]">
                             {product.image ? (
                               <img
                                 src={getImageUrl(product.image) || ''}
@@ -621,30 +691,30 @@ export default function CreateAdminOrder() {
                               />
                             ) : (
                               <div className="w-full h-full flex items-center justify-center text-stone-400">
-                                <Package size={28} />
+                                <Package size={24} />
                               </div>
                             )}
 
-                            {/* Shipping Tag Badge on Image */}
-                            <div className="absolute top-2 left-2 flex flex-col gap-1">
+                            {/* Delivery Fee Badge */}
+                            <div className="absolute top-2 left-2">
                               {product.has_delivery_fee ? (
-                                <span className="inline-flex items-center gap-1 text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-amber-500 text-stone-950 shadow-md">
+                                <span className="inline-flex items-center gap-1 text-[9px] font-bold px-2 py-0.5 rounded-md bg-black/70 text-amber-300 backdrop-blur-xs">
                                   <Truck size={10} />
                                   <span>+Ongkir {formatRupiah(product.delivery_fee || 0)}</span>
                                 </span>
                               ) : (
-                                <span className="inline-flex items-center gap-1 text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-emerald-600 text-white shadow-md">
+                                <span className="inline-flex items-center gap-1 text-[9px] font-bold px-2 py-0.5 rounded-md bg-black/70 text-emerald-300 backdrop-blur-xs">
                                   <Truck size={10} />
                                   <span>Bebas Ongkir</span>
                                 </span>
                               )}
                             </div>
 
-                            {/* Cart Count Overlay if already added */}
+                            {/* Cart Count Badge */}
                             {cartItemCount > 0 && (
                               <div className="absolute top-2 right-2">
-                                <span className="inline-flex items-center gap-1 text-[10px] font-black px-2 py-0.5 rounded-full bg-red-600 text-white shadow-md">
-                                  <Check size={11} strokeWidth={3} />
+                                <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-md bg-[#95271D] text-white shadow-xs">
+                                  <Check size={11} strokeWidth={2.5} />
                                   <span>{cartItemCount} box</span>
                                 </span>
                               </div>
@@ -652,7 +722,7 @@ export default function CreateAdminOrder() {
                           </div>
 
                           {/* Product Info */}
-                          <div className="space-y-1">
+                          <div className="space-y-0.5">
                             <h3 className="text-xs sm:text-sm font-bold tracking-tight line-clamp-1">
                               {product.name}
                             </h3>
@@ -662,10 +732,10 @@ export default function CreateAdminOrder() {
                               </p>
                             )}
                             <div className="flex items-baseline justify-between pt-1">
-                              <span className="text-sm font-extrabold text-red-600 dark:text-red-400">
+                              <span className="text-xs sm:text-sm font-extrabold text-[#D9534F] dark:text-[#E06A55]">
                                 {formatRupiah(product.price)}
                               </span>
-                              <span className="text-[10px] text-stone-400 font-semibold">
+                              <span className="text-[10px] text-stone-400 font-medium">
                                 Min. {product.minimum_order || 1} box
                               </span>
                             </div>
@@ -673,21 +743,21 @@ export default function CreateAdminOrder() {
                         </div>
 
                         {/* Add Button */}
-                        <div className="pt-3 mt-3 border-t border-stone-200/60 dark:border-[#60241E]/50 flex items-center justify-between gap-2">
+                        <div className="pt-2.5 mt-2.5 border-t border-[#352321]/30 dark:border-[#352321]/50 flex items-center justify-between gap-2">
                           <span className="text-[10px] text-stone-400 font-medium">
-                            {hasAddons ? 'Tersedia pilihan addon' : 'Menu standar'}
+                            {hasAddons ? 'Pilihan addon' : 'Menu standar'}
                           </span>
                           <button
                             type="button"
                             onClick={() => handleOpenConfigure(product)}
-                            className={`px-3 py-1.5 rounded-xl text-xs font-bold shadow-xs transition active:scale-95 cursor-pointer flex items-center gap-1.5 ${
+                            className={`px-3 py-1.5 rounded-xl text-xs font-semibold shadow-xs transition active:scale-95 cursor-pointer flex items-center gap-1.5 ${
                               cartItemCount > 0
-                                ? 'bg-red-700 hover:bg-red-800 text-white'
-                                : 'bg-red-600 hover:bg-red-700 text-white'
+                                ? 'bg-[#95271D] hover:bg-[#A82D22] text-white font-bold'
+                                : 'bg-[#95271D] hover:bg-[#A82D22] text-white'
                             }`}
                           >
                             <Plus size={13} />
-                            <span>{hasAddons ? 'Atur & Tambah' : 'Tambah'}</span>
+                            <span>{hasAddons ? 'Atur Addon' : 'Tambah'}</span>
                           </button>
                         </div>
                       </div>
@@ -701,28 +771,29 @@ export default function CreateAdminOrder() {
           {/* ======================================================== */}
           {/* RIGHT COLUMN: KASIR, DATA PEMESAN & ONGKIR (5 cols)     */}
           {/* ======================================================== */}
-          <div className="lg:col-span-5 space-y-5 lg:sticky lg:top-4">
-
+          <div
+            className={`lg:col-span-5 space-y-4 lg:sticky lg:top-4 ${
+              mobileTab === 'details' ? 'block' : 'hidden lg:block'
+            }`}
+          >
             {/* CARD 1: KERANJANG MENU TERPILIH */}
             <div
-              className={`rounded-3xl border p-5 shadow-sm transition-all ${
-                isDark ? 'border-[#60241E]/80 bg-[#240E0C]' : 'border-stone-200/90 bg-white'
+              className={`rounded-2xl sm:rounded-3xl border p-4 sm:p-5 shadow-sm transition-all ${
+                isDark ? 'border-[#382321] bg-[#1A1211]' : 'border-stone-200/90 bg-white'
               }`}
             >
-              <div className="flex items-center justify-between pb-3 mb-3 border-b border-stone-200/60 dark:border-[#60241E]/60">
+              <div className="flex items-center justify-between pb-3 mb-3 border-b border-[#352321]/40 dark:border-[#352321]/60">
                 <div className="flex items-center gap-2">
                   <div
                     className={`p-1.5 rounded-lg ${
-                      isDark ? 'bg-red-950/60 text-red-400' : 'bg-red-50 text-red-600'
+                      isDark ? 'bg-red-950/60 text-red-400' : 'bg-red-50 text-red-700'
                     }`}
                   >
-                    <ShoppingBag size={16} />
+                    <ShoppingBag size={15} />
                   </div>
-                  <div>
-                    <h3 className="text-xs sm:text-sm font-bold tracking-tight">
-                      1. Menu Terpilih ({items.length})
-                    </h3>
-                  </div>
+                  <h3 className="text-xs sm:text-sm font-bold tracking-tight">
+                    1. Menu Terpilih ({items.length})
+                  </h3>
                 </div>
 
                 {items.length > 0 && (
@@ -737,15 +808,23 @@ export default function CreateAdminOrder() {
               </div>
 
               {items.length === 0 ? (
-                <div className="py-8 text-center space-y-1.5 border border-dashed border-stone-300 dark:border-[#60241E] rounded-2xl p-4">
-                  <ShoppingBag size={24} className="mx-auto text-stone-400" />
+                <div className="py-7 text-center space-y-2 border border-dashed border-[#382321] dark:border-[#382321] rounded-2xl p-4">
+                  <ShoppingBag size={22} className="mx-auto text-stone-400" />
                   <p className="text-xs font-bold text-stone-400">Keranjang masih kosong</p>
                   <p className="text-[11px] text-stone-500 max-w-xs mx-auto">
-                    Klik tombol <strong>+ Tambah</strong> pada menu di sebelah kiri untuk memasukkan pesanan katering.
+                    Klik tombol <strong>+ Tambah</strong> pada menu di katalog untuk memasukkan pesanan katering.
                   </p>
+                  <button
+                    type="button"
+                    onClick={() => setMobileTab('catalog')}
+                    className="mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#95271D] hover:bg-[#A82D22] text-white text-xs font-bold transition cursor-pointer"
+                  >
+                    <Plus size={13} />
+                    <span>Buka Katalog Menu</span>
+                  </button>
                 </div>
               ) : (
-                <div className="space-y-2.5 max-h-64 overflow-y-auto pr-1.5 scrollbar-thin">
+                <div className="space-y-2 max-h-64 overflow-y-auto pr-1 scrollbar-thin">
                   {items.map((item) => {
                     const addonsPrice = item.selectedAddons.reduce(
                       (sum, a) => sum + Number(a.addon.price || 0),
@@ -757,9 +836,9 @@ export default function CreateAdminOrder() {
                     return (
                       <div
                         key={item.tempId}
-                        className={`p-3 rounded-2xl border transition ${
+                        className={`p-2.5 sm:p-3 rounded-xl border transition ${
                           isDark
-                            ? 'border-[#60241E]/60 bg-[#1C0B09]'
+                            ? 'border-[#382321] bg-[#1E1413]'
                             : 'border-stone-200 bg-stone-50/70'
                         }`}
                       >
@@ -770,7 +849,7 @@ export default function CreateAdminOrder() {
                                 {item.product.name}
                               </p>
                               {item.product.has_delivery_fee && (
-                                <span className="text-[9px] px-1.5 py-0.2 rounded font-black bg-amber-500/20 text-amber-500 shrink-0">
+                                <span className="text-[9px] px-1.5 py-0.2 rounded font-bold bg-amber-500/20 text-amber-400 shrink-0">
                                   +Ongkir
                                 </span>
                               )}
@@ -785,10 +864,10 @@ export default function CreateAdminOrder() {
                                 {item.selectedAddons.map((a, aIdx) => (
                                   <span
                                     key={aIdx}
-                                    className={`text-[9px] px-1.5 py-0.5 rounded font-medium inline-flex items-center gap-1 ${
+                                    className={`text-[9px] px-1.5 py-0.2 rounded font-medium inline-flex items-center gap-1 ${
                                       isDark
-                                        ? 'bg-[#240E0C] text-amber-300 border border-[#60241E]'
-                                        : 'bg-amber-50 text-amber-800 border border-amber-200'
+                                        ? 'bg-[#2A1816] text-amber-200/90 border border-[#382321]'
+                                        : 'bg-amber-50 text-amber-900 border border-amber-200'
                                     }`}
                                   >
                                     <span>{a.addon.name}</span>
@@ -814,14 +893,16 @@ export default function CreateAdminOrder() {
                         </div>
 
                         {/* Stepper & Line Subtotal */}
-                        <div className="flex items-center justify-between pt-2 mt-2 border-t border-stone-200/50 dark:border-[#60241E]/40">
+                        <div className="flex items-center justify-between pt-2 mt-2 border-t border-[#352321]/30 dark:border-[#352321]/40">
                           <div className="flex items-center gap-1.5">
                             <button
                               type="button"
-                              onClick={() => handleUpdateItemQuantity(item.tempId, item.quantity - 1)}
-                              className={`h-6 w-6 rounded-lg flex items-center justify-center border transition cursor-pointer ${
+                              onClick={() =>
+                                handleUpdateItemQuantity(item.tempId, item.quantity - 1)
+                              }
+                              className={`h-7 w-7 rounded-lg flex items-center justify-center border transition cursor-pointer ${
                                 isDark
-                                  ? 'border-[#60241E] bg-[#240E0C] text-stone-300 hover:bg-[#2D120F]'
+                                  ? 'border-[#382321] bg-[#241614] text-stone-300 hover:bg-[#2F1D1B]'
                                   : 'border-stone-200 bg-white text-stone-700 hover:bg-stone-100'
                               }`}
                             >
@@ -832,18 +913,25 @@ export default function CreateAdminOrder() {
                               min={1}
                               value={item.quantity}
                               onChange={(e) =>
-                                handleUpdateItemQuantity(item.tempId, Math.max(1, Number(e.target.value) || 1))
+                                handleUpdateItemQuantity(
+                                  item.tempId,
+                                  Math.max(1, Number(e.target.value) || 1),
+                                )
                               }
-                              className={`w-12 text-center text-xs font-bold rounded-lg border py-0.5 focus:outline-none ${
-                                isDark ? 'border-[#60241E] bg-[#240E0C]' : 'border-stone-200 bg-white'
+                              className={`w-11 text-center text-xs font-bold rounded-lg border py-0.5 focus:outline-none ${
+                                isDark
+                                  ? 'border-[#382321] bg-[#1A1211]'
+                                  : 'border-stone-200 bg-white'
                               }`}
                             />
                             <button
                               type="button"
-                              onClick={() => handleUpdateItemQuantity(item.tempId, item.quantity + 1)}
-                              className={`h-6 w-6 rounded-lg flex items-center justify-center border transition cursor-pointer ${
+                              onClick={() =>
+                                handleUpdateItemQuantity(item.tempId, item.quantity + 1)
+                              }
+                              className={`h-7 w-7 rounded-lg flex items-center justify-center border transition cursor-pointer ${
                                 isDark
-                                  ? 'border-[#60241E] bg-[#240E0C] text-stone-300 hover:bg-[#2D120F]'
+                                  ? 'border-[#382321] bg-[#241614] text-stone-300 hover:bg-[#2F1D1B]'
                                   : 'border-stone-200 bg-white text-stone-700 hover:bg-stone-100'
                               }`}
                             >
@@ -852,7 +940,7 @@ export default function CreateAdminOrder() {
                             <span className="text-[10px] text-stone-400 ml-1">box</span>
                           </div>
 
-                          <p className="text-xs font-extrabold text-red-600 dark:text-red-400">
+                          <p className="text-xs font-extrabold text-[#D9534F] dark:text-[#E06A55]">
                             {formatRupiah(itemTotal)}
                           </p>
                         </div>
@@ -861,21 +949,37 @@ export default function CreateAdminOrder() {
                   })}
                 </div>
               )}
+
+              {/* Quick Jump to Catalog button */}
+              {items.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setMobileTab('catalog')}
+                  className={`w-full mt-2.5 py-1.5 rounded-xl border border-dashed text-xs font-semibold flex items-center justify-center gap-1.5 transition cursor-pointer ${
+                    isDark
+                      ? 'border-[#382321] hover:border-[#95271D] text-stone-400 hover:text-stone-200'
+                      : 'border-stone-300 hover:border-[#95271D] text-stone-600 hover:text-stone-900'
+                  }`}
+                >
+                  <Plus size={12} />
+                  <span>Tambah Menu Lain dari Katalog</span>
+                </button>
+              )}
             </div>
 
             {/* CARD 2: DATA PEMESAN & JADWAL ACARA */}
             <div
-              className={`rounded-3xl border p-5 shadow-sm transition-all space-y-4 ${
-                isDark ? 'border-[#60241E]/80 bg-[#240E0C]' : 'border-stone-200/90 bg-white'
+              className={`rounded-2xl sm:rounded-3xl border p-4 sm:p-5 shadow-sm transition-all space-y-3.5 ${
+                isDark ? 'border-[#382321] bg-[#1A1211]' : 'border-stone-200/90 bg-white'
               }`}
             >
-              <div className="flex items-center gap-2 pb-2.5 border-b border-stone-200/60 dark:border-[#60241E]/60">
+              <div className="flex items-center gap-2 pb-2.5 border-b border-[#352321]/40 dark:border-[#352321]/60">
                 <div
                   className={`p-1.5 rounded-lg ${
-                    isDark ? 'bg-red-950/60 text-red-400' : 'bg-red-50 text-red-600'
+                    isDark ? 'bg-red-950/60 text-red-400' : 'bg-red-50 text-red-700'
                   }`}
                 >
-                  <User size={16} />
+                  <User size={15} />
                 </div>
                 <h3 className="text-xs sm:text-sm font-bold tracking-tight">
                   2. Data Pemesan & Jadwal Acara
@@ -898,10 +1002,10 @@ export default function CreateAdminOrder() {
                     placeholder="Contoh: Ibu Rina / Bpk. Heru"
                     value={customerName}
                     onChange={(e) => setCustomerName(e.target.value)}
-                    className={`w-full rounded-xl border px-3 py-2 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-red-500/20 transition ${
+                    className={`w-full rounded-xl border px-3 py-2 text-xs font-medium focus:outline-none focus:ring-1 focus:ring-[#95271D] transition ${
                       isDark
-                        ? 'border-[#60241E] bg-[#1C0B09] text-white focus:border-red-600 placeholder:text-stone-500'
-                        : 'border-stone-200 bg-stone-50 text-stone-900 focus:border-red-600 placeholder:text-stone-400'
+                        ? 'border-[#382321] bg-[#1E1413] text-white focus:border-[#95271D] placeholder:text-stone-500'
+                        : 'border-stone-200 bg-stone-50 text-stone-900 focus:border-[#95271D] placeholder:text-stone-400'
                     }`}
                   />
                 </div>
@@ -918,7 +1022,7 @@ export default function CreateAdminOrder() {
                   <div className="relative">
                     <Phone
                       size={12}
-                      className="absolute left-2.5 top-1/2 -translate-y-1/2 text-stone-400"
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400"
                     />
                     <input
                       type="tel"
@@ -926,10 +1030,10 @@ export default function CreateAdminOrder() {
                       placeholder="081234567890"
                       value={customerPhone}
                       onChange={(e) => setCustomerPhone(e.target.value)}
-                      className={`w-full rounded-xl border pl-7.5 pr-3 py-2 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-red-500/20 transition ${
+                      className={`w-full rounded-xl border pl-8 pr-3 py-2 text-xs font-medium focus:outline-none focus:ring-1 focus:ring-[#95271D] transition ${
                         isDark
-                          ? 'border-[#60241E] bg-[#1C0B09] text-white focus:border-red-600 placeholder:text-stone-500'
-                          : 'border-stone-200 bg-stone-50 text-stone-900 focus:border-red-600 placeholder:text-stone-400'
+                          ? 'border-[#382321] bg-[#1E1413] text-white focus:border-[#95271D] placeholder:text-stone-500'
+                          : 'border-stone-200 bg-stone-50 text-stone-900 focus:border-[#95271D] placeholder:text-stone-400'
                       }`}
                     />
                   </div>
@@ -951,10 +1055,10 @@ export default function CreateAdminOrder() {
                       min={toDateInputValue(now)}
                       value={eventDate}
                       onChange={(e) => setEventDate(e.target.value)}
-                      className={`w-full rounded-xl border px-3 py-2 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-red-500/20 transition ${
+                      className={`w-full rounded-xl border px-3 py-2 text-xs font-medium focus:outline-none focus:ring-1 focus:ring-[#95271D] transition ${
                         isDark
-                          ? 'border-[#60241E] bg-[#1C0B09] text-white focus:border-red-600'
-                          : 'border-stone-200 bg-stone-50 text-stone-900 focus:border-red-600'
+                          ? 'border-[#382321] bg-[#1E1413] text-white focus:border-[#95271D]'
+                          : 'border-stone-200 bg-stone-50 text-stone-900 focus:border-[#95271D]'
                       }`}
                     />
                   </div>
@@ -988,13 +1092,13 @@ export default function CreateAdminOrder() {
                   </label>
                   <input
                     type="text"
-                    placeholder="Contoh: Pisahkan sambal, bungkus per kardus 25 box..."
+                    placeholder="Contoh: Pisahkan sambal, kardus per 25 box..."
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
-                    className={`w-full rounded-xl border px-3 py-2 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-red-500/20 transition ${
+                    className={`w-full rounded-xl border px-3 py-2 text-xs font-medium focus:outline-none focus:ring-1 focus:ring-[#95271D] transition ${
                       isDark
-                        ? 'border-[#60241E] bg-[#1C0B09] text-white focus:border-red-600 placeholder:text-stone-500'
-                        : 'border-stone-200 bg-stone-50 text-stone-900 focus:border-red-600 placeholder:text-stone-400'
+                        ? 'border-[#382321] bg-[#1E1413] text-white focus:border-[#95271D] placeholder:text-stone-500'
+                        : 'border-stone-200 bg-stone-50 text-stone-900 focus:border-[#95271D] placeholder:text-stone-400'
                     }`}
                   />
                 </div>
@@ -1003,17 +1107,17 @@ export default function CreateAdminOrder() {
 
             {/* CARD 3: PENGANTARAN & TOGGLE CUSTOM ONGKIR */}
             <div
-              className={`rounded-3xl border p-5 shadow-sm transition-all space-y-4 ${
-                isDark ? 'border-[#60241E]/80 bg-[#240E0C]' : 'border-stone-200/90 bg-white'
+              className={`rounded-2xl sm:rounded-3xl border p-4 sm:p-5 shadow-sm transition-all space-y-3.5 ${
+                isDark ? 'border-[#382321] bg-[#1A1211]' : 'border-stone-200/90 bg-white'
               }`}
             >
-              <div className="flex items-center gap-2 pb-2.5 border-b border-stone-200/60 dark:border-[#60241E]/60">
+              <div className="flex items-center gap-2 pb-2.5 border-b border-[#352321]/40 dark:border-[#352321]/60">
                 <div
                   className={`p-1.5 rounded-lg ${
-                    isDark ? 'bg-amber-950/60 text-amber-400' : 'bg-amber-50 text-amber-600'
+                    isDark ? 'bg-amber-500/10 text-amber-400' : 'bg-amber-50 text-amber-700'
                   }`}
                 >
-                  <Truck size={16} />
+                  <Truck size={15} />
                 </div>
                 <h3 className="text-xs sm:text-sm font-bold tracking-tight">
                   3. Pengantaran & Ongkos Kirim
@@ -1046,7 +1150,7 @@ export default function CreateAdminOrder() {
                       deliveryAddress.includes('Ambil Sendiri')
                         ? 'bg-emerald-600 text-white border-emerald-600'
                         : isDark
-                          ? 'border-[#60241E] bg-[#1C0B09] text-stone-300 hover:text-white'
+                          ? 'border-[#382321] bg-[#1E1413] text-stone-300 hover:text-white'
                           : 'border-stone-200 bg-stone-100 text-stone-700 hover:bg-stone-200'
                     }`}
                   >
@@ -1065,7 +1169,7 @@ export default function CreateAdminOrder() {
                       !deliveryAddress.includes('Ambil Sendiri') && deliveryAddress.length > 0
                         ? 'bg-amber-600 text-white border-amber-600'
                         : isDark
-                          ? 'border-[#60241E] bg-[#1C0B09] text-stone-300 hover:text-white'
+                          ? 'border-[#382321] bg-[#1E1413] text-stone-300 hover:text-white'
                           : 'border-stone-200 bg-stone-100 text-stone-700 hover:bg-stone-200'
                     }`}
                   >
@@ -1080,62 +1184,62 @@ export default function CreateAdminOrder() {
                   placeholder="Alamat lengkap tujuan pengantaran..."
                   value={deliveryAddress}
                   onChange={(e) => setDeliveryAddress(e.target.value)}
-                  className={`w-full rounded-xl border px-3 py-2 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-red-500/20 transition resize-none ${
+                  className={`w-full rounded-xl border px-3 py-2 text-xs font-medium focus:outline-none focus:ring-1 focus:ring-[#95271D] transition resize-none ${
                     isDark
-                      ? 'border-[#60241E] bg-[#1C0B09] text-white focus:border-red-600 placeholder:text-stone-500'
-                      : 'border-stone-200 bg-stone-50 text-stone-900 focus:border-red-600 placeholder:text-stone-400'
+                      ? 'border-[#382321] bg-[#1E1413] text-white focus:border-[#95271D] placeholder:text-stone-500'
+                      : 'border-stone-200 bg-stone-50 text-stone-900 focus:border-[#95271D] placeholder:text-stone-400'
                   }`}
                 />
               </div>
 
-              {/* SHOPEE-STYLE DELIVERY FEE TOGGLE */}
+              {/* REFINED ENTERPRISE DELIVERY FEE TOGGLE */}
               <div
-                className={`p-3.5 rounded-2xl border transition-all ${
+                className={`p-3 rounded-xl border transition-all ${
                   isDeliveryFeeEnabled
                     ? isDark
-                      ? 'border-amber-500/40 bg-amber-950/20'
+                      ? 'border-amber-500/30 bg-[#241712]'
                       : 'border-amber-200 bg-amber-50/60'
                     : isDark
-                      ? 'border-[#60241E]/60 bg-[#1C0B09]'
+                      ? 'border-[#382321] bg-[#1E1413]'
                       : 'border-stone-200 bg-stone-50/60'
                 }`}
               >
                 <div className="flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2.5">
                     <div
-                      className={`h-9 w-9 rounded-xl flex items-center justify-center shrink-0 transition-colors ${
+                      className={`h-8 w-8 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
                         isDeliveryFeeEnabled
                           ? isDark
-                            ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
-                            : 'bg-amber-100 text-amber-700 border border-amber-200'
+                            ? 'bg-amber-500/20 text-amber-300'
+                            : 'bg-amber-100 text-amber-700'
                           : isDark
-                            ? 'bg-emerald-950/60 text-emerald-400 border border-emerald-500/30'
-                            : 'bg-emerald-100 text-emerald-700 border border-emerald-200'
+                            ? 'bg-emerald-500/20 text-emerald-300'
+                            : 'bg-emerald-100 text-emerald-700'
                       }`}
                     >
-                      <Truck size={18} />
+                      <Truck size={16} />
                     </div>
                     <div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs font-bold">Biaya Pengiriman (Ongkir)</span>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-xs font-bold">Biaya Ongkir</span>
                         <span
-                          className={`text-[9px] font-black uppercase px-2 py-0.5 rounded-full ${
+                          className={`text-[9px] font-bold px-1.5 py-0.2 rounded ${
                             isDeliveryFeeEnabled
                               ? isDark
-                                ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
-                                : 'bg-amber-100 text-amber-800 border border-amber-200'
+                                ? 'bg-amber-500/20 text-amber-300'
+                                : 'bg-amber-100 text-amber-800'
                               : isDark
-                                ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-                                : 'bg-emerald-100 text-emerald-800 border border-emerald-200'
+                                ? 'bg-emerald-500/20 text-emerald-300'
+                                : 'bg-emerald-100 text-emerald-800'
                           }`}
                         >
-                          {isDeliveryFeeEnabled ? 'Dikenakan Ongkir' : 'Bebas Ongkir'}
+                          {isDeliveryFeeEnabled ? 'Dikenakan' : 'Gratis'}
                         </span>
                       </div>
-                      <p className="text-[11px] text-stone-400 mt-0.5">
+                      <p className="text-[10px] text-stone-400">
                         {isDeliveryFeeEnabled
-                          ? 'Dikenakan tarif ongkir tambahan.'
-                          : 'Gratis ongkir (Rp 0) untuk pesanan ini.'}
+                          ? 'Dikenakan tarif pengiriman tambahan.'
+                          : 'Bebas ongkir untuk pesanan ini.'}
                       </p>
                     </div>
                   </div>
@@ -1147,16 +1251,16 @@ export default function CreateAdminOrder() {
                       role="switch"
                       aria-checked={isDeliveryFeeEnabled}
                       onClick={handleToggleDelivery}
-                      className={`relative inline-flex h-7 w-12 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                      className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
                         isDeliveryFeeEnabled
                           ? 'bg-amber-500'
                           : isDark
-                            ? 'bg-[#381612]'
+                            ? 'bg-[#352321]'
                             : 'bg-stone-300'
                       }`}
                     >
                       <span
-                        className={`pointer-events-none inline-block h-6 w-6 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                        className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
                           isDeliveryFeeEnabled ? 'translate-x-5' : 'translate-x-0'
                         }`}
                       />
@@ -1164,16 +1268,16 @@ export default function CreateAdminOrder() {
                   </div>
                 </div>
 
-                {/* Nominal Input & Quick Presets (Slide Down when Enabled) */}
+                {/* Nominal Input & Quick Presets */}
                 {isDeliveryFeeEnabled && (
-                  <div className="mt-3.5 pt-3 border-t border-stone-200/60 dark:border-[#60241E]/60 space-y-3 animate-in fade-in duration-200">
+                  <div className="mt-3 pt-3 border-t border-[#352321]/30 dark:border-[#352321]/50 space-y-2.5 animate-in fade-in duration-200">
                     <div>
                       <label
-                        className={`block text-[11px] font-bold uppercase tracking-wider mb-1 ${
+                        className={`block text-[10px] font-bold uppercase tracking-wider mb-1 ${
                           isDark ? 'text-amber-200/80' : 'text-stone-600'
                         }`}
                       >
-                        Nominal Ongkir Tambahan (Rp)
+                        Nominal Ongkir (Rp)
                       </label>
                       <div className="relative">
                         <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-stone-400">
@@ -1188,9 +1292,9 @@ export default function CreateAdminOrder() {
                             setUserOverrodeDelivery(true)
                             setDeliveryFee(Math.max(0, Number(e.target.value) || 0))
                           }}
-                          className={`w-full rounded-xl border pl-9 pr-3 py-2 text-xs font-extrabold focus:outline-none transition ${
+                          className={`w-full rounded-xl border pl-9 pr-3 py-1.5 text-xs font-extrabold focus:outline-none transition ${
                             isDark
-                              ? 'border-amber-500/40 bg-[#1C0B09] text-white focus:border-amber-500'
+                              ? 'border-amber-500/40 bg-[#1A1211] text-white focus:border-amber-500'
                               : 'border-amber-300 bg-white text-stone-900 focus:border-amber-600'
                           }`}
                         />
@@ -1199,10 +1303,7 @@ export default function CreateAdminOrder() {
 
                     {/* Quick Presets */}
                     <div>
-                      <p className="text-[10px] font-semibold text-stone-400 mb-1.5">
-                        Pilihan Cepat Ongkir:
-                      </p>
-                      <div className="flex flex-wrap gap-1.5">
+                      <div className="flex flex-wrap gap-1">
                         {DELIVERY_PRESETS.map((p) => {
                           const isSelected = deliveryFee === p
                           return (
@@ -1210,11 +1311,11 @@ export default function CreateAdminOrder() {
                               key={p}
                               type="button"
                               onClick={() => handleSelectDeliveryPreset(p)}
-                              className={`px-2.5 py-1 rounded-lg text-[10px] font-bold border transition cursor-pointer ${
+                              className={`px-2 py-0.5 rounded-lg text-[10px] font-bold border transition cursor-pointer ${
                                 isSelected
-                                  ? 'bg-amber-500 text-stone-950 border-amber-500 shadow-2xs'
+                                  ? 'bg-amber-500 text-stone-950 border-amber-500'
                                   : isDark
-                                    ? 'border-[#60241E] bg-[#240E0C] text-stone-300 hover:border-amber-500/50'
+                                    ? 'border-[#382321] bg-[#1A1211] text-stone-300 hover:border-amber-500/50'
                                     : 'border-stone-200 bg-white text-stone-700 hover:bg-stone-50'
                               }`}
                             >
@@ -1225,19 +1326,19 @@ export default function CreateAdminOrder() {
                       </div>
                     </div>
 
-                    {/* Auto-detected hint from cart products */}
+                    {/* Auto-detected hint */}
                     {hasDeliveryFeeProducts && (
                       <div
-                        className={`p-2.5 rounded-xl border flex items-center justify-between gap-2 text-[11px] ${
+                        className={`p-2 rounded-xl border flex items-center justify-between gap-2 text-[10px] ${
                           isDark
-                            ? 'border-amber-500/30 bg-[#240E0C] text-amber-200/90'
+                            ? 'border-amber-500/30 bg-[#221615] text-amber-200/90'
                             : 'border-amber-200 bg-amber-50 text-amber-900'
                         }`}
                       >
                         <div className="flex items-center gap-1.5">
-                          <Sparkles size={13} className="text-amber-500 shrink-0" />
+                          <Sparkles size={12} className="text-amber-500 shrink-0" />
                           <span>
-                            Saran dari menu keranjang: <strong>{formatRupiah(suggestedDeliveryFee)}</strong>
+                            Saran ongkir katering: <strong>{formatRupiah(suggestedDeliveryFee)}</strong>
                           </span>
                         </div>
                         {userOverrodeDelivery && deliveryFee !== suggestedDeliveryFee && (
@@ -1259,17 +1360,17 @@ export default function CreateAdminOrder() {
 
             {/* CARD 4: KASIR, STATUS PEMBAYARAN & SUBMIT */}
             <div
-              className={`rounded-3xl border p-5 shadow-sm transition-all space-y-4 ${
-                isDark ? 'border-[#60241E]/80 bg-[#240E0C]' : 'border-stone-200/90 bg-white'
+              className={`rounded-2xl sm:rounded-3xl border p-4 sm:p-5 shadow-sm transition-all space-y-3.5 ${
+                isDark ? 'border-[#382321] bg-[#1A1211]' : 'border-stone-200/90 bg-white'
               }`}
             >
-              <div className="flex items-center gap-2 pb-2.5 border-b border-stone-200/60 dark:border-[#60241E]/60">
+              <div className="flex items-center gap-2 pb-2.5 border-b border-[#352321]/40 dark:border-[#352321]/60">
                 <div
                   className={`p-1.5 rounded-lg ${
-                    isDark ? 'bg-red-950/60 text-red-400' : 'bg-red-50 text-red-600'
+                    isDark ? 'bg-red-950/60 text-red-400' : 'bg-red-50 text-red-700'
                   }`}
                 >
-                  <CreditCard size={16} />
+                  <CreditCard size={15} />
                 </div>
                 <h3 className="text-xs sm:text-sm font-bold tracking-tight">
                   4. Kasir & Pembayaran
@@ -1277,7 +1378,7 @@ export default function CreateAdminOrder() {
               </div>
 
               <div className="grid grid-cols-2 gap-3 text-xs">
-                {/* Initial Status */}
+                {/* Order Status */}
                 <div>
                   <label
                     className={`block text-[11px] font-bold uppercase tracking-wider mb-1 ${
@@ -1291,8 +1392,8 @@ export default function CreateAdminOrder() {
                     onChange={(e) => setOrderStatus(e.target.value as OrderStatus)}
                     className={`w-full rounded-xl border px-3 py-2 text-xs font-medium focus:outline-none transition ${
                       isDark
-                        ? 'border-[#60241E] bg-[#1C0B09] text-white focus:border-red-600'
-                        : 'border-stone-200 bg-stone-50 text-stone-900 focus:border-red-600'
+                        ? 'border-[#382321] bg-[#1E1413] text-white focus:border-[#95271D]'
+                        : 'border-stone-200 bg-stone-50 text-stone-900 focus:border-[#95271D]'
                     }`}
                   >
                     <option value="pending">Menunggu Konfirmasi</option>
@@ -1302,7 +1403,7 @@ export default function CreateAdminOrder() {
                   </select>
                 </div>
 
-                {/* Initial Payment Status */}
+                {/* Payment Status */}
                 <div>
                   <label
                     className={`block text-[11px] font-bold uppercase tracking-wider mb-1 ${
@@ -1316,8 +1417,8 @@ export default function CreateAdminOrder() {
                     onChange={(e) => handlePaymentStatusChange(e.target.value as PaymentStatus)}
                     className={`w-full rounded-xl border px-3 py-2 text-xs font-medium focus:outline-none transition ${
                       isDark
-                        ? 'border-[#60241E] bg-[#1C0B09] text-white focus:border-red-600'
-                        : 'border-stone-200 bg-stone-50 text-stone-900 focus:border-red-600'
+                        ? 'border-[#382321] bg-[#1E1413] text-white focus:border-[#95271D]'
+                        : 'border-stone-200 bg-stone-50 text-stone-900 focus:border-[#95271D]'
                     }`}
                   >
                     <option value="unpaid">Belum Bayar</option>
@@ -1328,40 +1429,13 @@ export default function CreateAdminOrder() {
 
                 {/* Paid Amount */}
                 <div className="col-span-2">
-                  <div className="flex items-center justify-between mb-1">
-                    <label
-                      className={`text-[11px] font-bold uppercase tracking-wider ${
-                        isDark ? 'text-stone-300' : 'text-stone-600'
-                      }`}
-                    >
-                      Nominal Dibayar (Rp)
-                    </label>
-                    <div className="flex items-center gap-1.5">
-                      <button
-                        type="button"
-                        onClick={handleSetZeroPayment}
-                        className="text-[10px] text-stone-400 hover:text-stone-200 font-semibold cursor-pointer underline"
-                      >
-                        Rp 0
-                      </button>
-                      <span className="text-stone-400 text-[10px]">•</span>
-                      <button
-                        type="button"
-                        onClick={handleSetDp50}
-                        className="text-[10px] text-amber-500 hover:text-amber-400 font-semibold cursor-pointer underline"
-                      >
-                        DP 50%
-                      </button>
-                      <span className="text-stone-400 text-[10px]">•</span>
-                      <button
-                        type="button"
-                        onClick={handleSetFullPayment}
-                        className="text-[10px] text-emerald-500 hover:text-emerald-400 font-semibold cursor-pointer underline"
-                      >
-                        Lunas Pas
-                      </button>
-                    </div>
-                  </div>
+                  <label
+                    className={`block text-[11px] font-bold uppercase tracking-wider mb-1 ${
+                      isDark ? 'text-stone-300' : 'text-stone-600'
+                    }`}
+                  >
+                    Nominal Dibayar (Rp)
+                  </label>
                   <input
                     type="number"
                     min={0}
@@ -1369,8 +1443,8 @@ export default function CreateAdminOrder() {
                     onChange={(e) => setPaidAmount(Number(e.target.value) || 0)}
                     className={`w-full rounded-xl border px-3 py-2 text-xs font-medium focus:outline-none transition ${
                       isDark
-                        ? 'border-[#60241E] bg-[#1C0B09] text-white focus:border-red-600'
-                        : 'border-stone-200 bg-stone-50 text-stone-900 focus:border-red-600'
+                        ? 'border-[#382321] bg-[#1E1413] text-white focus:border-[#95271D]'
+                        : 'border-stone-200 bg-stone-50 text-stone-900 focus:border-[#95271D]'
                     }`}
                   />
                 </div>
@@ -1389,8 +1463,8 @@ export default function CreateAdminOrder() {
                     onChange={(e) => setPaymentMethod(e.target.value)}
                     className={`w-full rounded-xl border px-3 py-2 text-xs font-medium focus:outline-none transition ${
                       isDark
-                        ? 'border-[#60241E] bg-[#1C0B09] text-white focus:border-red-600'
-                        : 'border-stone-200 bg-stone-50 text-stone-900 focus:border-red-600'
+                        ? 'border-[#382321] bg-[#1E1413] text-white focus:border-[#95271D]'
+                        : 'border-stone-200 bg-stone-50 text-stone-900 focus:border-[#95271D]'
                     }`}
                   >
                     <option value="Tunai / Cash">Tunai / Cash</option>
@@ -1417,8 +1491,8 @@ export default function CreateAdminOrder() {
                     onChange={(e) => setPaymentNote(e.target.value)}
                     className={`w-full rounded-xl border px-3 py-2 text-xs font-medium focus:outline-none transition ${
                       isDark
-                        ? 'border-[#60241E] bg-[#1C0B09] text-white focus:border-red-600'
-                        : 'border-stone-200 bg-stone-50 text-stone-900 focus:border-red-600'
+                        ? 'border-[#382321] bg-[#1E1413] text-white focus:border-[#95271D] placeholder:text-stone-500'
+                        : 'border-stone-200 bg-stone-50 text-stone-900 focus:border-[#95271D] placeholder:text-stone-400'
                     }`}
                   />
                 </div>
@@ -1426,12 +1500,14 @@ export default function CreateAdminOrder() {
 
               {/* Financial Summary */}
               <div
-                className={`p-4 rounded-2xl border space-y-2 text-xs ${
-                  isDark ? 'border-[#60241E]/70 bg-[#1C0B09]' : 'border-stone-200 bg-stone-50'
+                className={`p-3.5 rounded-xl border space-y-1.5 text-xs ${
+                  isDark ? 'border-[#382321] bg-[#1E1413]' : 'border-stone-200 bg-stone-50'
                 }`}
               >
                 <div className="flex justify-between text-stone-500">
-                  <span>Subtotal Menu ({items.length} item, {totalBoxes} box):</span>
+                  <span>
+                    Subtotal Menu ({items.length} item, {totalBoxes} box):
+                  </span>
                   <span className="font-semibold">{formatRupiah(subtotal)}</span>
                 </div>
                 <div className="flex justify-between items-center text-stone-500">
@@ -1446,9 +1522,9 @@ export default function CreateAdminOrder() {
                     )}
                   </span>
                 </div>
-                <div className="flex justify-between items-baseline font-black text-sm pt-2 border-t border-stone-200 dark:border-[#60241E]">
+                <div className="flex justify-between items-baseline font-black text-sm pt-2 border-t border-[#352321]/30 dark:border-[#352321]/50">
                   <span className="text-stone-800 dark:text-stone-200">Total Tagihan:</span>
-                  <span className="text-base text-red-600 dark:text-red-400">
+                  <span className="text-base text-[#D9534F] dark:text-[#E06A55] font-extrabold">
                     {formatRupiah(total)}
                   </span>
                 </div>
@@ -1457,14 +1533,14 @@ export default function CreateAdminOrder() {
                   <span>{formatRupiah(paidAmount)}</span>
                 </div>
                 {remainingPayment > 0 ? (
-                  <div className="flex justify-between text-rose-600 dark:text-rose-400 font-bold pt-1 border-t border-dashed border-stone-200 dark:border-[#60241E]">
+                  <div className="flex justify-between text-rose-600 dark:text-rose-400 font-bold pt-1 border-t border-dashed border-[#352321]/30 dark:border-[#352321]/50">
                     <span>Sisa Tagihan (Piutang):</span>
                     <span>{formatRupiah(remainingPayment)}</span>
                   </div>
                 ) : (
-                  <div className="flex items-center justify-between text-emerald-600 dark:text-emerald-400 font-bold pt-1 border-t border-dashed border-stone-200 dark:border-[#60241E]">
+                  <div className="flex items-center justify-between text-emerald-600 dark:text-emerald-400 font-bold pt-1 border-t border-dashed border-[#352321]/30 dark:border-[#352321]/50">
                     <span>Status Pembayaran:</span>
-                    <span className="inline-flex items-center gap-1 text-[11px] font-black uppercase">
+                    <span className="inline-flex items-center gap-1 text-[11px] font-bold uppercase">
                       <CheckCircle2 size={13} />
                       <span>Lunas Penuh</span>
                     </span>
@@ -1472,52 +1548,105 @@ export default function CreateAdminOrder() {
                 )}
               </div>
 
-              {/* Submit Button */}
+              {/* Submit Button (Desktop Only) */}
               <button
                 type="submit"
                 disabled={isSubmitting || items.length === 0}
-                className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-700 hover:to-rose-800 text-white font-extrabold text-xs sm:text-sm shadow-md shadow-red-950/20 transition disabled:opacity-50 cursor-pointer active:scale-98 flex items-center justify-center gap-2"
+                className="w-full py-3 rounded-xl bg-[#95271D] hover:bg-[#A82D22] text-white font-bold text-xs sm:text-sm shadow-md transition disabled:opacity-50 cursor-pointer active:scale-98 flex items-center justify-center gap-2"
               >
-                <FileCheck2 size={18} />
-                <span>
-                  {isSubmitting
-                    ? 'Menyimpan Pesanan...'
-                    : `Simpan & Buat Pesanan Manual (${formatRupiah(total)})`}
-                </span>
+                {isSubmitting ? (
+                  <>
+                    <Loader2 size={16} className="animate-spin" />
+                    <span>Menyimpan Pesanan...</span>
+                  </>
+                ) : (
+                  <>
+                    <FileCheck2 size={16} />
+                    <span>Simpan & Buat Pesanan Manual</span>
+                  </>
+                )}
               </button>
             </div>
+          </div>
+        </div>
+
+        {/* STICKY BOTTOM BAR FOR MOBILE (lg:hidden) */}
+        <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 p-3 bg-white/95 dark:bg-[#1A1211]/95 backdrop-blur-md border-t border-stone-200 dark:border-[#382321] shadow-xl">
+          <div className="flex items-center justify-between gap-3 max-w-lg mx-auto">
+            <div>
+              <span className="text-[10px] text-stone-400 block font-medium">Total Pesanan:</span>
+              <span className="text-sm font-extrabold text-[#D9534F] dark:text-[#E06A55]">
+                {formatRupiah(total)}
+              </span>
+              <span className="text-[10px] text-stone-400 ml-1">
+                ({items.length} menu)
+              </span>
+            </div>
+
+            {mobileTab === 'catalog' ? (
+              <button
+                type="button"
+                onClick={() => setMobileTab('details')}
+                className="px-4 py-2.5 rounded-xl bg-[#95271D] hover:bg-[#A82D22] text-white text-xs font-bold shadow-md transition flex items-center gap-1.5 cursor-pointer"
+              >
+                <span>Lihat Rincian ({items.length})</span>
+                <ArrowRight size={14} />
+              </button>
+            ) : (
+              <button
+                type="submit"
+                disabled={isSubmitting || items.length === 0}
+                className="px-5 py-2.5 rounded-xl bg-[#95271D] hover:bg-[#A82D22] text-white text-xs font-bold shadow-md transition disabled:opacity-50 flex items-center gap-1.5 cursor-pointer"
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 size={14} className="animate-spin" />
+                    <span>Menyimpan...</span>
+                  </>
+                ) : (
+                  <>
+                    <FileCheck2 size={14} />
+                    <span>Simpan Pesanan</span>
+                  </>
+                )}
+              </button>
+            )}
           </div>
         </div>
       </form>
 
       {/* Product Addon Configuration Modal */}
       {configuringProduct && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200">
           <div
-            className={`w-full max-w-lg max-h-[90vh] overflow-y-auto scrollbar-thin rounded-3xl border p-5 sm:p-6 shadow-2xl transition-all ${
-              isDark ? 'border-[#60241E] bg-[#1C0B09] text-stone-100' : 'border-stone-200 bg-white text-stone-900'
+            className={`w-full max-w-lg max-h-[85vh] sm:max-h-[90vh] overflow-y-auto scrollbar-thin rounded-t-3xl sm:rounded-3xl border p-4 sm:p-6 shadow-2xl transition-all ${
+              isDark
+                ? 'border-[#382321] bg-[#1A1211] text-stone-100'
+                : 'border-stone-200 bg-white text-stone-900'
             }`}
           >
             {/* Modal Header */}
-            <div className="flex items-start justify-between pb-4 border-b border-stone-200 dark:border-[#60241E]">
+            <div className="flex items-start justify-between pb-3.5 border-b border-[#352321]/40 dark:border-[#352321]/60">
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="flex h-2 w-2 rounded-full bg-red-600" />
-                  <p className="text-[10px] font-black uppercase tracking-wider text-red-600">
-                    Kustomisasi Menu & Addon
+                  <span className="flex h-2 w-2 rounded-full bg-[#95271D]" />
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-[#D9534F] dark:text-[#E06A55]">
+                    Kustomisasi Menu
                   </p>
                 </div>
-                <h3 className="text-lg font-extrabold mt-0.5">{configuringProduct.name}</h3>
+                <h3 className="text-base sm:text-lg font-extrabold mt-0.5">
+                  {configuringProduct.name}
+                </h3>
                 <div className="flex flex-wrap items-center gap-2 mt-1">
-                  <span className="text-xs font-bold text-red-600 dark:text-red-400">
+                  <span className="text-xs font-bold text-[#D9534F] dark:text-[#E06A55]">
                     Harga Dasar: {formatRupiah(configuringProduct.price)}
                   </span>
                   {configuringProduct.has_delivery_fee ? (
-                    <span className="text-[10px] px-2 py-0.5 rounded-full font-black bg-amber-500/20 text-amber-500 border border-amber-500/30">
+                    <span className="text-[10px] px-2 py-0.2 rounded-full font-bold bg-amber-500/10 text-amber-400 border border-amber-500/30">
                       +Ongkir {formatRupiah(configuringProduct.delivery_fee || 0)}
                     </span>
                   ) : (
-                    <span className="text-[10px] px-2 py-0.5 rounded-full font-black bg-emerald-500/20 text-emerald-500 border border-emerald-500/30">
+                    <span className="text-[10px] px-2 py-0.2 rounded-full font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
                       Bebas Ongkir
                     </span>
                   )}
@@ -1526,9 +1655,9 @@ export default function CreateAdminOrder() {
               <button
                 type="button"
                 onClick={() => setConfiguringProduct(null)}
-                className={`p-2 rounded-full border transition cursor-pointer shrink-0 ${
+                className={`p-1.5 rounded-full border transition cursor-pointer shrink-0 ${
                   isDark
-                    ? 'border-[#60241E] bg-[#240E0C] text-stone-400 hover:text-white'
+                    ? 'border-[#382321] bg-[#241614] text-stone-400 hover:text-white'
                     : 'border-stone-200 bg-stone-50 text-stone-500 hover:text-stone-900'
                 }`}
               >
@@ -1537,7 +1666,7 @@ export default function CreateAdminOrder() {
             </div>
 
             {/* Modal Body: Addon Groups & Quantity */}
-            <div className="py-4 space-y-5">
+            <div className="py-3.5 space-y-4">
               {/* Addon Groups */}
               {((configuringProduct.addon_groups || configuringProduct.addonGroups || []) as AddonGroup[]).map(
                 (group) => {
@@ -1553,23 +1682,23 @@ export default function CreateAdminOrder() {
                   return (
                     <div
                       key={group.id}
-                      className={`p-3.5 rounded-2xl border space-y-2.5 ${
-                        isDark ? 'border-[#60241E]/70 bg-[#240E0C]/70' : 'border-stone-200/90 bg-stone-50/60'
+                      className={`p-3 rounded-2xl border space-y-2 ${
+                        isDark ? 'border-[#382321] bg-[#1E1413]' : 'border-stone-200/90 bg-stone-50/60'
                       }`}
                     >
                       <div className="flex items-center justify-between gap-2">
                         <div>
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-1.5">
                             <h4 className="text-xs font-bold tracking-tight">
                               {group.name}
                             </h4>
                             {groupSelectedCount > 0 ? (
-                              <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-red-600 text-white shadow-2xs">
+                              <span className="text-[10px] px-1.5 py-0.2 rounded-full font-bold bg-[#95271D] text-white">
                                 {groupSelectedCount} dipilih
                               </span>
                             ) : (
-                              <span className="text-[10px] px-2 py-0.5 rounded-full font-medium text-stone-400 bg-stone-200/60 dark:bg-stone-800">
-                                0 dipilih
+                              <span className="text-[10px] px-1.5 py-0.2 rounded-full font-medium text-stone-400 bg-stone-200/60 dark:bg-stone-800">
+                                0
                               </span>
                             )}
                           </div>
@@ -1587,70 +1716,50 @@ export default function CreateAdminOrder() {
                                 ? handleClearGroup(group.id)
                                 : handleSelectAllInGroup(group)
                             }
-                            className="text-[10px] font-bold text-red-600 dark:text-red-400 hover:underline cursor-pointer shrink-0"
+                            className="text-[10px] font-bold text-[#D9534F] dark:text-[#E06A55] hover:underline cursor-pointer shrink-0"
                           >
                             {allSelectedInGroup ? 'Batal Semua' : 'Pilih Semua'}
                           </button>
                         )}
                       </div>
 
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
                         {group.addons.map((addon) => {
                           const isSelected = tempSelectedAddons.some(
                             (item) => item.addon.id === addon.id
                           )
-                          const priceNum = Number(addon.price || 0)
 
                           return (
                             <button
                               key={addon.id}
                               type="button"
                               onClick={() => handleToggleAddon(group, addon)}
-                              className={`p-2.5 rounded-xl border text-left transition cursor-pointer flex items-center justify-between gap-2.5 ${
+                              className={`p-2 rounded-xl border text-left transition flex items-center justify-between gap-2 cursor-pointer ${
                                 isSelected
                                   ? isDark
-                                    ? 'border-red-500 bg-red-950/40 text-white shadow-xs ring-1 ring-red-500/40'
-                                    : 'border-red-600 bg-red-50 text-red-950 shadow-xs ring-1 ring-red-500/20'
+                                    ? 'border-[#95271D] bg-[#2C1614] text-white shadow-xs'
+                                    : 'border-red-400 bg-red-50 text-red-950 shadow-xs'
                                   : isDark
-                                    ? 'border-[#60241E]/60 bg-[#1C0B09] text-stone-300 hover:border-red-600/50 hover:bg-[#250E0C]'
-                                    : 'border-stone-200 bg-white text-stone-700 hover:border-red-300 hover:bg-stone-50'
+                                    ? 'border-[#382321] bg-[#1A1211] text-stone-300 hover:border-[#52332F]'
+                                    : 'border-stone-200 bg-white text-stone-700 hover:border-stone-300'
                               }`}
                             >
-                              <div className="flex items-center gap-2.5 min-w-0">
-                                {/* Checkbox Indicator */}
+                              <div className="flex items-center gap-2 min-w-0">
                                 <div
-                                  className={`w-4 h-4 rounded-md border flex items-center justify-center shrink-0 transition-all ${
+                                  className={`h-4 w-4 rounded flex items-center justify-center shrink-0 border ${
                                     isSelected
-                                      ? 'border-red-600 bg-red-600 text-white'
+                                      ? 'bg-[#95271D] border-[#95271D] text-white'
                                       : isDark
-                                        ? 'border-stone-600 bg-[#240E0C]'
-                                        : 'border-stone-300 bg-white'
+                                        ? 'border-stone-600 bg-[#241614]'
+                                        : 'border-stone-300 bg-stone-100'
                                   }`}
                                 >
-                                  {isSelected && <Check size={11} strokeWidth={3} />}
+                                  {isSelected && <Check size={11} strokeWidth={2.5} />}
                                 </div>
-                                <div className="min-w-0">
-                                  <p className="text-xs font-semibold truncate leading-tight">
-                                    {addon.name}
-                                  </p>
-                                  {addon.description && (
-                                    <p className="text-[10px] text-stone-400 truncate">
-                                      {addon.description}
-                                    </p>
-                                  )}
-                                </div>
+                                <span className="text-xs font-semibold truncate">{addon.name}</span>
                               </div>
-
-                              <span
-                                className={`text-[10px] font-bold shrink-0 px-1.5 py-0.5 rounded-md ${
-                                  priceNum > 0
-                                    ? isSelected
-                                      ? 'text-red-700 dark:text-red-300 bg-red-100 dark:bg-red-900/50'
-                                      : 'text-stone-500 dark:text-stone-400 bg-stone-100 dark:bg-stone-800'
-                                    : 'text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40'
-                                }`}
-                              >
-                                {priceNum > 0 ? `+${formatRupiah(priceNum)}` : 'Termasuk'}
+                              <span className="text-[11px] font-bold text-[#D9534F] dark:text-[#E06A55] shrink-0">
+                                +{formatRupiah(addon.price)}
                               </span>
                             </button>
                           )
@@ -1661,104 +1770,85 @@ export default function CreateAdminOrder() {
                 }
               )}
 
-              {/* Quantity */}
+              {/* Quantity Stepper */}
               <div
-                className={`p-3.5 rounded-2xl border flex items-center justify-between ${
-                  isDark ? 'border-[#60241E]/60 bg-[#240E0C]' : 'border-stone-200 bg-stone-50'
+                className={`p-3 rounded-2xl border flex items-center justify-between gap-4 ${
+                  isDark ? 'border-[#382321] bg-[#1E1413]' : 'border-stone-200 bg-stone-50'
                 }`}
               >
                 <div>
-                  <p className="text-xs font-bold">Jumlah Porsi (Box)</p>
-                  <p className="text-[10px] text-stone-400">
-                    Minimal order: {configuringProduct.minimum_order} box
+                  <h4 className="text-xs font-bold">Jumlah Porsi / Box</h4>
+                  <p className="text-[11px] text-stone-400">
+                    Minimal {configuringProduct.minimum_order || 1} box
                   </p>
                 </div>
 
                 <div className="flex items-center gap-2">
                   <button
                     type="button"
-                    onClick={() => setTempQuantity((q) => Math.max(1, q - 1))}
-                    className={`h-8 w-8 rounded-lg flex items-center justify-center border transition cursor-pointer ${
+                    onClick={() =>
+                      setTempQuantity((prev) =>
+                        Math.max(configuringProduct.minimum_order || 1, prev - 1)
+                      )
+                    }
+                    className={`h-8 w-8 rounded-xl flex items-center justify-center border transition cursor-pointer ${
                       isDark
-                        ? 'border-[#60241E] bg-[#1C0B09] text-stone-200'
-                        : 'border-stone-200 bg-white text-stone-700'
+                        ? 'border-[#382321] bg-[#241614] text-stone-300 hover:bg-[#2F1D1B]'
+                        : 'border-stone-200 bg-white text-stone-700 hover:bg-stone-100'
                     }`}
                   >
                     <Minus size={13} />
                   </button>
                   <input
                     type="number"
-                    min={1}
+                    min={configuringProduct.minimum_order || 1}
                     value={tempQuantity}
-                    onChange={(e) => setTempQuantity(Math.max(1, Number(e.target.value) || 1))}
-                    className={`w-14 text-center text-xs font-bold rounded-lg border py-1 focus:outline-none ${
-                      isDark ? 'border-[#60241E] bg-[#1C0B09]' : 'border-stone-200 bg-white'
+                    onChange={(e) =>
+                      setTempQuantity(
+                        Math.max(
+                          configuringProduct.minimum_order || 1,
+                          Number(e.target.value) || 1
+                        )
+                      )
+                    }
+                    className={`w-14 text-center text-xs font-extrabold rounded-xl border py-1 focus:outline-none ${
+                      isDark ? 'border-[#382321] bg-[#1A1211]' : 'border-stone-200 bg-white'
                     }`}
                   />
                   <button
                     type="button"
-                    onClick={() => setTempQuantity((q) => q + 1)}
-                    className={`h-8 w-8 rounded-lg flex items-center justify-center border transition cursor-pointer ${
+                    onClick={() => setTempQuantity((prev) => prev + 1)}
+                    className={`h-8 w-8 rounded-xl flex items-center justify-center border transition cursor-pointer ${
                       isDark
-                        ? 'border-[#60241E] bg-[#1C0B09] text-stone-200'
-                        : 'border-stone-200 bg-white text-stone-700'
+                        ? 'border-[#382321] bg-[#241614] text-stone-300 hover:bg-[#2F1D1B]'
+                        : 'border-stone-200 bg-white text-stone-700 hover:bg-stone-100'
                     }`}
                   >
                     <Plus size={13} />
                   </button>
                 </div>
               </div>
-
-              {/* Live Price Summary Box in Modal */}
-              <div
-                className={`p-3.5 rounded-2xl border space-y-2 text-xs ${
-                  isDark ? 'border-[#60241E]/70 bg-[#1C0B09]' : 'border-stone-200 bg-stone-50'
-                }`}
-              >
-                <div className="flex justify-between text-stone-400">
-                  <span>Harga dasar menu:</span>
-                  <span className="font-semibold text-stone-700 dark:text-stone-200">
-                    {formatRupiah(configuringProduct.price)} / box
-                  </span>
-                </div>
-                <div className="flex justify-between text-stone-400">
-                  <span>Total addon dipilih:</span>
-                  <span className="font-semibold text-stone-700 dark:text-stone-200">
-                    {modalAddonsExtraPerUnit > 0
-                      ? `+${formatRupiah(modalAddonsExtraPerUnit)} (${tempSelectedAddons.length} addon)`
-                      : 'Rp 0 (Tanpa addon)'}
-                  </span>
-                </div>
-                <div className="flex justify-between text-stone-400">
-                  <span>Harga per box:</span>
-                  <span className="font-bold text-red-600 dark:text-red-400">
-                    {formatRupiah(modalUnitPrice)}
-                  </span>
-                </div>
-                <div className="pt-2 border-t border-stone-200 dark:border-[#60241E] flex justify-between items-center font-extrabold text-sm">
-                  <span>Subtotal ({tempQuantity} box):</span>
-                  <span className="text-red-600 dark:text-red-400 text-base">
-                    {formatRupiah(modalTotalPrice)}
-                  </span>
-                </div>
-              </div>
             </div>
 
             {/* Modal Footer */}
-            <div className="pt-3 border-t border-stone-200 dark:border-[#60241E] flex items-center justify-between gap-2">
-              <div className="text-[11px] text-stone-400 hidden sm:block">
-                {tempSelectedAddons.length > 0
-                  ? `${tempSelectedAddons.length} addon dipilih`
-                  : 'Belum ada addon dipilih'}
+            <div className="pt-3 border-t border-[#352321]/40 dark:border-[#352321]/60 flex flex-col sm:flex-row items-center justify-between gap-3">
+              <div>
+                <span className="text-[10px] text-stone-400 block">Total Menu Ini:</span>
+                <span className="text-base font-black text-[#D9534F] dark:text-[#E06A55]">
+                  {formatRupiah(modalTotalPrice)}
+                </span>
+                <span className="text-[10px] text-stone-400 ml-1.5">
+                  ({tempQuantity} × {formatRupiah(modalUnitPrice)})
+                </span>
               </div>
 
-              <div className="flex items-center gap-2 ml-auto">
+              <div className="flex items-center gap-2 w-full sm:w-auto">
                 <button
                   type="button"
                   onClick={() => setConfiguringProduct(null)}
-                  className={`px-4 py-2.5 rounded-xl text-xs font-bold border transition cursor-pointer ${
+                  className={`flex-1 sm:flex-initial px-4 py-2.5 rounded-xl border text-xs font-semibold transition cursor-pointer ${
                     isDark
-                      ? 'border-[#60241E] bg-[#240E0C] text-stone-300 hover:text-white'
+                      ? 'border-[#382321] bg-[#241614] text-stone-300 hover:bg-[#2F1D1B]'
                       : 'border-stone-200 bg-stone-100 text-stone-700 hover:bg-stone-200'
                   }`}
                 >
@@ -1767,10 +1857,10 @@ export default function CreateAdminOrder() {
                 <button
                   type="button"
                   onClick={handleConfirmAddToCart}
-                  className="px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold shadow-xs transition cursor-pointer flex items-center gap-1.5"
+                  className="flex-1 sm:flex-initial px-5 py-2.5 rounded-xl bg-[#95271D] hover:bg-[#A82D22] text-white text-xs font-bold shadow-xs transition active:scale-95 cursor-pointer flex items-center justify-center gap-1.5"
                 >
                   <Plus size={14} />
-                  <span>Tambahkan ({formatRupiah(modalTotalPrice)})</span>
+                  <span>Tambahkan</span>
                 </button>
               </div>
             </div>

@@ -108,50 +108,50 @@ export default function OrderEditDiffModal({
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-stone-950/75 backdrop-blur-xs animate-in fade-in duration-200">
       <div
-        className={`w-full max-w-2xl max-h-[92vh] flex flex-col rounded-3xl border shadow-2xl overflow-hidden transition-all ${
+        className={`w-full max-w-2xl max-h-[92dvh] sm:max-h-[88dvh] flex flex-col rounded-2xl sm:rounded-3xl border shadow-2xl overflow-hidden transition-all ${
           isDark
-            ? 'border-[#60241E] bg-[#1C0B09] text-stone-100'
-            : 'border-stone-200 bg-white text-stone-900'
+            ? 'border-[#382321] bg-[#18100F] text-stone-100 shadow-black/80'
+            : 'border-stone-200 bg-white text-stone-900 shadow-stone-900/10'
         }`}
       >
         {/* ======================================================== */}
         {/* MODAL HEADER                                             */}
         {/* ======================================================== */}
         <div
-          className={`px-6 py-4 border-b flex items-center justify-between shrink-0 ${
-            isDark ? 'border-[#60241E]/80 bg-[#240E0C]' : 'border-stone-200 bg-stone-50/80'
+          className={`px-4 py-3 sm:px-6 sm:py-4 border-b flex items-center justify-between shrink-0 ${
+            isDark ? 'border-[#382321] bg-[#140D0C]' : 'border-stone-200/80 bg-[#FAF8F5]'
           }`}
         >
           <div className="flex items-center gap-3">
             <div
-              className={`p-2.5 rounded-2xl ${
+              className={`p-2 sm:p-2.5 rounded-xl ${
                 diff.hasChanges
                   ? diff.criticalCount > 0
                     ? isDark
                       ? 'bg-amber-950/70 text-amber-400 border border-amber-600/40'
                       : 'bg-amber-50 text-amber-700 border border-amber-200'
                     : isDark
-                    ? 'bg-blue-950/70 text-blue-400 border border-blue-600/40'
-                    : 'bg-blue-50 text-blue-700 border border-blue-200'
+                    ? 'bg-amber-950/40 text-amber-300 border border-amber-600/30'
+                    : 'bg-amber-50 text-amber-700 border border-amber-200'
                   : isDark
                   ? 'bg-stone-800 text-stone-300'
                   : 'bg-stone-100 text-stone-600'
               }`}
             >
               {diff.criticalCount > 0 ? (
-                <ShieldAlert size={22} className="animate-pulse" />
+                <ShieldAlert size={20} className="animate-pulse" />
               ) : diff.hasChanges ? (
-                <ShieldCheck size={22} />
+                <ShieldCheck size={20} />
               ) : (
-                <Info size={22} />
+                <Info size={20} />
               )}
             </div>
 
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="text-base font-black tracking-tight">
+                <h3 className="text-sm sm:text-base font-bold tracking-tight">
                   {diff.hasChanges
                     ? 'Cek Ulang & Konfirmasi Perubahan'
                     : 'Tidak Ada Perubahan Data'}
@@ -160,7 +160,7 @@ export default function OrderEditDiffModal({
                   {orderCode}
                 </span>
               </div>
-              <p className={`text-xs ${isDark ? 'text-amber-200/60' : 'text-stone-500'}`}>
+              <p className={`text-[11px] sm:text-xs ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
                 {diff.hasChanges
                   ? 'Pastikan rincian perubahan di bawah ini sudah akurat sebelum disimpan.'
                   : 'Seluruh formulir masih identik dengan data pesanan yang tersimpan.'}
@@ -172,10 +172,10 @@ export default function OrderEditDiffModal({
             type="button"
             onClick={onClose}
             disabled={isSubmitting}
-            className={`p-2 rounded-xl transition cursor-pointer ${
+            className={`p-1.5 sm:p-2 rounded-xl transition cursor-pointer ${
               isDark
-                ? 'text-stone-400 hover:bg-[#2D120F] hover:text-stone-200'
-                : 'text-stone-400 hover:bg-stone-200 hover:text-stone-700'
+                ? 'text-stone-400 hover:bg-[#281A18] hover:text-stone-200'
+                : 'text-stone-400 hover:bg-stone-100 hover:text-stone-700'
             }`}
           >
             <X size={18} />
@@ -217,7 +217,7 @@ export default function OrderEditDiffModal({
             <div
               className={`rounded-2xl border p-8 text-center space-y-3 ${
                 isDark
-                  ? 'border-[#60241E]/60 bg-[#240E0C]/50 text-stone-300'
+                  ? 'border-[#382321] bg-[#140D0C] text-stone-300'
                   : 'border-stone-200 bg-stone-50 text-stone-600'
               }`}
             >
@@ -320,11 +320,11 @@ export default function OrderEditDiffModal({
                               ? 'border-amber-600/50 bg-amber-950/20'
                               : 'border-amber-300 bg-amber-50/50'
                             : isDark
-                            ? 'border-[#60241E]/60 bg-[#240E0C]/40'
+                            ? 'border-[#382321] bg-[#140D0C]'
                             : 'border-stone-200 bg-stone-50/70'
                         }`}
                       >
-                        <div className="flex items-center justify-between pb-1.5 mb-2 border-b border-stone-200/40 dark:border-[#60241E]/40">
+                        <div className="flex items-center justify-between pb-1.5 mb-2 border-b border-stone-200/50 dark:border-[#382321]">
                           <span className="font-bold flex items-center gap-1.5">
                             {field.isCritical && (
                               <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
@@ -386,7 +386,7 @@ export default function OrderEditDiffModal({
 
                   <div
                     className={`rounded-2xl border p-3.5 space-y-3 ${
-                      isDark ? 'border-[#60241E]/70 bg-[#240E0C]/40' : 'border-stone-200 bg-stone-50/70'
+                      isDark ? 'border-[#382321] bg-[#140D0C]' : 'border-stone-200 bg-stone-50/70'
                     }`}
                   >
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
@@ -467,7 +467,7 @@ export default function OrderEditDiffModal({
               {/* ==================================================== */}
               <div
                 className={`rounded-2xl border p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
-                  isDark ? 'border-[#60241E] bg-[#1C0B09]' : 'border-stone-200 bg-stone-100/60'
+                  isDark ? 'border-[#382321] bg-[#140D0C]' : 'border-stone-200 bg-stone-100/60'
                 }`}
               >
                 <div>
@@ -513,7 +513,7 @@ export default function OrderEditDiffModal({
               <div
                 className={`rounded-2xl border p-4 space-y-2.5 ${
                   isDark
-                    ? 'border-[#60241E] bg-[#240E0C]/70'
+                    ? 'border-[#382321] bg-[#140D0C]'
                     : 'border-stone-200 bg-stone-50'
                 }`}
               >
@@ -551,7 +551,7 @@ export default function OrderEditDiffModal({
                       isKeywordValid
                         ? 'border-emerald-500/80 bg-emerald-500/10 text-emerald-500 focus:ring-2 focus:ring-emerald-500/30'
                         : isDark
-                        ? 'border-[#60241E] bg-[#1C0B09] text-stone-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20'
+                        ? 'border-[#382321] bg-[#1E1413] text-stone-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20'
                         : 'border-stone-300 bg-white text-stone-800 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20'
                     }`}
                   />
@@ -575,18 +575,18 @@ export default function OrderEditDiffModal({
         {/* MODAL FOOTER ACTIONS                                    */}
         {/* ======================================================== */}
         <div
-          className={`px-6 py-4 border-t flex flex-col sm:flex-row items-center justify-between gap-3 shrink-0 ${
-            isDark ? 'border-[#60241E]/80 bg-[#240E0C]' : 'border-stone-200 bg-stone-50/80'
+          className={`px-4 py-3 sm:px-6 sm:py-4 border-t flex flex-col sm:flex-row items-center justify-between gap-3 shrink-0 ${
+            isDark ? 'border-[#382321] bg-[#140D0C]' : 'border-stone-200/80 bg-[#FAF8F5]'
           }`}
         >
           <button
             type="button"
             onClick={onClose}
             disabled={isSubmitting}
-            className={`w-full sm:w-auto px-5 py-2.5 rounded-xl border text-xs font-bold transition cursor-pointer ${
+            className={`w-full sm:w-auto px-5 py-2.5 rounded-xl border text-xs font-semibold transition active:scale-95 cursor-pointer ${
               isDark
-                ? 'border-[#60241E] bg-[#1C0B09] text-stone-300 hover:bg-[#2D120F]'
-                : 'border-stone-200 bg-white text-stone-700 hover:bg-stone-100'
+                ? 'border-[#382321] bg-[#1E1413] text-stone-300 hover:bg-[#281A18] hover:text-white'
+                : 'border-stone-200 bg-white text-stone-700 hover:bg-stone-50'
             }`}
           >
             {diff.hasChanges ? 'Periksa Kembali (Batal)' : 'Tutup'}
@@ -597,9 +597,9 @@ export default function OrderEditDiffModal({
               type="button"
               onClick={onConfirm}
               disabled={!isKeywordValid || isSubmitting}
-              className={`w-full sm:w-auto px-6 py-2.5 rounded-xl text-xs font-black shadow-md transition flex items-center justify-center gap-2 cursor-pointer ${
+              className={`w-full sm:w-auto px-6 py-2.5 rounded-xl text-xs font-bold shadow-md transition flex items-center justify-center gap-2 cursor-pointer ${
                 isKeywordValid && !isSubmitting
-                  ? 'bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-700 hover:to-rose-800 text-white shadow-red-950/20 active:scale-95'
+                  ? 'bg-gradient-to-r from-[#95271D] to-[#7D1E16] hover:from-[#A82D22] hover:to-[#8E2219] text-white shadow-red-950/20 active:scale-95'
                   : 'bg-stone-300 dark:bg-stone-800 text-stone-500 dark:text-stone-400 opacity-60 cursor-not-allowed'
               }`}
             >
