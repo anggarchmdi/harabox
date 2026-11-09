@@ -188,7 +188,7 @@ export default function PaymentProofSection({
   return (
     <div
       className={`rounded-2xl p-4 transition-all duration-200 border shadow-xs ${
-        isDark ? 'border-[#60241E]/80 bg-[#1A0A08]' : 'border-stone-200/90 bg-stone-50/60'
+        isDark ? 'border-[#382321] bg-[#18100F]' : 'border-stone-200/90 bg-stone-50/60'
       }`}
     >
       {/* Header */}
@@ -196,7 +196,7 @@ export default function PaymentProofSection({
         <div className="flex items-center gap-2.5">
           <div
             className={`flex h-8 w-8 items-center justify-center rounded-xl ${
-              isDark ? 'bg-[#2D120F] text-amber-300' : 'bg-red-50 text-red-600'
+              isDark ? 'bg-[#281A18] text-amber-400' : 'bg-amber-50 text-amber-700'
             }`}
           >
             <FolderOpen size={16} />
@@ -209,7 +209,7 @@ export default function PaymentProofSection({
             >
               Bukti Transfer (Google Drive)
             </h4>
-            <p className={`text-[11px] ${isDark ? 'text-amber-200/50' : 'text-stone-400'}`}>
+            <p className={`text-[11px] ${isDark ? 'text-stone-400' : 'text-stone-400'}`}>
               Tersimpan otomatis di folder cloud Google Drive per pelanggan
             </p>
           </div>
@@ -223,7 +223,7 @@ export default function PaymentProofSection({
               disabled={connectingDrive}
               className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold border transition cursor-pointer ${
                 isDark
-                  ? 'border-[#60241E] bg-[#240E0C] text-amber-300 hover:bg-[#341411]'
+                  ? 'border-[#382321] bg-[#1E1413] text-stone-300 hover:bg-[#281A18] hover:text-white'
                   : 'border-stone-200 bg-white text-stone-700 hover:bg-stone-50'
               }`}
               title="Sambungkan / Perbarui Otorisasi Google Drive OAuth 2.0"
@@ -255,7 +255,7 @@ export default function PaymentProofSection({
           <div>
             <label
               className={`block text-[11px] font-bold uppercase tracking-wider mb-1 ${
-                isDark ? 'text-amber-200/60' : 'text-stone-500'
+                isDark ? 'text-stone-300' : 'text-stone-500'
               }`}
             >
               Jenis Pembayaran
@@ -266,7 +266,7 @@ export default function PaymentProofSection({
               disabled={uploading}
               className={`w-full rounded-xl border px-3 py-2 text-xs font-semibold outline-none cursor-pointer transition ${
                 isDark
-                  ? 'border-[#60241E] bg-[#240E0C] text-white focus:border-[#F59E0B]'
+                  ? 'border-[#382321] bg-[#1E1413] text-white focus:border-[#F59E0B]'
                   : 'border-stone-200 bg-white text-stone-900 focus:border-red-600'
               }`}
             >
@@ -279,7 +279,7 @@ export default function PaymentProofSection({
           <div className="sm:col-span-2">
             <label
               className={`block text-[11px] font-bold uppercase tracking-wider mb-1 ${
-                isDark ? 'text-amber-200/60' : 'text-stone-500'
+                isDark ? 'text-stone-300' : 'text-stone-500'
               }`}
             >
               Pilih Bukti Transfer (.jpg, .png, .webp)
@@ -298,17 +298,17 @@ export default function PaymentProofSection({
                 htmlFor="payment-proof-file-input"
                 className={`flex-1 flex items-center justify-between gap-2 rounded-xl border px-3 py-1.5 text-xs cursor-pointer transition select-none truncate ${
                   isDark
-                    ? 'border-[#60241E] bg-[#240E0C] text-stone-300 hover:bg-[#2D120F]'
+                    ? 'border-[#382321] bg-[#1E1413] text-stone-300 hover:bg-[#281A18]'
                     : 'border-stone-200 bg-white text-stone-700 hover:bg-stone-50'
                 } ${uploading ? 'opacity-50 pointer-events-none' : ''}`}
               >
                 <span className="truncate flex items-center gap-2">
-                  <ImageIcon size={14} className={isDark ? 'text-amber-400' : 'text-red-500'} />
+                  <ImageIcon size={14} className={isDark ? 'text-amber-400' : 'text-[#95271D]'} />
                   {selectedFile ? selectedFile.name : 'Pilih file gambar...'}
                 </span>
                 <span
                   className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-lg shrink-0 ${
-                    isDark ? 'bg-[#3A1814] text-amber-200' : 'bg-stone-100 text-stone-600'
+                    isDark ? 'bg-[#281A18] text-amber-300 border border-[#382321]' : 'bg-stone-100 text-stone-600'
                   }`}
                 >
                   Browse
@@ -318,7 +318,7 @@ export default function PaymentProofSection({
               <button
                 type="submit"
                 disabled={uploading || !selectedFile}
-                className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-red-600 px-4 py-2 text-xs font-bold text-white shadow-2xs hover:bg-red-700 active:scale-95 transition disabled:opacity-50 h-[38px] shrink-0 cursor-pointer"
+                className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-[#95271D] to-[#7D1E16] hover:from-[#A82D22] hover:to-[#8E2219] px-4 py-2 text-xs font-bold text-white shadow-2xs active:scale-95 transition disabled:opacity-50 h-[38px] shrink-0 cursor-pointer"
               >
                 {uploading ? (
                   <>
@@ -340,13 +340,13 @@ export default function PaymentProofSection({
         {filePreview && (
           <div
             className={`flex items-center gap-3 rounded-xl p-2.5 border ${
-              isDark ? 'border-[#60241E]/60 bg-[#240E0C]' : 'border-stone-200 bg-white'
+              isDark ? 'border-[#382321] bg-[#1E1413]' : 'border-stone-200 bg-white'
             }`}
           >
             <img
               src={filePreview}
               alt="Preview bukti"
-              className="h-12 w-12 rounded-lg object-cover border border-stone-300 dark:border-[#60241E]"
+              className="h-12 w-12 rounded-lg object-cover border border-stone-300 dark:border-[#382321]"
             />
             <div className="flex-1 min-w-0 text-xs">
               <p className={`font-semibold truncate ${isDark ? 'text-white' : 'text-stone-800'}`}>
@@ -374,10 +374,10 @@ export default function PaymentProofSection({
       </form>
 
       {/* List of Uploaded Proofs */}
-      <div className="mt-4 pt-3 border-t border-dashed border-stone-200 dark:border-[#60241E]/60">
+      <div className="mt-4 pt-3 border-t border-dashed border-stone-200 dark:border-[#382321]">
         <h5
           className={`text-[11px] font-bold uppercase tracking-wider mb-2.5 ${
-            isDark ? 'text-amber-200/60' : 'text-stone-500'
+            isDark ? 'text-stone-300' : 'text-stone-500'
           }`}
         >
           Bukti Transfer Tersimpan
@@ -386,7 +386,7 @@ export default function PaymentProofSection({
         {proofs.length === 0 ? (
           <div
             className={`rounded-xl p-3 text-center text-xs ${
-              isDark ? 'bg-[#240E0C]/40 text-stone-400' : 'bg-white text-stone-500'
+              isDark ? 'bg-[#1E1413] text-stone-400' : 'bg-white text-stone-500'
             }`}
           >
             <AlertCircle size={16} className="mx-auto mb-1 opacity-50" />
@@ -403,7 +403,7 @@ export default function PaymentProofSection({
                   key={proof.id}
                   className={`flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 rounded-xl p-3 border transition ${
                     isDark
-                      ? 'border-[#60241E] bg-[#240E0C] hover:border-[#8C342C]'
+                      ? 'border-[#382321] bg-[#1E1413] hover:border-amber-600/40'
                       : 'border-stone-200 bg-white hover:border-stone-300'
                   }`}
                 >
@@ -488,7 +488,7 @@ export default function PaymentProofSection({
                       rel="noopener noreferrer"
                       className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold shadow-2xs transition active:scale-95 ${
                         isDark
-                          ? 'bg-[#3A1814] text-amber-200 hover:bg-[#4D201A] border border-[#60241E]'
+                          ? 'bg-[#281A18] text-stone-200 hover:bg-[#34221F] border border-[#382321]'
                           : 'bg-stone-100 text-stone-700 hover:bg-stone-200 border border-stone-200'
                       }`}
                     >

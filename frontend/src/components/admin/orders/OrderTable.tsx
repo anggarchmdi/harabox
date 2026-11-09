@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
   Calendar,
+  ChevronDown,
+  ChevronUp,
   Eye,
   MapPin,
   MessageCircle,
@@ -11,6 +13,7 @@ import {
   Star,
   Trash2,
   User,
+  ShoppingBag,
 } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -19,6 +22,12 @@ import { ordersService } from '../../../services/orders.service'
 import { useThemeStore } from '../../../stores/theme.store'
 import OrderStatusBadge from './OrderStatusBadge'
 import PaymentStatusBadge from './PaymentStatusBadge'
+import {
+  getWhatsAppInvoiceUrl,
+  getWhatsAppTestimonialUrl,
+} from '../../../utils/whatsappInvoice'
+
+export { getWhatsAppInvoiceUrl, getWhatsAppTestimonialUrl }
 
 interface OrderTableProps {
   orders: Order[]
@@ -33,23 +42,21 @@ function formatRupiah(value: string | number) {
     style: 'currency',
     currency: 'IDR',
     maximumFractionDigits: 0,
-  }).format(Number(value))
+  }).format(Number(value || 0))
 }
 
 function formatDate(date: string) {
-  return new Intl.DateTimeFormat('id-ID', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-  }).format(new Date(date))
+  if (!date) return '-'
+  try {
+    return new Intl.DateTimeFormat('id-ID', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+    }).format(new Date(date))
+  } catch {
+    return date
+  }
 }
-
-import {
-  getWhatsAppInvoiceUrl,
-  getWhatsAppTestimonialUrl,
-} from '../../../utils/whatsappInvoice'
-
-export { getWhatsAppInvoiceUrl, getWhatsAppTestimonialUrl }
 
 export default function OrderTable({
   orders,
@@ -60,6 +67,14 @@ export default function OrderTable({
 }: OrderTableProps) {
   const isDark = useThemeStore((state) => state.theme === 'dark')
   const [updatingId, setUpdatingId] = useState<number | null>(null)
+  const [expandedOrders, setExpandedOrders] = useState<Record<number, boolean>>({})
+
+  const toggleExpand = (orderId: number) => {
+    setExpandedOrders((prev) => ({
+      ...prev,
+      [orderId]: !prev[orderId],
+    }))
+  }
 
   const handleQuickStatusChange = async (
     order: Order,
@@ -72,7 +87,7 @@ export default function OrderTable({
       setUpdatingId(order.id)
       await ordersService.updateStatus(order.id, newStatus, force)
       toast.success(
-        `Status order ${order.order_code} berhasil diubah ke "${newStatus}".`,
+        `Status order #${order.order_code} berhasil diperbarui.`,
       )
       onStatusUpdated?.()
     } catch (err: any) {
@@ -95,17 +110,20 @@ export default function OrderTable({
   if (orders.length === 0) {
     return (
       <div
-        className={`rounded-2xl border border-dashed px-6 py-16 text-center ${
+        className={`rounded-2xl border border-dashed px-6 py-16 text-center transition-all ${
           isDark
-            ? 'border-[#60241E] bg-[#240E0C]'
-            : 'border-stone-200 bg-white'
+            ? 'border-[#382321] bg-[#1A1211]'
+            : 'border-stone-200 bg-white shadow-xs'
         }`}
       >
+        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-stone-100 dark:bg-[#251715] text-stone-400 dark:text-stone-500 mb-3">
+          <ShoppingBag size={22} />
+        </div>
         <h3 className={`text-base font-bold ${isDark ? 'text-white' : 'text-stone-900'}`}>
-          Belum ada pesanan
+          Tidak ada pesanan ditemukan
         </h3>
-        <p className={`mt-1 text-xs sm:text-sm ${isDark ? 'text-amber-100/70' : 'text-stone-500'}`}>
-          Pesanan katering pelanggan akan muncul di sini saat ada order baru masuk.
+        <p className={`mt-1 text-xs sm:text-sm max-w-sm mx-auto ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
+          Tidak ada data pesanan yang cocok dengan kriteria filter atau pencarian saat ini.
         </p>
       </div>
     )
@@ -113,230 +131,227 @@ export default function OrderTable({
 
   return (
     <div
-      className={`rounded-2xl border shadow-2xs overflow-hidden ${
+      className={`rounded-2xl border shadow-xs overflow-hidden transition-all ${
         isDark
-          ? 'border-[#60241E]/80 bg-[#240E0C]'
+          ? 'border-[#382321] bg-[#18100F]'
           : 'border-stone-200/90 bg-white'
       }`}
     >
-      {/* Desktop Table View (>= md) */}
+      {/* =====================================================
+          DESKTOP TABLE VIEW (>= md)
+      ====================================================== */}
       <div className="hidden md:block overflow-x-auto">
-        <table className="w-full text-left">
-          <thead
-            className={`border-b ${
-              isDark
-                ? 'border-[#60241E]/60 bg-[#2D120F]'
-                : 'border-stone-100 bg-stone-50/70'
-            }`}
-          >
-            <tr>
-              <th
-                className={`px-5 py-3.5 text-[11px] font-bold uppercase tracking-wider ${
-                  isDark ? 'text-amber-200/60' : 'text-stone-400'
-                }`}
-              >
-                Kode Order
-              </th>
-              <th
-                className={`px-5 py-3.5 text-[11px] font-bold uppercase tracking-wider ${
-                  isDark ? 'text-amber-200/60' : 'text-stone-400'
-                }`}
-              >
-                Pemesan (Nama & WA)
-              </th>
-              <th
-                className={`px-5 py-3.5 text-[11px] font-bold uppercase tracking-wider ${
-                  isDark ? 'text-amber-200/60' : 'text-stone-400'
-                }`}
-              >
-                Menu & Porsi
-              </th>
-              <th
-                className={`px-5 py-3.5 text-[11px] font-bold uppercase tracking-wider ${
-                  isDark ? 'text-amber-200/60' : 'text-stone-400'
-                }`}
-              >
-                Acara & Alamat
-              </th>
-              <th
-                className={`px-5 py-3.5 text-[11px] font-bold uppercase tracking-wider ${
-                  isDark ? 'text-amber-200/60' : 'text-stone-400'
-                }`}
-              >
-                Total Tagihan
-              </th>
-              <th
-                className={`px-5 py-3.5 text-[11px] font-bold uppercase tracking-wider ${
-                  isDark ? 'text-amber-200/60' : 'text-stone-400'
-                }`}
-              >
-                Status Pesanan
-              </th>
-              <th
-                className={`px-5 py-3.5 text-right text-[11px] font-bold uppercase tracking-wider ${
-                  isDark ? 'text-amber-200/60' : 'text-stone-400'
-                }`}
-              >
-                Aksi
-              </th>
+        <table className="w-full text-left border-collapse">
+          <thead>
+            <tr
+              className={`border-b text-[11px] font-bold uppercase tracking-wider ${
+                isDark
+                  ? 'border-[#382321] bg-[#140D0C] text-stone-400'
+                  : 'border-stone-200/90 bg-[#FAF8F5] text-stone-500'
+              }`}
+            >
+              <th className="px-5 py-3.5 whitespace-nowrap">ID & Waktu Pesan</th>
+              <th className="px-5 py-3.5 whitespace-nowrap">Pemesan</th>
+              <th className="px-5 py-3.5">Menu & Rincian</th>
+              <th className="px-5 py-3.5 whitespace-nowrap">Jadwal Acara & Lokasi</th>
+              <th className="px-5 py-3.5 whitespace-nowrap">Total Tagihan</th>
+              <th className="px-5 py-3.5 whitespace-nowrap">Status Pesanan</th>
+              <th className="px-5 py-3.5 text-right whitespace-nowrap">Aksi</th>
             </tr>
           </thead>
 
           <tbody
             className={`divide-y text-xs ${
-              isDark ? 'divide-[#60241E]/40' : 'divide-stone-100'
+              isDark ? 'divide-[#2A1816]' : 'divide-stone-100'
             }`}
           >
             {orders.map((order) => {
               const invoiceUrl = getWhatsAppInvoiceUrl(order)
               const cleanPhone = order.customers_phone.replace(/[^0-9]/g, '')
               const waChatUrl = `https://wa.me/${cleanPhone.startsWith('0') ? '62' + cleanPhone.slice(1) : cleanPhone}`
+              const isExpanded = Boolean(expandedOrders[order.id])
+              const itemsList = order.items || []
+              const displayItems = isExpanded ? itemsList : itemsList.slice(0, 2)
+              const hiddenCount = itemsList.length - 2
 
               return (
                 <tr
                   key={order.id}
-                  className={`transition ${
-                    isDark ? 'hover:bg-[#2D120F]/60' : 'hover:bg-stone-50/70'
+                  className={`group transition-colors ${
+                    isDark
+                      ? 'hover:bg-[#201514]'
+                      : 'hover:bg-[#FAF8F5]/90'
                   }`}
                 >
-                  {/* Order Code */}
+                  {/* Order Code & Timestamp */}
                   <td className="px-5 py-4 align-top whitespace-nowrap">
-                    <p
-                      className={`font-bold font-mono text-xs ${
-                        isDark ? 'text-white' : 'text-stone-900'
+                    <button
+                      type="button"
+                      onClick={() => onView(order)}
+                      className={`font-mono font-bold text-xs hover:underline cursor-pointer block text-left ${
+                        isDark ? 'text-amber-300' : 'text-stone-900'
                       }`}
+                      title="Klik untuk lihat detail lengkap"
                     >
                       {order.order_code}
-                    </p>
+                    </button>
                     <p
-                      className={`mt-0.5 text-[11px] ${
-                        isDark ? 'text-amber-200/50' : 'text-stone-400'
+                      className={`mt-1 text-[11px] ${
+                        isDark ? 'text-stone-400' : 'text-stone-500'
                       }`}
                     >
                       {formatDate(order.created_at)}
                     </p>
                   </td>
 
-                  {/* Customer (Name & Phone) */}
+                  {/* Customer Information */}
                   <td className="px-5 py-4 align-top whitespace-nowrap">
                     <p
                       className={`font-semibold flex items-center gap-1.5 ${
                         isDark ? 'text-stone-100' : 'text-stone-900'
                       }`}
                     >
-                      <User size={13} className={isDark ? 'text-amber-200/60' : 'text-stone-400'} />
-                      {order.customers_name}
+                      <User size={13} className={isDark ? 'text-amber-400/80' : 'text-stone-400'} />
+                      <span>{order.customers_name}</span>
                     </p>
                     <a
                       href={waChatUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="mt-1 inline-flex items-center gap-1 text-xs font-semibold text-emerald-500 hover:text-emerald-400 hover:underline"
-                      title="Chat pelanggan via WhatsApp"
+                      className="mt-1 inline-flex items-center gap-1 text-[11px] font-medium text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 hover:underline"
+                      title="Chat WhatsApp pelanggan"
                     >
-                      <MessageCircle size={13} />
-                      {order.customers_phone}
+                      <MessageCircle size={12} className="shrink-0" />
+                      <span>{order.customers_phone}</span>
                     </a>
                   </td>
 
-                  {/* Menu items */}
+                  {/* Catering Menu Items & Addons with Progressive Disclosure */}
                   <td className="px-5 py-4 align-top">
                     <div className="max-w-xs space-y-1.5">
-                      {order.items && order.items.length > 0 ? (
-                        order.items.map((item) => (
-                          <div key={item.id} className="text-xs">
-                            <div className="flex items-center gap-1.5">
-                              <span
-                                className={`font-semibold ${
-                                  isDark ? 'text-stone-100' : 'text-stone-900'
-                                }`}
-                              >
-                                {item.item_name}
-                              </span>
-                              <span
-                                className={`inline-block rounded px-1.5 py-0.2 text-[10px] font-bold ${
-                                  isDark ? 'bg-red-950/60 text-red-300' : 'bg-red-50 text-red-600'
-                                }`}
-                              >
-                                {item.quantity} porsi
-                              </span>
-                            </div>
-                            {item.addons && item.addons.length > 0 && (
-                              <div
-                                className={`mt-0.5 space-y-0.5 pl-2 border-l ${
-                                  isDark ? 'border-[#60241E] text-stone-300' : 'border-red-200 text-stone-600'
-                                }`}
-                              >
-                                {item.addons.map((a) => (
-                                  <div key={a.id || a.addon_name} className="text-[11px]">
-                                    <span className="text-red-500 font-bold">+</span> {a.addon_name}{' '}
-                                    <span
-                                      className={`font-mono ${
-                                        isDark ? 'text-stone-400' : 'text-stone-400'
-                                      }`}
-                                    >
-                                      (+{formatRupiah(a.price)} × {a.quantity || item.quantity} = +{formatRupiah(a.subtotal || String(Number(a.price) * item.quantity))})
-                                    </span>
-                                  </div>
-                                ))}
+                      {itemsList.length > 0 ? (
+                        <>
+                          {displayItems.map((item, idx) => (
+                            <div key={item.id || idx} className="text-xs">
+                              <div className="flex items-baseline gap-1.5 flex-wrap">
+                                <span
+                                  className={`font-semibold ${
+                                    isDark ? 'text-stone-200' : 'text-stone-900'
+                                  }`}
+                                >
+                                  {item.item_name}
+                                </span>
+                                <span
+                                  className={`inline-flex items-center rounded-md px-1.5 py-0.5 text-[10px] font-bold ${
+                                    isDark
+                                      ? 'bg-red-950/50 text-red-300 border border-red-900/60'
+                                      : 'bg-red-50 text-red-700 border border-red-200/80'
+                                  }`}
+                                >
+                                  {item.quantity} porsi
+                                </span>
                               </div>
-                            )}
-                          </div>
-                        ))
+
+                              {item.addons && item.addons.length > 0 && (
+                                <div
+                                  className={`mt-0.5 space-y-0.5 pl-2 border-l text-[11px] ${
+                                    isDark ? 'border-[#4A2D2A] text-stone-400' : 'border-stone-200 text-stone-500'
+                                  }`}
+                                >
+                                  {item.addons.map((a, aIdx) => (
+                                    <div key={a.id || aIdx} className="truncate">
+                                      <span className="text-amber-500 font-bold">+</span> {a.addon_name}
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          ))}
+
+                          {hiddenCount > 0 && (
+                            <button
+                              type="button"
+                              onClick={() => toggleExpand(order.id)}
+                              className={`mt-1 inline-flex items-center gap-1 text-[11px] font-medium transition cursor-pointer ${
+                                isDark
+                                  ? 'text-amber-400 hover:text-amber-300'
+                                  : 'text-amber-700 hover:text-amber-800'
+                              }`}
+                            >
+                              {isExpanded ? (
+                                <>
+                                  <ChevronUp size={12} />
+                                  <span>Sembunyikan rincian menu</span>
+                                </>
+                              ) : (
+                                <>
+                                  <ChevronDown size={12} />
+                                  <span>+ {hiddenCount} menu katering lainnya</span>
+                                </>
+                              )}
+                            </button>
+                          )}
+                        </>
                       ) : (
-                        <p className={`text-xs ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
-                          Menu Katering
-                        </p>
+                        <span className={`text-[11px] ${isDark ? 'text-stone-500' : 'text-stone-400'}`}>
+                          Rincian katering umum
+                        </span>
                       )}
                     </div>
                   </td>
 
-                  {/* Event & Address */}
+                  {/* Schedule & Delivery Location */}
                   <td className="px-5 py-4 align-top">
-                    <div className="max-w-xs">
+                    <div className="max-w-[210px] space-y-1">
                       <p
-                        className={`font-medium text-xs flex items-center gap-1 ${
+                        className={`font-semibold text-xs flex items-center gap-1.5 ${
                           isDark ? 'text-stone-200' : 'text-stone-900'
                         }`}
                       >
-                        <Calendar size={13} className={isDark ? 'text-amber-200/60' : 'text-stone-400'} />
-                        {formatDate(order.event_date)}
+                        <Calendar size={13} className={isDark ? 'text-amber-400/80' : 'text-stone-400'} />
+                        <span>{formatDate(order.event_date)}</span>
                         {order.event_time && (
-                          <span className={isDark ? 'text-stone-400 font-normal' : 'text-stone-500 font-normal'}>
-                            ({order.event_time})
+                          <span
+                            className={`rounded px-1.5 py-0.2 text-[10px] font-mono font-medium ${
+                              isDark ? 'bg-[#291A18] text-amber-300' : 'bg-stone-100 text-stone-700'
+                            }`}
+                          >
+                            {order.event_time}
                           </span>
                         )}
                       </p>
                       <p
-                        className={`mt-0.5 text-xs line-clamp-2 flex items-start gap-1 ${
+                        className={`text-[11px] line-clamp-2 flex items-start gap-1 leading-snug ${
                           isDark ? 'text-stone-400' : 'text-stone-500'
                         }`}
+                        title={order.delivery_address}
                       >
-                        <MapPin size={13} className={`shrink-0 mt-0.5 ${isDark ? 'text-amber-200/60' : 'text-stone-400'}`} />
-                        <span>{order.delivery_address}</span>
+                        <MapPin size={12} className={`shrink-0 mt-0.5 ${isDark ? 'text-stone-500' : 'text-stone-400'}`} />
+                        <span>{order.delivery_address || 'Ambil di Toko / Outlet'}</span>
                       </p>
                     </div>
                   </td>
 
-                  {/* Total Tagihan & Status Pembayaran */}
+                  {/* Total Amount & Payment Badge */}
                   <td className="px-5 py-4 align-top whitespace-nowrap">
                     <p
-                      className={`font-bold text-xs sm:text-sm font-mono ${
-                        isDark ? 'text-white' : 'text-stone-900'
+                      className={`font-bold font-mono text-xs sm:text-sm ${
+                        isDark ? 'text-white' : 'text-stone-950'
                       }`}
                     >
                       {formatRupiah(order.total)}
                     </p>
-                    <div className="mt-1">
+                    <div className="mt-1.5">
                       <PaymentStatusBadge
                         status={order.payment_status}
                         paidAmount={order.paid_amount}
                         paymentMethod={order.payment_method}
+                        compact
                       />
                     </div>
                   </td>
 
-                  {/* Status & Quick Status Changer */}
+                  {/* Order Status & Quick Status Changer */}
                   <td className="px-5 py-4 align-top">
                     <div className="space-y-1.5 w-36">
                       <OrderStatusBadge status={order.status} />
@@ -350,95 +365,65 @@ export default function OrderTable({
                             e.target.value as OrderStatus,
                           )
                         }
-                        className={`block w-full rounded-lg border px-2 py-1 text-[11px] font-medium outline-none disabled:opacity-50 ${
+                        className={`block w-full rounded-lg border px-2 py-1 text-[11px] font-medium outline-none transition cursor-pointer disabled:opacity-50 ${
                           isDark
-                            ? 'border-[#60241E] bg-[#1C0B09] text-stone-200 focus:border-[#F59E0B]'
-                            : 'border-stone-200 bg-white text-stone-800 focus:border-red-600 focus:ring-1 focus:ring-red-600'
+                            ? 'border-[#3D2522] bg-[#221514] text-stone-300 hover:bg-[#2A1B19] focus:border-[#F59E0B]'
+                            : 'border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100 focus:border-red-600 focus:bg-white'
                         }`}
+                        title="Ubah status pesanan secara instan"
                       >
-                        <option value="pending">Menunggu</option>
-                        <option value="processing">Diproses Dapur</option>
-                        <option value="completed">Selesai</option>
-                        <option value="cancelled">Dibatalkan</option>
+                        <option value="pending">Ubah: Menunggu</option>
+                        <option value="processing">Ubah: Diproses Dapur</option>
+                        <option value="completed">Ubah: Selesai</option>
+                        <option value="cancelled">Ubah: Dibatalkan</option>
                       </select>
                     </div>
                   </td>
 
-                  {/* Actions (Horizontal Icon Toolbar) */}
+                  {/* Action Toolbar */}
                   <td className="px-5 py-4 align-top text-right whitespace-nowrap">
-                    <div className="flex items-center justify-end gap-1.5">
+                    <div className="inline-flex items-center justify-end gap-1">
                       {/* Detail */}
                       <button
                         type="button"
                         onClick={() => onView(order)}
-                        className={`h-8 w-8 rounded-xl border flex items-center justify-center transition active:scale-95 cursor-pointer shadow-2xs ${
+                        className={`h-8 w-8 rounded-xl border flex items-center justify-center transition active:scale-95 cursor-pointer ${
                           isDark
-                            ? 'border-[#60241E] bg-[#1C0B09] text-stone-300 hover:bg-[#2D120F] hover:text-white'
-                            : 'border-stone-200 bg-white text-stone-700 hover:bg-stone-100 hover:text-stone-900'
+                            ? 'border-[#382321] bg-[#221514] text-stone-300 hover:bg-[#2E1D1B] hover:text-white'
+                            : 'border-stone-200 bg-white text-stone-700 hover:bg-stone-50 hover:text-stone-900 shadow-2xs'
                         }`}
-                        title="Lihat Detail Pesanan"
+                        title="Lihat Detail Lengkap Pesanan"
                         aria-label="Detail"
                       >
                         <Eye size={14} />
                       </button>
 
-                      {/* Edit */}
-                      <Link
-                        to={`/admin/orders/${order.id}/edit`}
-                        className={`h-8 w-8 rounded-xl border flex items-center justify-center transition active:scale-95 cursor-pointer shadow-2xs ${
-                          isDark
-                            ? 'border-amber-600/40 bg-amber-950/30 text-amber-300 hover:bg-amber-900/50'
-                            : 'border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100'
-                        }`}
-                        title="Edit Rincian Pesanan"
-                        aria-label="Edit"
-                      >
-                        <Pencil size={13} />
-                      </Link>
-
-                      {/* Hapus */}
-                      {onDelete && (
-                        <button
-                          type="button"
-                          onClick={() => onDelete(order)}
-                          className={`h-8 w-8 rounded-xl border flex items-center justify-center transition active:scale-95 cursor-pointer shadow-2xs ${
-                            isDark
-                              ? 'border-rose-600/40 bg-rose-950/30 text-rose-300 hover:bg-rose-900/50'
-                              : 'border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100'
-                          }`}
-                          title="Hapus Pesanan"
-                          aria-label="Hapus"
-                        >
-                          <Trash2 size={13} />
-                        </button>
-                      )}
-
-                      {/* Cetak Nota */}
+                      {/* Print Nota */}
                       {onPrint && (
                         <button
                           type="button"
                           onClick={() => onPrint(order)}
-                          className={`h-8 w-8 rounded-xl border flex items-center justify-center transition active:scale-95 cursor-pointer shadow-2xs ${
+                          className={`h-8 w-8 rounded-xl border flex items-center justify-center transition active:scale-95 cursor-pointer ${
                             isDark
-                              ? 'border-red-600/40 bg-red-950/40 text-red-300 hover:bg-red-900/50'
-                              : 'border-red-200 bg-red-50 text-red-700 hover:bg-red-100'
+                              ? 'border-[#4A201B] bg-[#261311] text-red-300 hover:bg-red-950/50 hover:text-white'
+                              : 'border-red-200 bg-red-50/70 text-red-700 hover:bg-red-100 shadow-2xs'
                           }`}
-                          title="Cetak Nota / Slip Dapur"
+                          title="Cetak Nota Struk / Tiket Dapur"
                           aria-label="Cetak Nota"
                         >
                           <Printer size={13} />
                         </button>
                       )}
 
-                      {/* Invoice WA */}
+                      {/* WhatsApp Invoice */}
                       <a
                         href={invoiceUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className={`h-8 w-8 rounded-xl border flex items-center justify-center transition active:scale-95 shadow-2xs ${
+                        className={`h-8 w-8 rounded-xl border flex items-center justify-center transition active:scale-95 ${
                           isDark
-                            ? 'border-emerald-600/40 bg-emerald-950/40 text-emerald-300 hover:bg-emerald-900/50'
-                            : 'border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
+                            ? 'border-emerald-800/50 bg-emerald-950/30 text-emerald-400 hover:bg-emerald-900/40 hover:text-white'
+                            : 'border-emerald-200 bg-emerald-50/70 text-emerald-700 hover:bg-emerald-100 shadow-2xs'
                         }`}
                         title="Kirim Invoice Resmi ke WhatsApp"
                         aria-label="Invoice WA"
@@ -446,22 +431,53 @@ export default function OrderTable({
                         <Receipt size={13} />
                       </a>
 
-                      {/* Link Testimoni (hanya saat completed) */}
+                      {/* Edit */}
+                      <Link
+                        to={`/admin/orders/${order.id}/edit`}
+                        className={`h-8 w-8 rounded-xl border flex items-center justify-center transition active:scale-95 cursor-pointer ${
+                          isDark
+                            ? 'border-amber-800/50 bg-amber-950/30 text-amber-300 hover:bg-amber-900/40 hover:text-white'
+                            : 'border-amber-200 bg-amber-50/70 text-amber-800 hover:bg-amber-100 shadow-2xs'
+                        }`}
+                        title="Edit Rincian Pesanan"
+                        aria-label="Edit"
+                      >
+                        <Pencil size={13} />
+                      </Link>
+
+                      {/* Link Testimoni (completed only) */}
                       {order.status === 'completed' && (
                         <a
                           href={getWhatsAppTestimonialUrl(order)}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className={`h-8 w-8 rounded-xl border flex items-center justify-center transition active:scale-95 shadow-2xs ${
+                          className={`h-8 w-8 rounded-xl border flex items-center justify-center transition active:scale-95 ${
                             isDark
-                              ? 'border-amber-500/40 bg-amber-950/40 text-amber-300 hover:bg-amber-900/50'
-                              : 'border-amber-200 bg-amber-50 text-amber-600 hover:bg-amber-100'
+                              ? 'border-amber-500/40 bg-amber-950/30 text-amber-300 hover:bg-amber-900/50'
+                              : 'border-amber-200 bg-amber-50 text-amber-600 hover:bg-amber-100 shadow-2xs'
                           }`}
-                          title="Kirim Link Testimoni via WhatsApp"
+                          title="Kirim Link Testimoni Pelanggan"
                           aria-label="Link Testimoni"
                         >
                           <Star size={13} className="fill-amber-400 text-amber-500" />
                         </a>
+                      )}
+
+                      {/* Delete */}
+                      {onDelete && (
+                        <button
+                          type="button"
+                          onClick={() => onDelete(order)}
+                          className={`h-8 w-8 rounded-xl border flex items-center justify-center transition active:scale-95 cursor-pointer ${
+                            isDark
+                              ? 'border-rose-900/50 bg-rose-950/20 text-rose-400 hover:bg-rose-950/50 hover:text-white'
+                              : 'border-stone-200 bg-white text-stone-400 hover:text-rose-600 hover:border-rose-200 shadow-2xs'
+                          }`}
+                          title="Hapus Pesanan Ini"
+                          aria-label="Hapus"
+                        >
+                          <Trash2 size={13} />
+                        </button>
                       )}
                     </div>
                   </td>
@@ -472,10 +488,12 @@ export default function OrderTable({
         </table>
       </div>
 
-      {/* Mobile Responsive Order Cards (< md) */}
+      {/* =====================================================
+          MOBILE RESPONSIVE ORDER CARDS (< md)
+      ====================================================== */}
       <div
-        className={`block md:hidden divide-y p-4 space-y-4 ${
-          isDark ? 'divide-[#60241E]/40' : 'divide-stone-100'
+        className={`block md:hidden p-3 sm:p-4 space-y-3.5 ${
+          isDark ? 'bg-[#18100F]' : 'bg-[#FAF8F5]'
         }`}
       >
         {orders.map((order) => {
@@ -486,127 +504,121 @@ export default function OrderTable({
           return (
             <div
               key={order.id}
-              className={`rounded-xl border p-4 shadow-2xs space-y-3 ${
+              className={`rounded-2xl border p-4 shadow-xs space-y-3 transition-all ${
                 isDark
-                  ? 'border-[#60241E]/80 bg-[#1C0B09]'
-                  : 'border-stone-200 bg-white'
+                  ? 'border-[#382321] bg-[#1C1312]'
+                  : 'border-stone-200/90 bg-white'
               }`}
             >
-              <div className="flex items-start justify-between gap-2">
-                <div>
-                  <span
-                    className={`font-bold font-mono text-sm ${
-                      isDark ? 'text-white' : 'text-stone-900'
+              {/* Card Header: Code, Timestamp & Badge */}
+              <div className="flex items-start justify-between gap-2 border-b pb-2.5 dark:border-[#2D1B19] border-stone-100">
+                <div className="min-w-0 flex-1">
+                  <button
+                    type="button"
+                    onClick={() => onView(order)}
+                    className={`font-mono font-bold text-sm hover:underline cursor-pointer block text-left truncate ${
+                      isDark ? 'text-amber-300' : 'text-stone-900'
                     }`}
                   >
-                    {order.order_code}
-                  </span>
+                    #{order.order_code}
+                  </button>
                   <p
-                    className={`text-[11px] ${
-                      isDark ? 'text-amber-200/50' : 'text-stone-400'
+                    className={`text-[11px] mt-0.5 ${
+                      isDark ? 'text-stone-400' : 'text-stone-400'
                     }`}
                   >
-                    {formatDate(order.created_at)}
+                    Masuk pada {formatDate(order.created_at)}
                   </p>
                 </div>
 
                 <OrderStatusBadge status={order.status} />
               </div>
 
-              <div className="space-y-1 text-xs">
-                <p
-                  className={`font-semibold flex items-center gap-1.5 ${
-                    isDark ? 'text-stone-100' : 'text-stone-900'
-                  }`}
-                >
-                  <User size={13} className={isDark ? 'text-amber-200/60' : 'text-stone-400'} />
-                  {order.customers_name}
-                </p>
-                <a
-                  href={waChatUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-500 hover:underline"
-                >
-                  <MessageCircle size={13} />
-                  {order.customers_phone}
-                </a>
+              {/* Customer & Event Schedule in 2-column info */}
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                <div>
+                  <span className={`text-[10px] uppercase font-bold tracking-wider block ${isDark ? 'text-stone-400' : 'text-stone-400'}`}>
+                    Pemesan
+                  </span>
+                  <p className={`font-semibold truncate mt-0.5 ${isDark ? 'text-stone-100' : 'text-stone-900'}`}>
+                    {order.customers_name}
+                  </p>
+                  <a
+                    href={waChatUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-0.5 inline-flex items-center gap-1 text-[11px] font-medium text-emerald-600 dark:text-emerald-400 hover:underline truncate"
+                  >
+                    <MessageCircle size={11} className="shrink-0" />
+                    <span>{order.customers_phone}</span>
+                  </a>
+                </div>
+
+                <div>
+                  <span className={`text-[10px] uppercase font-bold tracking-wider block ${isDark ? 'text-stone-400' : 'text-stone-400'}`}>
+                    Jadwal Acara
+                  </span>
+                  <p className={`font-semibold text-xs flex items-center gap-1 mt-0.5 ${isDark ? 'text-stone-200' : 'text-stone-900'}`}>
+                    <Calendar size={11} className="shrink-0 text-amber-500" />
+                    <span>{formatDate(order.event_date)}</span>
+                  </p>
+                  {order.event_time && (
+                    <p className={`text-[10px] font-mono mt-0.5 ${isDark ? 'text-amber-300' : 'text-stone-600'}`}>
+                      Pukul {order.event_time} WIB
+                    </p>
+                  )}
+                </div>
               </div>
 
-              {/* Items Preview */}
+              {/* Address */}
+              {order.delivery_address && (
+                <div
+                  className={`rounded-xl px-2.5 py-1.5 text-[11px] flex items-start gap-1.5 ${
+                    isDark ? 'bg-[#241715] text-stone-300' : 'bg-stone-50 text-stone-600'
+                  }`}
+                >
+                  <MapPin size={12} className="shrink-0 mt-0.5 text-stone-400" />
+                  <span className="line-clamp-2">{order.delivery_address}</span>
+                </div>
+              )}
+
+              {/* Menu Items Preview */}
               <div
-                className={`rounded-lg p-2.5 text-xs space-y-1.5 ${
-                  isDark ? 'bg-[#240E0C]' : 'bg-stone-50'
+                className={`rounded-xl p-2.5 text-xs space-y-1.5 ${
+                  isDark ? 'bg-[#221514]' : 'bg-[#FAF8F5]'
                 }`}
               >
                 {order.items && order.items.length > 0 ? (
-                  order.items.map((item) => (
-                    <div key={item.id} className="space-y-0.5">
-                      <div className="flex justify-between">
-                        <span
-                          className={`font-semibold ${
-                            isDark ? 'text-stone-200' : 'text-stone-800'
-                          }`}
-                        >
-                          {item.item_name}
-                        </span>
-                        <span
-                          className={`font-bold ${
-                            isDark ? 'text-stone-300' : 'text-stone-600'
-                          }`}
-                        >
-                          {item.quantity} porsi
-                        </span>
-                      </div>
-                      {item.addons && item.addons.length > 0 && (
-                        <div
-                          className={`pl-2 border-l space-y-0.5 ${
-                            isDark ? 'border-[#60241E]' : 'border-red-200'
-                          }`}
-                        >
-                          {item.addons.map((a) => (
-                            <div
-                              key={a.id || a.addon_name}
-                              className={`text-[10px] flex justify-between ${
-                                isDark ? 'text-stone-300' : 'text-stone-600'
-                              }`}
-                            >
-                              <span>+ {a.addon_name}</span>
-                              <span
-                                className={`font-mono ${
-                                  isDark ? 'text-stone-400' : 'text-stone-400'
-                                }`}
-                              >
-                                +{formatRupiah(a.price)} × {a.quantity || item.quantity} = +{formatRupiah(a.subtotal || String(Number(a.price) * item.quantity))}
-                              </span>
-                            </div>
-                          ))}
-                        </div>
-                      )}
+                  order.items.slice(0, 3).map((item, idx) => (
+                    <div key={item.id || idx} className="flex justify-between items-baseline gap-2 text-xs">
+                      <span className={`font-medium truncate ${isDark ? 'text-stone-200' : 'text-stone-800'}`}>
+                        {item.item_name}
+                      </span>
+                      <span className={`font-bold font-mono text-[11px] shrink-0 ${isDark ? 'text-stone-300' : 'text-stone-600'}`}>
+                        {item.quantity}x
+                      </span>
                     </div>
                   ))
                 ) : (
-                  <p className={isDark ? 'text-stone-400' : 'text-stone-500'}>Menu Katering</p>
+                  <p className={`text-[11px] ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>Menu Katering</p>
                 )}
 
-                <p
-                  className={`pt-1 text-[11px] flex items-center gap-1 border-t ${
-                    isDark ? 'border-[#60241E]/50 text-stone-400' : 'border-stone-200/50 text-stone-400'
-                  }`}
-                >
-                  <Calendar size={11} />
-                  Acara: {formatDate(order.event_date)} {order.event_time ? `(${order.event_time})` : ''}
-                </p>
+                {order.items && order.items.length > 3 && (
+                  <p className="text-[10px] text-amber-500 font-medium pt-0.5">
+                    +{order.items.length - 3} item menu lainnya
+                  </p>
+                )}
               </div>
 
+              {/* Total & Payment Bar */}
               <div
-                className={`flex items-center justify-between pt-1 border-t text-xs ${
-                  isDark ? 'border-[#60241E]/60' : 'border-stone-100'
+                className={`flex items-center justify-between pt-2 border-t text-xs ${
+                  isDark ? 'border-[#2D1B19]' : 'border-stone-100'
                 }`}
               >
                 <div>
-                  <span className={`text-[10px] ${isDark ? 'text-amber-200/50' : 'text-stone-400'}`}>
-                    Total & Pembayaran:
+                  <span className={`text-[10px] ${isDark ? 'text-stone-400' : 'text-stone-400'}`}>
+                    Total Tagihan:
                   </span>
                   <p
                     className={`font-bold font-mono text-sm ${
@@ -615,117 +627,78 @@ export default function OrderTable({
                   >
                     {formatRupiah(order.total)}
                   </p>
-                  <div className="mt-1">
-                    <PaymentStatusBadge
-                      status={order.payment_status}
-                      paidAmount={order.paid_amount}
-                      paymentMethod={order.payment_method}
-                      compact
-                    />
-                  </div>
                 </div>
 
-                <div className="flex items-center gap-1.5 shrink-0">
-                  {/* Detail */}
-                  <button
-                    type="button"
-                    onClick={() => onView(order)}
-                    className={`h-8 w-8 rounded-xl border flex items-center justify-center transition active:scale-95 cursor-pointer shadow-2xs ${
-                      isDark
-                        ? 'border-[#60241E] bg-[#240E0C] text-stone-200'
-                        : 'border-stone-200 bg-white text-stone-700'
-                    }`}
-                    title="Lihat Detail Pesanan"
-                    aria-label="Detail"
-                  >
-                    <Eye size={14} />
-                  </button>
-
-                  {/* Edit */}
-                  <Link
-                    to={`/admin/orders/${order.id}/edit`}
-                    className={`h-8 w-8 rounded-xl border flex items-center justify-center transition active:scale-95 cursor-pointer shadow-2xs ${
-                      isDark
-                        ? 'border-amber-600/40 bg-amber-950/30 text-amber-300'
-                        : 'border-amber-200 bg-amber-50 text-amber-800'
-                    }`}
-                    title="Edit Pesanan"
-                    aria-label="Edit"
-                  >
-                    <Pencil size={13} />
-                  </Link>
-
-                  {/* Hapus */}
-                  {onDelete && (
-                    <button
-                      type="button"
-                      onClick={() => onDelete(order)}
-                      className={`h-8 w-8 rounded-xl border flex items-center justify-center transition active:scale-95 cursor-pointer shadow-2xs ${
-                        isDark
-                          ? 'border-rose-600/40 bg-rose-950/30 text-rose-300'
-                          : 'border-rose-200 bg-rose-50 text-rose-700'
-                      }`}
-                      title="Hapus Pesanan"
-                      aria-label="Hapus"
-                    >
-                      <Trash2 size={13} />
-                    </button>
-                  )}
-
-                  {/* Cetak Nota */}
-                  {onPrint && (
-                    <button
-                      type="button"
-                      onClick={() => onPrint(order)}
-                      className={`h-8 w-8 rounded-xl border flex items-center justify-center transition active:scale-95 cursor-pointer shadow-2xs ${
-                        isDark
-                          ? 'border-red-600/40 bg-red-950/40 text-red-300'
-                          : 'border-red-200 bg-red-50 text-red-700'
-                      }`}
-                      title="Cetak Nota / Slip Dapur"
-                      aria-label="Cetak Nota"
-                    >
-                      <Printer size={13} />
-                    </button>
-                  )}
-
-                  {/* Invoice WA */}
-                  <a
-                    href={invoiceUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={`h-8 w-8 rounded-xl border flex items-center justify-center transition active:scale-95 shadow-2xs ${
-                      isDark
-                        ? 'border-emerald-600/40 bg-emerald-950/40 text-emerald-300'
-                        : 'border-emerald-200 bg-emerald-50 text-emerald-700'
-                    }`}
-                    title="Kirim Invoice WhatsApp"
-                    aria-label="Invoice WA"
-                  >
-                    <Receipt size={13} />
-                  </a>
-
-                  {/* Link Testimoni */}
-                  {order.status === 'completed' && (
-                    <a
-                      href={getWhatsAppTestimonialUrl(order)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={`h-8 w-8 rounded-xl border flex items-center justify-center transition active:scale-95 shadow-2xs ${
-                        isDark
-                          ? 'border-amber-500/40 bg-amber-950/40 text-amber-400'
-                          : 'border-amber-200 bg-amber-50 text-amber-600'
-                      }`}
-                      title="Kirim Link Testimoni WhatsApp"
-                      aria-label="Link Testimoni"
-                    >
-                      <Star size={13} className="fill-amber-400 text-amber-500" />
-                    </a>
-                  )}
-                </div>
+                <PaymentStatusBadge
+                  status={order.payment_status}
+                  paidAmount={order.paid_amount}
+                  paymentMethod={order.payment_method}
+                  compact
+                />
               </div>
 
-              {/* Quick Status Dropdown on Mobile */}
+              {/* Mobile Actions Grid (Comfortable 40px touch targets) */}
+              <div className="grid grid-cols-4 gap-1.5 pt-1">
+                <button
+                  type="button"
+                  onClick={() => onView(order)}
+                  className={`flex flex-col items-center justify-center py-2 rounded-xl border text-[10px] font-semibold transition active:scale-95 ${
+                    isDark
+                      ? 'border-[#382321] bg-[#241715] text-stone-200 hover:bg-[#2F1F1D]'
+                      : 'border-stone-200 bg-white text-stone-700 hover:bg-stone-50 shadow-2xs'
+                  }`}
+                  title="Lihat Detail Pesanan"
+                >
+                  <Eye size={14} className="mb-0.5" />
+                  <span>Detail</span>
+                </button>
+
+                {onPrint && (
+                  <button
+                    type="button"
+                    onClick={() => onPrint(order)}
+                    className={`flex flex-col items-center justify-center py-2 rounded-xl border text-[10px] font-semibold transition active:scale-95 ${
+                      isDark
+                        ? 'border-[#4A201B] bg-[#261311] text-red-300'
+                        : 'border-red-200 bg-red-50 text-red-700 shadow-2xs'
+                    }`}
+                    title="Cetak Nota / Slip Dapur"
+                  >
+                    <Printer size={14} className="mb-0.5" />
+                    <span>Cetak</span>
+                  </button>
+                )}
+
+                <a
+                  href={invoiceUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`flex flex-col items-center justify-center py-2 rounded-xl border text-[10px] font-semibold transition active:scale-95 ${
+                    isDark
+                      ? 'border-emerald-800/50 bg-emerald-950/30 text-emerald-400'
+                      : 'border-emerald-200 bg-emerald-50 text-emerald-700 shadow-2xs'
+                  }`}
+                  title="Kirim Invoice WhatsApp"
+                >
+                  <Receipt size={14} className="mb-0.5" />
+                  <span>Invoice</span>
+                </a>
+
+                <Link
+                  to={`/admin/orders/${order.id}/edit`}
+                  className={`flex flex-col items-center justify-center py-2 rounded-xl border text-[10px] font-semibold transition active:scale-95 ${
+                    isDark
+                      ? 'border-amber-800/50 bg-amber-950/30 text-amber-300'
+                      : 'border-amber-200 bg-amber-50 text-amber-800 shadow-2xs'
+                  }`}
+                  title="Edit Pesanan"
+                >
+                  <Pencil size={13} className="mb-0.5" />
+                  <span>Edit</span>
+                </Link>
+              </div>
+
+              {/* Status Change Dropdown on Mobile */}
               <div className="pt-1">
                 <select
                   value={order.status}
@@ -736,13 +709,13 @@ export default function OrderTable({
                       e.target.value as OrderStatus,
                     )
                   }
-                  className={`block w-full rounded-lg border px-2.5 py-1.5 text-xs font-medium outline-none ${
+                  className={`block w-full rounded-xl border px-3 py-2 text-xs font-semibold outline-none transition ${
                     isDark
-                      ? 'border-[#60241E] bg-[#240E0C] text-stone-200 focus:border-[#F59E0B]'
-                      : 'border-stone-200 bg-stone-50 text-stone-800 focus:border-red-600'
+                      ? 'border-[#382321] bg-[#221514] text-stone-200 focus:border-[#F59E0B]'
+                      : 'border-stone-200 bg-stone-50 text-stone-800 focus:border-red-600 focus:bg-white'
                   }`}
                 >
-                  <option value="pending">Ubah Status: Menunggu</option>
+                  <option value="pending">Ubah Status: Menunggu Konfirmasi</option>
                   <option value="processing">Ubah Status: Diproses Dapur</option>
                   <option value="completed">Ubah Status: Selesai</option>
                   <option value="cancelled">Ubah Status: Dibatalkan</option>

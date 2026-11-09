@@ -594,24 +594,29 @@ Instagram: @pawonhara
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/70 backdrop-blur-xs animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/75 backdrop-blur-xs animate-in fade-in duration-200">
       <div
-        className={`w-full max-w-2xl max-h-[92vh] flex flex-col rounded-2xl sm:rounded-3xl border shadow-2xl overflow-hidden transition-all ${isDark
-          ? 'border-[#60241E] bg-[#1C0B09] text-stone-100'
-          : 'border-stone-200 bg-white text-stone-900'
-          }`}
+        className={`w-full max-w-2xl max-h-[92dvh] sm:max-h-[88dvh] flex flex-col rounded-2xl sm:rounded-3xl border shadow-2xl overflow-hidden transition-all ${
+          isDark
+            ? 'border-[#382321] bg-[#18100F] text-stone-100 shadow-black/80'
+            : 'border-stone-200 bg-white text-stone-900'
+        }`}
       >
         {/* Modal Header */}
-        <div className="flex items-center justify-between px-4 py-3 sm:px-5 sm:py-4 border-b border-stone-200 dark:border-[#60241E]/80 shrink-0">
+        <div
+          className={`flex items-center justify-between px-4 py-3 sm:px-5 sm:py-4 border-b shrink-0 ${
+            isDark ? 'border-[#382321] bg-[#140D0C]' : 'border-stone-200/80 bg-stone-50/80'
+          }`}
+        >
           <div className="flex items-center gap-2.5 min-w-0 flex-1 mr-2">
-            <div className="p-2 rounded-xl bg-red-600 text-white shadow-2xs shrink-0">
+            <div className="p-2 rounded-xl bg-gradient-to-br from-[#95271D] to-[#60241E] text-white shadow-2xs shrink-0">
               <Printer size={18} />
             </div>
             <div className="min-w-0 flex-1">
               <h3 className="text-sm sm:text-base font-extrabold tracking-tight truncate">
                 Cetak Nota & Slip Pesanan
               </h3>
-              <p className="text-[11px] sm:text-xs text-stone-400 truncate">
+              <p className={`text-[11px] sm:text-xs truncate ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
                 Order #{order.order_code} • {order.customers_name}
               </p>
             </div>
@@ -620,26 +625,40 @@ Instagram: @pawonhara
           <button
             type="button"
             onClick={onClose}
-            className={`p-2 rounded-full border transition cursor-pointer shrink-0 ${isDark
-              ? 'border-[#60241E] bg-[#240E0C] text-stone-400 hover:text-white'
-              : 'border-stone-200 bg-stone-50 text-stone-500 hover:text-stone-900'
-              }`}
+            className={`p-2 rounded-xl border transition cursor-pointer shrink-0 ${
+              isDark
+                ? 'border-[#382321] bg-[#1E1413] text-stone-400 hover:text-white hover:bg-[#281A18]'
+                : 'border-stone-200 bg-white text-stone-500 hover:text-stone-900 hover:bg-stone-50'
+            }`}
           >
             <X size={16} />
           </button>
         </div>
 
         {/* Control Toolbar (Template Switcher & Size Selector) */}
-        <div className="px-4 py-2.5 sm:px-5 sm:py-3 border-b border-stone-200/80 dark:border-[#60241E]/60 bg-stone-50/50 dark:bg-[#240E0C]/40 flex flex-wrap items-center justify-between gap-2 shrink-0">
+        <div
+          className={`px-4 py-2.5 sm:px-5 sm:py-3 border-b flex flex-wrap items-center justify-between gap-2 shrink-0 ${
+            isDark ? 'border-[#382321] bg-[#1A1110]' : 'border-stone-200/80 bg-stone-50'
+          }`}
+        >
           {/* Format Tabs */}
-          <div className="grid grid-cols-2 sm:flex items-center gap-1.5 p-1 rounded-xl border border-stone-200 dark:border-[#60241E] bg-white dark:bg-[#1C0B09] w-full sm:w-auto">
+          <div
+            className={`grid grid-cols-2 sm:flex items-center gap-1.5 p-1 rounded-xl border w-full sm:w-auto ${
+              isDark ? 'border-[#382321] bg-[#140D0C]' : 'border-stone-200 bg-white'
+            }`}
+          >
             <button
               type="button"
               onClick={() => setTemplate('kitchen')}
-              className={`flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer text-center ${template === 'kitchen'
-                ? 'bg-red-600 text-white shadow-xs'
-                : 'text-stone-500 hover:text-stone-900 dark:text-stone-400 dark:hover:text-white'
-                }`}
+              className={`flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer text-center ${
+                template === 'kitchen'
+                  ? isDark
+                    ? 'bg-gradient-to-r from-[#95271D] to-[#7D1E16] text-white shadow-xs'
+                    : 'bg-stone-900 text-white shadow-xs'
+                  : isDark
+                    ? 'text-stone-400 hover:text-white'
+                    : 'text-stone-500 hover:text-stone-900'
+              }`}
             >
               <ChefHat size={13} className="shrink-0" />
               <span className="truncate">Slip Dapur (Tiket Kerja)</span>
@@ -648,10 +667,15 @@ Instagram: @pawonhara
             <button
               type="button"
               onClick={() => setTemplate('invoice')}
-              className={`flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer text-center ${template === 'invoice'
-                ? 'bg-red-600 text-white shadow-xs'
-                : 'text-stone-500 hover:text-stone-900 dark:text-stone-400 dark:hover:text-white'
-                }`}
+              className={`flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer text-center ${
+                template === 'invoice'
+                  ? isDark
+                    ? 'bg-gradient-to-r from-[#95271D] to-[#7D1E16] text-white shadow-xs'
+                    : 'bg-stone-900 text-white shadow-xs'
+                  : isDark
+                    ? 'text-stone-400 hover:text-white'
+                    : 'text-stone-500 hover:text-stone-900'
+              }`}
             >
               <FileText size={13} className="shrink-0" />
               <span className="truncate">Invoice Resmi (A4)</span>
@@ -660,12 +684,13 @@ Instagram: @pawonhara
         </div>
 
         {/* Live Preview Paper Container */}
-        <div className="flex-1 overflow-y-auto p-3 sm:p-6 bg-stone-100 dark:bg-[#140605] overscroll-contain">
+        <div className="flex-1 overflow-y-auto p-3 sm:p-6 bg-stone-200/70 dark:bg-[#120B0A] overscroll-contain">
           <div
-            className={`mx-auto bg-white text-black shadow-lg border border-stone-300 rounded-lg p-4 sm:p-5 font-mono text-xs leading-relaxed select-text transition-all h-fit ${template === 'invoice'
-              ? 'w-full max-w-xl text-[11px] sm:text-[12px]'
-              : 'w-full max-w-[360px] text-[11px] sm:text-[12px]'
-              }`}
+            className={`mx-auto bg-white text-black shadow-xl border border-stone-300/80 rounded-xl p-4 sm:p-6 font-mono text-xs leading-relaxed select-text transition-all ${
+              template === 'invoice'
+                ? 'w-full max-w-xl text-[11px] sm:text-[12px]'
+                : 'w-full max-w-[360px] text-[11px] sm:text-[12px]'
+            }`}
             style={{
               fontFamily:
                 "'Courier New', Courier, Consolas, Monaco, monospace, sans-serif",
@@ -882,8 +907,12 @@ Instagram: @pawonhara
         </div>
 
         {/* Modal Actions Footer */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-4 py-3 sm:px-5 sm:py-4 border-t border-stone-200 dark:border-[#60241E]/80 shrink-0">
-          <div className="text-xs text-stone-400 hidden sm:block">
+        <div
+          className={`flex flex-col sm:flex-row items-center justify-between gap-3 px-4 py-3 sm:px-6 sm:py-3.5 border-t shrink-0 ${
+            isDark ? 'border-[#382321] bg-[#140D0C]' : 'border-stone-200/90 bg-stone-50/80'
+          }`}
+        >
+          <div className={`text-xs hidden sm:block ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
             {template === 'kitchen'
               ? 'Format Tiket Dapur • Dilengkapi Checkbox Porsi & Addon'
               : 'Format Invoice Resmi • Ukuran A4 dengan Tanda Tangan'}
@@ -893,10 +922,11 @@ Instagram: @pawonhara
             <button
               type="button"
               onClick={handleCopyText}
-              className={`inline-flex items-center justify-center gap-1.5 px-3 py-2.5 sm:py-2 rounded-xl border text-xs font-bold transition cursor-pointer text-center ${isDark
-                ? 'border-[#60241E] bg-[#240E0C] text-stone-300 hover:text-white hover:bg-[#2D120F]'
-                : 'border-stone-200 bg-white text-stone-700 hover:bg-stone-50'
-                }`}
+              className={`inline-flex items-center justify-center gap-1.5 px-3 py-2 sm:py-2 rounded-xl border text-xs font-semibold transition active:scale-95 cursor-pointer text-center ${
+                isDark
+                  ? 'border-[#382321] bg-[#1E1413] text-stone-200 hover:bg-[#281A18] hover:text-white'
+                  : 'border-stone-200 bg-white text-stone-700 hover:bg-stone-50'
+              }`}
               title="Salin teks struk untuk aplikasi printer bluetooth HP / WA"
             >
               {copied ? <Check size={14} className="text-emerald-500 shrink-0" /> : <Copy size={14} className="shrink-0" />}
@@ -906,7 +936,7 @@ Instagram: @pawonhara
             <button
               type="button"
               onClick={handlePrint}
-              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-700 hover:to-rose-800 text-white text-xs font-bold shadow-md shadow-red-950/20 transition active:scale-95 cursor-pointer text-center"
+              className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-[#95271D] to-[#7D1E16] hover:from-[#A82D22] hover:to-[#8E2219] text-white text-xs font-bold shadow-sm shadow-red-950/20 transition active:scale-95 cursor-pointer text-center"
             >
               <Printer size={15} className="shrink-0" />
               <span className="truncate">Cetak (Print)</span>

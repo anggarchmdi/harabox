@@ -3,6 +3,7 @@ import { useThemeStore } from '../../../stores/theme.store'
 
 interface OrderStatusBadgeProps {
   status: OrderStatus
+  className?: string
 }
 
 const statusConfig: Record<
@@ -11,54 +12,72 @@ const statusConfig: Record<
     label: string
     lightClass: string
     darkClass: string
+    dotClass: string
+    pulse?: boolean
   }
 > = {
   pending: {
-    label: 'Pending',
-    lightClass: 'bg-amber-50 text-amber-700 ring-amber-200',
-    darkClass: 'bg-amber-950/60 text-amber-400 ring-amber-700/60',
+    label: 'Menunggu',
+    lightClass: 'bg-amber-50 text-amber-800 border-amber-300/90 shadow-2xs',
+    darkClass: 'bg-amber-950/40 text-amber-300 border-amber-700/50',
+    dotClass: 'bg-amber-500',
+    pulse: true,
   },
 
   confirmed: {
-    label: 'Confirmed',
-    lightClass: 'bg-blue-50 text-blue-700 ring-blue-200',
-    darkClass: 'bg-blue-950/60 text-blue-400 ring-blue-700/60',
+    label: 'Dikonfirmasi',
+    lightClass: 'bg-blue-50 text-blue-800 border-blue-300/90 shadow-2xs',
+    darkClass: 'bg-blue-950/40 text-blue-300 border-blue-700/50',
+    dotClass: 'bg-blue-500',
   },
 
   processing: {
-    label: 'Processing',
-    lightClass: 'bg-violet-50 text-violet-700 ring-violet-200',
-    darkClass: 'bg-violet-950/60 text-violet-400 ring-violet-700/60',
+    label: 'Diproses Dapur',
+    lightClass: 'bg-orange-50 text-orange-800 border-orange-300/90 shadow-2xs',
+    darkClass: 'bg-orange-950/40 text-orange-300 border-orange-700/50',
+    dotClass: 'bg-orange-500',
+    pulse: true,
   },
 
   completed: {
-    label: 'Completed',
-    lightClass: 'bg-emerald-50 text-emerald-700 ring-emerald-200',
-    darkClass: 'bg-emerald-950/60 text-emerald-400 ring-emerald-700/60',
+    label: 'Selesai',
+    lightClass: 'bg-emerald-50 text-emerald-800 border-emerald-300/90 shadow-2xs',
+    darkClass: 'bg-emerald-950/40 text-emerald-300 border-emerald-700/50',
+    dotClass: 'bg-emerald-500',
   },
 
   cancelled: {
-    label: 'Cancelled',
-    lightClass: 'bg-red-50 text-red-700 ring-red-200',
-    darkClass: 'bg-red-950/60 text-red-400 ring-red-700/60',
+    label: 'Dibatalkan',
+    lightClass: 'bg-stone-100 text-stone-600 border-stone-300/80',
+    darkClass: 'bg-stone-900/60 text-stone-400 border-stone-700/50',
+    dotClass: 'bg-stone-400',
   },
 }
 
 export default function OrderStatusBadge({
   status,
+  className = '',
 }: OrderStatusBadgeProps) {
   const isDark = useThemeStore((state) => state.theme === 'dark')
   const config = statusConfig[status] || statusConfig.pending
 
   return (
     <span
-      className={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-bold ring-1 ${
+      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold border tracking-tight transition-all shrink-0 ${
         isDark ? config.darkClass : config.lightClass
-      }`}
+      } ${className}`}
     >
-      <span className="h-1.5 w-1.5 rounded-full bg-current" />
-
-      {config.label}
+      <span className="relative flex h-1.5 w-1.5">
+        {config.pulse && (
+          <span
+            className={`absolute inline-flex h-full w-full animate-ping rounded-full opacity-75 ${config.dotClass}`}
+          />
+        )}
+        <span
+          className={`relative inline-flex h-1.5 w-1.5 rounded-full ${config.dotClass}`}
+        />
+      </span>
+      <span>{config.label}</span>
     </span>
   )
 }

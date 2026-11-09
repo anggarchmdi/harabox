@@ -30,6 +30,7 @@ import { toast } from 'sonner'
 
 import type { Order, OrderStatus, PaymentStatus } from '../../types/orders'
 import { ordersService } from '../../services/orders.service'
+import { dashboardService } from '../../services/dashboard.service'
 import { useThemeStore } from '../../stores/theme.store'
 import OrderTable, {
   getWhatsAppInvoiceUrl,
@@ -45,74 +46,80 @@ import Pagination from '../../components/ui/Pagination'
 import useDebounce from '../../hooks/useDebounce'
 
 function formatDate(date: string) {
-  return new Intl.DateTimeFormat('id-ID', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-  }).format(new Date(date))
+  if (!date) return '-'
+  try {
+    return new Intl.DateTimeFormat('id-ID', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+    }).format(new Date(date))
+  } catch {
+    return date
+  }
 }
 
 function formatRupiah(value: string | number) {
-  return `Rp ${Number(value).toLocaleString('id-ID')}`
+  return `Rp ${Number(value || 0).toLocaleString('id-ID')}`
 }
 
 function OrderTableSkeleton({ isDark }: { isDark: boolean }) {
   return (
     <div
-      className={`overflow-hidden rounded-2xl border shadow-2xs ${
-        isDark ? 'border-[#60241E] bg-[#240E0C]' : 'border-stone-200/80 bg-white'
+      className={`overflow-hidden rounded-2xl border shadow-xs ${
+        isDark ? 'border-[#382321] bg-[#18100F]' : 'border-stone-200/90 bg-white'
       }`}
     >
       {/* Desktop Table Skeleton */}
-      <div className="hidden lg:block overflow-x-auto">
+      <div className="hidden md:block overflow-x-auto">
         <table className="w-full text-left">
           <thead
             className={`border-b text-[11px] font-bold uppercase tracking-wider ${
               isDark
-                ? 'border-[#60241E] bg-[#1C0B09] text-amber-200/60'
-                : 'border-stone-200/80 bg-stone-50/80 text-stone-400'
+                ? 'border-[#382321] bg-[#140D0C] text-stone-400'
+                : 'border-stone-200/90 bg-[#FAF8F5] text-stone-500'
             }`}
           >
             <tr>
-              <th className="px-5 py-3.5">ID & Tgl Pesan</th>
+              <th className="px-5 py-3.5">ID & Waktu Pesan</th>
               <th className="px-5 py-3.5">Pemesan</th>
-              <th className="px-5 py-3.5">Menu & Porsi</th>
-              <th className="px-5 py-3.5">Acara & Alamat</th>
+              <th className="px-5 py-3.5">Menu & Rincian</th>
+              <th className="px-5 py-3.5">Jadwal Acara & Lokasi</th>
               <th className="px-5 py-3.5">Total Tagihan</th>
               <th className="px-5 py-3.5">Status Pesanan</th>
               <th className="px-5 py-3.5 text-right">Aksi</th>
             </tr>
           </thead>
-          <tbody className={`divide-y ${isDark ? 'divide-[#60241E]/40' : 'divide-stone-100'}`}>
-            {Array.from({ length: 7 }).map((_, i) => (
+          <tbody className={`divide-y ${isDark ? 'divide-[#2A1816]' : 'divide-stone-100'}`}>
+            {Array.from({ length: 6 }).map((_, i) => (
               <tr key={i} className="animate-pulse">
                 <td className="px-5 py-4">
-                  <div className={`h-3.5 w-20 rounded ${isDark ? 'bg-[#2D120F]' : 'bg-stone-200'}`} />
-                  <div className={`mt-2 h-2.5 w-14 rounded ${isDark ? 'bg-[#2D120F]' : 'bg-stone-100'}`} />
+                  <div className={`h-3.5 w-24 rounded-md ${isDark ? 'bg-[#261715]' : 'bg-stone-200'}`} />
+                  <div className={`mt-2 h-2.5 w-16 rounded-md ${isDark ? 'bg-[#201312]' : 'bg-stone-100'}`} />
                 </td>
                 <td className="px-5 py-4">
-                  <div className={`h-3.5 w-28 rounded ${isDark ? 'bg-[#2D120F]' : 'bg-stone-200'}`} />
-                  <div className={`mt-2 h-2.5 w-20 rounded ${isDark ? 'bg-[#2D120F]' : 'bg-stone-100'}`} />
+                  <div className={`h-3.5 w-28 rounded-md ${isDark ? 'bg-[#261715]' : 'bg-stone-200'}`} />
+                  <div className={`mt-2 h-2.5 w-20 rounded-md ${isDark ? 'bg-[#201312]' : 'bg-stone-100'}`} />
                 </td>
                 <td className="px-5 py-4">
-                  <div className={`h-3.5 w-36 rounded ${isDark ? 'bg-[#2D120F]' : 'bg-stone-200'}`} />
-                  <div className={`mt-2 h-2.5 w-24 rounded ${isDark ? 'bg-[#2D120F]' : 'bg-stone-100'}`} />
+                  <div className={`h-3.5 w-36 rounded-md ${isDark ? 'bg-[#261715]' : 'bg-stone-200'}`} />
+                  <div className={`mt-2 h-2.5 w-24 rounded-md ${isDark ? 'bg-[#201312]' : 'bg-stone-100'}`} />
                 </td>
                 <td className="px-5 py-4">
-                  <div className={`h-3.5 w-24 rounded ${isDark ? 'bg-[#2D120F]' : 'bg-stone-200'}`} />
-                  <div className={`mt-2 h-2.5 w-32 rounded ${isDark ? 'bg-[#2D120F]' : 'bg-stone-100'}`} />
+                  <div className={`h-3.5 w-24 rounded-md ${isDark ? 'bg-[#261715]' : 'bg-stone-200'}`} />
+                  <div className={`mt-2 h-2.5 w-32 rounded-md ${isDark ? 'bg-[#201312]' : 'bg-stone-100'}`} />
                 </td>
                 <td className="px-5 py-4">
-                  <div className={`h-3.5 w-24 rounded ${isDark ? 'bg-[#2D120F]' : 'bg-stone-200'}`} />
-                  <div className={`mt-2 h-4 w-16 rounded-full ${isDark ? 'bg-[#2D120F]' : 'bg-stone-100'}`} />
+                  <div className={`h-3.5 w-24 rounded-md ${isDark ? 'bg-[#261715]' : 'bg-stone-200'}`} />
+                  <div className={`mt-2 h-4 w-16 rounded-full ${isDark ? 'bg-[#261715]' : 'bg-stone-100'}`} />
                 </td>
                 <td className="px-5 py-4">
-                  <div className={`h-6 w-28 rounded-full ${isDark ? 'bg-[#2D120F]' : 'bg-stone-200'}`} />
+                  <div className={`h-6 w-24 rounded-full ${isDark ? 'bg-[#261715]' : 'bg-stone-200'}`} />
                 </td>
                 <td className="px-5 py-4 text-right">
                   <div className="flex items-center justify-end gap-1.5">
-                    <div className={`h-7 w-7 rounded-lg ${isDark ? 'bg-[#2D120F]' : 'bg-stone-200'}`} />
-                    <div className={`h-7 w-7 rounded-lg ${isDark ? 'bg-[#2D120F]' : 'bg-stone-200'}`} />
+                    <div className={`h-8 w-8 rounded-xl ${isDark ? 'bg-[#261715]' : 'bg-stone-200'}`} />
+                    <div className={`h-8 w-8 rounded-xl ${isDark ? 'bg-[#261715]' : 'bg-stone-200'}`} />
+                    <div className={`h-8 w-8 rounded-xl ${isDark ? 'bg-[#261715]' : 'bg-stone-200'}`} />
                   </div>
                 </td>
               </tr>
@@ -122,18 +129,21 @@ function OrderTableSkeleton({ isDark }: { isDark: boolean }) {
       </div>
 
       {/* Mobile Card Skeletons */}
-      <div className="lg:hidden p-3 divide-y divide-stone-100 dark:divide-[#60241E]/40 space-y-3">
-        {Array.from({ length: 4 }).map((_, i) => (
+      <div className="md:hidden p-3 divide-y divide-stone-100 dark:divide-[#2A1816] space-y-3">
+        {Array.from({ length: 3 }).map((_, i) => (
           <div key={i} className="pt-3 first:pt-0 animate-pulse space-y-2.5">
             <div className="flex items-center justify-between">
-              <div className={`h-3.5 w-24 rounded ${isDark ? 'bg-[#2D120F]' : 'bg-stone-200'}`} />
-              <div className={`h-5 w-20 rounded-full ${isDark ? 'bg-[#2D120F]' : 'bg-stone-200'}`} />
+              <div className={`h-4 w-28 rounded-md ${isDark ? 'bg-[#261715]' : 'bg-stone-200'}`} />
+              <div className={`h-5 w-20 rounded-full ${isDark ? 'bg-[#261715]' : 'bg-stone-200'}`} />
             </div>
-            <div className={`h-3.5 w-40 rounded ${isDark ? 'bg-[#2D120F]' : 'bg-stone-200'}`} />
-            <div className={`h-3 w-32 rounded ${isDark ? 'bg-[#2D120F]' : 'bg-stone-100'}`} />
-            <div className="flex items-center justify-between pt-1">
-              <div className={`h-4 w-24 rounded ${isDark ? 'bg-[#2D120F]' : 'bg-stone-200'}`} />
-              <div className={`h-7 w-16 rounded-lg ${isDark ? 'bg-[#2D120F]' : 'bg-stone-200'}`} />
+            <div className={`h-3.5 w-40 rounded-md ${isDark ? 'bg-[#261715]' : 'bg-stone-200'}`} />
+            <div className={`h-3 w-32 rounded-md ${isDark ? 'bg-[#201312]' : 'bg-stone-100'}`} />
+            <div className="flex items-center justify-between pt-2">
+              <div className={`h-4 w-24 rounded-md ${isDark ? 'bg-[#261715]' : 'bg-stone-200'}`} />
+              <div className="flex gap-1.5">
+                <div className={`h-8 w-8 rounded-xl ${isDark ? 'bg-[#261715]' : 'bg-stone-200'}`} />
+                <div className={`h-8 w-8 rounded-xl ${isDark ? 'bg-[#261715]' : 'bg-stone-200'}`} />
+              </div>
             </div>
           </div>
         ))}
@@ -202,6 +212,13 @@ export default function AdminOrders() {
         payment_status: selectedPaymentStatus || undefined,
         search: debouncedSearch.trim() || undefined,
       }),
+  })
+
+  // Polling data dashboard untuk metrik operasional terpadu (cached di React Query)
+  const { data: dashboardData } = useQuery({
+    queryKey: ['dashboard'],
+    queryFn: dashboardService.get,
+    staleTime: 30_000,
   })
 
   const orders = data?.orders ?? []
@@ -313,404 +330,484 @@ export default function AdminOrders() {
     }
   }
 
+  const pendingCount =
+    dashboardData?.summary?.pending_orders ??
+    orders.filter((o) => o.status === 'pending').length
+
+  const todayOrdersCount = dashboardData?.summary?.orders_today ?? 0
+
   return (
     <>
       <PageLoader
         isLoading={isLoading}
-        text="Memuat Pesanan Katering Masuk..."
+        text="Memuat Pesanan Katering..."
         subtext="Sinkronisasi status dan rincian pesanan pelanggan"
         minDuration={400}
       />
       <div
-        className={`min-h-screen space-y-6 sm:space-y-8 p-4 sm:p-6 lg:p-8 pb-24 transition-colors duration-300 ${
+        className={`min-h-screen space-y-6 sm:space-y-7 p-4 sm:p-6 lg:p-8 pb-24 transition-colors duration-300 ${
           isDark ? 'text-stone-100' : 'text-stone-900'
         }`}
       >
-      {/* Header */}
-      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="flex h-2 w-2 rounded-full bg-red-600" />
-            <p className="text-xs font-bold uppercase tracking-wider text-red-600">
-              Catering Management
+        {/* Page Header */}
+        <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+          <div className="space-y-1.5">
+            <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-700 dark:text-amber-400">
+              <span className="flex h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse" />
+              <span className="text-[10px] font-bold uppercase tracking-wider">
+                Manajemen Katering • Operasional
+              </span>
+            </div>
+
+            <div className="flex flex-wrap items-baseline gap-2.5">
+              <h1
+                className={`text-2xl sm:text-3xl font-extrabold tracking-tight ${
+                  isDark ? 'text-white' : 'text-stone-950'
+                }`}
+              >
+                Pesanan Masuk
+              </h1>
+              <span
+                className={`text-xs font-semibold px-2.5 py-0.5 rounded-full border ${
+                  isDark
+                    ? 'bg-[#241715] text-stone-300 border-[#3D2522]'
+                    : 'bg-stone-100 text-stone-700 border-stone-200'
+                }`}
+              >
+                {pagination?.total ?? orders.length} pesanan
+              </span>
+            </div>
+
+            <p
+              className={`text-xs sm:text-sm max-w-2xl leading-relaxed ${
+                isDark ? 'text-stone-400' : 'text-stone-500'
+              }`}
+            >
+              Pantau seluruh alur transaksi katering, koordinasikan produksi dapur, dan kirim dokumen invoice resmi pelanggan.
             </p>
           </div>
-          <h1
-            className={`mt-1 text-2xl sm:text-3xl font-extrabold tracking-tight ${
-              isDark ? 'text-white' : 'text-stone-950'
-            }`}
-          >
-            Daftar Pesanan Masuk
-          </h1>
-          <p
-            className={`mt-1 text-xs sm:text-sm max-w-2xl ${
-              isDark ? 'text-amber-100/70' : 'text-stone-500'
-            }`}
-          >
-            Pantau pesanan katering, kirim invoice WhatsApp ke pemesan, serta perbarui status pengerjaan secara berkala.
-          </p>
+
+          {/* Action Buttons Group */}
+          <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
+            <Link
+              to="/admin/orders/create"
+              className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-[#95271D] to-[#7D1E16] hover:from-[#A82D22] hover:to-[#8E2219] text-white px-3.5 py-2 text-xs font-bold shadow-sm shadow-red-950/20 active:scale-95 transition cursor-pointer"
+            >
+              <Plus size={15} strokeWidth={2.5} />
+              <span>+ Buat Pesanan</span>
+            </Link>
+
+            <Link
+              to="/admin/orders/recap"
+              className={`inline-flex items-center justify-center gap-1.5 rounded-xl border px-3.5 py-2 text-xs font-semibold shadow-2xs transition active:scale-95 cursor-pointer ${
+                isDark
+                  ? 'border-[#3D2522] bg-[#241715] text-stone-200 hover:bg-[#2D1C1A]'
+                  : 'border-stone-200/90 bg-white text-stone-800 hover:bg-stone-50'
+              }`}
+            >
+              <FileSpreadsheet size={15} className="text-emerald-600 dark:text-emerald-400" />
+              <span>Rekap Pesanan</span>
+            </Link>
+
+            <button
+              type="button"
+              onClick={() => refetch()}
+              disabled={isFetching}
+              className={`inline-flex items-center justify-center gap-1.5 rounded-xl border p-2 sm:px-3 sm:py-2 text-xs font-semibold shadow-2xs transition disabled:opacity-50 active:scale-95 cursor-pointer ${
+                isDark
+                  ? 'border-[#3D2522] bg-[#241715] text-stone-300 hover:bg-[#2D1C1A]'
+                  : 'border-stone-200/90 bg-white text-stone-700 hover:bg-stone-50'
+              }`}
+              title="Segarkan data pesanan"
+            >
+              <RefreshCw
+                size={14}
+                className={isFetching ? 'animate-spin text-amber-500' : ''}
+              />
+              <span className="hidden sm:inline">Segarkan</span>
+            </button>
+          </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
-          <Link
-            to="/admin/orders/create"
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white px-3.5 py-2 text-xs font-bold shadow-md shadow-amber-950/20 transition cursor-pointer"
-          >
-            <Plus size={15} />
-            <span>+ Pesanan Manual / Offline</span>
-          </Link>
-
-          <Link
-            to="/admin/orders/recap"
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-700 hover:to-rose-800 text-white px-3.5 py-2 text-xs font-bold shadow-md shadow-red-950/20 transition cursor-pointer"
-          >
-            <FileSpreadsheet size={15} />
-            <span>Tarik Rekap Bulanan (Excel)</span>
-          </Link>
-
-          <button
-            type="button"
-            onClick={() => refetch()}
-            disabled={isFetching}
-            className={`inline-flex items-center justify-center gap-2 rounded-xl border px-3.5 py-2 text-xs font-semibold shadow-2xs transition disabled:opacity-50 cursor-pointer ${
+        {/* Operational KPI Summary Cards */}
+        <div className="grid gap-3.5 sm:grid-cols-3">
+          {/* Card 1: Total Orders */}
+          <div
+            onClick={() => {
+              setSelectedStatus('')
+              setSelectedPaymentStatus('')
+              setSearch('')
+              setPage(1)
+            }}
+            className={`rounded-2xl border p-4.5 shadow-xs transition-all cursor-pointer group ${
               isDark
-                ? 'border-[#60241E] bg-[#240E0C] text-stone-200 hover:bg-[#2D120F]'
-                : 'border-stone-200 bg-white text-stone-700 hover:bg-stone-50'
+                ? 'border-[#382321] bg-[#1C1312] hover:border-amber-600/40'
+                : 'border-stone-200/90 bg-white hover:border-amber-600/40'
             }`}
+            title="Klik untuk tampilkan semua pesanan"
           >
-            <RefreshCw
-              size={14}
-              className={isFetching ? 'animate-spin' : ''}
-            />
-            <span>Segarkan Data</span>
-          </button>
-        </div>
-      </div>
-
-      {/* Summary Stat Cards */}
-      <div className="grid gap-4 sm:grid-cols-3">
-        <div
-          className={`rounded-2xl border p-5 shadow-2xs ${
-            isDark
-              ? 'border-[#60241E]/80 bg-[#240E0C]'
-              : 'border-stone-200/90 bg-white'
-          }`}
-        >
-          <div className="flex items-center gap-3.5">
-            <div
-              className={`flex h-11 w-11 items-center justify-center rounded-xl ${
-                isDark ? 'bg-red-950/60 text-red-400' : 'bg-red-50 text-red-600'
-              }`}
-            >
-              <ShoppingBag size={20} />
-            </div>
-            <div>
-              <p
-                className={`text-xs font-medium ${
-                  isDark ? 'text-amber-200/60' : 'text-stone-400'
-                }`}
-              >
-                Total Pesanan
-              </p>
-              <p
-                className={`mt-0.5 text-2xl font-bold ${
-                  isDark ? 'text-white' : 'text-stone-900'
-                }`}
-              >
-                {pagination?.total ?? 0}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div
-          className={`rounded-2xl border p-5 shadow-2xs ${
-            isDark
-              ? 'border-[#60241E]/80 bg-[#240E0C]'
-              : 'border-stone-200/90 bg-white'
-          }`}
-        >
-          <div className="flex items-center gap-3.5">
-            <div
-              className={`flex h-11 w-11 items-center justify-center rounded-xl ${
-                isDark ? 'bg-amber-950/60 text-amber-400' : 'bg-amber-50 text-amber-600'
-              }`}
-            >
-              <Clock size={20} />
-            </div>
-            <div>
-              <p
-                className={`text-xs font-medium ${
-                  isDark ? 'text-amber-200/60' : 'text-stone-400'
-                }`}
-              >
-                Status Aktif
-              </p>
-              <p
-                className={`mt-0.5 text-sm font-bold capitalize ${
-                  isDark ? 'text-white' : 'text-stone-900'
-                }`}
-              >
-                {selectedStatus ? selectedStatus : 'Semua Pesanan'}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div
-          className={`rounded-2xl border p-5 shadow-2xs ${
-            isDark
-              ? 'border-[#60241E]/80 bg-[#240E0C]'
-              : 'border-stone-200/90 bg-white'
-          }`}
-        >
-          <div className="flex items-center gap-3.5">
-            <div
-              className={`flex h-11 w-11 items-center justify-center rounded-xl ${
-                isDark ? 'bg-emerald-950/60 text-emerald-400' : 'bg-emerald-50 text-emerald-600'
-              }`}
-            >
-              <PackageCheck size={20} />
-            </div>
-            <div>
-              <p
-                className={`text-xs font-medium ${
-                  isDark ? 'text-amber-200/60' : 'text-stone-400'
-                }`}
-              >
-                Halaman Saat Ini
-              </p>
-              <p
-                className={`mt-0.5 text-2xl font-bold ${
-                  isDark ? 'text-white' : 'text-stone-900'
-                }`}
-              >
-                {pagination?.current_page ?? 1}{' '}
-                <span
-                  className={`text-xs font-normal ${
-                    isDark ? 'text-amber-200/50' : 'text-stone-400'
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div
+                  className={`flex h-10 w-10 items-center justify-center rounded-xl transition ${
+                    isDark
+                      ? 'bg-[#291A18] text-amber-400 group-hover:bg-[#34221F]'
+                      : 'bg-stone-100 text-stone-700 group-hover:bg-amber-50 group-hover:text-amber-700'
                   }`}
                 >
-                  / {pagination?.last_page ?? 1}
-                </span>
-              </p>
+                  <ShoppingBag size={18} />
+                </div>
+                <div>
+                  <p className={`text-xs font-medium ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
+                    Total Pesanan Masuk
+                  </p>
+                  <p className={`text-xl font-bold font-mono tracking-tight ${isDark ? 'text-white' : 'text-stone-900'}`}>
+                    {pagination?.total ?? orders.length}
+                  </p>
+                </div>
+              </div>
+              <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${isDark ? 'bg-[#261513] text-stone-400' : 'bg-stone-100 text-stone-500'}`}>
+                Semua
+              </span>
+            </div>
+          </div>
+
+          {/* Card 2: Menunggu Konfirmasi */}
+          <div
+            onClick={() => {
+              setSelectedStatus('pending')
+              setPage(1)
+            }}
+            className={`rounded-2xl border p-4.5 shadow-xs transition-all cursor-pointer group ${
+              selectedStatus === 'pending'
+                ? isDark
+                  ? 'border-amber-600/70 bg-[#241715] ring-1 ring-amber-500/20'
+                  : 'border-amber-400 bg-amber-50/40 ring-1 ring-amber-400/30'
+                : isDark
+                  ? 'border-[#382321] bg-[#1C1312] hover:border-amber-600/40'
+                  : 'border-stone-200/90 bg-white hover:border-amber-600/40'
+            }`}
+            title="Klik untuk filter pesanan yang menunggu konfirmasi"
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div
+                  className={`flex h-10 w-10 items-center justify-center rounded-xl transition ${
+                    isDark
+                      ? 'bg-amber-950/40 text-amber-400 group-hover:bg-amber-900/40'
+                      : 'bg-amber-50 text-amber-700 group-hover:bg-amber-100'
+                  }`}
+                >
+                  <Clock size={18} />
+                </div>
+                <div>
+                  <p className={`text-xs font-medium ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
+                    Perlu Konfirmasi
+                  </p>
+                  <p className={`text-xl font-bold font-mono tracking-tight ${isDark ? 'text-amber-300' : 'text-amber-800'}`}>
+                    {pendingCount}
+                  </p>
+                </div>
+              </div>
+              <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
+                pendingCount > 0
+                  ? 'bg-amber-500 text-white font-bold animate-pulse'
+                  : isDark ? 'bg-[#261513] text-stone-400' : 'bg-stone-100 text-stone-500'
+              }`}>
+                Menunggu
+              </span>
+            </div>
+          </div>
+
+          {/* Card 3: Pesanan Hari Ini */}
+          <div
+            className={`rounded-2xl border p-4.5 shadow-xs transition-all ${
+              isDark
+                ? 'border-[#382321] bg-[#1C1312]'
+                : 'border-stone-200/90 bg-white'
+            }`}
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div
+                  className={`flex h-10 w-10 items-center justify-center rounded-xl ${
+                    isDark
+                      ? 'bg-emerald-950/40 text-emerald-400'
+                      : 'bg-emerald-50 text-emerald-700'
+                  }`}
+                >
+                  <Calendar size={18} />
+                </div>
+                <div>
+                  <p className={`text-xs font-medium ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
+                    Pesanan Hari Ini
+                  </p>
+                  <p className={`text-xl font-bold font-mono tracking-tight ${isDark ? 'text-emerald-300' : 'text-emerald-800'}`}>
+                    {todayOrdersCount}
+                  </p>
+                </div>
+              </div>
+              <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${isDark ? 'bg-emerald-950/40 text-emerald-400 border border-emerald-800/50' : 'bg-emerald-50 text-emerald-700 border border-emerald-200'}`}>
+                Hari Ini
+              </span>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Filter & Search Bar */}
-      <div
-        className={`rounded-2xl border p-4 shadow-2xs space-y-3 ${
-          isDark
-            ? 'border-[#60241E]/80 bg-[#240E0C]'
-            : 'border-stone-200/90 bg-white'
-        }`}
-      >
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          {/* Status Tabs (No Emojis!) */}
-          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
-            {[
-              { label: 'Semua', value: '', icon: LayoutGrid },
-              { label: 'Menunggu', value: 'pending', icon: Clock },
-              { label: 'Diproses', value: 'processing', icon: ChefHat },
-              { label: 'Selesai', value: 'completed', icon: CheckCircle2 },
-              { label: 'Dibatalkan', value: 'cancelled', icon: XCircle },
-            ].map((tab) => {
-              const TabIcon = tab.icon
-              const isActive = selectedStatus === tab.value
+        {/* Unified Control & Filter Toolbar */}
+        <div
+          className={`rounded-2xl border p-3.5 sm:p-4 shadow-xs space-y-3 transition-all ${
+            isDark
+              ? 'border-[#382321] bg-[#18100F]'
+              : 'border-stone-200/90 bg-white'
+          }`}
+        >
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+            {/* Status Tabs Segmented Control */}
+            <div className="flex items-center gap-1 overflow-x-auto pb-1 lg:pb-0 scrollbar-none">
+              {[
+                { label: 'Semua', value: '', icon: LayoutGrid },
+                { label: 'Menunggu', value: 'pending', icon: Clock, count: pendingCount },
+                { label: 'Diproses Dapur', value: 'processing', icon: ChefHat },
+                { label: 'Selesai', value: 'completed', icon: CheckCircle2 },
+                { label: 'Dibatalkan', value: 'cancelled', icon: XCircle },
+              ].map((tab) => {
+                const TabIcon = tab.icon
+                const isActive = selectedStatus === tab.value
 
-              return (
+                return (
+                  <button
+                    key={tab.value}
+                    type="button"
+                    onClick={() => {
+                      setSelectedStatus(tab.value as OrderStatus | '')
+                      setPage(1)
+                    }}
+                    className={`inline-flex items-center gap-1.5 shrink-0 rounded-xl px-3 py-2 text-xs font-semibold transition active:scale-95 cursor-pointer ${
+                      isActive
+                        ? isDark
+                          ? 'bg-gradient-to-r from-[#95271D] to-[#7D1E16] text-white shadow-sm border border-[#F59E0B]/30'
+                          : 'bg-stone-900 text-white shadow-xs'
+                        : isDark
+                          ? 'text-stone-300 hover:bg-[#251715] hover:text-white'
+                          : 'text-stone-600 hover:bg-stone-100 hover:text-stone-900'
+                    }`}
+                  >
+                    <TabIcon
+                      size={13}
+                      className={
+                        isActive
+                          ? 'text-white'
+                          : isDark
+                            ? 'text-stone-400'
+                            : 'text-stone-400'
+                      }
+                    />
+                    <span>{tab.label}</span>
+                    {tab.count !== undefined && tab.count > 0 && (
+                      <span
+                        className={`ml-0.5 rounded-full px-1.5 py-0.2 text-[10px] font-bold ${
+                          isActive
+                            ? 'bg-amber-400 text-stone-950'
+                            : isDark
+                              ? 'bg-amber-950/60 text-amber-300 border border-amber-800/60'
+                              : 'bg-amber-100 text-amber-800'
+                        }`}
+                      >
+                        {tab.count}
+                      </span>
+                    )}
+                  </button>
+                )
+              })}
+            </div>
+
+            {/* Search Input Box */}
+            <div className="relative w-full lg:w-80">
+              <Search
+                size={14}
+                className={`pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 ${
+                  isDark ? 'text-stone-400' : 'text-stone-400'
+                }`}
+              />
+              <input
+                type="text"
+                placeholder="Cari kode order, nama pemesan, no. WA..."
+                value={search}
+                onChange={(e) => {
+                  setSearch(e.target.value)
+                  setPage(1)
+                }}
+                className={`h-9 w-full rounded-xl border pl-9 pr-8 text-xs font-medium outline-none transition ${
+                  isDark
+                    ? 'border-[#382321] bg-[#1F1413] text-white placeholder:text-stone-500 focus:border-[#F59E0B] focus:ring-1 focus:ring-[#F59E0B]/20'
+                    : 'border-stone-200 bg-stone-50/70 text-stone-900 placeholder:text-stone-400 focus:border-red-600 focus:bg-white focus:ring-1 focus:ring-red-600/20'
+                }`}
+              />
+              {search && (
                 <button
-                  key={tab.value}
+                  type="button"
+                  onClick={() => setSearch('')}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-200 cursor-pointer"
+                  title="Hapus pencarian"
+                >
+                  <X size={13} />
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Secondary Filter: Payment Status & Reset Button */}
+          <div
+            className={`flex flex-wrap items-center justify-between gap-2 pt-2.5 border-t text-xs ${
+              isDark ? 'border-[#2D1B19]' : 'border-stone-100'
+            }`}
+          >
+            <div className="flex flex-wrap items-center gap-1.5">
+              <span
+                className={`text-[11px] font-bold uppercase tracking-wider mr-1 flex items-center gap-1 ${
+                  isDark ? 'text-stone-400' : 'text-stone-400'
+                }`}
+              >
+                <Coins size={12} /> Status Bayar:
+              </span>
+              {[
+                { label: 'Semua', value: '' },
+                { label: 'Belum Bayar', value: 'unpaid' },
+                { label: 'DP Masuk', value: 'dp' },
+                { label: 'Lunas', value: 'paid' },
+              ].map((item) => (
+                <button
+                  key={item.value}
                   type="button"
                   onClick={() => {
-                    setSelectedStatus(tab.value as OrderStatus | '')
+                    setSelectedPaymentStatus(item.value as PaymentStatus | '')
                     setPage(1)
                   }}
-                  className={`inline-flex items-center gap-1.5 shrink-0 rounded-lg px-3 py-1.5 text-xs font-semibold transition cursor-pointer ${
-                    isActive
+                  className={`px-2.5 py-1 rounded-lg text-xs font-medium transition cursor-pointer ${
+                    selectedPaymentStatus === item.value
                       ? isDark
-                        ? 'bg-gradient-to-r from-[#95271D] to-[#60241E] text-white shadow-md border border-[#F59E0B]/30'
-                        : 'bg-stone-900 text-white shadow-2xs'
+                        ? 'bg-emerald-950/60 text-emerald-300 border border-emerald-700/60 font-semibold'
+                        : 'bg-emerald-50 text-emerald-800 border border-emerald-300 font-semibold shadow-2xs'
                       : isDark
-                        ? 'bg-[#1C0B09] text-stone-300 hover:bg-[#2D120F] border border-[#60241E]'
-                        : 'bg-stone-50 text-stone-600 hover:bg-stone-100 hover:text-stone-950 border border-stone-200/80'
+                        ? 'bg-[#1F1413] text-stone-300 hover:bg-[#2A1B19] border border-[#382321]'
+                        : 'bg-stone-50 text-stone-600 hover:bg-stone-100 border border-stone-200/80'
                   }`}
                 >
-                  <TabIcon
-                    size={13}
-                    className={
-                      isActive
-                        ? 'text-white'
-                        : isDark
-                          ? 'text-amber-200/60'
-                          : 'text-stone-400'
-                    }
-                  />
-                  <span>{tab.label}</span>
+                  {item.label}
                 </button>
-              )
-            })}
-          </div>
+              ))}
+            </div>
 
-          {/* Search Input */}
-          <div className="relative w-full sm:w-72">
-            <Search
-              size={14}
-              className={`pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 ${
-                isDark ? 'text-amber-200/60' : 'text-stone-400'
-              }`}
-            />
-            <input
-              type="text"
-              placeholder="Cari kode order / nama / WA..."
-              value={search}
-              onChange={(e) => {
-                setSearch(e.target.value)
-                setPage(1)
-              }}
-              className={`h-10 w-full rounded-xl border pl-9 pr-8 text-xs font-medium outline-none transition ${
-                isDark
-                  ? 'border-[#60241E] bg-[#1C0B09] text-white placeholder:text-stone-500 focus:border-[#F59E0B] focus:ring-1 focus:ring-[#F59E0B]/30'
-                  : 'border-stone-200 bg-stone-50/70 text-stone-900 placeholder:text-stone-400 focus:border-red-600 focus:bg-white focus:ring-1 focus:ring-red-600'
-              }`}
-            />
-            {search && (
+            {/* Quick Clear Filter Button */}
+            {(Boolean(selectedStatus) || Boolean(selectedPaymentStatus) || Boolean(search)) && (
               <button
                 type="button"
-                onClick={() => setSearch('')}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-200"
+                onClick={() => {
+                  setSelectedStatus('')
+                  setSelectedPaymentStatus('')
+                  setSearch('')
+                  setPage(1)
+                }}
+                className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold transition cursor-pointer ${
+                  isDark
+                    ? 'bg-rose-950/30 text-rose-300 hover:bg-rose-950/50 border border-rose-800/40'
+                    : 'bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200'
+                }`}
+                title="Reset seluruh filter pencarian"
               >
-                <X size={13} />
+                <X size={12} />
+                <span>Reset Filter</span>
               </button>
             )}
           </div>
         </div>
 
-        {/* Secondary Filter: Payment Status */}
-        <div
-          className={`flex flex-wrap items-center gap-1.5 pt-2.5 border-t text-xs ${
-            isDark ? 'border-[#60241E]/60' : 'border-stone-100'
-          }`}
-        >
-          <span
-            className={`text-[11px] font-bold uppercase tracking-wider mr-1 flex items-center gap-1 ${
-              isDark ? 'text-amber-200/60' : 'text-stone-400'
+        {/* Orders Table & Mobile Cards */}
+        {isLoading ? (
+          <OrderTableSkeleton isDark={isDark} />
+        ) : isError ? (
+          <div
+            className={`rounded-2xl border p-8 text-center shadow-xs ${
+              isDark
+                ? 'border-red-900/60 bg-[#1C1211]'
+                : 'border-red-200 bg-white'
             }`}
           >
-            <Coins size={12} /> Status Bayar:
-          </span>
-          {[
-            { label: 'Semua Status Bayar', value: '' },
-            { label: 'Belum Bayar', value: 'unpaid' },
-            { label: 'DP Masuk', value: 'dp' },
-            { label: 'Lunas', value: 'paid' },
-          ].map((item) => (
+            <p className="text-sm font-bold text-red-500">Gagal memuat data pesanan.</p>
             <button
-              key={item.value}
               type="button"
-              onClick={() => {
-                setSelectedPaymentStatus(item.value as PaymentStatus | '')
-                setPage(1)
-              }}
-              className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition cursor-pointer ${
-                selectedPaymentStatus === item.value
-                  ? 'bg-emerald-700 text-white shadow-2xs'
-                  : isDark
-                    ? 'bg-[#1C0B09] text-stone-300 hover:bg-[#2D120F] border border-[#60241E]'
-                    : 'bg-stone-50 text-stone-600 hover:bg-stone-100 border border-stone-200/80'
+              onClick={() => refetch()}
+              className={`mt-3 inline-flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-semibold shadow-xs ${
+                isDark
+                  ? 'bg-stone-800 text-white hover:bg-stone-700'
+                  : 'bg-stone-900 text-white hover:bg-stone-800'
               }`}
             >
-              {item.label}
+              Coba Lagi
             </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Orders Table & Mobile Cards */}
-      {isLoading ? (
-        <OrderTableSkeleton isDark={isDark} />
-      ) : isError ? (
-        <div
-          className={`rounded-2xl border p-8 text-center shadow-2xs ${
-            isDark
-              ? 'border-red-900/60 bg-[#240E0C]'
-              : 'border-red-200 bg-white'
-          }`}
-        >
-          <p className="text-sm font-bold text-red-500">Gagal memuat data pesanan.</p>
-          <button
-            type="button"
-            onClick={() => refetch()}
-            className={`mt-3 inline-flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-semibold shadow-xs ${
-              isDark
-                ? 'bg-stone-800 text-white hover:bg-stone-700'
-                : 'bg-stone-900 text-white hover:bg-stone-800'
-            }`}
-          >
-            Coba Lagi
-          </button>
-        </div>
-      ) : (
-        <>
-          <OrderTable
-            orders={orders}
-            onView={(order) => setSelectedOrder(order)}
-            onPrint={(order) => setPrintingOrder(order)}
-            onDelete={setOrderToDelete}
-            onStatusUpdated={() => refetch()}
-          />
-
-          {/* Pagination Controls */}
-          {pagination && (
-            <Pagination
-              currentPage={pagination.current_page}
-              lastPage={pagination.last_page}
-              total={pagination.total}
-              onPageChange={setPage}
-              itemName="pesanan masuk"
-              className="rounded-2xl mt-4"
+          </div>
+        ) : (
+          <>
+            <OrderTable
+              orders={orders}
+              onView={(order) => setSelectedOrder(order)}
+              onPrint={(order) => setPrintingOrder(order)}
+              onDelete={setOrderToDelete}
+              onStatusUpdated={() => refetch()}
             />
-          )}
-        </>
-      )}
+
+            {/* Pagination Controls */}
+            {pagination && (
+              <Pagination
+                currentPage={pagination.current_page}
+                lastPage={pagination.last_page}
+                total={pagination.total}
+                onPageChange={setPage}
+                itemName="pesanan masuk"
+                className="rounded-2xl mt-4"
+              />
+            )}
+          </>
+        )}
 
       {/* =====================================================
           ORDER DETAIL & INVOICE MODAL
       ====================================================== */}
       {selectedOrder && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-stone-950/70 backdrop-blur-xs transition-opacity">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-stone-950/75 backdrop-blur-xs transition-opacity animate-in fade-in duration-200">
           <div
-            className={`relative w-full max-w-2xl max-h-[92vh] flex flex-col overflow-hidden rounded-2xl sm:rounded-3xl border shadow-2xl ${
+            className={`relative w-full max-w-2xl max-h-[92dvh] sm:max-h-[88dvh] flex flex-col overflow-hidden rounded-2xl sm:rounded-3xl border shadow-2xl transition-all ${
               isDark
-                ? 'border-[#60241E] bg-[#240E0C] text-white shadow-black/80'
-                : 'border-stone-200 bg-white text-stone-900'
+                ? 'border-[#382321] bg-[#18100F] text-stone-100 shadow-black/80'
+                : 'border-stone-200/90 bg-white text-stone-900 shadow-stone-900/10'
             }`}
           >
             {/* Modal Header */}
             <div
               className={`flex items-center justify-between border-b px-4 py-3 sm:px-6 sm:py-4 shrink-0 ${
-                isDark ? 'border-[#60241E]/60 bg-[#1C0B09]' : 'border-stone-100 bg-stone-50'
+                isDark ? 'border-[#382321] bg-[#140D0C]' : 'border-stone-200/80 bg-[#FAF8F5]'
               }`}
             >
-              <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1 mr-2">
+              <div className="flex items-center gap-3 min-w-0 flex-1 mr-2">
                 <div
-                  className={`flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl shadow-xs ${
-                    isDark ? 'bg-[#2D120F] text-amber-400 border border-[#60241E]' : 'bg-stone-900 text-white'
+                  className={`flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl ${
+                    isDark
+                      ? 'bg-gradient-to-br from-[#95271D] to-[#60241E] text-amber-300 shadow-xs'
+                      : 'bg-stone-900 text-white shadow-xs'
                   }`}
                 >
                   <Receipt size={18} />
                 </div>
                 <div className="min-w-0 flex-1">
                   <h3
-                    className={`font-bold text-sm sm:text-base truncate ${
-                      isDark ? 'text-white' : 'text-stone-900'
+                    className={`font-mono font-bold text-sm sm:text-base tracking-tight truncate ${
+                      isDark ? 'text-white' : 'text-stone-950'
                     }`}
                   >
                     Detail: {selectedOrder.order_code}
                   </h3>
-                  <p className={`text-[11px] sm:text-xs truncate ${isDark ? 'text-amber-200/50' : 'text-stone-400'}`}>
+                  <p className={`text-[11px] sm:text-xs truncate ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
                     Masuk pada {formatDate(selectedOrder.created_at)}
                   </p>
                 </div>
@@ -719,14 +816,14 @@ export default function AdminOrders() {
               <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
                 <Link
                   to={`/admin/orders/${selectedOrder.id}/edit`}
-                  className={`inline-flex items-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-xl border text-xs font-semibold transition cursor-pointer ${
+                  className={`inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl border text-xs font-semibold transition active:scale-95 cursor-pointer ${
                     isDark
-                      ? 'border-amber-600/50 bg-amber-950/40 text-amber-300 hover:bg-amber-900/60'
-                      : 'border-amber-200 bg-amber-50 text-amber-800 hover:bg-amber-100'
+                      ? 'border-[#382321] bg-[#1E1413] text-stone-200 hover:bg-[#281A18] hover:text-white'
+                      : 'border-stone-200 bg-white text-stone-700 hover:bg-stone-50'
                   }`}
                   title="Buka halaman edit lengkap pesanan"
                 >
-                  <Pencil size={13} />
+                  <Pencil size={13} className="text-amber-500" />
                   <span className="hidden sm:inline">Edit Pesanan</span>
                   <span className="sm:hidden">Edit</span>
                 </Link>
@@ -734,9 +831,9 @@ export default function AdminOrders() {
                 <button
                   type="button"
                   onClick={() => setOrderToDelete(selectedOrder)}
-                  className={`inline-flex items-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-xl border text-xs font-semibold transition cursor-pointer ${
+                  className={`inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl border text-xs font-semibold transition active:scale-95 cursor-pointer ${
                     isDark
-                      ? 'border-rose-600/50 bg-rose-950/40 text-rose-300 hover:bg-rose-900/60'
+                      ? 'border-rose-800/40 bg-rose-950/20 text-rose-300 hover:bg-rose-950/40'
                       : 'border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100'
                   }`}
                   title="Hapus pesanan ini secara permanen"
@@ -748,11 +845,12 @@ export default function AdminOrders() {
                 <button
                   type="button"
                   onClick={() => setSelectedOrder(null)}
-                  className={`rounded-lg p-1.5 transition cursor-pointer shrink-0 ${
+                  className={`rounded-xl p-1.5 transition active:scale-95 cursor-pointer shrink-0 ${
                     isDark
-                      ? 'text-stone-400 hover:bg-[#2D120F] hover:text-stone-200'
-                      : 'text-stone-400 hover:bg-stone-200 hover:text-stone-700'
+                      ? 'text-stone-400 hover:bg-[#241715] hover:text-stone-200'
+                      : 'text-stone-400 hover:bg-stone-100 hover:text-stone-700'
                   }`}
+                  title="Tutup jendela rincian"
                 >
                   <X size={18} />
                 </button>
@@ -763,19 +861,19 @@ export default function AdminOrders() {
             <div className="flex-1 overflow-y-auto min-h-0 p-4 sm:p-6 space-y-4 sm:space-y-5 overscroll-contain">
               {/* Status Row & Changer */}
               <div
-                className={`rounded-xl border p-3.5 sm:p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 ${
-                  isDark ? 'border-[#60241E]/80 bg-[#1C0B09]/70' : 'border-stone-200 bg-stone-50/70'
+                className={`rounded-2xl border p-3.5 sm:p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 ${
+                  isDark ? 'border-[#382321] bg-[#140D0C]' : 'border-stone-200/90 bg-[#FAF8F5]'
                 }`}
               >
                 <div>
                   <p
-                    className={`text-[10px] font-bold uppercase tracking-wider mb-1 ${
-                      isDark ? 'text-amber-200/60' : 'text-stone-400'
+                    className={`text-[10px] font-bold uppercase tracking-wider mb-1.5 ${
+                      isDark ? 'text-stone-400' : 'text-stone-400'
                     }`}
                   >
                     Status Pesanan Saat Ini
                   </p>
-                  <div className="mt-1">
+                  <div>
                     <OrderStatusBadge status={selectedOrder.status} />
                   </div>
                 </div>
@@ -784,7 +882,7 @@ export default function AdminOrders() {
                 <div>
                   <p
                     className={`text-[10px] font-bold uppercase tracking-wider mb-1.5 ${
-                      isDark ? 'text-amber-200/60' : 'text-stone-400'
+                      isDark ? 'text-stone-400' : 'text-stone-400'
                     }`}
                   >
                     Ubah Status Cepat:
@@ -803,13 +901,13 @@ export default function AdminOrders() {
                         onClick={() =>
                           handleUpdateStatus(st.status as OrderStatus)
                         }
-                        className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer text-center ${
+                        className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition cursor-pointer text-center active:scale-95 ${
                           selectedOrder.status === st.status
                             ? isDark
-                              ? 'bg-gradient-to-r from-[#95271D] to-[#60241E] text-white shadow-md border border-[#F59E0B]/30'
-                              : 'bg-stone-900 text-white shadow-2xs'
+                              ? 'bg-gradient-to-r from-[#95271D] to-[#7D1E16] text-white shadow-xs border border-[#F59E0B]/30'
+                              : 'bg-stone-900 text-white shadow-xs'
                             : isDark
-                              ? 'bg-[#240E0C] border border-[#60241E] text-stone-300 hover:bg-[#2D120F]'
+                              ? 'bg-[#1E1413] border border-[#382321] text-stone-300 hover:bg-[#281A18] hover:text-white'
                               : 'bg-white border border-stone-200 text-stone-700 hover:bg-stone-100'
                         } disabled:opacity-50`}
                       >
@@ -822,19 +920,19 @@ export default function AdminOrders() {
 
               {/* Financial & Payment Tracking Card */}
               <div
-                className={`rounded-2xl border p-3.5 sm:p-4.5 shadow-2xs space-y-4 ${
-                  isDark ? 'border-[#60241E]/80 bg-[#1C0B09]' : 'border-stone-200 bg-white'
+                className={`rounded-2xl border p-3.5 sm:p-5 shadow-2xs space-y-4 ${
+                  isDark ? 'border-[#382321] bg-[#140D0C]' : 'border-stone-200/90 bg-[#FAF8F5]'
                 }`}
               >
                 <div
-                  className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b pb-3 ${
-                    isDark ? 'border-[#60241E]/60' : 'border-stone-100'
+                  className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5 border-b pb-3.5 ${
+                    isDark ? 'border-[#2D1B19]' : 'border-stone-200/70'
                   }`}
                 >
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2.5">
                     <div
-                      className={`flex h-8 w-8 items-center justify-center rounded-lg ${
-                        isDark ? 'bg-emerald-950/60 text-emerald-400' : 'bg-emerald-50 text-emerald-600'
+                      className={`flex h-8 w-8 items-center justify-center rounded-xl ${
+                        isDark ? 'bg-emerald-950/60 text-emerald-400 border border-emerald-800/40' : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
                       }`}
                     >
                       <Coins size={16} />
@@ -847,7 +945,7 @@ export default function AdminOrders() {
                       >
                         Catatan Keuangan & Pembayaran
                       </h4>
-                      <p className={`text-[11px] ${isDark ? 'text-amber-200/50' : 'text-stone-400'}`}>
+                      <p className={`text-[11px] ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
                         Status verifikasi transfer dari pelanggan via WA
                       </p>
                     </div>
@@ -860,13 +958,13 @@ export default function AdminOrders() {
                   />
                 </div>
 
-                {/* Quick Action Buttons */}
-                <div className="flex flex-col sm:flex-row sm:flex-wrap gap-2">
+                {/* Quick Action Chips */}
+                <div className="flex flex-wrap items-center gap-2">
                   <button
                     type="button"
                     disabled={updatingPayment}
                     onClick={() => handleUpdatePayment('paid', Number(selectedOrder.total))}
-                    className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-emerald-600 px-3.5 py-2 sm:py-1.5 text-xs font-bold text-white shadow-2xs hover:bg-emerald-700 active:scale-95 transition disabled:opacity-50 cursor-pointer w-full sm:w-auto text-center"
+                    className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 text-xs font-semibold shadow-2xs active:scale-95 transition disabled:opacity-50 cursor-pointer text-center"
                   >
                     <CheckCircle2 size={13} className="shrink-0" />
                     <span className="truncate">Tandai Lunas ({formatRupiah(selectedOrder.total)})</span>
@@ -876,7 +974,7 @@ export default function AdminOrders() {
                     type="button"
                     disabled={updatingPayment}
                     onClick={() => handleUpdatePayment('dp', Math.round(Number(selectedOrder.total) * 0.5))}
-                    className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-amber-500 px-3.5 py-2 sm:py-1.5 text-xs font-bold text-white shadow-2xs hover:bg-amber-600 active:scale-95 transition disabled:opacity-50 cursor-pointer w-full sm:w-auto text-center"
+                    className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white px-3 py-1.5 text-xs font-semibold shadow-2xs active:scale-95 transition disabled:opacity-50 cursor-pointer text-center"
                   >
                     <Coins size={13} className="shrink-0" />
                     <span className="truncate">Catat DP 50% ({formatRupiah(Math.round(Number(selectedOrder.total) * 0.5))})</span>
@@ -886,10 +984,10 @@ export default function AdminOrders() {
                     type="button"
                     disabled={updatingPayment}
                     onClick={() => handleUpdatePayment('unpaid', 0)}
-                    className={`inline-flex items-center justify-center gap-1.5 rounded-xl border px-3.5 py-2 sm:py-1.5 text-xs font-semibold active:scale-95 transition disabled:opacity-50 cursor-pointer w-full sm:w-auto text-center ${
+                    className={`inline-flex items-center justify-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-semibold active:scale-95 transition disabled:opacity-50 cursor-pointer text-center ${
                       isDark
-                        ? 'border-[#60241E] bg-[#240E0C] text-stone-300 hover:bg-[#2D120F]'
-                        : 'border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100'
+                        ? 'border-[#382321] bg-[#1E1413] text-stone-300 hover:bg-[#281A18] hover:text-white'
+                        : 'border-stone-200 bg-white text-stone-700 hover:bg-stone-50'
                     }`}
                   >
                     <Clock size={13} className="shrink-0" />
@@ -903,7 +1001,7 @@ export default function AdminOrders() {
                   <div>
                     <label
                       className={`block text-[11px] font-bold uppercase tracking-wider mb-1 ${
-                        isDark ? 'text-amber-200/60' : 'text-stone-500'
+                        isDark ? 'text-stone-300' : 'text-stone-500'
                       }`}
                     >
                       Status Bayar
@@ -923,10 +1021,10 @@ export default function AdminOrders() {
                                 : prev.paid_amount,
                         }))
                       }}
-                      className={`w-full rounded-xl border px-3 py-2 text-xs font-semibold outline-none ${
+                      className={`w-full rounded-xl border px-3 py-2 text-xs font-semibold outline-none transition ${
                         isDark
-                          ? 'border-[#60241E] bg-[#240E0C] text-white focus:border-[#F59E0B]'
-                          : 'border-stone-200 bg-stone-50/80 text-stone-900 focus:border-red-600 focus:bg-white'
+                          ? 'border-[#382321] bg-[#1E1413] text-white focus:border-[#F59E0B]'
+                          : 'border-stone-200 bg-white text-stone-900 focus:border-red-600'
                       }`}
                     >
                       <option value="unpaid">Belum Bayar</option>
@@ -939,7 +1037,7 @@ export default function AdminOrders() {
                   <div>
                     <label
                       className={`block text-[11px] font-bold uppercase tracking-wider mb-1 ${
-                        isDark ? 'text-amber-200/60' : 'text-stone-500'
+                        isDark ? 'text-stone-300' : 'text-stone-500'
                       }`}
                     >
                       Nominal Terbayar (Rp)
@@ -950,10 +1048,10 @@ export default function AdminOrders() {
                       step="1000"
                       value={paymentForm.paid_amount}
                       onChange={(e) => setPaymentForm((prev) => ({ ...prev, paid_amount: e.target.value }))}
-                      className={`w-full rounded-xl border px-3 py-2 font-mono text-xs font-bold outline-none ${
+                      className={`w-full rounded-xl border px-3 py-2 font-mono text-xs font-bold outline-none transition ${
                         isDark
-                          ? 'border-[#60241E] bg-[#240E0C] text-white focus:border-[#F59E0B]'
-                          : 'border-stone-200 bg-stone-50/80 text-stone-900 focus:border-red-600 focus:bg-white'
+                          ? 'border-[#382321] bg-[#1E1413] text-white focus:border-[#F59E0B]'
+                          : 'border-stone-200 bg-white text-stone-900 focus:border-red-600'
                       }`}
                     />
                   </div>
@@ -962,7 +1060,7 @@ export default function AdminOrders() {
                   <div>
                     <label
                       className={`block text-[11px] font-bold uppercase tracking-wider mb-1 ${
-                        isDark ? 'text-amber-200/60' : 'text-stone-500'
+                        isDark ? 'text-stone-300' : 'text-stone-500'
                       }`}
                     >
                       Metode Transfer
@@ -970,10 +1068,10 @@ export default function AdminOrders() {
                     <select
                       value={paymentForm.payment_method}
                       onChange={(e) => setPaymentForm((prev) => ({ ...prev, payment_method: e.target.value }))}
-                      className={`w-full rounded-xl border px-3 py-2 text-xs font-semibold outline-none ${
+                      className={`w-full rounded-xl border px-3 py-2 text-xs font-semibold outline-none transition ${
                         isDark
-                          ? 'border-[#60241E] bg-[#240E0C] text-white focus:border-[#F59E0B]'
-                          : 'border-stone-200 bg-stone-50/80 text-stone-900 focus:border-red-600 focus:bg-white'
+                          ? 'border-[#382321] bg-[#1E1413] text-white focus:border-[#F59E0B]'
+                          : 'border-stone-200 bg-white text-stone-900 focus:border-red-600'
                       }`}
                     >
                       <option value="Transfer BSI">Transfer BSI</option>
@@ -991,7 +1089,7 @@ export default function AdminOrders() {
                   <div className="sm:col-span-2">
                     <label
                       className={`block text-[11px] font-bold uppercase tracking-wider mb-1 ${
-                        isDark ? 'text-amber-200/60' : 'text-stone-500'
+                        isDark ? 'text-stone-300' : 'text-stone-500'
                       }`}
                     >
                       Catatan Pembayaran / Pengirim
@@ -1001,26 +1099,26 @@ export default function AdminOrders() {
                       placeholder="Contoh: DP 50% via BSI a.n. Ibu Siti"
                       value={paymentForm.payment_note}
                       onChange={(e) => setPaymentForm((prev) => ({ ...prev, payment_note: e.target.value }))}
-                      className={`w-full rounded-xl border px-3 py-2 text-xs font-medium outline-none ${
+                      className={`w-full rounded-xl border px-3 py-2 text-xs font-medium outline-none transition ${
                         isDark
-                          ? 'border-[#60241E] bg-[#240E0C] text-white placeholder:text-stone-500 focus:border-[#F59E0B]'
-                          : 'border-stone-200 bg-stone-50/80 text-stone-900 placeholder:text-stone-400 focus:border-red-600 focus:bg-white'
+                          ? 'border-[#382321] bg-[#1E1413] text-white placeholder:text-stone-500 focus:border-[#F59E0B]'
+                          : 'border-stone-200 bg-white text-stone-900 placeholder:text-stone-400 focus:border-red-600'
                       }`}
                     />
                   </div>
 
                   <div className="flex gap-2 items-center">
                     <div
-                      className={`flex-1 rounded-xl p-2 text-center ${
-                        isDark ? 'bg-[#240E0C] border border-[#60241E]' : 'bg-stone-100'
+                      className={`flex-1 rounded-xl p-2 text-center border ${
+                        isDark ? 'bg-[#1E1413] border-[#382321]' : 'bg-white border-stone-200'
                       }`}
                     >
-                      <span className={`text-[10px] block ${isDark ? 'text-amber-200/50' : 'text-stone-400'}`}>
+                      <span className={`text-[10px] block ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
                         Sisa Tagihan
                       </span>
                       <span
                         className={`font-mono font-bold text-xs ${
-                          isDark ? 'text-white' : 'text-stone-800'
+                          isDark ? 'text-white' : 'text-stone-900'
                         }`}
                       >
                         {formatRupiah(Math.max(0, Number(selectedOrder.total) - Number(paymentForm.paid_amount || 0)))}
@@ -1031,7 +1129,7 @@ export default function AdminOrders() {
                       type="button"
                       disabled={updatingPayment}
                       onClick={() => handleUpdatePayment()}
-                      className="inline-flex items-center justify-center gap-1 rounded-xl bg-red-600 px-4 py-2 text-xs font-bold text-white shadow-2xs hover:bg-red-700 transition active:scale-95 disabled:opacity-50 h-[38px] cursor-pointer"
+                      className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-[#95271D] to-[#7D1E16] hover:from-[#A82D22] hover:to-[#8E2219] px-4 py-2 text-xs font-bold text-white shadow-2xs transition active:scale-95 disabled:opacity-50 h-[38px] cursor-pointer"
                     >
                       {updatingPayment ? <RefreshCw size={13} className="animate-spin" /> : <Check size={13} />}
                       <span>Simpan</span>
@@ -1051,15 +1149,15 @@ export default function AdminOrders() {
               />
 
               {/* Customer & Event Details */}
-              <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid gap-3 sm:grid-cols-2">
                 <div
-                  className={`rounded-xl border p-4 space-y-2 ${
-                    isDark ? 'border-[#60241E] bg-[#1C0B09]' : 'border-stone-200'
+                  className={`rounded-2xl border p-4 space-y-2 ${
+                    isDark ? 'border-[#382321] bg-[#140D0C]' : 'border-stone-200/90 bg-[#FAF8F5]'
                   }`}
                 >
                   <p
-                    className={`text-xs font-semibold uppercase tracking-wider ${
-                      isDark ? 'text-amber-200/60' : 'text-stone-400'
+                    className={`text-xs font-bold uppercase tracking-wider ${
+                      isDark ? 'text-stone-400' : 'text-stone-500'
                     }`}
                   >
                     Informasi Pemesan
@@ -1070,7 +1168,7 @@ export default function AdminOrders() {
                         isDark ? 'text-white' : 'text-stone-900'
                       }`}
                     >
-                      <User size={15} className={isDark ? 'text-amber-200/60' : 'text-stone-400'} />
+                      <User size={15} className={isDark ? 'text-amber-400' : 'text-stone-400'} />
                       {selectedOrder.customers_name}
                     </p>
                     <a
@@ -1086,13 +1184,13 @@ export default function AdminOrders() {
                 </div>
 
                 <div
-                  className={`rounded-xl border p-4 space-y-2 ${
-                    isDark ? 'border-[#60241E] bg-[#1C0B09]' : 'border-stone-200'
+                  className={`rounded-2xl border p-4 space-y-2 ${
+                    isDark ? 'border-[#382321] bg-[#140D0C]' : 'border-stone-200/90 bg-[#FAF8F5]'
                   }`}
                 >
                   <p
-                    className={`text-xs font-semibold uppercase tracking-wider ${
-                      isDark ? 'text-amber-200/60' : 'text-stone-400'
+                    className={`text-xs font-bold uppercase tracking-wider ${
+                      isDark ? 'text-stone-400' : 'text-stone-500'
                     }`}
                   >
                     Jadwal & Lokasi Acara
@@ -1102,7 +1200,7 @@ export default function AdminOrders() {
                       isDark ? 'text-white' : 'text-stone-900'
                     }`}
                   >
-                    <Calendar size={14} className={isDark ? 'text-amber-200/60' : 'text-stone-400'} />
+                    <Calendar size={14} className={isDark ? 'text-amber-400' : 'text-stone-400'} />
                     {formatDate(selectedOrder.event_date)}{' '}
                     {selectedOrder.event_time && `(${selectedOrder.event_time})`}
                   </p>
@@ -1111,8 +1209,8 @@ export default function AdminOrders() {
                       isDark ? 'text-stone-400' : 'text-stone-500'
                     }`}
                   >
-                    <MapPin size={14} className={`shrink-0 mt-0.5 ${isDark ? 'text-amber-200/60' : 'text-stone-400'}`} />
-                    <span>{selectedOrder.delivery_address || '-'}</span>
+                    <MapPin size={14} className={`shrink-0 mt-0.5 ${isDark ? 'text-amber-400' : 'text-stone-400'}`} />
+                    <span className="break-words">{selectedOrder.delivery_address || '-'}</span>
                   </p>
                 </div>
               </div>
@@ -1120,9 +1218,9 @@ export default function AdminOrders() {
               {/* Notes */}
               {selectedOrder.notes && (
                 <div
-                  className={`rounded-xl border p-3.5 text-xs ${
+                  className={`rounded-2xl border p-3.5 text-xs ${
                     isDark
-                      ? 'border-amber-900/60 bg-amber-950/30 text-amber-200'
+                      ? 'border-amber-800/40 bg-amber-950/20 text-amber-200'
                       : 'border-amber-200 bg-amber-50/60 text-amber-900'
                   }`}
                 >
@@ -1132,27 +1230,27 @@ export default function AdminOrders() {
 
               {/* Menu Items Table */}
               <div
-                className={`rounded-xl border overflow-hidden ${
-                  isDark ? 'border-[#60241E] bg-[#1C0B09]' : 'border-stone-200'
+                className={`rounded-2xl border overflow-hidden ${
+                  isDark ? 'border-[#382321] bg-[#140D0C]' : 'border-stone-200/90 bg-white'
                 }`}
               >
                 <div
-                  className={`px-4 py-2 border-b text-xs font-bold uppercase tracking-wider ${
+                  className={`px-4 py-2.5 border-b text-xs font-bold uppercase tracking-wider ${
                     isDark
-                      ? 'bg-[#240E0C] border-[#60241E] text-amber-200/70'
-                      : 'bg-stone-50 border-stone-200 text-stone-500'
+                      ? 'bg-[#1A1110] border-[#382321] text-stone-300'
+                      : 'bg-stone-50 border-stone-200 text-stone-600'
                   }`}
                 >
                   Rincian Item Menu Katering
                 </div>
-                <div className={`divide-y p-2 ${isDark ? 'divide-[#60241E]/50' : 'divide-stone-100'}`}>
+                <div className={`divide-y ${isDark ? 'divide-[#281A18]' : 'divide-stone-100'}`}>
                   {selectedOrder.items && selectedOrder.items.length > 0 ? (
                     selectedOrder.items.map((item) => (
                       <div
                         key={item.id}
-                        className="flex items-center justify-between p-2.5 text-xs"
+                        className="flex items-center justify-between p-3 text-xs"
                       >
-                        <div>
+                        <div className="min-w-0 flex-1 pr-3">
                           <p
                             className={`font-semibold ${
                               isDark ? 'text-stone-100' : 'text-stone-900'
@@ -1165,9 +1263,9 @@ export default function AdminOrders() {
                               {item.addons.map((a, idx) => (
                                 <div
                                   key={idx}
-                                  className={`rounded-md px-2 py-1 text-[11px] font-medium border inline-block mr-1.5 ${
+                                  className={`rounded-md px-2 py-0.5 text-[11px] font-medium border inline-block mr-1.5 ${
                                     isDark
-                                      ? 'bg-[#240E0C] border-[#60241E] text-stone-300'
+                                      ? 'bg-[#1E1413] border-[#382321] text-stone-300'
                                       : 'bg-stone-50 border-stone-200 text-stone-700'
                                   }`}
                                 >
@@ -1191,14 +1289,14 @@ export default function AdminOrders() {
                           )}
                           <p
                             className={`font-mono text-[11px] mt-1 ${
-                              isDark ? 'text-stone-500' : 'text-stone-400'
+                              isDark ? 'text-stone-400' : 'text-stone-400'
                             }`}
                           >
                             Paket dasar: {formatRupiah(item.price)} x {item.quantity} porsi
                           </p>
                         </div>
                         <p
-                          className={`font-bold font-mono text-sm ${
+                          className={`font-bold font-mono text-sm shrink-0 ${
                             isDark ? 'text-white' : 'text-stone-950'
                           }`}
                         >
@@ -1219,8 +1317,8 @@ export default function AdminOrders() {
 
                 {/* Cost Breakdown Footer */}
                 <div
-                  className={`p-4 border-t space-y-1 text-xs ${
-                    isDark ? 'bg-[#240E0C] border-[#60241E]' : 'bg-stone-50 border-stone-200'
+                  className={`p-4 border-t space-y-1.5 text-xs ${
+                    isDark ? 'bg-[#1A1110] border-[#382321]' : 'bg-stone-50 border-stone-200'
                   }`}
                 >
                   <div
@@ -1242,12 +1340,12 @@ export default function AdminOrders() {
                   <div
                     className={`flex justify-between text-sm font-bold pt-2 border-t ${
                       isDark
-                        ? 'text-white border-[#60241E]'
+                        ? 'text-white border-[#382321]'
                         : 'text-stone-950 border-stone-200'
                     }`}
                   >
                     <span>Total Tagihan Invoice</span>
-                    <span className="text-red-500 font-mono">
+                    <span className="text-[#95271D] dark:text-red-400 font-mono text-base font-extrabold">
                       {formatRupiah(selectedOrder.total)}
                     </span>
                   </div>
@@ -1257,11 +1355,11 @@ export default function AdminOrders() {
 
             {/* Modal Actions */}
             <div
-              className={`border-t px-4 py-3 sm:px-6 sm:py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 shrink-0 ${
-                isDark ? 'border-[#60241E]/60 bg-[#1C0B09]' : 'border-stone-100 bg-stone-50'
+              className={`border-t px-4 py-3 sm:px-6 sm:py-3.5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 shrink-0 ${
+                isDark ? 'border-[#382321] bg-[#140D0C]' : 'border-stone-200/90 bg-[#FAF8F5]'
               }`}
             >
-              <p className={`text-xs hidden sm:block ${isDark ? 'text-amber-200/50' : 'text-stone-400'}`}>
+              <p className={`text-xs hidden sm:block ${isDark ? 'text-stone-400' : 'text-stone-500'}`}>
                 Kirimkan invoice resmi langsung ke nomor WhatsApp pemesan.
               </p>
 
@@ -1269,10 +1367,10 @@ export default function AdminOrders() {
                 <button
                   type="button"
                   onClick={() => setSelectedOrder(null)}
-                  className={`px-3 py-2 rounded-xl border text-xs font-semibold transition cursor-pointer text-center justify-center ${
+                  className={`px-3 py-2 rounded-xl border text-xs font-semibold transition active:scale-95 cursor-pointer text-center justify-center ${
                     isDark
-                      ? 'border-[#60241E] text-stone-300 hover:bg-[#240E0C]'
-                      : 'border-stone-200 text-stone-700 hover:bg-white'
+                      ? 'border-[#382321] bg-[#1E1413] text-stone-200 hover:bg-[#281A18] hover:text-white'
+                      : 'border-stone-200 bg-white text-stone-700 hover:bg-stone-50'
                   }`}
                 >
                   Tutup
@@ -1283,7 +1381,7 @@ export default function AdminOrders() {
                     href={getWhatsAppTestimonialUrl(selectedOrder)}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-amber-500 text-white text-xs font-bold shadow-xs hover:bg-amber-600 transition text-center"
+                    className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold shadow-xs active:scale-95 transition text-center"
                     title="Kirim link ulasan ke nomor WhatsApp pemesan"
                   >
                     <Star size={14} className="fill-white shrink-0" />
@@ -1294,7 +1392,7 @@ export default function AdminOrders() {
                 <button
                   type="button"
                   onClick={() => setPrintingOrder(selectedOrder)}
-                  className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold shadow-xs transition cursor-pointer text-center"
+                  className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-gradient-to-r from-[#95271D] to-[#7D1E16] hover:from-[#A82D22] hover:to-[#8E2219] text-white text-xs font-bold shadow-xs active:scale-95 transition cursor-pointer text-center"
                   title="Cetak Slip Dapur / Invoice Resmi"
                 >
                   <Printer size={14} className="shrink-0" />
@@ -1305,7 +1403,7 @@ export default function AdminOrders() {
                   href={getWhatsAppInvoiceUrl(selectedOrder)}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={`inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-600 text-white text-xs font-bold shadow-xs hover:bg-emerald-700 transition text-center ${
+                  className={`inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs active:scale-95 transition text-center ${
                     selectedOrder.status !== 'completed' ? 'col-span-2 sm:col-span-1' : ''
                   }`}
                 >

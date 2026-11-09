@@ -32,18 +32,18 @@ export default function PaymentStatusBadge({
   if (effectiveStatus === 'paid') {
     return (
       <span
-        className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-bold shadow-2xs ${
+        className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-semibold border shadow-2xs transition-all shrink-0 ${
           isDark
-            ? 'bg-emerald-950/60 text-emerald-400 border border-emerald-800/60'
-            : 'bg-emerald-50 text-emerald-800 border border-emerald-200/90'
+            ? 'bg-emerald-950/40 text-emerald-300 border-emerald-700/50'
+            : 'bg-emerald-50 text-emerald-800 border-emerald-300/80'
         }`}
       >
-        <CheckCircle2 size={13} className={isDark ? 'text-emerald-400' : 'text-emerald-600'} />
+        <CheckCircle2 size={12} className={isDark ? 'text-emerald-400' : 'text-emerald-600'} />
         <span>Lunas</span>
         {!compact && paymentMethod && (
           <span
-            className={`text-[10px] font-semibold ${
-              isDark ? 'text-emerald-300/80' : 'text-emerald-600/80'
+            className={`text-[10px] font-normal ${
+              isDark ? 'text-emerald-300/80' : 'text-emerald-700/80'
             }`}
           >
             ({paymentMethod.replace('Transfer ', '')})
@@ -56,18 +56,18 @@ export default function PaymentStatusBadge({
   if (effectiveStatus === 'dp') {
     return (
       <span
-        className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-bold shadow-2xs ${
+        className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-semibold border shadow-2xs transition-all shrink-0 ${
           isDark
-            ? 'bg-amber-950/60 text-amber-400 border border-amber-800/60'
-            : 'bg-amber-50 text-amber-800 border border-amber-300/90'
+            ? 'bg-amber-950/40 text-amber-300 border-amber-700/50'
+            : 'bg-amber-50 text-amber-800 border-amber-300/80'
         }`}
       >
-        <Coins size={13} className={isDark ? 'text-amber-400' : 'text-amber-600'} />
+        <Coins size={12} className={isDark ? 'text-amber-400' : 'text-amber-600'} />
         <span>DP Masuk</span>
         {!compact && paidAmount && Number(paidAmount) > 0 && (
           <span
-            className={`text-[10px] font-mono font-semibold ${
-              isDark ? 'text-amber-300' : 'text-amber-700'
+            className={`text-[10px] font-mono font-normal ${
+              isDark ? 'text-amber-300/90' : 'text-amber-800/90'
             }`}
           >
             ({formatRupiahShort(paidAmount)})
@@ -79,13 +79,13 @@ export default function PaymentStatusBadge({
 
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold shadow-2xs ${
+      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-medium border shadow-2xs transition-all shrink-0 ${
         isDark
-          ? 'bg-[#1C0B09] text-stone-400 border border-[#60241E]'
-          : 'bg-stone-100 text-stone-600 border border-stone-200'
+          ? 'bg-stone-900/60 text-stone-400 border-stone-800'
+          : 'bg-stone-100/90 text-stone-600 border-stone-200'
       }`}
     >
-      <Clock size={13} className={isDark ? 'text-stone-500' : 'text-stone-400'} />
+      <Clock size={12} className={isDark ? 'text-stone-500' : 'text-stone-400'} />
       <span>Belum Bayar</span>
     </span>
   )
