@@ -35,6 +35,7 @@ import { ordersService } from '../../../services/orders.service'
 import { useThemeStore } from '../../../stores/theme.store'
 import { getImageUrl } from '../../../utils/image'
 import { TimeInput24 } from '../../../components/ui/TimeInput24'
+import PageLoader from '../../../components/ui/PageLoader'
 import OrderEditDiffModal, {
   type OrderDiffSummary,
   type FieldDiffItem,
@@ -751,20 +752,7 @@ export default function EditAdminOrder() {
     }
   }
 
-  if (orderLoading) {
-    return (
-      <div
-        className={`min-h-screen flex flex-col items-center justify-center p-8 text-center space-y-3 ${
-          isDark ? 'bg-[#140D0C] text-stone-300' : 'bg-[#FAF8F5] text-stone-700'
-        }`}
-      >
-        <Loader2 size={36} className="animate-spin text-[#95271D] mx-auto" />
-        <p className="text-sm font-semibold">Memuat rincian pesanan #{orderId}...</p>
-      </div>
-    )
-  }
-
-  if (orderError || !order) {
+  if (orderError || (!orderLoading && !order)) {
     return (
       <div
         className={`min-h-screen flex flex-col items-center justify-center p-8 text-center space-y-4 ${
@@ -788,11 +776,26 @@ export default function EditAdminOrder() {
   }
 
   return (
-    <div
-      className={`min-h-screen space-y-4 sm:space-y-6 p-3 sm:p-6 lg:p-8 pb-28 lg:pb-12 transition-colors duration-300 ${
-        isDark ? 'bg-[#140D0C] text-stone-100' : 'bg-[#FAF8F5] text-stone-900'
-      }`}
-    >
+    <>
+      <PageLoader
+        isLoading={orderLoading || productsLoading}
+        text="Memuat Rincian Pesanan..."
+        subtext={`Menyiapkan data pesanan #${order?.order_code || orderId}`}
+        minDuration={400}
+      />
+
+      {orderLoading || !order ? (
+        <div
+          className={`min-h-screen ${
+            isDark ? 'bg-[#140D0C]' : 'bg-[#FAF8F5]'
+          }`}
+        />
+      ) : (
+        <div
+          className={`min-h-screen space-y-4 sm:space-y-6 p-3 sm:p-6 lg:p-8 pb-28 lg:pb-12 transition-colors duration-300 ${
+            isDark ? 'bg-[#140D0C] text-stone-100' : 'bg-[#FAF8F5] text-stone-900'
+          }`}
+        >
       {/* Top Header & Breadcrumb */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 pb-2 border-b border-[#352321]/40 dark:border-[#352321]/60">
         <div className="space-y-1 w-full sm:w-auto">
@@ -2268,6 +2271,8 @@ export default function EditAdminOrder() {
           isSubmitting={isSubmitting}
         />
       )}
-    </div>
+        </div>
+      )}
+    </>
   )
 }

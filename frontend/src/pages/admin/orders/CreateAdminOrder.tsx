@@ -35,6 +35,7 @@ import { ordersService } from '../../../services/orders.service'
 import { useThemeStore } from '../../../stores/theme.store'
 import { getImageUrl } from '../../../utils/image'
 import { TimeInput24 } from '../../../components/ui/TimeInput24'
+import PageLoader from '../../../components/ui/PageLoader'
 
 function formatRupiah(value: string | number) {
   return new Intl.NumberFormat('id-ID', {
@@ -402,11 +403,18 @@ export default function CreateAdminOrder() {
   }
 
   return (
-    <div
-      className={`min-h-screen space-y-4 sm:space-y-6 p-3 sm:p-6 lg:p-8 pb-28 lg:pb-12 transition-colors duration-300 ${
-        isDark ? 'bg-[#140D0C] text-stone-100' : 'bg-[#FAF8F5] text-stone-900'
-      }`}
-    >
+    <>
+      <PageLoader
+        isLoading={productsLoading}
+        text="Menyiapkan Kasir Offline..."
+        subtext="Memuat katalog katering & opsi pesanan"
+        minDuration={400}
+      />
+      <div
+        className={`min-h-screen space-y-4 sm:space-y-6 p-3 sm:p-6 lg:p-8 pb-28 lg:pb-12 transition-colors duration-300 ${
+          isDark ? 'bg-[#140D0C] text-stone-100' : 'bg-[#FAF8F5] text-stone-900'
+        }`}
+      >
       {/* Top Header & Breadcrumb */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 pb-2 border-b border-[#352321]/40 dark:border-[#352321]/60">
         <div className="space-y-1 w-full sm:w-auto">
@@ -1868,5 +1876,6 @@ export default function CreateAdminOrder() {
         </div>
       )}
     </div>
+    </>
   )
 }
