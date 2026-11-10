@@ -4,9 +4,10 @@ import {
   X,
   ChefHat,
   FileText,
-  Copy,
-  Check,
+  Download,
+  Loader2,
 } from 'lucide-react'
+import { toPng } from 'html-to-image'
 import { toast } from 'sonner'
 import type { Order } from '../../../types/orders'
 import { useThemeStore } from '../../../stores/theme.store'
@@ -67,8 +68,9 @@ export default function PrintOrderModal({
 }: PrintOrderModalProps) {
   const isDark = useThemeStore((state) => state.theme === 'dark')
   const [template, setTemplate] = useState<PrintTemplate>('kitchen')
-  const [copied, setCopied] = useState(false)
+  const [isDownloading, setIsDownloading] = useState(false)
   const iframeRef = useRef<HTMLIFrameElement | null>(null)
+  const receiptPaperRef = useRef<HTMLDivElement | null>(null)
 
   if (!isOpen || !order) return null
 
@@ -86,112 +88,60 @@ export default function PrintOrderModal({
         ? 'DP DITERIMA'
         : 'BELUM BAYAR'
 
-  const orderStatusText =
-    {
-      pending: 'MENUNGGU KONFIRMASI',
-      confirmed: 'DIKONFIRMASI',
-      processing: 'DIPROSES DAPUR',
-      completed: 'SELESAI',
-      cancelled: 'DIBATALKAN',
-    }[order.status] || order.status.toUpperCase()
+  // Handle Download Receipt as Image (PNG)
+  const handleDownloadImage = async () => {
+    if (!receiptPaperRef.current || !order) return
 
-  // Generate plain text version for copying / bluetooth print apps
-  const generatePlainText = () => {
-    const line = '--------------------------------'
-    const doubleLine = '================================'
-    const itemsText = (order.items || [])
-      .map((item) => {
-        let text = `${item.item_name}\n  ${item.quantity}x @${Number(item.price).toLocaleString('id-ID')} = Rp ${Number(item.subtotal).toLocaleString('id-ID')}`
-        if (item.addons && item.addons.length > 0) {
-          const addons = item.addons
-            .map(
-              (a) =>
-                `   + ${a.addon_name} (+Rp ${Number(a.price).toLocaleString('id-ID')})`
-            )
-            .join('\n')
-          text += `\n${addons}`
-        }
-        return text
-      })
-      .join('\n')
-
-    if (template === 'kitchen') {
-      return `*** TIKET KERJA DAPUR ***
-PAWON HARA CATERING
-${doubleLine}
-JADWAL KIRIM / SIAP:
-${formatDateIndo(order.event_date).toUpperCase()}
-JAM: ${order.event_time ? `${order.event_time} WIB` : 'JAM BELUM DITENTUKAN'}
-${line}
-Kode Order : ${order.order_code}
-Pemesan    : ${order.customers_name} (${order.customers_phone})
-Alamat     : ${order.delivery_address}
-${doubleLine}
-DAFTAR MENU YANG HARUS DIMASAK:
-${(order.items || [])
-          .map(
-            (item, idx) =>
-              `[ ] ${idx + 1}. ${item.quantity}x ${item.item_name.toUpperCase()}${item.addons && item.addons.length > 0
-                ? '\n' +
-                item.addons
-                  .map((a) => `     - [ ] ${a.addon_name} (${item.quantity} porsi)`)
-                  .join('\n')
-                : ''
-              }`
-          )
-          .join('\n')}
-${line}
-CATATAN KHUSUS:
-${order.notes || 'Tidak ada catatan khusus'}
-${doubleLine}
-Dicek Dapur : [          ]
-Dicek QC    : [          ]
-Dicetak     : ${formatDateTime(new Date().toISOString())}
-`
-    }
-
-    return `PAWON HARA
-Dapurnya Rasa Nusantara
-WA: 0811-2222-5520
-${doubleLine}
-No. Nota    : ${order.order_code}
-Tgl Order   : ${formatDateTime(order.created_at)}
-Tgl Acara   : ${formatDateIndo(order.event_date)}
-Waktu Acara : ${order.event_time ? `${order.event_time} WIB` : '-'}
-Pemesan     : ${order.customers_name}
-No. WA      : ${order.customers_phone}
-Alamat      : ${order.delivery_address}
-${line}
-RINCIAN PESANAN:
-${itemsText}
-${line}
-Subtotal Menu : ${formatRupiah(subtotal)}
-Ongkos Kirim  : ${deliveryFee > 0 ? formatRupiah(deliveryFee) : 'GRATIS (Rp 0)'}
-TOTAL TAGIHAN : ${formatRupiah(total)}
-${line}
-Status Order  : ${orderStatusText}
-Status Bayar  : ${order.status === 'cancelled' ? 'DIBATALKAN' : (remaining <= 0 || order.payment_status === 'paid' ? 'LUNAS' : paymentStatusText)}
-Telah Dibayar : ${formatRupiah(paidAmount)}
-${remaining > 0 && order.status !== 'cancelled' ? `Sisa Tagihan  : ${formatRupiah(remaining)}\n` : ''}Metode Bayar  : ${order.payment_method || '-'}
-${order.status !== 'cancelled' && remaining > 0 && order.payment_status !== 'paid'
-        ? `\nRekening Bank :\nBank BSI: 7881113346\na/n CV AYAM GEPREK PARANGTRITIS\n`
-        : ''
-      }${order.notes ? `Catatan       : ${order.notes}\n` : ''}${doubleLine}
-Terima kasih telah mempercayakan
-hidangan Anda kepada Pawon Hara!
-Instagram: @pawonhara
-`
-  }
-
-  // Handle Copy to Clipboard
-  const handleCopyText = async () => {
     try {
-      await navigator.clipboard.writeText(generatePlainText())
-      setCopied(true)
-      toast.success('Teks nota berhasil disalin ke clipboard!')
-      setTimeout(() => setCopied(false), 2000)
-    } catch {
-      toast.error('Gagal menyalin teks.')
+      setIsDownloading(true)
+      const isKitchen = template === 'kitchen'
+      const cleanOrderCode = (order.order_code || `order-${order.id}`).replace(/[^a-zA-Z0-9_-]/g, '_')
+      const fileName = isKitchen
+        ? `Tiket-Dapur-${cleanOrderCode}.png`
+        : `Invoice-${cleanOrderCode}.png`
+
+      const node = receiptPaperRef.current
+      // Exact element dimensions to prevent any canvas clipping
+      const width = node.offsetWidth
+      const height = Math.max(node.offsetHeight, node.scrollHeight)
+
+      // Render at pixelRatio 2 for crisp high-resolution output (sharp for WhatsApp / gallery)
+      // Force margin: 0 and dimensions so the SVG foreignObject doesn't get offset by browser margins
+      const dataUrl = await toPng(node, {
+        cacheBust: true,
+        pixelRatio: 2,
+        backgroundColor: '#ffffff',
+        width,
+        height,
+        style: {
+          margin: '0',
+          marginLeft: '0',
+          marginRight: '0',
+          marginTop: '0',
+          marginBottom: '0',
+          transform: 'none',
+          boxShadow: 'none',
+          maxWidth: 'none',
+          width: `${width}px`,
+        },
+      })
+
+      // Trigger automatic browser file download
+      const link = document.createElement('a')
+      link.download = fileName
+      link.href = dataUrl
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+
+      toast.success(
+        `Gambar ${isKitchen ? 'Slip Dapur' : 'Invoice'} berhasil diunduh ke galeri/perangkat!`
+      )
+    } catch (err) {
+      console.error('Error generating receipt image:', err)
+      toast.error('Gagal mengunduh gambar nota. Silakan coba kembali.')
+    } finally {
+      setIsDownloading(false)
     }
   }
 
@@ -685,17 +635,19 @@ Instagram: @pawonhara
 
         {/* Live Preview Paper Container */}
         <div className="flex-1 overflow-y-auto p-3 sm:p-6 bg-stone-200/70 dark:bg-[#120B0A] overscroll-contain">
-          <div
-            className={`mx-auto bg-white text-black shadow-xl border border-stone-300/80 rounded-xl p-4 sm:p-6 font-mono text-xs leading-relaxed select-text transition-all ${
-              template === 'invoice'
-                ? 'w-full max-w-xl text-[11px] sm:text-[12px]'
-                : 'w-full max-w-[360px] text-[11px] sm:text-[12px]'
-            }`}
-            style={{
-              fontFamily:
-                "'Courier New', Courier, Consolas, Monaco, monospace, sans-serif",
-            }}
-          >
+          <div className="flex justify-center w-full min-h-full">
+            <div
+              ref={receiptPaperRef}
+              className={`bg-white text-black shadow-xl border border-stone-300/80 rounded-xl p-4 sm:p-6 font-mono text-xs leading-relaxed select-text transition-all ${
+                template === 'invoice'
+                  ? 'w-full max-w-xl text-[11px] sm:text-[12px]'
+                  : 'w-full max-w-[360px] text-[11px] sm:text-[12px]'
+              }`}
+              style={{
+                fontFamily:
+                  "'Courier New', Courier, Consolas, Monaco, monospace, sans-serif",
+              }}
+            >
             {/* Live Paper Preview Render */}
             {template === 'kitchen' ? (
               <div className="space-y-3">
@@ -905,8 +857,9 @@ Instagram: @pawonhara
             )}
           </div>
         </div>
+      </div>
 
-        {/* Modal Actions Footer */}
+      {/* Modal Actions Footer */}
         <div
           className={`flex flex-col sm:flex-row items-center justify-between gap-3 px-4 py-3 sm:px-6 sm:py-3.5 border-t shrink-0 ${
             isDark ? 'border-[#382321] bg-[#140D0C]' : 'border-stone-200/90 bg-stone-50/80'
@@ -921,16 +874,26 @@ Instagram: @pawonhara
           <div className="grid grid-cols-2 sm:flex items-center gap-2 w-full sm:w-auto justify-end">
             <button
               type="button"
-              onClick={handleCopyText}
-              className={`inline-flex items-center justify-center gap-1.5 px-3 py-2 sm:py-2 rounded-xl border text-xs font-semibold transition active:scale-95 cursor-pointer text-center ${
+              onClick={handleDownloadImage}
+              disabled={isDownloading}
+              className={`inline-flex items-center justify-center gap-1.5 px-3 py-2 sm:py-2 rounded-xl border text-xs font-bold transition active:scale-95 cursor-pointer text-center disabled:opacity-50 ${
                 isDark
                   ? 'border-[#382321] bg-[#1E1413] text-stone-200 hover:bg-[#281A18] hover:text-white'
                   : 'border-stone-200 bg-white text-stone-700 hover:bg-stone-50'
               }`}
-              title="Salin teks struk untuk aplikasi printer bluetooth HP / WA"
+              title="Download gambar nota (PNG) langsung ke galeri / perangkat"
             >
-              {copied ? <Check size={14} className="text-emerald-500 shrink-0" /> : <Copy size={14} className="shrink-0" />}
-              <span className="truncate">{copied ? 'Tersalin!' : 'Salin Teks'}</span>
+              {isDownloading ? (
+                <>
+                  <Loader2 size={14} className="animate-spin text-[#95271D] shrink-0" />
+                  <span className="truncate">Menyimpan...</span>
+                </>
+              ) : (
+                <>
+                  <Download size={14} className="shrink-0 text-amber-500" />
+                  <span className="truncate">Download Gambar</span>
+                </>
+              )}
             </button>
 
             <button
