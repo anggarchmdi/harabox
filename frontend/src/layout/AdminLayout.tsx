@@ -758,30 +758,38 @@ export default function AdminLayout() {
             TOP NAVBAR (STICKY BLUR HEADER)
         ====================================================== */}
         <header
-          className={`sticky top-0 z-20 flex h-20 items-center justify-between border-b px-4 backdrop-blur-md sm:px-8 transition-colors duration-300 ${
+          className={`sticky top-0 z-20 flex h-16 sm:h-20 items-center justify-between border-b px-3.5 sm:px-8 backdrop-blur-md transition-colors duration-300 ${
             isDark
               ? 'border-[#60241E]/80 bg-[#1C0B09]/90 text-white'
               : 'border-stone-200/80 bg-white/90 text-stone-900'
           }`}
         >
-          {/* Left: Mobile Toggle, Desktop Collapse Toggle & Dynamic Title */}
-          <div className="flex items-center gap-3 sm:gap-4">
-            {/* Mobile Toggle Button */}
+          {/* Left: Mobile Toggle & Page Title */}
+          <div className="flex items-center gap-2.5 sm:gap-4 min-w-0">
+            {/* Mobile Toggle Button with Pending Orders Indicator */}
             <button
               type="button"
               onClick={() => setMobileSidebarOpen(true)}
-              className={`flex h-10 w-10 items-center justify-center rounded-xl border lg:hidden cursor-pointer ${
+              className={`relative flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl border lg:hidden cursor-pointer shrink-0 transition-colors ${
                 isDark
-                  ? 'border-[#60241E] text-stone-200 hover:bg-[#240E0C]'
-                  : 'border-stone-200 text-stone-700 hover:bg-stone-50'
+                  ? 'border-[#60241E] bg-[#240E0C]/80 text-stone-200 hover:bg-[#240E0C] hover:text-white'
+                  : 'border-stone-200 bg-white text-stone-700 hover:bg-stone-50'
               }`}
               aria-label="Buka Menu Sidebar"
             >
               <Menu size={18} />
+              {pendingOrdersCount > 0 && (
+                <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500 ring-2 ring-[#1C0B09] dark:ring-[#1C0B09]" />
+                </span>
+              )}
             </button>
-            <div>
+
+            {/* Breadcrumb (Desktop) & Responsive Page Title */}
+            <div className="min-w-0">
               <div
-                className={`flex hidden md:flex items-center gap-1.5 text-[11px] font-medium ${
+                className={`hidden md:flex items-center gap-1.5 text-[11px] font-medium ${
                   isDark ? 'text-amber-200/50' : 'text-stone-400'
                 }`}
               >
@@ -792,7 +800,7 @@ export default function AdminLayout() {
                 </span>
               </div>
               <h2
-                className={`text-base hidden md:flex font-bold tracking-tight ${
+                className={`text-sm sm:text-base font-extrabold tracking-tight truncate ${
                   isDark ? 'text-white' : 'text-stone-950'
                 }`}
               >
@@ -801,13 +809,13 @@ export default function AdminLayout() {
             </div>
           </div>
 
-          {/* Right: Quick Alert Pills, Theme Switcher & Profile Dropdown */}
-          <div className="flex items-center gap-2 sm:gap-3">
-            {/* Pending Orders Notification Pill */}
+          {/* Right: Essential Action Controls & Profile */}
+          <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
+            {/* Pending Orders Notification Pill (Desktop only to prevent mobile crowding) */}
             {pendingOrdersCount > 0 && (
               <Link
                 to="/admin/orders"
-                className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold shadow-2xs transition ${
+                className={`hidden md:inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold shadow-2xs transition ${
                   isDark
                     ? 'border border-red-900/60 bg-red-950/40 text-red-400 hover:bg-red-900/50'
                     : 'border border-red-200 bg-red-50 text-red-700 hover:bg-red-100'
@@ -825,35 +833,35 @@ export default function AdminLayout() {
               onClick={() => setNotificationModalOpen(true)}
               aria-label="Pengaturan Notifikasi Pesanan"
               title="Notifikasi Pesanan (Web Push & Suara Bel)"
-              className={`group relative flex h-10 w-10 items-center justify-center rounded-xl border transition-all duration-200 cursor-pointer shadow-2xs ${
+              className={`group relative flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl border transition-all duration-200 cursor-pointer shadow-2xs ${
                 isDark
                   ? 'border-[#60241E] bg-[#240E0C] text-amber-400 hover:border-amber-400 hover:bg-[#2D120F]'
                   : 'border-stone-200 bg-white text-amber-600 hover:border-amber-500 hover:bg-[#FAF0E4]'
               }`}
             >
-              <Bell size={18} className="transition-transform duration-200 group-hover:scale-110" />
+              <Bell size={17} className="transition-transform duration-200 group-hover:scale-110" />
               {/* Active Indicator Dot */}
-              <span className="absolute top-2 right-2 flex h-2.5 w-2.5">
+              <span className="absolute top-1.5 right-1.5 flex h-2 w-2">
                 <span
                   className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
                     isPushActive ? 'bg-emerald-400' : 'bg-amber-400'
                   }`}
                 />
                 <span
-                  className={`relative inline-flex rounded-full h-2.5 w-2.5 ${
+                  className={`relative inline-flex rounded-full h-2 w-2 ${
                     isPushActive ? 'bg-emerald-500' : 'bg-amber-500'
                   }`}
                 />
               </span>
             </button>
 
-            {/* Theme Toggle Button */}
+            {/* Theme Toggle Button (Desktop only; on mobile accessible via Drawer or Profile) */}
             <button
               type="button"
               onClick={toggleTheme}
               aria-label={isDark ? 'Beralih ke mode terang' : 'Beralih ke mode gelap'}
               title={isDark ? 'Mode Terang (Coklat Terang)' : 'Mode Gelap (Coklat Tua)'}
-              className={`group relative flex h-10 w-10 items-center justify-center rounded-xl border transition-all duration-200 cursor-pointer shadow-2xs ${
+              className={`hidden md:flex group relative h-10 w-10 items-center justify-center rounded-xl border transition-all duration-200 cursor-pointer shadow-2xs ${
                 isDark
                   ? 'border-[#60241E] bg-[#240E0C] text-[#F59E0B] hover:border-[#F59E0B] hover:bg-[#2D120F]'
                   : 'border-stone-200 bg-white text-[#D97706] hover:border-[#D97706] hover:bg-[#FAF0E4]'
@@ -864,7 +872,7 @@ export default function AdminLayout() {
               </span>
             </button>
 
-            {/* Quick Visit Website */}
+            {/* Quick Visit Website (Desktop) */}
             <Link
               to="/menu"
               target="_blank"
@@ -879,16 +887,21 @@ export default function AdminLayout() {
               <ExternalLink size={13} className={isDark ? 'text-amber-200/50' : 'text-stone-400'} />
             </Link>
 
-            {/* Admin Profile Dropdown */}
+            {/* Admin Profile Dropdown (Clean Responsive Avatar) */}
             <div className="relative">
               <button
                 type="button"
                 onClick={() => setProfileOpen((prev) => !prev)}
-                className={`flex items-center gap-2.5 rounded-xl border p-1.5 pl-3 transition shadow-2xs cursor-pointer ${
+                className={`flex items-center transition cursor-pointer ${
                   isDark
-                    ? 'border-[#60241E] bg-[#240E0C] hover:bg-[#2D120F]'
-                    : 'border-stone-200/80 bg-white hover:bg-stone-50'
+                    ? 'hover:bg-[#2D120F]'
+                    : 'hover:bg-stone-50'
+                } sm:gap-2.5 sm:rounded-xl sm:border sm:p-1.5 sm:pl-3 sm:shadow-2xs ${
+                  isDark
+                    ? 'sm:border-[#60241E] sm:bg-[#240E0C]'
+                    : 'sm:border-stone-200/80 sm:bg-white'
                 }`}
+                aria-label="Menu Profil Admin"
               >
                 <div className="hidden text-right sm:block">
                   <p
@@ -902,16 +915,16 @@ export default function AdminLayout() {
                 </div>
 
                 <div
-                  className={`flex h-8 w-8 items-center justify-center overflow-hidden ${
-                    isDark ? '' : ''
+                  className={`flex h-9 w-9 sm:h-8 sm:w-8 items-center justify-center rounded-full sm:rounded-lg overflow-hidden ring-2 ring-[#F59E0B]/30 hover:ring-[#F59E0B]/60 transition-all ${
+                    isDark ? 'bg-[#2D120F]' : 'bg-stone-100'
                   }`}
                 >
-                  <img src={LogoProfile} className="h-8 w-8 object-cover" alt="Profile" />
+                  <img src={LogoProfile} className="h-full w-full object-cover" alt="Profile" />
                 </div>
 
                 <ChevronDown
                   size={14}
-                  className={`transition-transform duration-200 mr-1 ${
+                  className={`hidden sm:block transition-transform duration-200 mr-1 ${
                     isDark ? 'text-stone-400' : 'text-stone-400'
                   } ${profileOpen ? 'rotate-180' : ''}`}
                 />
@@ -995,6 +1008,31 @@ export default function AdminLayout() {
                       <ExternalLink size={14} className={isDark ? 'text-stone-400' : 'text-stone-400'} />
                       <span>Lihat Menu Publik</span>
                     </Link>
+
+                    {/* Quick Theme Switcher in Profile Menu */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        toggleTheme()
+                      }}
+                      className={`flex w-full items-center justify-between rounded-lg px-3 py-2 text-xs font-medium transition cursor-pointer ${
+                        isDark
+                          ? 'text-stone-200 hover:bg-[#2D120F] hover:text-white'
+                          : 'text-stone-700 hover:bg-stone-100 hover:text-stone-950'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2.5">
+                        {isDark ? (
+                          <Sun size={14} className="text-[#F59E0B]" />
+                        ) : (
+                          <Moon size={14} className="text-[#D97706]" />
+                        )}
+                        <span>{isDark ? 'Mode Terang' : 'Mode Gelap'}</span>
+                      </div>
+                      <span className="text-[10px] font-bold text-amber-500 uppercase">
+                        {isDark ? 'Gelap' : 'Terang'}
+                      </span>
+                    </button>
 
                     <div
                       className={`my-1 border-t ${
