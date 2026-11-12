@@ -513,4 +513,76 @@ html.dark body {
   animation-play-state: paused;
 }
 
+/* ==========================================================================
+   CIRCULAR THEME TRANSITION
+   Efek lingkaran membuka tema baru dari titik koordinat tombol toggle
+   ========================================================================== */
+
+/* Nonaktifkan transisi internal komponen selama efek lingkaran agar snapshot DOM instan & presisi */
+html.theme-transitioning,
+html.theme-transitioning *,
+html.theme-transitioning *::before,
+html.theme-transitioning *::after,
+html.admin-theme-transitioning,
+html.admin-theme-transitioning *,
+html.admin-theme-transitioning *::before,
+html.admin-theme-transitioning *::after {
+  transition: none !important;
+}
+
+/* Hilangkan blend-mode bawaan browser agar warna Pawon Hara (Dark Coklat & Light Krem) murni tanpa semburat putih/hitam */
+html.theme-transitioning::view-transition-group(root),
+html.admin-theme-transitioning::view-transition-group(root) {
+  animation-duration: 520ms;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  overflow: clip;
+}
+
+html.theme-transitioning::view-transition-old(root),
+html.theme-transitioning::view-transition-new(root),
+html.admin-theme-transitioning::view-transition-old(root),
+html.admin-theme-transitioning::view-transition-new(root) {
+  animation: none !important;
+  mix-blend-mode: normal !important;
+  display: block;
+}
+
+/* Snapshot tema lama berada di layer bawah */
+html.theme-transitioning::view-transition-old(root),
+html.admin-theme-transitioning::view-transition-old(root) {
+  z-index: 1 !important;
+}
+
+/* Snapshot tema baru berada di layer atas dengan circular reveal */
+html.theme-transitioning::view-transition-new(root),
+html.admin-theme-transitioning::view-transition-new(root) {
+  z-index: 9999 !important;
+  animation: pawon-theme-circle-reveal 520ms cubic-bezier(0.22, 1, 0.36, 1) forwards !important;
+}
+
+@keyframes pawon-theme-circle-reveal {
+  0% {
+    clip-path: circle(0px at var(--theme-transition-x, 90vw) var(--theme-transition-y, 36px));
+  }
+  100% {
+    clip-path: circle(var(--theme-transition-r, 150vmax) at var(--theme-transition-x, 90vw) var(--theme-transition-y, 36px));
+  }
+}
+
+@keyframes admin-theme-circle-reveal {
+  0% {
+    clip-path: circle(0px at var(--theme-transition-x, 90vw) var(--theme-transition-y, 36px));
+  }
+  100% {
+    clip-path: circle(var(--theme-transition-r, 150vmax) at var(--theme-transition-x, 90vw) var(--theme-transition-y, 36px));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.theme-transitioning::view-transition-new(root),
+  html.admin-theme-transitioning::view-transition-new(root) {
+    animation: none !important;
+  }
+}
+
 

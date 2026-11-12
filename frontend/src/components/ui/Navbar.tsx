@@ -12,6 +12,7 @@ import {
 import PawonHaraImg from '../../assets/PawonHara.webp'
 import { useCartStore } from '../../stores/cart.store'
 import { useThemeStore } from '../../stores/theme.store'
+import { toggleThemeWithTransition } from '../../utils/themeTransition'
 
 const navItems = [
   {
@@ -39,7 +40,7 @@ const navItems = [
 export default function Navbar() {
   const location = useLocation()
   const totalCartItems = useCartStore((state) => state.items.length)
-  const { theme, toggleTheme } = useThemeStore()
+  const theme = useThemeStore((state) => state.theme)
   const isDark = theme === 'dark'
 
   const [scrolled, setScrolled] = useState(false)
@@ -191,7 +192,7 @@ export default function Navbar() {
             {/* Theme Toggle Button */}
             <button
               type="button"
-              onClick={toggleTheme}
+              onClick={(e) => toggleThemeWithTransition(e)}
               aria-label={isDark ? 'Beralih ke mode terang' : 'Beralih ke mode gelap'}
               title={isDark ? 'Mode Terang (Coklat Terang)' : 'Mode Gelap (Coklat Tua)'}
               className={`
@@ -272,7 +273,7 @@ export default function Navbar() {
             {/* Mobile Theme Toggle */}
             <button
               type="button"
-              onClick={toggleTheme}
+              onClick={(e) => toggleThemeWithTransition(e)}
               aria-label={isDark ? 'Beralih ke mode terang' : 'Beralih ke mode gelap'}
               className={`
                 relative z-50 flex w-8 h-8 md:h-11 md:w-11 items-center justify-center rounded-full border transition-all duration-300 cursor-pointer

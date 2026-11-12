@@ -29,6 +29,7 @@ import {
 import { authService } from '../services/auth.service'
 import { useAuthStore } from '../stores/auth.store'
 import { useThemeStore } from '../stores/theme.store'
+import { toggleAdminThemeWithTransition } from '../utils/themeTransition'
 import { useSEO } from '../hooks/useSEO'
 import { dashboardService } from '../services/dashboard.service'
 import LogoProfile from '../assets/PawonHara.webp'
@@ -114,7 +115,7 @@ export default function AdminLayout() {
   const location = useLocation()
   const user = useAuthStore((state) => state.user)
   const logout = useAuthStore((state) => state.logout)
-  const { theme, toggleTheme } = useThemeStore()
+  const theme = useThemeStore((state) => state.theme)
   const isDark = theme === 'dark'
 
   const [isLoggingOut, setIsLoggingOut] = useState(false)
@@ -684,7 +685,7 @@ export default function AdminLayout() {
                 {/* Mobile Theme Toggle Button */}
                 <button
                   type="button"
-                  onClick={toggleTheme}
+                  onClick={(e) => toggleAdminThemeWithTransition(e)}
                   className={`flex w-full items-center justify-between px-3.5 py-2.5 text-xs font-semibold rounded-xl border transition ${
                     isDark
                       ? 'border-[#60241E] bg-[#1C0B09] text-amber-300 hover:bg-[#2D120F]'
@@ -858,7 +859,7 @@ export default function AdminLayout() {
             {/* Theme Toggle Button (Desktop only; on mobile accessible via Drawer or Profile) */}
             <button
               type="button"
-              onClick={toggleTheme}
+              onClick={(e) => toggleAdminThemeWithTransition(e)}
               aria-label={isDark ? 'Beralih ke mode terang' : 'Beralih ke mode gelap'}
               title={isDark ? 'Mode Terang (Coklat Terang)' : 'Mode Gelap (Coklat Tua)'}
               className={`hidden md:flex group relative h-10 w-10 items-center justify-center rounded-xl border transition-all duration-200 cursor-pointer shadow-2xs ${
@@ -1012,8 +1013,8 @@ export default function AdminLayout() {
                     {/* Quick Theme Switcher in Profile Menu */}
                     <button
                       type="button"
-                      onClick={() => {
-                        toggleTheme()
+                      onClick={(e) => {
+                        toggleAdminThemeWithTransition(e)
                       }}
                       className={`flex w-full items-center justify-between rounded-lg px-3 py-2 text-xs font-medium transition cursor-pointer ${
                         isDark
