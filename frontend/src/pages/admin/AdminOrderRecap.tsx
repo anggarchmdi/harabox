@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import {
   Calendar,
+  ChevronDown,
   ChevronLeft,
   ChevronRight,
   Clock,
@@ -53,6 +54,21 @@ function toDateInputValue(d: Date): string {
   return `${year}-${month}-${day}`
 }
 
+const MONTH_NAMES = [
+  'Januari',
+  'Februari',
+  'Maret',
+  'April',
+  'Mei',
+  'Juni',
+  'Juli',
+  'Agustus',
+  'September',
+  'Oktober',
+  'November',
+  'Desember',
+]
+
 export default function AdminOrderRecap() {
   const isDark = useThemeStore((state) => state.theme === 'dark')
 
@@ -65,6 +81,78 @@ export default function AdminOrderRecap() {
   const [startDate, setStartDate] = useState<string>(defaultStartDate)
   const [endDate, setEndDate] = useState<string>(defaultEndDate)
   const [activePreset, setActivePreset] = useState<string>('this_month')
+
+  // Month & Year dropdown filter states
+  const [selectedMonth, setSelectedMonth] = useState<number>(now.getMonth())
+  const [selectedYear, setSelectedYear] = useState<number>(now.getFullYear())
+
+  // Generate range tahun (3 tahun lalu sampai 2 tahun ke depan)
+  const availableYears = useMemo(() => {
+    const currentYear = new Date().getFullYear()
+    const years: number[] = []
+    for (let y = currentYear - 3; y <= currentYear + 2; y++) {
+      years.push(y)
+    }
+    return years
+  }, [])
+
+  // Handler saat bulan atau tahun dipilih via dropdown
+  const handleApplyMonthYear = (month: number, year: number) => {
+    setSelectedMonth(month)
+    setSelectedYear(year)
+    const start = toDateInputValue(new Date(year, month, 1))
+    const end = toDateInputValue(new Date(year, month + 1, 0))
+    setStartDate(start)
+    setEndDate(end)
+
+    const current = new Date()
+    if (year === current.getFullYear() && month === current.getMonth()) {
+      setActivePreset('this_month')
+    } else if (
+      (month === current.getMonth() - 1 && year === current.getFullYear()) ||
+      (current.getMonth() === 0 && month === 11 && year === current.getFullYear() - 1)
+    ) {
+      setActivePreset('last_month')
+    } else {
+      setActivePreset('custom_month')
+    }
+  }
+
+  // Navigasi cepat bulan sebelumnya
+  const handlePrevMonth = () => {
+    let newMonth = selectedMonth - 1
+    let newYear = selectedYear
+    if (newMonth < 0) {
+      newMonth = 11
+      newYear -= 1
+    }
+    handleApplyMonthYear(newMonth, newYear)
+  }
+
+  // Navigasi cepat bulan berikutnya
+  const handleNextMonth = () => {
+    let newMonth = selectedMonth + 1
+    let newYear = selectedYear
+    if (newMonth > 11) {
+      newMonth = 0
+      newYear += 1
+    }
+    handleApplyMonthYear(newMonth, newYear)
+  }
+
+  // Sinkronisasi bulan & tahun jika tanggal diedit manual
+  const syncMonthYearFromDate = (dateStr: string) => {
+    if (!dateStr) return
+    const parts = dateStr.split('-')
+    if (parts.length === 3) {
+      const y = parseInt(parts[0], 10)
+      const m = parseInt(parts[1], 10) - 1
+      if (!isNaN(y) && !isNaN(m) && m >= 0 && m <= 11) {
+        setSelectedYear(y)
+        setSelectedMonth(m)
+      }
+    }
+  }
 
   // Other filters
   const [dateType, setDateType] = useState<'event_date' | 'created_at'>('event_date')
@@ -104,12 +192,22 @@ export default function AdminOrderRecap() {
       setStartDate(toDateInputValue(past))
       setEndDate(toDateInputValue(today))
     } else if (presetKey === 'this_month') {
-      setStartDate(toDateInputValue(new Date(today.getFullYear(), today.getMonth(), 1)))
-      setEndDate(toDateInputValue(new Date(today.getFullYear(), today.getMonth() + 1, 0)))
+      const m = today.getMonth()
+      const y = today.getFullYear()
+      setSelectedMonth(m)
+      setSelectedYear(y)
+      setStartDate(toDateInputValue(new Date(y, m, 1)))
+      setEndDate(toDateInputValue(new Date(y, m + 1, 0)))
     } else if (presetKey === 'last_month') {
-      setStartDate(toDateInputValue(new Date(today.getFullYear(), today.getMonth() - 1, 1)))
-      setEndDate(toDateInputValue(new Date(today.getFullYear(), today.getMonth(), 0)))
+      const prevDate = new Date(today.getFullYear(), today.getMonth() - 1, 1)
+      const m = prevDate.getMonth()
+      const y = prevDate.getFullYear()
+      setSelectedMonth(m)
+      setSelectedYear(y)
+      setStartDate(toDateInputValue(new Date(y, m, 1)))
+      setEndDate(toDateInputValue(new Date(y, m + 1, 0)))
     } else if (presetKey === 'this_year') {
+      setSelectedYear(today.getFullYear())
       setStartDate(toDateInputValue(new Date(today.getFullYear(), 0, 1)))
       setEndDate(toDateInputValue(new Date(today.getFullYear(), 11, 31)))
     } else if (presetKey === 'all') {
@@ -252,10 +350,31 @@ export default function AdminOrderRecap() {
           </div>
 
           <div className="flex items-center gap-2 flex-wrap">
+            {/* Active Period Badge */}
+            <span
+              className={`inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-lg border ${
+                isDark
+                  ? 'border-[#60241E] bg-[#1C0B09] text-amber-300'
+                  : 'border-stone-200 bg-stone-50 text-stone-700'
+              }`}
+            >
+              <Calendar size={12} className="text-red-500" />
+              <span>
+                {activePreset === 'this_month' || activePreset === 'last_month' || activePreset === 'custom_month'
+                  ? `Periode: ${MONTH_NAMES[selectedMonth]} ${selectedYear}`
+                  : startDate && endDate
+                    ? `${formatDate(startDate)} - ${formatDate(endDate)}`
+                    : 'Semua Waktu'}
+              </span>
+            </span>
+
             {(startDate || endDate || status !== 'all' || paymentStatus !== 'all' || search) && (
               <button
                 type="button"
                 onClick={() => {
+                  const current = new Date()
+                  setSelectedMonth(current.getMonth())
+                  setSelectedYear(current.getFullYear())
                   handleApplyPreset('this_month')
                   setStatus('all')
                   setPaymentStatus('all')
@@ -273,41 +392,163 @@ export default function AdminOrderRecap() {
           </div>
         </div>
 
-        {/* Quick Date Presets */}
-        <div className="mb-4">
-          <p
-            className={`text-[11px] font-bold uppercase tracking-wider mb-2 ${isDark ? 'text-stone-400' : 'text-stone-500'
-              }`}
-          >
-            Pilihan Cepat Rentang Waktu:
-          </p>
-          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
-            {[
-              { id: 'today', label: 'Hari Ini' },
-              { id: 'last_7', label: '7 Hari Terakhir' },
-              { id: 'last_30', label: '30 Hari Terakhir' },
-              { id: 'this_month', label: 'Bulan Ini' },
-              { id: 'last_month', label: 'Bulan Lalu' },
-              { id: 'this_year', label: 'Tahun Ini' },
-              { id: 'all', label: 'Semua Waktu' },
-            ].map((p) => {
-              const isActive = activePreset === p.id
-              return (
-                <button
-                  key={p.id}
-                  type="button"
-                  onClick={() => handleApplyPreset(p.id)}
-                  className={`px-3 py-1.5 text-xs font-semibold rounded-xl border transition cursor-pointer ${isActive
-                    ? 'bg-red-600 border-red-600 text-white shadow-xs'
-                    : isDark
-                      ? 'border-[#60241E] bg-[#1C0B09] text-stone-300 hover:bg-[#2D120F] hover:text-white'
-                      : 'border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100'
-                    }`}
+        {/* Preset & Month/Year Filter Section */}
+        <div className="mb-4 flex flex-col xl:flex-row xl:items-center justify-between gap-3.5 pb-3 border-b border-stone-200/60 dark:border-[#60241E]/60">
+          {/* Quick Date Presets */}
+          <div className="flex-1">
+            <p
+              className={`text-[11px] font-bold uppercase tracking-wider mb-2 ${isDark ? 'text-stone-400' : 'text-stone-500'
+                }`}
+            >
+              Pilihan Cepat Rentang Waktu:
+            </p>
+            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+              {[
+                { id: 'today', label: 'Hari Ini' },
+                { id: 'last_7', label: '7 Hari Terakhir' },
+                { id: 'last_30', label: '30 Hari Terakhir' },
+                { id: 'this_month', label: 'Bulan Ini' },
+                { id: 'last_month', label: 'Bulan Lalu' },
+                { id: 'this_year', label: 'Tahun Ini' },
+                { id: 'all', label: 'Semua Waktu' },
+              ].map((p) => {
+                const isActive = activePreset === p.id
+                return (
+                  <button
+                    key={p.id}
+                    type="button"
+                    onClick={() => handleApplyPreset(p.id)}
+                    className={`px-3 py-1.5 text-xs font-semibold rounded-xl border transition cursor-pointer ${isActive
+                      ? 'bg-red-600 border-red-600 text-white shadow-xs'
+                      : isDark
+                        ? 'border-[#60241E] bg-[#1C0B09] text-stone-300 hover:bg-[#2D120F] hover:text-white'
+                        : 'border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100'
+                      }`}
+                  >
+                    {p.label}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+
+          {/* Month & Year Dropdown Controls */}
+          <div className="xl:border-l xl:pl-4 border-stone-200/80 dark:border-[#60241E]/80 shrink-0">
+            <div className="flex items-center justify-between gap-2 mb-2">
+              <p
+                className={`text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5 ${
+                  isDark ? 'text-stone-400' : 'text-stone-500'
+                }`}
+              >
+                <Calendar size={13} className="text-red-500" />
+                <span>Pilih Bulan & Tahun:</span>
+              </p>
+              {activePreset === 'custom_month' && (
+                <span className="text-[10px] font-bold text-red-500 bg-red-500/10 dark:bg-red-950/40 px-2 py-0.5 rounded-full border border-red-500/20">
+                  Bulan Kustom
+                </span>
+              )}
+            </div>
+
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              {/* Prev Month Button */}
+              <button
+                type="button"
+                onClick={handlePrevMonth}
+                title="Bulan sebelumnya"
+                aria-label="Bulan sebelumnya"
+                className={`h-9 w-9 flex items-center justify-center rounded-xl border transition cursor-pointer shrink-0 active:scale-95 ${
+                  isDark
+                    ? 'border-[#60241E] bg-[#1C0B09] text-stone-300 hover:text-white hover:bg-[#2D120F]'
+                    : 'border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100'
+                }`}
+              >
+                <ChevronLeft size={16} />
+              </button>
+
+              {/* Month Dropdown */}
+              <div className="relative flex-1 sm:w-36">
+                <select
+                  value={selectedMonth}
+                  onChange={(e) => handleApplyMonthYear(Number(e.target.value), selectedYear)}
+                  aria-label="Pilih Bulan"
+                  className={`w-full h-9 rounded-xl border px-3 pr-7 py-1.5 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-red-500/20 transition cursor-pointer appearance-none ${
+                    activePreset === 'custom_month' || activePreset === 'this_month' || activePreset === 'last_month'
+                      ? isDark
+                        ? 'border-red-600/70 bg-[#2D120F] text-amber-200'
+                        : 'border-red-500/60 bg-red-50/70 text-red-950 font-bold'
+                      : isDark
+                        ? 'border-[#60241E] bg-[#1C0B09] text-white'
+                        : 'border-stone-200 bg-stone-50 text-stone-900'
+                  }`}
                 >
-                  {p.label}
-                </button>
-              )
-            })}
+                  {MONTH_NAMES.map((name, idx) => (
+                    <option
+                      key={idx}
+                      value={idx}
+                      className={isDark ? 'bg-[#1C0B09] text-white' : 'bg-white text-stone-900'}
+                    >
+                      {name}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown
+                  size={14}
+                  className={`pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 ${
+                    isDark ? 'text-stone-400' : 'text-stone-500'
+                  }`}
+                />
+              </div>
+
+              {/* Year Dropdown */}
+              <div className="relative w-22 sm:w-26">
+                <select
+                  value={selectedYear}
+                  onChange={(e) => handleApplyMonthYear(selectedMonth, Number(e.target.value))}
+                  aria-label="Pilih Tahun"
+                  className={`w-full h-9 rounded-xl border px-3 pr-7 py-1.5 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-red-500/20 transition cursor-pointer appearance-none ${
+                    activePreset === 'custom_month' || activePreset === 'this_month' || activePreset === 'last_month'
+                      ? isDark
+                        ? 'border-red-600/70 bg-[#2D120F] text-amber-200'
+                        : 'border-red-500/60 bg-red-50/70 text-red-950 font-bold'
+                      : isDark
+                        ? 'border-[#60241E] bg-[#1C0B09] text-white'
+                        : 'border-stone-200 bg-stone-50 text-stone-900'
+                  }`}
+                >
+                  {availableYears.map((y) => (
+                    <option
+                      key={y}
+                      value={y}
+                      className={isDark ? 'bg-[#1C0B09] text-white' : 'bg-white text-stone-900'}
+                    >
+                      {y}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown
+                  size={14}
+                  className={`pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 ${
+                    isDark ? 'text-stone-400' : 'text-stone-500'
+                  }`}
+                />
+              </div>
+
+              {/* Next Month Button */}
+              <button
+                type="button"
+                onClick={handleNextMonth}
+                title="Bulan berikutnya"
+                aria-label="Bulan berikutnya"
+                className={`h-9 w-9 flex items-center justify-center rounded-xl border transition cursor-pointer shrink-0 active:scale-95 ${
+                  isDark
+                    ? 'border-[#60241E] bg-[#1C0B09] text-stone-300 hover:text-white hover:bg-[#2D120F]'
+                    : 'border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100'
+                }`}
+              >
+                <ChevronRight size={16} />
+              </button>
+            </div>
           </div>
         </div>
 
@@ -327,6 +568,7 @@ export default function AdminOrderRecap() {
               onChange={(e) => {
                 setStartDate(e.target.value)
                 setActivePreset('custom')
+                syncMonthYearFromDate(e.target.value)
               }}
               className={`w-full rounded-xl border px-3 py-2 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-red-500/20 transition ${isDark
                 ? 'border-[#60241E] bg-[#1C0B09] text-white focus:border-red-600'
@@ -350,6 +592,7 @@ export default function AdminOrderRecap() {
               onChange={(e) => {
                 setEndDate(e.target.value)
                 setActivePreset('custom')
+                syncMonthYearFromDate(e.target.value)
               }}
               className={`w-full rounded-xl border px-3 py-2 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-red-500/20 transition ${isDark
                 ? 'border-[#60241E] bg-[#1C0B09] text-white focus:border-red-600'
