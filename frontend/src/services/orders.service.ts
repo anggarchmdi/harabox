@@ -25,6 +25,7 @@ export interface OrderFilters {
   payment_status?: PaymentStatus | ''
   date_from?: string
   date_to?: string
+  month?: string
 }
 
 export const ordersService = {
@@ -65,6 +66,10 @@ export const ordersService = {
 
     if (filters.date_to) {
       params.set('date_to', filters.date_to)
+    }
+
+    if (filters.month) {
+      params.set('month', filters.month)
     }
 
     const queryString = params.toString()

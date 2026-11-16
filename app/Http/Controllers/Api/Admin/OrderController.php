@@ -127,6 +127,29 @@ class OrderController extends Controller
             });
         }
 
+        $dateType = $request->query('date_type', 'event_date');
+        $dateColumn = $dateType === 'created_at' ? 'created_at' : 'event_date';
+
+        $startDate = $request->query('start_date') ?: $request->query('date_from');
+        $endDate = $request->query('end_date') ?: $request->query('date_to');
+
+        // Dukungan parameter 'month' langsung (format: YYYY-MM)
+        if ($monthParam = $request->query('month')) {
+            if ($monthParam !== 'all' && preg_match('/^\d{4}-\d{2}$/', $monthParam)) {
+                $startDate = Carbon::createFromFormat('Y-m', $monthParam)->startOfMonth()->format('Y-m-d');
+                $endDate = Carbon::createFromFormat('Y-m', $monthParam)->endOfMonth()->format('Y-m-d');
+            }
+        }
+
+        if ($startDate && $endDate) {
+            $query->whereDate($dateColumn, '>=', $startDate)
+                ->whereDate($dateColumn, '<=', $endDate);
+        } elseif ($startDate) {
+            $query->whereDate($dateColumn, '>=', $startDate);
+        } elseif ($endDate) {
+            $query->whereDate($dateColumn, '<=', $endDate);
+        }
+
         $orders = $query->paginate($perPage);
 
         return response()->json([

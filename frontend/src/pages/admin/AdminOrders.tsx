@@ -1,9 +1,12 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import {
   Calendar,
   CheckCircle2,
   ChefHat,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   Clock,
   Coins,
   FileSpreadsheet,
@@ -150,15 +153,86 @@ function OrderTableSkeleton({ isDark }: { isDark: boolean }) {
   )
 }
 
+const MONTH_NAMES = [
+  'Januari',
+  'Februari',
+  'Maret',
+  'April',
+  'Mei',
+  'Juni',
+  'Juli',
+  'Agustus',
+  'September',
+  'Oktober',
+  'November',
+  'Desember',
+]
+
+function toDateInputValue(d: Date): string {
+  const year = d.getFullYear()
+  const month = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
 export default function AdminOrders() {
   const queryClient = useQueryClient()
   const isDark = useThemeStore((state) => state.theme === 'dark')
 
+  const now = new Date()
   const [page, setPage] = useState(1)
   const [search, setSearch] = useState('')
   const debouncedSearch = useDebounce(search, 400)
   const [selectedStatus, setSelectedStatus] = useState<OrderStatus | ''>('')
   const [selectedPaymentStatus, setSelectedPaymentStatus] = useState<PaymentStatus | ''>('')
+
+  // Filter waktu operasional (default: Bulan Ini)
+  const [timeFilter, setTimeFilter] = useState<'this_month' | 'today' | 'custom_month' | 'all'>('this_month')
+  const [selectedMonth, setSelectedMonth] = useState<number>(now.getMonth())
+  const [selectedYear, setSelectedYear] = useState<number>(now.getFullYear())
+
+  // Range tahun (3 tahun lalu sampai 2 tahun ke depan)
+  const availableYears = useMemo(() => {
+    const currentYear = new Date().getFullYear()
+    const years: number[] = []
+    for (let y = currentYear - 3; y <= currentYear + 2; y++) {
+      years.push(y)
+    }
+    return years
+  }, [])
+
+  const handleApplyMonthYear = (month: number, year: number) => {
+    setSelectedMonth(month)
+    setSelectedYear(year)
+    const current = new Date()
+    if (year === current.getFullYear() && month === current.getMonth()) {
+      setTimeFilter('this_month')
+    } else {
+      setTimeFilter('custom_month')
+    }
+    setPage(1)
+  }
+
+  const handlePrevMonth = () => {
+    let newMonth = selectedMonth - 1
+    let newYear = selectedYear
+    if (newMonth < 0) {
+      newMonth = 11
+      newYear -= 1
+    }
+    handleApplyMonthYear(newMonth, newYear)
+  }
+
+  const handleNextMonth = () => {
+    let newMonth = selectedMonth + 1
+    let newYear = selectedYear
+    if (newMonth > 11) {
+      newMonth = 0
+      newYear += 1
+    }
+    handleApplyMonthYear(newMonth, newYear)
+  }
+
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
   const [printingOrder, setPrintingOrder] = useState<Order | null>(null)
   const [orderToDelete, setOrderToDelete] = useState<Order | null>(null)
@@ -169,7 +243,7 @@ export default function AdminOrders() {
   // Reset page when search or filters change
   useEffect(() => {
     setPage(1)
-  }, [debouncedSearch, selectedStatus, selectedPaymentStatus])
+  }, [debouncedSearch, selectedStatus, selectedPaymentStatus, timeFilter, selectedMonth, selectedYear])
 
   const [paymentForm, setPaymentForm] = useState<{
     payment_status: PaymentStatus
@@ -201,15 +275,43 @@ export default function AdminOrders() {
     refetch,
     isFetching,
   } = useQuery({
-    queryKey: ['admin-orders', page, selectedStatus, selectedPaymentStatus, debouncedSearch],
-    queryFn: () =>
-      ordersService.getAll({
+    queryKey: [
+      'admin-orders',
+      page,
+      selectedStatus,
+      selectedPaymentStatus,
+      debouncedSearch,
+      timeFilter,
+      selectedMonth,
+      selectedYear,
+    ],
+    queryFn: () => {
+      let dateFrom: string | undefined = undefined
+      let dateTo: string | undefined = undefined
+
+      if (timeFilter === 'today') {
+        const todayStr = toDateInputValue(new Date())
+        dateFrom = todayStr
+        dateTo = todayStr
+      } else if (timeFilter === 'this_month') {
+        const current = new Date()
+        dateFrom = toDateInputValue(new Date(current.getFullYear(), current.getMonth(), 1))
+        dateTo = toDateInputValue(new Date(current.getFullYear(), current.getMonth() + 1, 0))
+      } else if (timeFilter === 'custom_month') {
+        dateFrom = toDateInputValue(new Date(selectedYear, selectedMonth, 1))
+        dateTo = toDateInputValue(new Date(selectedYear, selectedMonth + 1, 0))
+      }
+
+      return ordersService.getAll({
         page,
         per_page: 10,
         status: selectedStatus || undefined,
         payment_status: selectedPaymentStatus || undefined,
         search: debouncedSearch.trim() || undefined,
-      }),
+        date_from: dateFrom,
+        date_to: dateTo,
+      })
+    },
   })
 
   // Polling data dashboard untuk metrik operasional terpadu (cached di React Query)
@@ -507,17 +609,28 @@ export default function AdminOrders() {
 
           {/* Card 3: Pesanan Hari Ini */}
           <div
-            className={`rounded-2xl border p-4.5 shadow-xs transition-all ${isDark
-                ? 'border-[#382321] bg-[#1C1312]'
-                : 'border-stone-200/90 bg-white'
+            onClick={() => {
+              setTimeFilter('today')
+              setPage(1)
+            }}
+            className={`rounded-2xl border p-4.5 shadow-xs transition-all cursor-pointer group ${timeFilter === 'today'
+                ? isDark
+                  ? 'border-emerald-600/70 bg-[#1A261E] ring-1 ring-emerald-500/20'
+                  : 'border-emerald-500 bg-emerald-50/60 ring-1 ring-emerald-400/30'
+                : isDark
+                  ? 'border-[#382321] bg-[#1C1312] hover:border-emerald-600/40'
+                  : 'border-stone-200/90 bg-white hover:border-emerald-600/40'
               }`}
+            title="Klik untuk filter pesanan hari ini"
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div
-                  className={`flex h-10 w-10 items-center justify-center rounded-xl ${isDark
-                      ? 'bg-emerald-950/40 text-emerald-400'
-                      : 'bg-emerald-50 text-emerald-700'
+                  className={`flex h-10 w-10 items-center justify-center rounded-xl transition ${timeFilter === 'today'
+                      ? 'bg-emerald-500 text-white'
+                      : isDark
+                        ? 'bg-emerald-950/40 text-emerald-400'
+                        : 'bg-emerald-50 text-emerald-700'
                     }`}
                 >
                   <Calendar size={18} />
@@ -545,6 +658,159 @@ export default function AdminOrders() {
               : 'border-stone-200/90 bg-white'
             }`}
         >
+          {/* Row 1: Time & Month Filter Bar */}
+          <div
+            className={`flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-3 border-b text-xs ${
+              isDark ? 'border-[#2D1B19]' : 'border-stone-100'
+            }`}
+          >
+            {/* Quick Period Buttons */}
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <span
+                className={`text-[11px] font-bold uppercase tracking-wider mr-1 flex items-center gap-1.5 ${
+                  isDark ? 'text-stone-400' : 'text-stone-500'
+                }`}
+              >
+                <Calendar size={13} className="text-amber-500" />
+                <span>Periode:</span>
+              </span>
+
+              {[
+                { id: 'this_month', label: 'Bulan Ini' },
+                { id: 'today', label: 'Hari Ini' },
+                { id: 'all', label: 'Semua' },
+              ].map((btn) => {
+                const isActive = timeFilter === btn.id
+                return (
+                  <button
+                    key={btn.id}
+                    type="button"
+                    onClick={() => {
+                      if (btn.id === 'this_month') {
+                        const cur = new Date()
+                        setSelectedMonth(cur.getMonth())
+                        setSelectedYear(cur.getFullYear())
+                      }
+                      setTimeFilter(btn.id as typeof timeFilter)
+                      setPage(1)
+                    }}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition active:scale-95 cursor-pointer ${
+                      isActive
+                        ? isDark
+                          ? 'bg-gradient-to-r from-[#95271D] to-[#7D1E16] text-white shadow-sm border border-[#F59E0B]/30'
+                          : 'bg-stone-900 text-white shadow-xs'
+                        : isDark
+                          ? 'border border-[#382321] bg-[#1F1413] text-stone-300 hover:bg-[#2A1B19] hover:text-white'
+                          : 'border border-stone-200/90 bg-stone-50 text-stone-700 hover:bg-stone-100'
+                    }`}
+                  >
+                    {btn.label}
+                  </button>
+                )
+              })}
+            </div>
+
+            {/* Month & Year Dropdown Controls */}
+            <div className="flex items-center gap-1.5 shrink-0 self-stretch sm:self-auto">
+              {/* Prev Month Button */}
+              <button
+                type="button"
+                onClick={handlePrevMonth}
+                title="Bulan sebelumnya"
+                aria-label="Bulan sebelumnya"
+                className={`h-8 w-8 sm:h-8.5 sm:w-8.5 flex items-center justify-center rounded-xl border transition cursor-pointer shrink-0 active:scale-95 ${
+                  isDark
+                    ? 'border-[#382321] bg-[#1F1413] text-stone-300 hover:text-white hover:bg-[#2A1B19]'
+                    : 'border-stone-200/90 bg-stone-50 text-stone-700 hover:bg-stone-100'
+                }`}
+              >
+                <ChevronLeft size={15} />
+              </button>
+
+              {/* Month Dropdown */}
+              <div className="relative flex-1 sm:w-34">
+                <select
+                  value={selectedMonth}
+                  onChange={(e) => handleApplyMonthYear(Number(e.target.value), selectedYear)}
+                  aria-label="Pilih Bulan"
+                  className={`w-full h-8 sm:h-8.5 rounded-xl border px-2.5 pr-6 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-amber-500/30 transition cursor-pointer appearance-none ${
+                    timeFilter === 'custom_month' || timeFilter === 'this_month'
+                      ? isDark
+                        ? 'border-red-600/70 bg-[#2D120F] text-amber-200'
+                        : 'border-red-500/60 bg-red-50/70 text-red-950 font-bold'
+                      : isDark
+                        ? 'border-[#382321] bg-[#1F1413] text-white'
+                        : 'border-stone-200 bg-stone-50 text-stone-900'
+                  }`}
+                >
+                  {MONTH_NAMES.map((name, idx) => (
+                    <option
+                      key={idx}
+                      value={idx}
+                      className={isDark ? 'bg-[#1C0B09] text-white' : 'bg-white text-stone-900'}
+                    >
+                      {name}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown
+                  size={13}
+                  className={`pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 ${
+                    isDark ? 'text-stone-400' : 'text-stone-500'
+                  }`}
+                />
+              </div>
+
+              {/* Year Dropdown */}
+              <div className="relative w-20 sm:w-24">
+                <select
+                  value={selectedYear}
+                  onChange={(e) => handleApplyMonthYear(selectedMonth, Number(e.target.value))}
+                  aria-label="Pilih Tahun"
+                  className={`w-full h-8 sm:h-8.5 rounded-xl border px-2.5 pr-6 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-amber-500/30 transition cursor-pointer appearance-none ${
+                    timeFilter === 'custom_month' || timeFilter === 'this_month'
+                      ? isDark
+                        ? 'border-red-600/70 bg-[#2D120F] text-amber-200'
+                        : 'border-red-500/60 bg-red-50/70 text-red-950 font-bold'
+                      : isDark
+                        ? 'border-[#382321] bg-[#1F1413] text-white'
+                        : 'border-stone-200 bg-stone-50 text-stone-900'
+                  }`}
+                >
+                  {availableYears.map((y) => (
+                    <option
+                      key={y}
+                      value={y}
+                      className={isDark ? 'bg-[#1C0B09] text-white' : 'bg-white text-stone-900'}
+                    >
+                      {y}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown
+                  size={13}
+                  className={`pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 ${
+                    isDark ? 'text-stone-400' : 'text-stone-500'
+                  }`}
+                />
+              </div>
+
+              {/* Next Month Button */}
+              <button
+                type="button"
+                onClick={handleNextMonth}
+                title="Bulan berikutnya"
+                aria-label="Bulan berikutnya"
+                className={`h-8 w-8 sm:h-8.5 sm:w-8.5 flex items-center justify-center rounded-xl border transition cursor-pointer shrink-0 active:scale-95 ${
+                  isDark
+                    ? 'border-[#382321] bg-[#1F1413] text-stone-300 hover:text-white hover:bg-[#2A1B19]'
+                    : 'border-stone-200/90 bg-stone-50 text-stone-700 hover:bg-stone-100'
+                }`}
+              >
+                <ChevronRight size={15} />
+              </button>
+            </div>
+          </div>
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
             {/* Status Tabs Segmented Control */}
             <div className="flex items-center gap-1 overflow-x-auto pb-1 lg:pb-0 scrollbar-none">
@@ -676,10 +942,14 @@ export default function AdminOrders() {
             </div>
 
             {/* Quick Clear Filter Button */}
-            {(Boolean(selectedStatus) || Boolean(selectedPaymentStatus) || Boolean(search)) && (
+            {(Boolean(selectedStatus) || Boolean(selectedPaymentStatus) || Boolean(search) || timeFilter !== 'this_month') && (
               <button
                 type="button"
                 onClick={() => {
+                  const cur = new Date()
+                  setSelectedMonth(cur.getMonth())
+                  setSelectedYear(cur.getFullYear())
+                  setTimeFilter('this_month')
                   setSelectedStatus('')
                   setSelectedPaymentStatus('')
                   setSearch('')
