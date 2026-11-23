@@ -413,32 +413,32 @@ export default function PrintOrderModal({
           </div>
         </div>
 
-        <div style="display: flex; justify-content: space-between; margin-top: 36px; font-size: 11px; text-align: center;">
-          <div style="width: 38%;">
+        <div style="display: flex; justify-content: space-between; margin-top: 48px; font-size: 11px; text-align: center;">
+          <div style="width: 38%; display: flex; flex-direction: column; justify-content: space-between; min-height: 104px;">
             <div>Tanda Terima Pemesan,</div>
-            <div style="height: 50px;"></div>
             <div style="font-weight: bold;">( ${order.customers_name} )</div>
           </div>
-          <div style="width: 44%; display: flex; flex-direction: column; align-items: center;">
-            <div style="font-weight: 500; margin-bottom: 6px;">Hormat Kami,</div>
+          <div style="width: 44%; display: flex; flex-direction: column; justify-content: space-between; align-items: center; min-height: 104px;">
+            <div style="font-weight: 500;">Hormat Kami,</div>
             <div style="
               display: inline-block;
-              margin-top: 4px;
-              padding: 5px 12px;
+              padding: 4px 12px;
               color: #113BB6;
               font-family: 'Times New Roman', Times, Georgia, serif;
-              font-size: 13px;
+              font-size: 12.5px;
               font-weight: 800;
               -webkit-text-stroke: 0.35px #113BB6;
               border: 2px solid #113BB6;
               border-radius: 3px;
               letter-spacing: 0.2px;
               line-height: 1.25;
+              white-space: nowrap;
               text-shadow: 0 0 0.5px rgba(17, 59, 182, 0.5), 0 0 1px rgba(17, 59, 182, 0.2);
               box-shadow: inset 0 0 0 0.5px rgba(17, 59, 182, 0.25);
             ">
               CV. Ayam Geprek Parangtritis
             </div>
+            <div style="font-weight: bold;">( Pawon Hara Management )</div>
           </div>
         </div>
       `
@@ -871,16 +871,15 @@ export default function PrintOrderModal({
                 </div>
 
                 {/* Signature & Stamp Footer (Preview) */}
-                <div className="flex justify-between items-start pt-6 text-xs text-center border-t border-dashed border-stone-300 mt-6">
-                  <div className="w-[40%]">
+                <div className="flex justify-between items-start pt-8 text-xs text-center border-t border-dashed border-stone-300 mt-8">
+                  <div className="w-[40%] flex flex-col justify-between items-center min-h-[104px]">
                     <p className="text-stone-700">Tanda Terima Pemesan,</p>
-                    <div className="h-10" />
                     <p className="font-bold text-stone-900">( {order.customers_name} )</p>
                   </div>
-                  <div className="w-[45%] flex flex-col items-center">
+                  <div className="w-[45%] flex flex-col justify-between items-center min-h-[104px]">
                     <p className="text-stone-700 font-medium">Hormat Kami,</p>
                     <div
-                      className="mt-2 inline-block px-3 py-1.5 text-[#113BB6] border-2 border-[#113BB6] rounded-[3px] font-serif font-extrabold text-xs sm:text-[13px] tracking-normal select-none shadow-[inset_0_0_0_0.5px_rgba(17,59,182,0.25)] [text-shadow:0_0_0.5px_rgba(17,59,182,0.5),0_0_1px_rgba(17,59,182,0.2)]"
+                      className="inline-block px-2.5 py-1 text-[#113BB6] border-2 border-[#113BB6] rounded-[3px] font-serif font-extrabold text-[12px] sm:text-[12.5px] tracking-normal select-none shadow-[inset_0_0_0_0.5px_rgba(17,59,182,0.25)] [text-shadow:0_0_0.5px_rgba(17,59,182,0.5),0_0_1px_rgba(17,59,182,0.2)] whitespace-nowrap"
                       style={{
                         WebkitTextStroke: '0.35px #113BB6',
                         fontFamily: "'Times New Roman', Times, Georgia, serif",
@@ -888,6 +887,7 @@ export default function PrintOrderModal({
                     >
                       CV. Ayam Geprek Parangtritis
                     </div>
+                    <p className="font-bold text-stone-900">( Pawon Hara Management )</p>
                   </div>
                 </div>
               </div>
