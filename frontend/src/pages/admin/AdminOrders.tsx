@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { Link } from 'react-router-dom'
+import AutoRefreshBar from '../../components/admin/AutoRefreshBar'
 import {
   Calendar,
   CheckCircle2,
@@ -442,6 +443,14 @@ export default function AdminOrders() {
         text="Memuat Pesanan Katering..."
         subtext="Sinkronisasi status dan rincian pesanan pelanggan"
         minDuration={400}
+      />
+      <AutoRefreshBar
+        onRefresh={async () => {
+          await refetch()
+        }}
+        intervalMs={60000}
+        paused={Boolean(selectedOrder || printingOrder || orderToDelete)}
+        isDark={isDark}
       />
       <div
         className={`min-h-screen space-y-6 sm:space-y-7 p-4 sm:p-6 lg:p-8 pb-24 transition-colors duration-300 ${isDark ? 'text-stone-100' : 'text-stone-900'

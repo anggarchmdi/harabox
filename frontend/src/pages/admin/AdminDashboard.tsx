@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
+import AutoRefreshBar from '../../components/admin/AutoRefreshBar'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   Boxes,
@@ -278,6 +279,14 @@ export default function AdminDashboard() {
         text="Menyiapkan Dashboard Monitoring..."
         subtext="Memuat analitik penjualan, omset, dan antrean pesanan"
         minDuration={400}
+      />
+      <AutoRefreshBar
+        onRefresh={async () => {
+          await refetch()
+        }}
+        intervalMs={60000}
+        paused={Boolean(selectedOrder)}
+        isDark={isDark}
       />
       <div className={`mx-auto max-w-7xl space-y-6 sm:space-y-8 p-4 sm:p-6 lg:p-8 pb-24 ${isDark ? 'text-stone-100' : 'text-stone-900'}`}>
       {/* =====================================================
