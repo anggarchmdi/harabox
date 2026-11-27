@@ -242,11 +242,10 @@ export default function AdminLayout() {
 
   return (
     <div
-      className={`min-h-screen w-full max-w-full overflow-x-clip font-sans transition-colors duration-300 ${
-        isDark
-          ? 'bg-[#1C0B09] text-stone-100 selection:bg-[#F59E0B] selection:text-[#1C0B09]'
-          : 'bg-[#FBF7F2] text-stone-900 selection:bg-[#F59E0B] selection:text-[#2B120E]'
-      }`}
+      className={`min-h-screen w-full max-w-full overflow-x-clip font-sans transition-colors duration-300 ${isDark
+        ? 'bg-[#1C0B09] text-stone-100 selection:bg-[#F59E0B] selection:text-[#1C0B09]'
+        : 'bg-[#FBF7F2] text-stone-900 selection:bg-[#F59E0B] selection:text-[#2B120E]'
+        }`}
     >
       {/* Animasi Loader Tradisional Kendil Saat Logout */}
       <PageLoader
@@ -260,11 +259,10 @@ export default function AdminLayout() {
           DESKTOP SIDEBAR (EXPAND / COLLAPSE) - FLOATING & CURVED
       ====================================================== */}
       <aside
-        className={`fixed top-3.5 bottom-3.5 left-3.5 hidden flex-col rounded-3xl border z-30 lg:flex transition-all duration-300 ease-in-out backdrop-blur-xl ${
-          isDark
-            ? 'border-[#60241E]/80 bg-[#240E0C]/95 shadow-[0_12px_40px_rgba(0,0,0,0.65)]'
-            : 'border-stone-200/90 bg-white/95 shadow-[0_12px_36px_rgba(43,18,14,0.08)]'
-        } ${isCollapsed ? 'w-20' : 'w-72'}`}
+        className={`fixed top-3.5 bottom-3.5 left-3.5 hidden flex-col rounded-3xl border z-30 lg:flex transition-all duration-300 ease-in-out backdrop-blur-xl ${isDark
+          ? 'border-[#60241E]/80 bg-[#240E0C]/95 shadow-[0_12px_40px_rgba(0,0,0,0.65)]'
+          : 'border-stone-200/90 bg-white/95 shadow-[0_12px_36px_rgba(43,18,14,0.08)]'
+          } ${isCollapsed ? 'w-20' : 'w-64 2xl:w-72'}`}
       >
         {/* Floating Expand/Collapse Toggle Button */}
         <button
@@ -272,11 +270,10 @@ export default function AdminLayout() {
           onClick={toggleCollapse}
           aria-label={isCollapsed ? 'Perluas Sidebar' : 'Perkecil Sidebar'}
           title={isCollapsed ? 'Perluas Sidebar' : 'Perkecil Sidebar'}
-          className={`absolute -right-3.5 top-80 hidden lg:flex h-7 w-7 items-center justify-center rounded-full border shadow-md transition-all z-40 focus:outline-none cursor-pointer ${
-            isDark
-              ? 'bg-[#2D120F] border-[#60241E] text-stone-300 hover:text-white hover:bg-[#381612] focus:ring-2 focus:ring-[#F59E0B]/30'
-              : 'bg-white border-stone-200 text-stone-500 hover:text-stone-950 hover:bg-stone-50 focus:ring-2 focus:ring-red-500/20'
-          }`}
+          className={`absolute -right-3.5 top-80 hidden lg:flex h-7 w-7 items-center justify-center rounded-full border shadow-md transition-all z-40 focus:outline-none cursor-pointer ${isDark
+            ? 'bg-[#2D120F] border-[#60241E] text-stone-300 hover:text-white hover:bg-[#381612] focus:ring-2 focus:ring-[#F59E0B]/30'
+            : 'bg-white border-stone-200 text-stone-500 hover:text-stone-950 hover:bg-stone-50 focus:ring-2 focus:ring-red-500/20'
+            }`}
         >
           <ChevronLeft
             size={14}
@@ -287,9 +284,8 @@ export default function AdminLayout() {
 
         {/* Brand / Logo Header */}
         <div
-          className={`flex h-20 items-center border-b transition-all duration-300 rounded-t-3xl ${
-            isDark ? 'border-[#60241E]/60' : 'border-stone-100'
-          } ${isCollapsed ? 'justify-center px-2' : 'justify-between px-6'}`}
+          className={`flex h-20 items-center border-b transition-all duration-300 rounded-t-3xl ${isDark ? 'border-[#60241E]/60' : 'border-stone-100'
+            } ${isCollapsed ? 'justify-center px-2' : 'justify-between px-6'}`}
         >
           {isCollapsed ? (
             <Link
@@ -297,7 +293,7 @@ export default function AdminLayout() {
               className="group relative flex h-14 w-14 items-center justify-center transition hover:scale-105"
               title="Pawon Hara Admin"
             >
-                <img src={LogoProfile} alt="" />
+              <img src={LogoProfile} alt="" />
               {/* Tooltip */}
               <div className="pointer-events-none absolute left-full ml-3 hidden group-hover:flex items-center rounded-xl bg-stone-900 px-3 py-1.5 text-xs font-semibold text-white shadow-xl z-50 whitespace-nowrap">
                 Pawon Hara Admin
@@ -307,13 +303,12 @@ export default function AdminLayout() {
             <>
               <Link to="/admin" className="flex items-center gap-3">
                 <div className="flex h-14 w-14 items-center justify-center rounded-xl">
-                <img src={LogoProfile} className='w-' alt="" />
+                  <img src={LogoProfile} className='w-' alt="" />
                 </div>
                 <div className="flex flex-col">
                   <span
-                    className={`font-dhaksinarga tracking-wide text-xl font-bold leading-none ${
-                      isDark ? 'text-white' : 'text-stone-900'
-                    }`}
+                    className={`font-dhaksinarga tracking-wide text-xl font-bold leading-none ${isDark ? 'text-white' : 'text-stone-900'
+                      }`}
                   >
                     Pawon Hara
                   </span>
@@ -331,9 +326,8 @@ export default function AdminLayout() {
         {/* Live Status Pill */}
         {isCollapsed ? (
           <div
-            className={`py-3 border-b flex justify-center group relative cursor-help ${
-              isDark ? 'bg-[#1C0B09]/40 border-[#60241E]/50' : 'bg-stone-50/60 border-stone-100'
-            }`}
+            className={`py-3 border-b flex justify-center group relative cursor-help ${isDark ? 'bg-[#1C0B09]/40 border-[#60241E]/50' : 'bg-stone-50/60 border-stone-100'
+              }`}
           >
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
@@ -345,9 +339,8 @@ export default function AdminLayout() {
           </div>
         ) : (
           <div
-            className={`px-6 py-3 border-b ${
-              isDark ? 'bg-[#1C0B09]/40 border-[#60241E]/50' : 'bg-stone-50/60 border-stone-100'
-            }`}
+            className={`px-6 py-3 border-b ${isDark ? 'bg-[#1C0B09]/40 border-[#60241E]/50' : 'bg-stone-50/60 border-stone-100'
+              }`}
           >
             <div className="flex items-center gap-2">
               <span className="relative flex h-2 w-2">
@@ -367,9 +360,8 @@ export default function AdminLayout() {
           <div>
             {!isCollapsed && (
               <p
-                className={`px-3 text-[10px] font-bold uppercase tracking-[0.18em] mb-2 ${
-                  isDark ? 'text-amber-200/50' : 'text-stone-400'
-                }`}
+                className={`px-3 text-[10px] font-bold uppercase tracking-[0.18em] mb-2 ${isDark ? 'text-amber-200/50' : 'text-stone-400'
+                  }`}
               >
                 Menu Utama
               </p>
@@ -379,107 +371,102 @@ export default function AdminLayout() {
               {mainMenus
                 .filter((menu) => !menu.superAdminOnly || user?.role === 'super_admin')
                 .map((menu) => {
-                const Icon = menu.icon
-                const isPendingBadge = menu.badgeKey === 'pending_orders' && pendingOrdersCount > 0
-                const isActiveProductBadge = menu.badgeKey === 'active_products' && activeProductsCount > 0
+                  const Icon = menu.icon
+                  const isPendingBadge = menu.badgeKey === 'pending_orders' && pendingOrdersCount > 0
+                  const isActiveProductBadge = menu.badgeKey === 'active_products' && activeProductsCount > 0
 
-                return (
-                  <div key={menu.to} className="relative group">
-                    <NavLink
-                      to={menu.to}
-                      end={menu.end ?? menu.to === '/admin'}
-                      className={({ isActive }) =>
-                        `group relative flex items-center rounded-xl transition-all ${
-                          isCollapsed
+                  return (
+                    <div key={menu.to} className="relative group">
+                      <NavLink
+                        to={menu.to}
+                        end={menu.end ?? menu.to === '/admin'}
+                        className={({ isActive }) =>
+                          `group relative flex items-center rounded-xl transition-all ${isCollapsed
                             ? 'h-11 w-11 mx-auto justify-center'
                             : 'justify-between px-3.5 py-2.5 text-xs sm:text-sm font-semibold'
-                        } ${
-                          isActive
+                          } ${isActive
                             ? isDark
                               ? 'bg-gradient-to-r from-[#95271D] to-[#60241E] text-white shadow-md border border-[#F59E0B]/30'
                               : 'bg-stone-900 text-white shadow-xs'
                             : isDark
                               ? 'text-stone-300 hover:bg-[#2D120F] hover:text-white'
                               : 'text-stone-600 hover:bg-stone-100 hover:text-stone-950'
-                        }`
-                      }
-                    >
-                      {({ isActive }) => (
-                        <>
-                          <div className={`flex items-center ${isCollapsed ? 'justify-center relative' : 'gap-3'}`}>
-                            <Icon
-                              size={isCollapsed ? 19 : 17}
-                              strokeWidth={isActive ? 2.2 : 1.8}
-                              className={`transition-colors ${
-                                isActive
+                          }`
+                        }
+                      >
+                        {({ isActive }) => (
+                          <>
+                            <div className={`flex items-center ${isCollapsed ? 'justify-center relative' : 'gap-3'}`}>
+                              <Icon
+                                size={isCollapsed ? 19 : 17}
+                                strokeWidth={isActive ? 2.2 : 1.8}
+                                className={`transition-colors ${isActive
                                   ? 'text-white'
                                   : isDark
                                     ? 'text-amber-200/50 group-hover:text-amber-300'
                                     : 'text-stone-400 group-hover:text-stone-900'
-                              }`}
-                            />
+                                  }`}
+                              />
 
-                            {!isCollapsed && <span>{menu.label}</span>}
+                              {!isCollapsed && <span>{menu.label}</span>}
 
-                            {/* Collapsed Badge Dot / Number Counter */}
-                            {isCollapsed && isPendingBadge && (
-                              <span className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-600 px-1 text-[9px] font-bold text-white ring-2 ring-white">
-                                {pendingOrdersCount}
-                              </span>
-                            )}
-                          </div>
+                              {/* Collapsed Badge Dot / Number Counter */}
+                              {isCollapsed && isPendingBadge && (
+                                <span className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-600 px-1 text-[9px] font-bold text-white ring-2 ring-white">
+                                  {pendingOrdersCount}
+                                </span>
+                              )}
+                            </div>
 
-                          {/* Expanded Badges */}
-                          {!isCollapsed && isPendingBadge && (
-                            <span
-                              className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
-                                isActive
+                            {/* Expanded Badges */}
+                            {!isCollapsed && isPendingBadge && (
+                              <span
+                                className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${isActive
                                   ? 'bg-amber-400 text-stone-950'
                                   : isDark
                                     ? 'bg-red-950/60 text-red-400 border border-red-800/60'
                                     : 'bg-red-50 text-red-700 border border-red-200'
-                              }`}
-                            >
-                              {pendingOrdersCount} baru
-                            </span>
-                          )}
+                                  }`}
+                              >
+                                {pendingOrdersCount} baru
+                              </span>
+                            )}
 
-                          {!isCollapsed && isActiveProductBadge && !isPendingBadge && (
-                            <span
-                              className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${
-                                isActive
+                            {!isCollapsed && isActiveProductBadge && !isPendingBadge && (
+                              <span
+                                className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${isActive
                                   ? 'bg-white/20 text-stone-100'
                                   : isDark
                                     ? 'text-stone-400'
                                     : 'text-stone-400'
-                              }`}
-                            >
-                              {activeProductsCount} menu
+                                  }`}
+                              >
+                                {activeProductsCount} menu
+                              </span>
+                            )}
+                          </>
+                        )}
+                      </NavLink>
+
+                      {/* Floating Tooltip saat Collapsed */}
+                      {isCollapsed && (
+                        <div className="pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-3 hidden group-hover:flex items-center gap-2 rounded-xl bg-stone-900 px-3 py-2 text-xs font-semibold text-white shadow-xl z-50 whitespace-nowrap">
+                          <span>{menu.label}</span>
+                          {isPendingBadge && (
+                            <span className="rounded-full bg-red-600 px-1.5 py-0.2 text-[10px] font-bold text-white">
+                              {pendingOrdersCount} baru
                             </span>
                           )}
-                        </>
+                          {isActiveProductBadge && !isPendingBadge && (
+                            <span className="rounded-full bg-stone-800 px-1.5 py-0.2 text-[10px] font-medium text-stone-300">
+                              {activeProductsCount}
+                            </span>
+                          )}
+                        </div>
                       )}
-                    </NavLink>
-
-                    {/* Floating Tooltip saat Collapsed */}
-                    {isCollapsed && (
-                      <div className="pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-3 hidden group-hover:flex items-center gap-2 rounded-xl bg-stone-900 px-3 py-2 text-xs font-semibold text-white shadow-xl z-50 whitespace-nowrap">
-                        <span>{menu.label}</span>
-                        {isPendingBadge && (
-                          <span className="rounded-full bg-red-600 px-1.5 py-0.2 text-[10px] font-bold text-white">
-                            {pendingOrdersCount} baru
-                          </span>
-                        )}
-                        {isActiveProductBadge && !isPendingBadge && (
-                          <span className="rounded-full bg-stone-800 px-1.5 py-0.2 text-[10px] font-medium text-stone-300">
-                            {activeProductsCount}
-                          </span>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                )
-              })}
+                    </div>
+                  )
+                })}
             </nav>
           </div>
 
@@ -487,9 +474,8 @@ export default function AdminLayout() {
           <div>
             {!isCollapsed && (
               <p
-                className={`px-3 text-[10px] font-bold uppercase tracking-[0.18em] mb-2 ${
-                  isDark ? 'text-amber-200/50' : 'text-stone-400'
-                }`}
+                className={`px-3 text-[10px] font-bold uppercase tracking-[0.18em] mb-2 ${isDark ? 'text-amber-200/50' : 'text-stone-400'
+                  }`}
               >
                 Akses Publik
               </p>
@@ -500,15 +486,13 @@ export default function AdminLayout() {
                   to="/menu"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={`group flex items-center rounded-xl text-xs font-medium transition ${
-                    isCollapsed
-                      ? 'h-10 w-10 mx-auto justify-center'
-                      : 'justify-between px-3.5 py-2'
-                  } ${
-                    isDark
+                  className={`group flex items-center rounded-xl text-xs font-medium transition ${isCollapsed
+                    ? 'h-10 w-10 mx-auto justify-center'
+                    : 'justify-between px-3.5 py-2'
+                    } ${isDark
                       ? 'text-stone-300 hover:bg-[#2D120F] hover:text-white'
                       : 'text-stone-600 hover:bg-stone-100 hover:text-stone-950'
-                  }`}
+                    }`}
                 >
                   <div className={`flex items-center ${isCollapsed ? 'justify-center' : 'gap-3'}`}>
                     <Boxes
@@ -538,15 +522,13 @@ export default function AdminLayout() {
                   to="/cara-pesan"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={`group flex items-center rounded-xl text-xs font-medium transition ${
-                    isCollapsed
-                      ? 'h-10 w-10 mx-auto justify-center'
-                      : 'justify-between px-3.5 py-2'
-                  } ${
-                    isDark
+                  className={`group flex items-center rounded-xl text-xs font-medium transition ${isCollapsed
+                    ? 'h-10 w-10 mx-auto justify-center'
+                    : 'justify-between px-3.5 py-2'
+                    } ${isDark
                       ? 'text-stone-300 hover:bg-[#2D120F] hover:text-white'
                       : 'text-stone-600 hover:bg-stone-100 hover:text-stone-950'
-                  }`}
+                    }`}
                 >
                   <div className={`flex items-center ${isCollapsed ? 'justify-center' : 'gap-3'}`}>
                     <HelpCircle
@@ -588,14 +570,12 @@ export default function AdminLayout() {
 
           {/* Drawer Content - Floating & Curved */}
           <aside
-            className={`fixed top-3 bottom-3 left-3 w-[calc(100vw-2rem)] max-w-xs flex-col border rounded-3xl shadow-2xl flex z-10 overflow-hidden ${
-              isDark ? 'bg-[#240E0C] border-[#60241E] text-stone-100' : 'bg-white border-stone-200 text-stone-900'
-            }`}
+            className={`fixed top-3 bottom-3 left-3 w-[calc(100vw-2rem)] max-w-xs flex-col border rounded-3xl shadow-2xl flex z-10 overflow-hidden ${isDark ? 'bg-[#240E0C] border-[#60241E] text-stone-100' : 'bg-white border-stone-200 text-stone-900'
+              }`}
           >
             <div
-              className={`flex h-20 items-center justify-between border-b px-6 rounded-t-3xl ${
-                isDark ? 'border-[#60241E]/60' : 'border-stone-100'
-              }`}
+              className={`flex h-20 items-center justify-between border-b px-6 rounded-t-3xl ${isDark ? 'border-[#60241E]/60' : 'border-stone-100'
+                }`}
             >
               <div className="flex items-center gap-3">
                 <div className="flex items-center justify-center rounded-xl  shadow-md ring-[#F59E0B]/30">
@@ -604,9 +584,8 @@ export default function AdminLayout() {
                 </div>
                 <div className="flex flex-col">
                   <span
-                    className={`font-dhaksinarga tracking-wide text-xl font-bold leading-none ${
-                      isDark ? 'text-white' : 'text-stone-900'
-                    }`}
+                    className={`font-dhaksinarga tracking-wide text-xl font-bold leading-none ${isDark ? 'text-white' : 'text-stone-900'
+                      }`}
                   >
                     Pawon Hara
                   </span>
@@ -618,11 +597,10 @@ export default function AdminLayout() {
               <button
                 type="button"
                 onClick={() => setMobileSidebarOpen(false)}
-                className={`rounded-lg p-2 transition ${
-                  isDark
-                    ? 'text-stone-400 hover:bg-[#2D120F] hover:text-stone-200'
-                    : 'text-stone-400 hover:bg-stone-100 hover:text-stone-700'
-                }`}
+                className={`rounded-lg p-2 transition ${isDark
+                  ? 'text-stone-400 hover:bg-[#2D120F] hover:text-stone-200'
+                  : 'text-stone-400 hover:bg-stone-100 hover:text-stone-700'
+                  }`}
                 aria-label="Tutup"
               >
                 <X size={18} />
@@ -631,9 +609,8 @@ export default function AdminLayout() {
 
             <div className="flex-1 overflow-y-auto px-4 py-6 space-y-5">
               <p
-                className={`px-3 text-[10px] font-bold uppercase tracking-[0.18em] ${
-                  isDark ? 'text-amber-200/50' : 'text-stone-400'
-                }`}
+                className={`px-3 text-[10px] font-bold uppercase tracking-[0.18em] ${isDark ? 'text-amber-200/50' : 'text-stone-400'
+                  }`}
               >
                 Menu Utama
               </p>
@@ -641,56 +618,53 @@ export default function AdminLayout() {
                 {mainMenus
                   .filter((menu) => !menu.superAdminOnly || user?.role === 'super_admin')
                   .map((menu) => {
-                  const Icon = menu.icon
-                  const isPendingBadge = menu.badgeKey === 'pending_orders' && pendingOrdersCount > 0
+                    const Icon = menu.icon
+                    const isPendingBadge = menu.badgeKey === 'pending_orders' && pendingOrdersCount > 0
 
-                  return (
-                    <NavLink
-                      key={menu.to}
-                      to={menu.to}
-                      end={menu.end ?? menu.to === '/admin'}
-                      onClick={() => setMobileSidebarOpen(false)}
-                      className={({ isActive }) =>
-                        `flex items-center justify-between rounded-xl px-3.5 py-3 text-sm font-semibold transition ${
-                          isActive
+                    return (
+                      <NavLink
+                        key={menu.to}
+                        to={menu.to}
+                        end={menu.end ?? menu.to === '/admin'}
+                        onClick={() => setMobileSidebarOpen(false)}
+                        className={({ isActive }) =>
+                          `flex items-center justify-between rounded-xl px-3.5 py-3 text-sm font-semibold transition ${isActive
                             ? isDark
                               ? 'bg-gradient-to-r from-[#95271D] to-[#60241E] text-white shadow-md border border-[#F59E0B]/30'
                               : 'bg-stone-900 text-white shadow-xs'
                             : isDark
                               ? 'text-stone-300 hover:bg-[#2D120F] hover:text-white'
                               : 'text-stone-600 hover:bg-stone-100 hover:text-stone-950'
-                        }`
-                      }
-                    >
-                      <div className="flex items-center gap-3">
-                        <Icon size={18} />
-                        <span>{menu.label}</span>
-                      </div>
+                          }`
+                        }
+                      >
+                        <div className="flex items-center gap-3">
+                          <Icon size={18} />
+                          <span>{menu.label}</span>
+                        </div>
 
-                      {isPendingBadge && (
-                        <span className="rounded-full bg-red-600 px-2 py-0.5 text-[10px] font-bold text-white">
-                          {pendingOrdersCount}
-                        </span>
-                      )}
-                    </NavLink>
-                  )
-                })}
+                        {isPendingBadge && (
+                          <span className="rounded-full bg-red-600 px-2 py-0.5 text-[10px] font-bold text-white">
+                            {pendingOrdersCount}
+                          </span>
+                        )}
+                      </NavLink>
+                    )
+                  })}
               </nav>
 
               <div
-                className={`pt-4 border-t space-y-2 ${
-                  isDark ? 'border-[#60241E]/60' : 'border-stone-100'
-                }`}
+                className={`pt-4 border-t space-y-2 ${isDark ? 'border-[#60241E]/60' : 'border-stone-100'
+                  }`}
               >
                 {/* Mobile Theme Toggle Button */}
                 <button
                   type="button"
                   onClick={(e) => toggleAdminThemeWithTransition(e)}
-                  className={`flex w-full items-center justify-between px-3.5 py-2.5 text-xs font-semibold rounded-xl border transition ${
-                    isDark
-                      ? 'border-[#60241E] bg-[#1C0B09] text-amber-300 hover:bg-[#2D120F]'
-                      : 'border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100'
-                  }`}
+                  className={`flex w-full items-center justify-between px-3.5 py-2.5 text-xs font-semibold rounded-xl border transition ${isDark
+                    ? 'border-[#60241E] bg-[#1C0B09] text-amber-300 hover:bg-[#2D120F]'
+                    : 'border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100'
+                    }`}
                 >
                   <div className="flex items-center gap-2.5">
                     {isDark ? <Sun size={15} className="text-[#F59E0B]" /> : <Moon size={15} className="text-[#D97706]" />}
@@ -704,9 +678,8 @@ export default function AdminLayout() {
                 <Link
                   to="/menu"
                   target="_blank"
-                  className={`flex items-center justify-between px-3.5 py-2.5 text-xs font-medium rounded-xl ${
-                    isDark ? 'text-stone-300 hover:bg-[#2D120F]' : 'text-stone-600 hover:bg-stone-50'
-                  }`}
+                  className={`flex items-center justify-between px-3.5 py-2.5 text-xs font-medium rounded-xl ${isDark ? 'text-stone-300 hover:bg-[#2D120F]' : 'text-stone-600 hover:bg-stone-50'
+                    }`}
                 >
                   <span>Buka Menu Publik</span>
                   <ExternalLink size={14} />
@@ -714,9 +687,8 @@ export default function AdminLayout() {
                 <Link
                   to="/cara-pesan"
                   target="_blank"
-                  className={`flex items-center justify-between px-3.5 py-2.5 text-xs font-medium rounded-xl ${
-                    isDark ? 'text-stone-300 hover:bg-[#2D120F]' : 'text-stone-600 hover:bg-stone-50'
-                  }`}
+                  className={`flex items-center justify-between px-3.5 py-2.5 text-xs font-medium rounded-xl ${isDark ? 'text-stone-300 hover:bg-[#2D120F]' : 'text-stone-600 hover:bg-stone-50'
+                    }`}
                 >
                   <span>Panduan Cara Pesan</span>
                   <ExternalLink size={14} />
@@ -725,19 +697,17 @@ export default function AdminLayout() {
             </div>
 
             <div
-              className={`border-t p-4 rounded-b-3xl ${
-                isDark ? 'border-[#60241E]/60' : 'border-stone-100'
-              }`}
+              className={`border-t p-4 rounded-b-3xl ${isDark ? 'border-[#60241E]/60' : 'border-stone-100'
+                }`}
             >
               <button
                 type="button"
                 onClick={handleLogout}
                 disabled={isLoggingOut}
-                className={`flex w-full items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-xs font-bold transition disabled:opacity-50 cursor-pointer ${
-                  isDark
-                    ? 'bg-[#1C0B09] border border-[#60241E] text-red-400 hover:bg-red-950/30'
-                    : 'bg-stone-100 text-red-600 hover:bg-red-50'
-                }`}
+                className={`flex w-full items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-xs font-bold transition disabled:opacity-50 cursor-pointer ${isDark
+                  ? 'bg-[#1C0B09] border border-[#60241E] text-red-400 hover:bg-red-950/30'
+                  : 'bg-stone-100 text-red-600 hover:bg-red-50'
+                  }`}
               >
                 <LogOut size={16} />
                 <span>{isLoggingOut ? 'Sedang Logout...' : 'Logout Keluar'}</span>
@@ -751,19 +721,17 @@ export default function AdminLayout() {
           MAIN CONTENT AREA (WITH SMOOTH OFFSET FOR FIXED SIDEBAR)
       ====================================================== */}
       <div
-        className={`transition-all duration-300 ease-in-out ${
-          isCollapsed ? 'lg:pl-[108px]' : 'lg:pl-[316px]'
-        }`}
+        className={`transition-all duration-300 ease-in-out ${isCollapsed ? 'lg:pl-[108px]' : 'lg:pl-[252px] 2xl:pl-[316px]'
+          }`}
       >
         {/* =====================================================
             TOP NAVBAR (STICKY BLUR HEADER)
         ====================================================== */}
         <header
-          className={`sticky top-0 z-20 flex h-16 sm:h-20 items-center justify-between border-b px-3.5 sm:px-8 backdrop-blur-md transition-colors duration-300 ${
-            isDark
-              ? 'border-[#60241E]/80 bg-[#1C0B09]/90 text-white'
-              : 'border-stone-200/80 bg-white/90 text-stone-900'
-          }`}
+          className={`sticky top-0 z-20 flex h-16 sm:h-20 items-center justify-between border-b px-3.5 sm:px-8 backdrop-blur-md transition-colors duration-300 ${isDark
+            ? 'border-[#60241E]/80 bg-[#1C0B09]/90 text-white'
+            : 'border-stone-200/80 bg-white/90 text-stone-900'
+            }`}
         >
           {/* Left: Mobile Toggle & Page Title */}
           <div className="flex items-center gap-2.5 sm:gap-4 min-w-0">
@@ -771,11 +739,10 @@ export default function AdminLayout() {
             <button
               type="button"
               onClick={() => setMobileSidebarOpen(true)}
-              className={`relative flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl border lg:hidden cursor-pointer shrink-0 transition-colors ${
-                isDark
-                  ? 'border-[#60241E] bg-[#240E0C]/80 text-stone-200 hover:bg-[#240E0C] hover:text-white'
-                  : 'border-stone-200 bg-white text-stone-700 hover:bg-stone-50'
-              }`}
+              className={`relative flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl border lg:hidden cursor-pointer shrink-0 transition-colors ${isDark
+                ? 'border-[#60241E] bg-[#240E0C]/80 text-stone-200 hover:bg-[#240E0C] hover:text-white'
+                : 'border-stone-200 bg-white text-stone-700 hover:bg-stone-50'
+                }`}
               aria-label="Buka Menu Sidebar"
             >
               <Menu size={18} />
@@ -790,9 +757,8 @@ export default function AdminLayout() {
             {/* Breadcrumb (Desktop) & Responsive Page Title */}
             <div className="min-w-0">
               <div
-                className={`hidden md:flex items-center gap-1.5 text-[11px] font-medium ${
-                  isDark ? 'text-amber-200/50' : 'text-stone-400'
-                }`}
+                className={`hidden md:flex items-center gap-1.5 text-[11px] font-medium ${isDark ? 'text-amber-200/50' : 'text-stone-400'
+                  }`}
               >
                 <span>Pawon Hara</span>
                 <span>/</span>
@@ -801,9 +767,8 @@ export default function AdminLayout() {
                 </span>
               </div>
               <h2
-                className={`text-sm sm:text-base font-extrabold tracking-tight truncate ${
-                  isDark ? 'text-white' : 'text-stone-950'
-                }`}
+                className={`text-sm sm:text-base font-extrabold tracking-tight truncate ${isDark ? 'text-white' : 'text-stone-950'
+                  }`}
               >
                 {pageTitle}
               </h2>
@@ -816,11 +781,10 @@ export default function AdminLayout() {
             {pendingOrdersCount > 0 && (
               <Link
                 to="/admin/orders"
-                className={`hidden md:inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold shadow-2xs transition ${
-                  isDark
-                    ? 'border border-red-900/60 bg-red-950/40 text-red-400 hover:bg-red-900/50'
-                    : 'border border-red-200 bg-red-50 text-red-700 hover:bg-red-100'
-                }`}
+                className={`hidden md:inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold shadow-2xs transition ${isDark
+                  ? 'border border-red-900/60 bg-red-950/40 text-red-400 hover:bg-red-900/50'
+                  : 'border border-red-200 bg-red-50 text-red-700 hover:bg-red-100'
+                  }`}
                 title="Pesanan baru yang menunggu konfirmasi"
               >
                 <ShoppingCart size={13} />
@@ -834,24 +798,21 @@ export default function AdminLayout() {
               onClick={() => setNotificationModalOpen(true)}
               aria-label="Pengaturan Notifikasi Pesanan"
               title="Notifikasi Pesanan (Web Push & Suara Bel)"
-              className={`group relative flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl border transition-all duration-200 cursor-pointer shadow-2xs ${
-                isDark
-                  ? 'border-[#60241E] bg-[#240E0C] text-amber-400 hover:border-amber-400 hover:bg-[#2D120F]'
-                  : 'border-stone-200 bg-white text-amber-600 hover:border-amber-500 hover:bg-[#FAF0E4]'
-              }`}
+              className={`group relative flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl border transition-all duration-200 cursor-pointer shadow-2xs ${isDark
+                ? 'border-[#60241E] bg-[#240E0C] text-amber-400 hover:border-amber-400 hover:bg-[#2D120F]'
+                : 'border-stone-200 bg-white text-amber-600 hover:border-amber-500 hover:bg-[#FAF0E4]'
+                }`}
             >
               <Bell size={17} className="transition-transform duration-200 group-hover:scale-110" />
               {/* Active Indicator Dot */}
               <span className="absolute top-1.5 right-1.5 flex h-2 w-2">
                 <span
-                  className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
-                    isPushActive ? 'bg-emerald-400' : 'bg-amber-400'
-                  }`}
+                  className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${isPushActive ? 'bg-emerald-400' : 'bg-amber-400'
+                    }`}
                 />
                 <span
-                  className={`relative inline-flex rounded-full h-2 w-2 ${
-                    isPushActive ? 'bg-emerald-500' : 'bg-amber-500'
-                  }`}
+                  className={`relative inline-flex rounded-full h-2 w-2 ${isPushActive ? 'bg-emerald-500' : 'bg-amber-500'
+                    }`}
                 />
               </span>
             </button>
@@ -862,11 +823,10 @@ export default function AdminLayout() {
               onClick={(e) => toggleAdminThemeWithTransition(e)}
               aria-label={isDark ? 'Beralih ke mode terang' : 'Beralih ke mode gelap'}
               title={isDark ? 'Mode Terang (Coklat Terang)' : 'Mode Gelap (Coklat Tua)'}
-              className={`hidden md:flex group relative h-10 w-10 items-center justify-center rounded-xl border transition-all duration-200 cursor-pointer shadow-2xs ${
-                isDark
-                  ? 'border-[#60241E] bg-[#240E0C] text-[#F59E0B] hover:border-[#F59E0B] hover:bg-[#2D120F]'
-                  : 'border-stone-200 bg-white text-[#D97706] hover:border-[#D97706] hover:bg-[#FAF0E4]'
-              }`}
+              className={`hidden md:flex group relative h-10 w-10 items-center justify-center rounded-xl border transition-all duration-200 cursor-pointer shadow-2xs ${isDark
+                ? 'border-[#60241E] bg-[#240E0C] text-[#F59E0B] hover:border-[#F59E0B] hover:bg-[#2D120F]'
+                : 'border-stone-200 bg-white text-[#D97706] hover:border-[#D97706] hover:bg-[#FAF0E4]'
+                }`}
             >
               <span className="transition-transform duration-300 group-hover:rotate-45">
                 {isDark ? <Sun size={17} strokeWidth={2.2} /> : <Moon size={17} strokeWidth={2.2} />}
@@ -878,11 +838,10 @@ export default function AdminLayout() {
               to="/menu"
               target="_blank"
               rel="noopener noreferrer"
-              className={`hidden md:inline-flex items-center gap-1.5 rounded-xl border px-3.5 py-2 text-xs font-semibold shadow-2xs transition ${
-                isDark
-                  ? 'border-[#60241E] bg-[#240E0C] text-stone-300 hover:bg-[#2D120F] hover:text-white'
-                  : 'border-stone-200 bg-white text-stone-700 hover:bg-stone-50'
-              }`}
+              className={`hidden md:inline-flex items-center gap-1.5 rounded-xl border px-3.5 py-2 text-xs font-semibold shadow-2xs transition ${isDark
+                ? 'border-[#60241E] bg-[#240E0C] text-stone-300 hover:bg-[#2D120F] hover:text-white'
+                : 'border-stone-200 bg-white text-stone-700 hover:bg-stone-50'
+                }`}
             >
               <span>Website</span>
               <ExternalLink size={13} className={isDark ? 'text-amber-200/50' : 'text-stone-400'} />
@@ -893,22 +852,19 @@ export default function AdminLayout() {
               <button
                 type="button"
                 onClick={() => setProfileOpen((prev) => !prev)}
-                className={`flex items-center transition cursor-pointer ${
-                  isDark
-                    ? 'hover:bg-[#2D120F]'
-                    : 'hover:bg-stone-50'
-                } sm:gap-2.5 sm:rounded-xl sm:border sm:p-1.5 sm:pl-3 sm:shadow-2xs ${
-                  isDark
+                className={`flex items-center transition cursor-pointer ${isDark
+                  ? 'hover:bg-[#2D120F]'
+                  : 'hover:bg-stone-50'
+                  } sm:gap-2.5 sm:rounded-xl sm:border sm:p-1.5 sm:pl-3 sm:shadow-2xs ${isDark
                     ? 'sm:border-[#60241E] sm:bg-[#240E0C]'
                     : 'sm:border-stone-200/80 sm:bg-white'
-                }`}
+                  }`}
                 aria-label="Menu Profil Admin"
               >
                 <div className="hidden text-right sm:block">
                   <p
-                    className={`text-xs font-bold truncate max-w-[130px] ${
-                      isDark ? 'text-white' : 'text-stone-950'
-                    }`}
+                    className={`text-xs font-bold truncate max-w-[130px] ${isDark ? 'text-white' : 'text-stone-950'
+                      }`}
                   >
                     {user?.name || 'Admin'}
                   </p>
@@ -916,34 +872,30 @@ export default function AdminLayout() {
                 </div>
 
                 <div
-                  className={`flex h-9 w-9 sm:h-8 sm:w-8 items-center justify-center rounded-full sm:rounded-lg overflow-hidden ring-2 ring-[#F59E0B]/30 hover:ring-[#F59E0B]/60 transition-all ${
-                    isDark ? 'bg-[#2D120F]' : 'bg-stone-100'
-                  }`}
+                  className={`flex h-9 w-9 sm:h-8 sm:w-8 items-center justify-center rounded-full sm:rounded-lg overflow-hidden ring-2 ring-[#F59E0B]/30 hover:ring-[#F59E0B]/60 transition-all ${isDark ? 'bg-[#2D120F]' : 'bg-stone-100'
+                    }`}
                 >
                   <img src={LogoProfile} className="h-full w-full object-cover" alt="Profile" />
                 </div>
 
                 <ChevronDown
                   size={14}
-                  className={`hidden sm:block transition-transform duration-200 mr-1 ${
-                    isDark ? 'text-stone-400' : 'text-stone-400'
-                  } ${profileOpen ? 'rotate-180' : ''}`}
+                  className={`hidden sm:block transition-transform duration-200 mr-1 ${isDark ? 'text-stone-400' : 'text-stone-400'
+                    } ${profileOpen ? 'rotate-180' : ''}`}
                 />
               </button>
 
               {/* Profile Menu Dropdown */}
               {profileOpen && (
                 <div
-                  className={`absolute right-0 top-full mt-2 w-60 overflow-hidden rounded-2xl border shadow-xl z-50 animate-in fade-in slide-in-from-top-1 duration-150 ${
-                    isDark
-                      ? 'border-[#60241E] bg-[#240E0C] text-white shadow-black/60'
-                      : 'border-stone-200 bg-white'
-                  }`}
+                  className={`absolute right-0 top-full mt-2 w-60 overflow-hidden rounded-2xl border shadow-xl z-50 animate-in fade-in slide-in-from-top-1 duration-150 ${isDark
+                    ? 'border-[#60241E] bg-[#240E0C] text-white shadow-black/60'
+                    : 'border-stone-200 bg-white'
+                    }`}
                 >
                   <div
-                    className={`border-b px-4 py-3 ${
-                      isDark ? 'border-[#60241E]/60 bg-[#1C0B09]' : 'border-stone-100 bg-stone-50/80'
-                    }`}
+                    className={`border-b px-4 py-3 ${isDark ? 'border-[#60241E]/60 bg-[#1C0B09]' : 'border-stone-100 bg-stone-50/80'
+                      }`}
                   >
                     <p className={`text-xs font-bold ${isDark ? 'text-white' : 'text-stone-950'}`}>
                       {user?.name || 'Administrator'}
@@ -952,15 +904,14 @@ export default function AdminLayout() {
                       {user?.email || 'admin@pawonhara.com'}
                     </p>
                     <div
-                      className={`mt-2 flex items-center gap-1.5 text-[10px] font-semibold rounded-md px-2 py-0.5 ${
-                        user?.role === 'super_admin'
-                          ? isDark
-                            ? 'text-amber-400 bg-amber-950/40 border border-amber-800/50'
-                            : 'text-amber-700 bg-amber-50 border border-amber-200/60'
-                          : isDark
-                            ? 'text-emerald-400 bg-emerald-950/40 border border-emerald-800/50'
-                            : 'text-emerald-700 bg-emerald-50 border border-emerald-200/60'
-                      }`}
+                      className={`mt-2 flex items-center gap-1.5 text-[10px] font-semibold rounded-md px-2 py-0.5 ${user?.role === 'super_admin'
+                        ? isDark
+                          ? 'text-amber-400 bg-amber-950/40 border border-amber-800/50'
+                          : 'text-amber-700 bg-amber-50 border border-amber-200/60'
+                        : isDark
+                          ? 'text-emerald-400 bg-emerald-950/40 border border-emerald-800/50'
+                          : 'text-emerald-700 bg-emerald-50 border border-emerald-200/60'
+                        }`}
                     >
                       <ShieldCheck size={12} />
                       <span>{user?.role === 'super_admin' ? 'Hak Akses Super Admin' : 'Hak Akses Admin Staf'}</span>
@@ -972,11 +923,10 @@ export default function AdminLayout() {
                       <Link
                         to="/admin/users"
                         onClick={() => setProfileOpen(false)}
-                        className={`flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-medium transition ${
-                          isDark
-                            ? 'text-amber-300 hover:bg-[#2D120F] hover:text-white'
-                            : 'text-amber-800 hover:bg-stone-100 hover:text-stone-950'
-                        }`}
+                        className={`flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-medium transition ${isDark
+                          ? 'text-amber-300 hover:bg-[#2D120F] hover:text-white'
+                          : 'text-amber-800 hover:bg-stone-100 hover:text-stone-950'
+                          }`}
                       >
                         <Users size={14} className="text-amber-400" />
                         <span>Kelola Akun Admin</span>
@@ -986,11 +936,10 @@ export default function AdminLayout() {
                     <Link
                       to="/admin"
                       onClick={() => setProfileOpen(false)}
-                      className={`flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-medium transition ${
-                        isDark
-                          ? 'text-stone-200 hover:bg-[#2D120F] hover:text-white'
-                          : 'text-stone-700 hover:bg-stone-100 hover:text-stone-950'
-                      }`}
+                      className={`flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-medium transition ${isDark
+                        ? 'text-stone-200 hover:bg-[#2D120F] hover:text-white'
+                        : 'text-stone-700 hover:bg-stone-100 hover:text-stone-950'
+                        }`}
                     >
                       <LayoutDashboard size={14} className={isDark ? 'text-stone-400' : 'text-stone-400'} />
                       <span>Dashboard Utama</span>
@@ -1000,11 +949,10 @@ export default function AdminLayout() {
                       to="/menu"
                       target="_blank"
                       onClick={() => setProfileOpen(false)}
-                      className={`flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-medium transition ${
-                        isDark
-                          ? 'text-stone-200 hover:bg-[#2D120F] hover:text-white'
-                          : 'text-stone-700 hover:bg-stone-100 hover:text-stone-950'
-                      }`}
+                      className={`flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-medium transition ${isDark
+                        ? 'text-stone-200 hover:bg-[#2D120F] hover:text-white'
+                        : 'text-stone-700 hover:bg-stone-100 hover:text-stone-950'
+                        }`}
                     >
                       <ExternalLink size={14} className={isDark ? 'text-stone-400' : 'text-stone-400'} />
                       <span>Lihat Menu Publik</span>
@@ -1016,11 +964,10 @@ export default function AdminLayout() {
                       onClick={(e) => {
                         toggleAdminThemeWithTransition(e)
                       }}
-                      className={`flex w-full items-center justify-between rounded-lg px-3 py-2 text-xs font-medium transition cursor-pointer ${
-                        isDark
-                          ? 'text-stone-200 hover:bg-[#2D120F] hover:text-white'
-                          : 'text-stone-700 hover:bg-stone-100 hover:text-stone-950'
-                      }`}
+                      className={`flex w-full items-center justify-between rounded-lg px-3 py-2 text-xs font-medium transition cursor-pointer ${isDark
+                        ? 'text-stone-200 hover:bg-[#2D120F] hover:text-white'
+                        : 'text-stone-700 hover:bg-stone-100 hover:text-stone-950'
+                        }`}
                     >
                       <div className="flex items-center gap-2.5">
                         {isDark ? (
@@ -1036,18 +983,16 @@ export default function AdminLayout() {
                     </button>
 
                     <div
-                      className={`my-1 border-t ${
-                        isDark ? 'border-[#60241E]/60' : 'border-stone-100'
-                      }`}
+                      className={`my-1 border-t ${isDark ? 'border-[#60241E]/60' : 'border-stone-100'
+                        }`}
                     />
 
                     <button
                       type="button"
                       onClick={handleLogout}
                       disabled={isLoggingOut}
-                      className={`flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-semibold text-red-500 transition disabled:opacity-50 cursor-pointer ${
-                        isDark ? 'hover:bg-red-950/30' : 'hover:bg-red-50'
-                      }`}
+                      className={`flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-semibold text-red-500 transition disabled:opacity-50 cursor-pointer ${isDark ? 'hover:bg-red-950/30' : 'hover:bg-red-50'
+                        }`}
                     >
                       <LogOut size={14} />
                       <span>{isLoggingOut ? 'Sedang Logout...' : 'Logout Keluar'}</span>

@@ -144,24 +144,24 @@ export default function OrderTable({
         <table className="w-full text-left border-collapse">
           <thead>
             <tr
-              className={`border-b text-[11px] font-bold uppercase tracking-wider ${
+              className={`border-b text-[10px] 2xl:text-[11px] font-bold uppercase tracking-wider ${
                 isDark
                   ? 'border-[#382321] bg-[#140D0C] text-stone-400'
                   : 'border-stone-200/90 bg-[#FAF8F5] text-stone-500'
               }`}
             >
-              <th className="px-5 py-3.5 whitespace-nowrap">ID & Waktu Pesan</th>
-              <th className="px-5 py-3.5 whitespace-nowrap">Pemesan</th>
-              <th className="px-5 py-3.5">Menu & Rincian</th>
-              <th className="px-5 py-3.5 whitespace-nowrap">Jadwal Acara & Lokasi</th>
-              <th className="px-5 py-3.5 whitespace-nowrap">Total Tagihan</th>
-              <th className="px-5 py-3.5 whitespace-nowrap">Status Pesanan</th>
-              <th className="px-5 py-3.5 text-right whitespace-nowrap">Aksi</th>
+              <th className="px-2.5 py-3 xl:px-3.5 2xl:px-5 2xl:py-3.5 whitespace-nowrap">ID & Waktu Pesan</th>
+              <th className="px-2.5 py-3 xl:px-3.5 2xl:px-5 2xl:py-3.5 whitespace-nowrap">Pemesan</th>
+              <th className="px-2.5 py-3 xl:px-3.5 2xl:px-5 2xl:py-3.5 min-w-[180px] 2xl:min-w-[220px]">Menu & Rincian</th>
+              <th className="px-2.5 py-3 xl:px-3.5 2xl:px-5 2xl:py-3.5 whitespace-nowrap">Jadwal Acara & Lokasi</th>
+              <th className="px-2.5 py-3 xl:px-3.5 2xl:px-5 2xl:py-3.5 whitespace-nowrap">Total Tagihan</th>
+              <th className="px-2.5 py-3 xl:px-3.5 2xl:px-5 2xl:py-3.5 whitespace-nowrap">Status Pesanan</th>
+              <th className="px-2.5 py-3 xl:px-3.5 2xl:px-5 2xl:py-3.5 text-right whitespace-nowrap">Aksi</th>
             </tr>
           </thead>
 
           <tbody
-            className={`divide-y text-xs ${
+            className={`divide-y text-[11px] 2xl:text-xs ${
               isDark ? 'divide-[#2A1816]' : 'divide-stone-100'
             }`}
           >
@@ -184,7 +184,7 @@ export default function OrderTable({
                   }`}
                 >
                   {/* Order Code & Timestamp */}
-                  <td className="px-5 py-4 align-top whitespace-nowrap">
+                  <td className="px-2.5 py-3 xl:px-3.5 2xl:px-5 2xl:py-4 align-top whitespace-nowrap">
                     <button
                       type="button"
                       onClick={() => onView(order)}
@@ -205,7 +205,7 @@ export default function OrderTable({
                   </td>
 
                   {/* Customer Information */}
-                  <td className="px-5 py-4 align-top whitespace-nowrap">
+                  <td className="px-2.5 py-3 xl:px-3.5 2xl:px-5 2xl:py-4 align-top whitespace-nowrap">
                     <p
                       className={`font-semibold flex items-center gap-1.5 ${
                         isDark ? 'text-stone-100' : 'text-stone-900'
@@ -227,7 +227,7 @@ export default function OrderTable({
                   </td>
 
                   {/* Catering Menu Items & Addons with Progressive Disclosure */}
-                  <td className="px-5 py-4 align-top">
+                  <td className="px-2.5 py-3 xl:px-3.5 2xl:px-5 2xl:py-4 align-top">
                     <div className="max-w-xs space-y-1.5">
                       {itemsList.length > 0 ? (
                         <>
@@ -301,7 +301,7 @@ export default function OrderTable({
                   </td>
 
                   {/* Schedule & Delivery Location */}
-                  <td className="px-5 py-4 align-top">
+                  <td className="px-2.5 py-3 xl:px-3.5 2xl:px-5 2xl:py-4 align-top">
                     <div className="max-w-[210px] space-y-1">
                       <p
                         className={`font-semibold text-xs flex items-center gap-1.5 ${
@@ -333,7 +333,7 @@ export default function OrderTable({
                   </td>
 
                   {/* Total Amount & Payment Badge */}
-                  <td className="px-5 py-4 align-top whitespace-nowrap">
+                  <td className="px-2.5 py-3 xl:px-3.5 2xl:px-5 2xl:py-4 align-top whitespace-nowrap">
                     <p
                       className={`font-bold font-mono text-xs sm:text-sm ${
                         isDark ? 'text-white' : 'text-stone-950'
@@ -352,7 +352,7 @@ export default function OrderTable({
                   </td>
 
                   {/* Order Status & Quick Status Changer */}
-                  <td className="px-5 py-4 align-top">
+                  <td className="px-2.5 py-3 xl:px-3.5 2xl:px-5 2xl:py-4 align-top">
                     <div className="space-y-1.5 w-36">
                       <OrderStatusBadge status={order.status} />
 
@@ -381,13 +381,13 @@ export default function OrderTable({
                   </td>
 
                   {/* Action Toolbar */}
-                  <td className="px-5 py-4 align-top text-right whitespace-nowrap">
-                    <div className="inline-flex items-center justify-end gap-1">
+                  <td className="px-2.5 py-3 xl:px-3.5 2xl:px-5 2xl:py-4 align-top text-right whitespace-nowrap">
+                    <div className="inline-flex items-center justify-end gap-0.5 2xl:gap-1">
                       {/* Detail */}
                       <button
                         type="button"
                         onClick={() => onView(order)}
-                        className={`h-8 w-8 rounded-xl border flex items-center justify-center transition active:scale-95 cursor-pointer ${
+                        className={`h-7 w-7 2xl:h-8 2xl:w-8 rounded-lg 2xl:rounded-xl border flex items-center justify-center transition active:scale-95 cursor-pointer ${
                           isDark
                             ? 'border-[#382321] bg-[#221514] text-stone-300 hover:bg-[#2E1D1B] hover:text-white'
                             : 'border-stone-200 bg-white text-stone-700 hover:bg-stone-50 hover:text-stone-900 shadow-2xs'
@@ -403,7 +403,7 @@ export default function OrderTable({
                         <button
                           type="button"
                           onClick={() => onPrint(order)}
-                          className={`h-8 w-8 rounded-xl border flex items-center justify-center transition active:scale-95 cursor-pointer ${
+                          className={`h-7 w-7 2xl:h-8 2xl:w-8 rounded-lg 2xl:rounded-xl border flex items-center justify-center transition active:scale-95 cursor-pointer ${
                             isDark
                               ? 'border-[#4A201B] bg-[#261311] text-red-300 hover:bg-red-950/50 hover:text-white'
                               : 'border-red-200 bg-red-50/70 text-red-700 hover:bg-red-100 shadow-2xs'
@@ -420,7 +420,7 @@ export default function OrderTable({
                         href={invoiceUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className={`h-8 w-8 rounded-xl border flex items-center justify-center transition active:scale-95 ${
+                        className={`h-7 w-7 2xl:h-8 2xl:w-8 rounded-lg 2xl:rounded-xl border flex items-center justify-center transition active:scale-95 ${
                           isDark
                             ? 'border-emerald-800/50 bg-emerald-950/30 text-emerald-400 hover:bg-emerald-900/40 hover:text-white'
                             : 'border-emerald-200 bg-emerald-50/70 text-emerald-700 hover:bg-emerald-100 shadow-2xs'
@@ -434,7 +434,7 @@ export default function OrderTable({
                       {/* Edit */}
                       <Link
                         to={`/admin/orders/${order.id}/edit`}
-                        className={`h-8 w-8 rounded-xl border flex items-center justify-center transition active:scale-95 cursor-pointer ${
+                        className={`h-7 w-7 2xl:h-8 2xl:w-8 rounded-lg 2xl:rounded-xl border flex items-center justify-center transition active:scale-95 cursor-pointer ${
                           isDark
                             ? 'border-amber-800/50 bg-amber-950/30 text-amber-300 hover:bg-amber-900/40 hover:text-white'
                             : 'border-amber-200 bg-amber-50/70 text-amber-800 hover:bg-amber-100 shadow-2xs'
@@ -451,7 +451,7 @@ export default function OrderTable({
                           href={getWhatsAppTestimonialUrl(order)}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className={`h-8 w-8 rounded-xl border flex items-center justify-center transition active:scale-95 ${
+                          className={`h-7 w-7 2xl:h-8 2xl:w-8 rounded-lg 2xl:rounded-xl border flex items-center justify-center transition active:scale-95 ${
                             isDark
                               ? 'border-amber-500/40 bg-amber-950/30 text-amber-300 hover:bg-amber-900/50'
                               : 'border-amber-200 bg-amber-50 text-amber-600 hover:bg-amber-100 shadow-2xs'
@@ -468,7 +468,7 @@ export default function OrderTable({
                         <button
                           type="button"
                           onClick={() => onDelete(order)}
-                          className={`h-8 w-8 rounded-xl border flex items-center justify-center transition active:scale-95 cursor-pointer ${
+                          className={`h-7 w-7 2xl:h-8 2xl:w-8 rounded-lg 2xl:rounded-xl border flex items-center justify-center transition active:scale-95 cursor-pointer ${
                             isDark
                               ? 'border-rose-900/50 bg-rose-950/20 text-rose-400 hover:bg-rose-950/50 hover:text-white'
                               : 'border-stone-200 bg-white text-stone-400 hover:text-rose-600 hover:border-rose-200 shadow-2xs'
